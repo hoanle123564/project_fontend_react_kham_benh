@@ -1,0 +1,153 @@
+import React, { Component } from 'react';
+import { connect } from 'react-redux'; // kết nối như router
+import './HomeHeader.scss'
+// thêm các ảnh thừ assets
+import logoSrc from '../../assets/logo2.png';
+import iconChuyenKhoa from '../../assets/iconkham-chuyen-khoa.png';
+import iconNhaKhoa from '../../assets/iconkham-nha-khoa.png';
+import iconCTongquat from '../../assets/iconkham-tong-quan.png';
+import iconTuXa from '../../assets/iconkham-tu-xa.png';
+import iconSuckhoeTinhthan from '../../assets/iconsuc-khoe-tinh-than.png';
+import iconXetNghiep from '../../assets/iconxet-nghiem-y-hoc.png';
+import vietnam from '../../assets/vietnam.png'
+import united from '../../assets/united_kingdom.png'
+import { FormattedMessage } from 'react-intl';  // chuyển đổi ngôn ngữ
+import { languages } from '../../utils/constant';
+import { changeLangguageApp } from '../../store/actions/appActions';
+
+
+
+class HomeHeader extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            changeLanguage: true
+        }
+    }
+    change = (language) => {
+        this.props.changeLangguageAppRedux(language);
+        this.setState({
+            changeLanguage: !this.state.changeLanguage
+        })
+    }
+    render() {
+        let language = this.state.changeLanguage;
+        // console.log('check props: ', this.props);
+
+        return (
+            <>
+                <div className='home-header-container'>
+                    <div className='home-header-content'>
+                        <div className='left-content'>
+                            <i className="fa-solid fa-bars"></i>
+                            <img src={logoSrc} alt="logo" />
+                            {/* <div className='header-logo'></div> */}
+                        </div>
+                        <div className='center-content'>
+                            <div className='child-content'>
+                                <div><b><FormattedMessage id='home-header.specility' /> </b></div>
+                            </div>
+                            <div className='child-content'>
+                                <div><b><FormattedMessage id='home-header.place_home' /> </b></div>
+                            </div>
+                            <div className='child-content'>
+                                <div><b><FormattedMessage id='home-header.place_hospital' /></b></div>
+                            </div>
+                            <div className='child-content'>
+                                <div><b><FormattedMessage id='home-header.message' /></b></div>
+                            </div>
+                        </div>
+                        <div className='right-content'>
+                            <div className='support'>
+                                <span>
+                                    <i className="fa-solid fa-circle-question"></i>
+                                    <FormattedMessage id='home-header.support' />
+                                </span>
+                            </div>
+                            {language ?
+                                <div className='language-vi'
+                                    onClick={() => this.change(languages.EN)}>
+                                    <img src={vietnam} alt='vietnam' width={'30px'} /> VN</div> :
+                                <div className='language-en'
+                                    onClick={() => this.change(languages.VI)}>
+                                    <img src={united} alt='united' width={'30px'} /> EN</div>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+                <div className='home-header-banner '>
+                    <div className='content-up pt-5'>
+                        <div className='title1'><FormattedMessage id='banner.title1' /></div>
+                        <div className='search '>
+                            <i className="fa-solid fa-magnifying-glass"></i>
+                            <input type='text' placeholder='Tìm kiếm ....' />
+                        </div>
+                    </div>
+                    <div className='content-down'>
+                        <div className='options'>
+                            {/* Chuyên khoa */}
+                            <div className='option-child'>
+                                <div className='icon-child'>
+                                    <img src={iconChuyenKhoa} alt='icon khám chuyên khoa' />
+                                </div>
+                                <div className='text-child'><FormattedMessage id='banner.child1' /></div>
+                            </div>
+                            {/* Chuyên khoa */}
+                            <div className='option-child'>
+                                <div className='icon-child'>
+                                    <img src={iconNhaKhoa} alt='icon khám nha khoa' />
+                                </div>
+                                <div className='text-child'><FormattedMessage id='banner.child2' /></div>
+                            </div>
+                            {/* Chuyên khoa */}
+                            <div className='option-child'>
+                                <div className='icon-child'>
+                                    <img src={iconCTongquat} alt='icon khám tổng quát' />
+                                </div>
+                                <div className='text-child'><FormattedMessage id='banner.child3' /></div>
+                            </div>
+                            {/* Chuyên khoa */}
+                            <div className='option-child'>
+                                <div className='icon-child'>
+                                    <img src={iconTuXa} alt='icon khám từ xa' />
+                                </div>
+                                <div className='text-child'><FormattedMessage id='banner.child4' /></div>
+                            </div>
+                            {/* Chuyên khoa */}
+                            <div className='option-child'>
+                                <div className='icon-child'>
+                                    <img src={iconSuckhoeTinhthan} alt='icon sức khỏe tinh thần' />
+                                </div>
+                                <div className='text-child'><FormattedMessage id='banner.child5' /></div>
+                            </div>
+                            {/* Chuyên khoa */}
+                            <div className='option-child'>
+                                <div className='icon-child'>
+                                    <img src={iconXetNghiep} alt='icon xét ngiệm' />
+                                </div>
+                                <div className='text-child'><FormattedMessage id='banner.child6' /></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </>
+        );
+    }
+
+}
+
+const mapStateToProps = state => {
+    return {
+        isLoggedIn: state.user.isLoggedIn,
+        language: state.app.language
+    };
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        changeLangguageAppRedux: (languages) => dispatch(changeLangguageApp(languages))
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeHeader);

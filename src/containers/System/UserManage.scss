@@ -1,0 +1,53 @@
+// ------ Bảng danh sách người dùng ------
+table {
+    width: 85%;
+    margin: 0 auto;
+    th,
+    td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+    tr {
+        &:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        &:hover {
+            background-color: #ddd;
+        }
+    }
+    th {
+        background-color: #04AA6D;
+        color: white;
+    }
+}
+
+.modal-user-container {
+    .modal-content {
+        .modal-header {
+            button {
+                position: relative !important;
+                filter: invert(1) grayscale(100%) brightness(200%);
+            }
+        }
+    }
+    .modal-user-body {
+        display: flex;
+        gap: 15px;
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            width: 60%;
+            &.max-input {
+                width: 100%;
+            }
+            input {
+                border-radius: 3px;
+                border: 1px solid gray;
+                height: 30px;
+                outline: none;
+                padding: 0 10px;
+            }
+        }
+    }
+}
