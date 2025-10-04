@@ -3,14 +3,14 @@ import { connect } from 'react-redux'; // kết nối như router
 import './HomeHeader.scss'
 // thêm các ảnh thừ assets
 import logoSrc from '../../assets/logo2.png';
-import iconChuyenKhoa from '../../assets/iconkham-chuyen-khoa.png';
-import iconNhaKhoa from '../../assets/iconkham-nha-khoa.png';
-import iconCTongquat from '../../assets/iconkham-tong-quan.png';
-import iconTuXa from '../../assets/iconkham-tu-xa.png';
-import iconSuckhoeTinhthan from '../../assets/iconsuc-khoe-tinh-than.png';
-import iconXetNghiep from '../../assets/iconxet-nghiem-y-hoc.png';
-import vietnam from '../../assets/vietnam.png'
-import united from '../../assets/united_kingdom.png'
+import iconChuyenKhoa from '../../assets/icon-khoa/iconkham-chuyen-khoa.png';
+import iconNhaKhoa from '../../assets/icon-khoa/iconkham-nha-khoa.png';
+import iconCTongquat from '../../assets/icon-khoa/iconkham-tong-quan.png';
+import iconTuXa from '../../assets/icon-khoa/iconkham-tu-xa.png';
+import iconSuckhoeTinhthan from '../../assets/icon-khoa/iconsuc-khoe-tinh-than.png';
+import iconXetNghiep from '../../assets/icon-khoa/iconxet-nghiem-y-hoc.png';
+import vietnam from '../../assets/flag/vietnam.png'
+import united from '../../assets/flag/united_kingdom.png'
 import { FormattedMessage } from 'react-intl';  // chuyển đổi ngôn ngữ
 import { languages } from '../../utils/constant';
 import { changeLangguageApp } from '../../store/actions/appActions';
