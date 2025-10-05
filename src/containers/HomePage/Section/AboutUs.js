@@ -1,0 +1,77 @@
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import DanTri from '../../../assets/communicate/dantrilogo.png'
+import SucKhoeDoiSong from '../../../assets/communicate/suckhoedoisong.png'
+import VNexpress from '../../../assets/communicate/vnexpress.png'
+import VNNet from '../../../assets/communicate/vnnet.png'
+import VTCNews from '../../../assets/communicate/vtcnews.png'
+import VTV1 from '../../../assets/communicate/vtv1.png'
+
+class AboutUs extends Component {
+
+    render() {
+
+
+        return (
+            <>
+                <div className='section-share section-about'>
+                    <div className='section-container'>
+                        <div className='secton-header-about'>
+                            Truyền thông nói về LIFECARE
+                        </div>
+                        <div className='secton-body-about'>
+                            <div className='secton-left-about'>
+                                <iframe width="560" height="330"
+                                    src="https://www.youtube.com/embed/HwGzmRVBsdw?list=PLearCtxlLjlcKWhwO3k9PGtDdxUNb6YCC"
+                                    title="Medical Hospital Clinic Background Music For Videos" frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+
+                                </iframe>
+                            </div>
+                            <div className='secton-right-about'>
+                                <div className='section-row'>
+                                    <div className='section-items'>
+                                        <img src={VNexpress} />
+                                    </div>
+                                    <div className='section-items'>
+                                        <img src={SucKhoeDoiSong} />
+                                    </div>
+                                </div>
+                                <div className='section-row'>
+                                    <div className='section-items'>
+                                        <img src={VNNet} />
+                                    </div>
+                                    <div className='section-items'>
+                                        <img src={VTV1} />
+                                    </div>
+                                </div>
+                                <div className='section-row'>
+                                    <div className='section-items'>
+                                        <img src={VTCNews} />
+                                    </div>
+                                    <div className='section-items'>
+                                        <img src={DanTri} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </>
+        );
+    }
+
+}
+
+const mapStateToProps = state => {
+    return {
+        isLoggedIn: state.user.isLoggedIn
+    };
+};
+
+const mapDispatchToProps = dispatch => {
+    return {};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AboutUs);
