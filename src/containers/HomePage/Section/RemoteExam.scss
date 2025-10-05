@@ -1,62 +1,62 @@
-.section-remote {
-    height: 400px;
+// .section-remote {
+//     height: 400px;
 
-    .section-container {
-        margin: 0 40px;
-        padding: 20px 0; // thêm khoảng trống trên dưới container
+//     .section-container {
+//         margin: 0 40px;
+//         padding: 20px 0; // thêm khoảng trống trên dưới container
 
-        .section-header {
-            margin: 15px 0;
-            display: flex;
-            justify-content: space-between;
+//         .section-header {
+//             margin: 15px 0;
+//             display: flex;
+//             justify-content: space-between;
 
-            .title-section {
-                font-weight: 600;
-                font-size: 25px;
-            }
+//             .title-section {
+//                 font-weight: 600;
+//                 font-size: 25px;
+//             }
 
-            .btn-section {
-                background: #DAF3F6;
-                color: #34929E;
-                font-weight: 600;
-                border: none; // bỏ border mặc định
-                border-radius: 20px; // bo tròn
-                padding: 10px 20px; // padding thoáng
-                font-size: 20px;
-                transition: all 0.3s ease; // hiệu ứng chuyển
+//             .btn-section {
+//                 background: #DAF3F6;
+//                 color: #34929E;
+//                 font-weight: 600;
+//                 border: none; // bỏ border mặc định
+//                 border-radius: 20px; // bo tròn
+//                 padding: 10px 20px; // padding thoáng
+//                 font-size: 20px;
+//                 transition: all 0.3s ease; // hiệu ứng chuyển
 
-                &:hover {
-                    background: #c2ebf0;
-                }
-            }
-        }
+//                 &:hover {
+//                     background: #c2ebf0;
+//                 }
+//             }
+//         }
 
-        .section-body {
+//         .section-body {
 
-            .image-customize {
-                width: 95% !important;
-                border: 2px solid #ddd; // viền bao quanh mỗi carousel
-                border-radius: 5%; // bo góc cho giống ảnh mẫu
-                background: #fff; // nền trắng cho box
-                text-align: center;
-                height: 300px !important;
-                align-items: center;
+//             .image-customize {
+//                 width: 95% !important;
+//                 border: 2px solid #ddd; // viền bao quanh mỗi carousel
+//                 border-radius: 5%; // bo góc cho giống ảnh mẫu
+//                 background: #fff; // nền trắng cho box
+//                 text-align: center;
+//                 height: 300px !important;
+//                 align-items: center;
 
-                img {
-                    height: 90%;
-                    width: 90%;
-                    top: 10;
-                    margin: 0 auto;
-                    object-fit: cover;
-                }
+//                 img {
+//                     height: 90%;
+//                     width: 90%;
+//                     top: 10;
+//                     margin: 0 auto;
+//                     object-fit: cover;
+//                 }
 
-                .title-img {
-                    font-size: 18px;
-                    font-weight: 700;
-                    color: #333;
-                }
-            }
-        }
-    }
+//                 .title-img {
+//                     font-size: 18px;
+//                     font-weight: 700;
+//                     color: #333;
+//                 }
+//             }
+//         }
+//     }
 
-}
+// }

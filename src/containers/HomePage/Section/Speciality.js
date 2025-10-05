@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'; // kết nối như router
 // Slider 
 import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+
 import ThanKinh from '../../../assets/khoa/than-kinh.png'
 import CoXuongKhop from '../../../assets/khoa/co-xuong-khop.png'
 import CotSong from '../../../assets/khoa/cot-song.png'
