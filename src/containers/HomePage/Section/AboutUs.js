@@ -32,26 +32,26 @@ class AboutUs extends Component {
                             <div className='secton-right-about'>
                                 <div className='section-row'>
                                     <div className='section-items'>
-                                        <img src={VNexpress} />
+                                        <img src={VNexpress} alt='VNexpress' />
                                     </div>
                                     <div className='section-items'>
-                                        <img src={SucKhoeDoiSong} />
-                                    </div>
-                                </div>
-                                <div className='section-row'>
-                                    <div className='section-items'>
-                                        <img src={VNNet} />
-                                    </div>
-                                    <div className='section-items'>
-                                        <img src={VTV1} />
+                                        <img src={SucKhoeDoiSong} alt='SucKhoeDoiSong' />
                                     </div>
                                 </div>
                                 <div className='section-row'>
                                     <div className='section-items'>
-                                        <img src={VTCNews} />
+                                        <img src={VNNet} alt='VNNet' />
                                     </div>
                                     <div className='section-items'>
-                                        <img src={DanTri} />
+                                        <img src={VTV1} alt='VTV1' />
+                                    </div>
+                                </div>
+                                <div className='section-row'>
+                                    <div className='section-items'>
+                                        <img src={VTCNews} alt='VTCNews' />
+                                    </div>
+                                    <div className='section-items'>
+                                        <img src={DanTri} alt='DanTri' />
                                     </div>
                                 </div>
                             </div>
