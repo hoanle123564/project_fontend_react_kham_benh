@@ -2,6 +2,7 @@
     "home-header": {
         "specility": "Tất cả",
         "place_home": "Tại nhà",
+        "language": "VN",
         "place_hospital": "Tại bệnh viện",
         "message": "Sống khỏe",
         "support": "Hỗ trợ"
@@ -45,6 +46,8 @@
     "menu": {
         "system": {
             "header": "Hệ thống",
+            "language": "VN",
+            "flag": "vn",
             "system-administrator": {
                 "header": "Quản trị hệ thống",
                 "user-manage": "Quản lý người sử dụng",

@@ -2,6 +2,7 @@
     "home-header": {
         "specility": "All",
         "place_home": "At home",
+        "language": "EN",
         "place_hospital": "At hospital",
         "message": "Live Healthy",
         "support": "Support"
@@ -45,6 +46,7 @@
     "menu": {
         "system": {
             "header": "System",
+            "language": "EN",
             "system-administrator": {
                 "header": "System Administrator",
                 "user-manage": "User manage",

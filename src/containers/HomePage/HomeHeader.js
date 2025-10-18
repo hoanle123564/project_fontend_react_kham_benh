@@ -26,14 +26,18 @@ class HomeHeader extends Component {
     }
     change = (language) => {
         this.props.changeLangguageAppRedux(language);
-        this.setState({
-            changeLanguage: !this.state.changeLanguage
-        })
+        // this.setState({
+        //     changeLanguage: !this.state.changeLanguage
+        // })
     }
-    render() {
-        let language = this.state.changeLanguage;
-        // console.log('check props: ', this.props);
 
+    render() {
+        // let language = this.state.changeLanguage;
+
+        // Lấy đường dẫn ảnh từ file message
+        const { language } = this.props;
+        // chọn cờ dựa trên language1
+        const flagSrc = language === languages.VI ? vietnam : united;
         return (
             <>
                 <div className='home-header-container'>
@@ -64,13 +68,17 @@ class HomeHeader extends Component {
                                     <FormattedMessage id='home-header.support' />
                                 </span>
                             </div>
-                            {language ?
-                                <div className='language-vi'
-                                    onClick={() => this.change(languages.EN)}>
-                                    <img src={vietnam} alt='vietnam' width={'30px'} /> VN</div> :
-                                <div className='language-en'
-                                    onClick={() => this.change(languages.VI)}>
-                                    <img src={united} alt='united' width={'30px'} /> EN</div>
+                            {flagSrc ?
+                                (language === languages.VI ?
+                                    <div className='language-vi' onClick={() => this.change(languages.EN)}>
+                                        <img src={flagSrc} alt='vietnam' width='30' /> <FormattedMessage id='home-header.language' />
+                                    </div>
+                                    :
+                                    <div className='language-en' onClick={() => this.change(languages.VI)}>
+                                        <img src={flagSrc} alt='united' width='30' /> <FormattedMessage id='home-header.language' />
+                                    </div>
+                                )
+                                : null
                             }
                         </div>
                     </div>
@@ -134,7 +142,6 @@ class HomeHeader extends Component {
             </>
         );
     }
-
 }
 
 const mapStateToProps = state => {

@@ -8,7 +8,7 @@ import './Header.scss';
 import vietnam from '../../assets/flag/vietnam.png'
 import united from '../../assets/flag/united_kingdom.png'
 import { languages } from '../../utils/constant';
-// import { changeLangguageApp } from '../../store/actions/appActions';
+import { FormattedMessage } from 'react-intl';  // chuyển đổi ngôn ngữ
 
 class Header extends Component {
     constructor(props) {
@@ -19,15 +19,13 @@ class Header extends Component {
     }
     change = (language) => {
         this.props.changeLangguageAppRedux(language);
-        this.setState({
-            changeLanguage: !this.state.changeLanguage
-        })
     }
 
     render() {
         const { processLogout } = this.props;
-        let language = this.state.changeLanguage;
-
+        const { language } = this.props;
+        // chọn cờ dựa trên language1
+        const flagSrc = language === languages.VI ? vietnam : united;
         return (
             <div className="header-container">
                 {/* thanh navigator */}
@@ -37,13 +35,17 @@ class Header extends Component {
                 {/* chuyển đổi ngôn ngữ */}
 
                 <div className='language '>
-                    {language ?
-                        <div className='language-vi'
-                            onClick={() => this.change(languages.EN)}>
-                            <img src={vietnam} alt='vietnam' width={'30px'} /> VN</div> :
-                        <div className='language-en'
-                            onClick={() => this.change(languages.VI)}>
-                            <img src={united} alt='united' width={'30px'} /> EN</div>
+                    {flagSrc ?
+                        (language === languages.VI ?
+                            <div className='language-vi' onClick={() => this.change(languages.EN)}>
+                                <img src={flagSrc} alt='vietnam' width='30' /> <FormattedMessage id='home-header.language' />
+                            </div>
+                            :
+                            <div className='language-en' onClick={() => this.change(languages.VI)}>
+                                <img src={flagSrc} alt='united' width='30' /> <FormattedMessage id='home-header.language' />
+                            </div>
+                        )
+                        : null
                     }
 
                     {/* nút logout */}
