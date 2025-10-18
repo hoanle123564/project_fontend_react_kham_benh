@@ -8,12 +8,12 @@ import { ToastContainer } from 'react-toastify';
 import { userIsAuthenticated, userIsNotAuthenticated } from '../hoc/authentication';
 
 import { path } from '../utils'
-import HomePage from './HomePage/HomPage'
+import HomePage from './HomePage/HomePage'
 import Home from '../routes/Home';
 import Login from '../containers/Auth/Login';
 import System from '../routes/System';
 
-import { CustomToastCloseButton } from '../components/CustomToast';
+// import { CustomToastCloseButton } from '../components/CustomToast';
 
 class App extends Component {
 
@@ -54,7 +54,7 @@ class App extends Component {
                             className="toast-container" toastClassName="toast-item" bodyClassName="toast-item-body"
                             autoClose={false} hideProgressBar={true} pauseOnHover={false}
                             pauseOnFocusLoss={true} closeOnClick={false} draggable={false}
-                            closeButton={<CustomToastCloseButton />}
+                        // closeButton={<CustomToastCloseButton />}
                         />
                     </div>
                 </Router>

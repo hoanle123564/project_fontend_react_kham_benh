@@ -23,9 +23,9 @@ class AboutUs extends Component {
                             <div className='secton-left-about'>
                                 <iframe width="560" height="330"
                                     src="https://www.youtube.com/embed/HwGzmRVBsdw?list=PLearCtxlLjlcKWhwO3k9PGtDdxUNb6YCC"
-                                    title="Medical Hospital Clinic Background Music For Videos" frameborder="0"
+                                    title="Medical Hospital Clinic Background Music For Videos" frameBorder="0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+                                    referrerPolicy="strict-origin-when-cross-origin" allowFullScreen >
 
                                 </iframe>
                             </div>
