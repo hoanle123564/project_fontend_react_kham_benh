@@ -24,7 +24,7 @@ const userPersistConfig = {
 const appPersistConfig = {
     ...persistCommonConfig,
     key: 'app',
-    whitelis: ['language']
+    whitelist: ['language']
 }
 // export default (history) => combineReducers({
 //     router: connectRouter(history),
