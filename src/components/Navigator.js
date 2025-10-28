@@ -26,6 +26,7 @@ class Menu extends Component {
 
     render() {
         const { name, active, link, children, onClick, hasSubMenu, onLinkClick } = this.props;
+
         return (
             <li className={"menu" + (hasSubMenu ? " has-sub-menu" : "") + ("") + (active ? " active" : "")}>
                 {hasSubMenu ? (
