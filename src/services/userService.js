@@ -5,7 +5,7 @@ const handleLoginAPI = (email, password) => {
 }
 const getAllUser = (id) => {
     //template string
-    return axios.get(`/api/get-all-user?id=${ id } `)
+    return axios.get(`/api/get-all-user?id=${id} `)
 }
 const CreateUser = (data) => {
     return axios.post('/api/create-new-user', data)
@@ -21,4 +21,8 @@ const DeleteUser = (UserId) => {
 const EditUser = (data) => {
     return axios.put('/api/edit-user', data)
 }
-export { handleLoginAPI, getAllUser, CreateUser, DeleteUser, EditUser };
+const getAllCode = (type) => {
+    return axios.get(`/api/allcodes?type=${type}`)
+
+}
+export { handleLoginAPI, getAllUser, CreateUser, DeleteUser, EditUser, getAllCode };
