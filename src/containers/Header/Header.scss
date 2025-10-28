@@ -13,6 +13,10 @@
         display: flex;
         align-items: center;
 
+        .welcome {
+            margin-right: 20px;
+        }
+
         .language-vi {
             cursor: pointer;
             padding-right: 15px;

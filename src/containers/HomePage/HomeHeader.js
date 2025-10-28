@@ -38,6 +38,7 @@ class HomeHeader extends Component {
         const { language } = this.props;
         // chọn cờ dựa trên language1
         const flagSrc = language === languages.VI ? vietnam : united;
+
         return (
             <>
                 <div className='home-header-container'>
@@ -147,7 +148,9 @@ class HomeHeader extends Component {
 const mapStateToProps = state => {
     return {
         isLoggedIn: state.user.isLoggedIn,
-        language: state.app.language
+        language: state.app.language,
+        userInfo: state.user.userInfo   // <-- thêm dòng này nếu cần hiển thị thông tin user
+
     };
 };
 

@@ -22,19 +22,22 @@ class Header extends Component {
     }
 
     render() {
-        const { processLogout } = this.props;
-        const { language } = this.props;
+        const { processLogout, language, userInfo } = this.props;
         // chọn cờ dựa trên language1
         const flagSrc = language === languages.VI ? vietnam : united;
+
         return (
             <div className="header-container">
                 {/* thanh navigator */}
                 <div className="header-tabs-container">
                     <Navigator menus={adminMenu} />
                 </div>
-                {/* chuyển đổi ngôn ngữ */}
 
+                {/* chuyển đổi ngôn ngữ */}
                 <div className='language '>
+                    <span className='welcome'>
+                        <FormattedMessage id='home-header.welcome' />, {userInfo && userInfo.firstName && userInfo.lastName ? userInfo.firstName + ' ' + userInfo.lastName : ''}
+                    </span>
                     {flagSrc ?
                         (language === languages.VI ?
                             <div className='language-vi' onClick={() => this.change(languages.EN)}>
@@ -62,7 +65,8 @@ class Header extends Component {
 const mapStateToProps = state => {
     return {
         isLoggedIn: state.user.isLoggedIn,
-        language: state.app.language
+        language: state.app.language,
+        userInfo: state.user.userInfo.user
 
     };
 };
