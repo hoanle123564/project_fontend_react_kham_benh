@@ -133,7 +133,7 @@ class UserManage extends Component {
                 <div className='m-1'>
                     <button className='btn btn-primary px-3' style={{ width: '150px' }}
                         onClick={() => this.handleAddNewUser()}>
-                        <i class="fa-solid fa-plus"></i> Add new user
+                        <i className="fa-solid fa-plus"></i> Add new user
                     </button>
                 </div>
                 <div className='table-container'>
@@ -170,11 +170,11 @@ class UserManage extends Component {
                                             <td className='d-flex'>
                                                 <button className="btn btn-warning mx-auto"
                                                     style={{ width: '80px', height: ' 40px' }}
-                                                    onClick={() => this.handleEditUser(item)}><i class="fas fa-edit"></i>
+                                                    onClick={() => this.handleEditUser(item)}><i className="fas fa-edit"></i>
                                                 </button>
                                                 <button className="btn btn-danger mx-auto"
                                                     style={{ width: '80px ', height: '40px' }}
-                                                    onClick={() => this.handleDeleteUser(item.id)}><i class="fa-solid fa-trash"></i>
+                                                    onClick={() => this.handleDeleteUser(item.id)}><i className="fa-solid fa-trash"></i>
                                                 </button>
                                             </td>
                                         </tr>
