@@ -44,7 +44,14 @@ const adminReducer = (state = initialState, action) => {
       return {
         ...state,
       };
-
+    case actionTypes.SAVE_USER:
+      return {
+        ...state,
+      };
+    case actionTypes.SAVE_USER_FAILD:
+      return {
+        ...state,
+      };
     default:
       return state;
   }

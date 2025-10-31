@@ -1,5 +1,5 @@
 import actionTypes from "./actionTypes";
-import { getAllCode } from "../../services/userService";
+import { getAllCode, CreateUser } from "../../services/userService";
 
 // GENDDER
 export const fetchGender = () => {
@@ -75,3 +75,15 @@ export const fetchRole = () => {
 export const fetchRoleFail = () => ({
   type: actionTypes.FETCH_ROLE_FAIL,
 });
+
+export const saveUser = (dataUser) => {
+  return async (dispatch, getState) => {
+    try {
+      let res = await CreateUser(dataUser);
+      console.log("saveUser res:", res);
+    } catch (error) {
+      dispatch(fetchRoleFail());
+      console.log("fetchRole error: ", error);
+    }
+  };
+};

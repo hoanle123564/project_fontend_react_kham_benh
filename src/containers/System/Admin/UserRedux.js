@@ -25,6 +25,7 @@ class UserRedux extends Component {
       role: "",
       avatar: "",
       previewImg: "",
+      isOpen: false,
       genderArr: [],
       positionArr: [],
       roleArr: [],
@@ -59,6 +60,7 @@ class UserRedux extends Component {
   }
   handleChangeInput = (e, field) => {
     const value = e.target.value;
+
     this.setState({
       [field]: value,
     });
@@ -74,31 +76,94 @@ class UserRedux extends Component {
       });
     }
   };
+
   componentDidUpdate(prevProps, prevState, snapshot) {
     // render => didupdate
     // quá khứ (prevProps) và hiện tại (this)
     // [0]  [3]
     if (prevProps.gender !== this.props.gender) {
+      let ArrGender = this.props.gender;
       this.setState({
         genderArr: this.props.gender,
+        gender: ArrGender && ArrGender.length > 0 ? ArrGender[0].keyMap : "",
       });
     }
 
     if (prevProps.position !== this.props.position) {
-      console.log("prevProps.position", prevProps.position);
+      let ArrPosition = this.props.position;
 
       this.setState({
         positionArr: this.props.position,
+        position:
+          ArrPosition && ArrPosition.length > 0 ? ArrPosition[0].keyMap : "",
       });
     }
 
     if (prevProps.role !== this.props.role) {
+      let ArrRole = this.props.role;
+
       this.setState({
         roleArr: this.props.role,
+        role: ArrRole && ArrRole.length > 0 ? ArrRole[0].keyMap : "",
       });
     }
     console.log("prevProps", prevProps);
   }
+
+  checkValidateInput = () => {
+    const requiredFields = [
+      "email",
+      "password",
+      "firstName",
+      "lastName",
+      "phoneNumber",
+      "address",
+    ];
+
+    for (let i = 0; i < requiredFields.length; i++) {
+      const field = requiredFields[i];
+      if (!this.state[field] || this.state[field].trim() === "") {
+        alert(`Vui lòng nhập đầy đủ thông tin: ${field}`);
+        return false;
+      }
+    }
+
+    // Kiểm tra định dạng email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.state.email)) {
+      alert("Email không hợp lệ!");
+      return false;
+    }
+
+    // Kiểm tra số điện thoại (ít nhất 9 chữ số)
+    const phoneRegex = /^[0-9]{9,11}$/;
+    if (!phoneRegex.test(this.state.phoneNumber)) {
+      alert("Số điện thoại không hợp lệ!");
+      return false;
+    }
+
+    return true;
+  };
+
+  handleSaveUser = async () => {
+    let check = this.checkValidateInput();
+    if (!check) {
+      return;
+    }
+
+    let res = this.props.saveUser({
+      email: this.state.email,
+      password: this.state.password,
+      firstName: this.state.firstName,
+      lastName: this.state.lastName,
+      address: this.state.address,
+      gender: this.state.gender,
+      position: this.state.position,
+      role: this.state.role,
+      phoneNumber: this.state.phoneNumber,
+    });
+    console.log("check saveUser", res);
+  };
   render() {
     const { genderArr, positionArr, roleArr } = this.state;
     const { language, intl } = this.props;
@@ -109,7 +174,7 @@ class UserRedux extends Component {
           <FormattedMessage id="user-manage.add" />
         </h3>
 
-        {/* 1️⃣ Email */}
+        {/* Email */}
         <div className="row mb-3 d-flex justify-content-center">
           <div className="col-md-6">
             <label>
@@ -124,7 +189,7 @@ class UserRedux extends Component {
           </div>
         </div>
 
-        {/* 2️⃣ Password + Phone */}
+        {/*  Password + Phone */}
         <div className="row mb-3 d-flex justify-content-center">
           <div className="col-md-3">
             <label>
@@ -150,7 +215,7 @@ class UserRedux extends Component {
           </div>
         </div>
 
-        {/* 3️⃣ First + Last */}
+        {/*  First + Last */}
         <div className="row mb-3 d-flex justify-content-center">
           <div className="col-md-3">
             <label>
@@ -176,7 +241,7 @@ class UserRedux extends Component {
           </div>
         </div>
 
-        {/* 4️⃣ Address */}
+        {/*  Address */}
         <div className="row mb-3 d-flex justify-content-center">
           <div className="col-md-6">
             <label>
@@ -208,7 +273,7 @@ class UserRedux extends Component {
               {genderArr &&
                 genderArr.length > 0 &&
                 genderArr.map((item, index) => (
-                  <option key={index}>
+                  <option key={index} value={item.keyMap}>
                     {language === languages.VI ? item.value_vi : item.value_en}
                   </option>
                 ))}
@@ -230,7 +295,7 @@ class UserRedux extends Component {
               {positionArr &&
                 positionArr.length > 0 &&
                 positionArr.map((item, index) => (
-                  <option key={index}>
+                  <option key={index} value={item.keyMap}>
                     {language === languages.VI ? item.value_vi : item.value_en}
                   </option>
                 ))}
@@ -252,7 +317,7 @@ class UserRedux extends Component {
               {roleArr &&
                 roleArr.length > 0 &&
                 roleArr.map((item, index) => (
-                  <option key={index}>
+                  <option key={index} value={item.keyMap}>
                     {language === languages.VI ? item.value_vi : item.value_en}
                   </option>
                 ))}
@@ -339,6 +404,7 @@ const mapDispatchToProps = (dispatch) => {
     getGender: () => dispatch(action.fetchGender()),
     getPosition: () => dispatch(action.fetchPosition()),
     getRole: () => dispatch(action.fetchRole()),
+    saveUser: (data) => dispatch(action.saveUser(data)),
   };
 };
 

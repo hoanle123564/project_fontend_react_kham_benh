@@ -19,6 +19,9 @@ const actionTypes = Object.freeze({
 
   FETCH_ROLE: "FETCH_ROLE",
   FETCH_ROLE_FAIL: "FETCH_ROLE_FAIL",
+
+  SAVE_USER: "SAVE_USER",
+  SAVE_USER_FAILD: "SAVE_USER_FAILD",
 });
 
 export default actionTypes;
