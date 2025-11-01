@@ -4,6 +4,7 @@ const initialState = {
   genderArr: [],
   positionArr: [],
   roleArr: [],
+  user: [],
 };
 
 const adminReducer = (state = initialState, action) => {
@@ -44,11 +45,24 @@ const adminReducer = (state = initialState, action) => {
       return {
         ...state,
       };
+    // save / create user
     case actionTypes.SAVE_USER:
       return {
         ...state,
       };
     case actionTypes.SAVE_USER_FAILD:
+      return {
+        ...state,
+      };
+    // get all user
+    case actionTypes.FETCH_USERS:
+      state.user = action.data;
+      return {
+        ...state,
+      };
+
+    case actionTypes.FETCH_USERS_FAIL:
+      state.user = [];
       return {
         ...state,
       };

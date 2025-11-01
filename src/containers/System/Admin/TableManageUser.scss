@@ -1,0 +1,33 @@
+.table-manage-user {
+  .table {
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #fff;
+
+    thead th {
+      background-color: #007bff !important;
+      color: white;
+      font-weight: 600;
+    }
+
+    tbody tr:hover {
+      background-color: #f8f9fa;
+      transition: background-color 0.2s ease;
+    }
+
+    td,
+    th {
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    .btn {
+      border-radius: 8px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+  }
+}

@@ -1,64 +1,68 @@
 {
-    "home-header": {
-        "specility": "All",
-        "place_home": "At home",
-        "language": "EN",
-        "place_hospital": "At hospital",
-        "message": "Live Healthy",
-        "support": "Support",
-        "welcome": "Welcome "
+  "home-header": {
+    "specility": "All",
+    "place_home": "At home",
+    "language": "EN",
+    "place_hospital": "At hospital",
+    "message": "Live Healthy",
+    "support": "Support",
+    "welcome": "Welcome "
+  },
+  "banner": {
+    "title1": "HEALTHCARE PLATFORM, MEDICAL APPOINTMENT BOOKING",
+    "input": "Search ...",
+    "child1": "Specialist Care",
+    "child2": "Dental Care",
+    "child3": "General Check-up",
+    "child4": "Telemedicine",
+    "child5": "Mental Health",
+    "child6": "Lab Tests"
+  },
+  "menu": {
+    "system": {
+      "header": "System",
+      "language": "EN",
+      "system-administrator": {
+        "header": "System Administrator",
+        "user-manage": "User manage",
+        "user-redux": "Manage user redux",
+        "register-package-group-or-account": "Register service package for group/account"
+      },
+      "system-parameter": {
+        "header": "System-parameter"
+      }
     },
-    "banner": {
-        "title1": "HEALTHCARE PLATFORM, MEDICAL APPOINTMENT BOOKING",
-        "input": "Search ...",
-        "child1": "Specialist Care",
-        "child2": "Dental Care",
-        "child3": "General Check-up",
-        "child4": "Telemedicine",
-        "child5": "Mental Health",
-        "child6": "Lab Tests"
-    },
-    "menu": {
-        "system": {
-            "header": "System",
-            "language": "EN",
-            "system-administrator": {
-                "header": "System Administrator",
-                "user-manage": "User manage",
-                "user-redux": "Manage user redux",
-                "register-package-group-or-account": "Register service package for group/account"
-            },
-            "system-parameter": {
-                "header": "System-parameter"
-            }
-        },
-        "admin": {
-            "manage-user": "Manage user",
-            "manage-doctor": "Manage doctor",
-            "manage-admin": "Manage admin",
-            "crud": "CRUD server",
-            "crud-redux": "CRUD Redux",
-            "clinic": "Clinic",
-            "manage-clinic": "Manage clinic",
-            "specialty": "specialty",
-            "manage-specialty": "Manage specialty",
-            "handbook": "Handbook",
-            "manage-handbook": "Manage lý handbook"
-        }
-    },
-    "user-manage": {
-        "add": "Add new user",
-        "email": "Email",
-        "password": "Password",
-        "first-name": "First name",
-        "last-name": "Last name",
-        "address": "Address",
-        "phone": "Phone number",
-        "gender": "Gender",
-        "role": "Role",
-        "choose": "Choose...",
-        "position": "Position",
-        "avatar": "Avatar",
-        "save": "Save user"
+    "admin": {
+      "manage-user": "Manage user",
+
+      "manage-user-table": "Manage user table",
+      "manage-doctor": "Manage doctor",
+      "manage-admin": "Manage admin",
+      "crud": "CRUD server",
+      "crud-redux": "CRUD Redux",
+      "clinic": "Clinic",
+      "manage-clinic": "Manage clinic",
+      "specialty": "specialty",
+      "manage-specialty": "Manage specialty",
+      "handbook": "Handbook",
+      "manage-handbook": "Manage lý handbook"
     }
+  },
+  "user-manage": {
+    "add": "Add new user",
+    "email": "Email",
+    "password": "Password",
+    "first-name": "First name",
+    "last-name": "Last name",
+    "address": "Address",
+    "phone": "Phone number",
+    "gender": "Gender",
+    "role": "Role",
+    "choose": "Choose...",
+    "position": "Position",
+    "avatar": "Avatar",
+    "save": "Save user",
+    "save_change": "Save change",
+    "cancel": "Cancel"
+  }
 }

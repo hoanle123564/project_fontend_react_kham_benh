@@ -1,65 +1,69 @@
 {
-    "home-header": {
-        "specility": "Tất cả",
-        "place_home": "Tại nhà",
-        "language": "VN",
-        "place_hospital": "Tại bệnh viện",
-        "message": "Sống khỏe",
-        "support": "Hỗ trợ",
-        "welcome": "Chào mừng "
+  "home-header": {
+    "specility": "Tất cả",
+    "place_home": "Tại nhà",
+    "language": "VN",
+    "place_hospital": "Tại bệnh viện",
+    "message": "Sống khỏe",
+    "support": "Hỗ trợ",
+    "welcome": "Chào mừng "
+  },
+  "banner": {
+    "title1": "NỀN TẢNG Y TẾ, ĐẶT LỊCH KHÁM BỆNH",
+    "input": "Tìm kiếm ....",
+    "child1": "Khám chuyên khoa",
+    "child2": "Khám nha khoa",
+    "child3": "Khám tổng quát",
+    "child4": "Khám từ xa",
+    "child5": "Sức khỏe tinh thần",
+    "child6": "Xét nghiệm"
+  },
+  "menu": {
+    "system": {
+      "header": "Hệ thống",
+      "language": "VN",
+      "flag": "vn",
+      "system-administrator": {
+        "header": "Quản trị hệ thống",
+        "user-manage": "Quản lý người sử dụng",
+        "user-redux": "Quản lý user redux",
+        "register-package-group-or-account": "Đăng ký gói dịch vụ cho nhóm/tài khoản"
+      },
+      "system-parameter": {
+        "header": "Tham số hệ thống"
+      }
     },
-    "banner": {
-        "title1": "NỀN TẢNG Y TẾ, ĐẶT LỊCH KHÁM BỆNH",
-        "input": "Tìm kiếm ....",
-        "child1": "Khám chuyên khoa",
-        "child2": "Khám nha khoa",
-        "child3": "Khám tổng quát",
-        "child4": "Khám từ xa",
-        "child5": "Sức khỏe tinh thần",
-        "child6": "Xét nghiệm"
-    },
-    "menu": {
-        "system": {
-            "header": "Hệ thống",
-            "language": "VN",
-            "flag": "vn",
-            "system-administrator": {
-                "header": "Quản trị hệ thống",
-                "user-manage": "Quản lý người sử dụng",
-                "user-redux": "Quản lý user redux",
-                "register-package-group-or-account": "Đăng ký gói dịch vụ cho nhóm/tài khoản"
-            },
-            "system-parameter": {
-                "header": "Tham số hệ thống"
-            }
-        },
-        "admin": {
-            "manage-user": "Quản lý người dùng",
-            "manage-doctor": "Quản lý bác sĩ",
-            "manage-admin": "Quản lý admin",
-            "crud": "CRUD server",
-            "crud-redux": "CRUD Redux",
-            "clinic": "Phòng khám",
-            "manage-clinic": "Quản lý phòng khám",
-            "specialty": "Chuyên khoa",
-            "manage-specialty": "Quản lý chuyên khoa",
-            "handbook": "Cẩm nang",
-            "manage-handbook": "Quản lý cẩm nang"
-        }
-    },
-    "user-manage": {
-        "add": "Thêm người dùng mới",
-        "email": "Email",
-        "password": "Mật khẩu",
-        "first-name": "Họ và tên lót",
-        "last-name": "Tên",
-        "address": "Địa chỉ",
-        "phone": "Số điện thoại",
-        "gender": "Giới tính",
-        "role": "Chức vụ",
-        "choose": "Chọn...",
-        "position": "Chức danh",
-        "avatar": "Ảnh đại diện",
-        "save": "Lưu người dùng"
+    "admin": {
+      "manage-user": "Quản lý người dùng",
+
+      "manage-user-table": "Manage user table",
+      "manage-doctor": "Quản lý bác sĩ",
+      "manage-admin": "Quản lý admin",
+      "crud": "CRUD server",
+      "crud-redux": "CRUD Redux",
+      "clinic": "Phòng khám",
+      "manage-clinic": "Quản lý phòng khám",
+      "specialty": "Chuyên khoa",
+      "manage-specialty": "Quản lý chuyên khoa",
+      "handbook": "Cẩm nang",
+      "manage-handbook": "Quản lý cẩm nang"
     }
+  },
+  "user-manage": {
+    "add": "Thêm người dùng mới",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "first-name": "Họ và tên lót",
+    "last-name": "Tên",
+    "address": "Địa chỉ",
+    "phone": "Số điện thoại",
+    "gender": "Giới tính",
+    "role": "Chức vụ",
+    "choose": "Chọn...",
+    "position": "Chức danh",
+    "avatar": "Ảnh đại diện",
+    "save": "Lưu người dùng",
+    "save_change": "Lưu thay đổi",
+    "cancel": "Hủy"
+  }
 }
