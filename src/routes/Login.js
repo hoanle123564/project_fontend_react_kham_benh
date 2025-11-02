@@ -9,9 +9,7 @@ import userIcon from "../../src/assets/images/user.svg";
 import passIcon from "../../src/assets/images/pass.svg";
 import "./Login.scss";
 import { FormattedMessage } from "react-intl";
-import adminService from "../services/adminService";
-// import { userService } from "../services";
-// import { Form } from "reactstrap";
+import adminService from "../services";
 
 class Login extends Component {
   constructor(props) {

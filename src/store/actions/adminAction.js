@@ -5,6 +5,7 @@ import {
   getAllUser,
   DeleteUser,
   EditUser,
+  getDoctor,
 } from "../../services/userService";
 import { toast } from "react-toastify";
 // GENDDER
@@ -103,6 +104,11 @@ export const fetchAllUser = () => {
   return async (dispatch, getState) => {
     try {
       let res = await getAllUser("ALL");
+      console.log("getuser", res);
+
+      let res1 = await getDoctor(3);
+      console.log("getDoctor", res1);
+
       if (res && res.errCode === 0) {
         let listUser = dispatch({
           type: actionTypes.FETCH_USERS,
@@ -162,15 +168,40 @@ export const fetchEditUser = (User) => {
         dispatch(fetchAllUser());
       } else {
         toast.error("Update user failed");
-        dispatch(fetchDeleteUserFail());
+        dispatch(fetchEditUserFail());
       }
     } catch (error) {
-      dispatch(fetchDeleteUserFail());
+      dispatch(fetchEditUserFail());
       console.log("fetchEditUser error: ", error);
     }
   };
 };
 
-export const fetchEditUserrFail = () => ({
+export const fetchEditUserFail = () => ({
   type: actionTypes.FETCH_EDIT_USERS_FAIL,
+});
+
+export const fetchTopDoctor = () => {
+  return async (dispatch, getState) => {
+    try {
+      let res = await getDoctor(7);
+
+      if (res && res.errCode === 0) {
+        let listUser = dispatch({
+          type: actionTypes.FETCH_DOCTOR,
+          data: res.data,
+        });
+        return listUser;
+      } else {
+        dispatch(fetchRoleFail());
+      }
+    } catch (error) {
+      dispatch(fetchRoleFail());
+      console.log("fetchTopDoctorFail error: ", error);
+    }
+  };
+};
+
+export const fetchTopDoctorFail = () => ({
+  type: actionTypes.FETCH_DOCTOR_FAIL,
 });

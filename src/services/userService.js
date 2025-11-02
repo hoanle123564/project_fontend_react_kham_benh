@@ -36,6 +36,10 @@ const getAllCode = (type) => {
   return axios.get(`/api/allcodes?type=${type}`);
 };
 
+// Lấy bác sĩ
+const getDoctor = (limit) => {
+  return axios.get(`/api/top-doctor?limit=${limit}`);
+};
 export {
   handleLoginAPI,
   getAllUser,
@@ -43,4 +47,5 @@ export {
   DeleteUser,
   EditUser,
   getAllCode,
+  getDoctor,
 };
