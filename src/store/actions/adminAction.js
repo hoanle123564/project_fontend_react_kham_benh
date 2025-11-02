@@ -150,7 +150,6 @@ export const fetchDeleteUserFail = () => ({
 });
 
 // EDIT USERS
-
 export const fetchEditUser = (User) => {
   return async (dispatch, getState) => {
     try {

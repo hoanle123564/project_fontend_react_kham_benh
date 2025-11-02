@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import { FormattedMessage, injectIntl } from "react-intl";
 import { connect } from "react-redux";
-// Light Box
-import Lightbox from "react-image-lightbox";
-import "react-image-lightbox/style.css";
+
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
 import { languages } from "../../../utils/constant";
@@ -34,7 +32,7 @@ class UserRedux extends Component {
   }
 
   async componentDidMount() {
-    // cách 1: thực hiện thông qua redux
+    // thực hiện thông qua redux
     this.props.getGender();
     this.props.getPosition();
     this.props.getRole();
@@ -53,10 +51,14 @@ class UserRedux extends Component {
     const file = e.target.files[0];
     if (file) {
       const objectUrl = URL.createObjectURL(file);
-      this.setState({
-        previewImg: objectUrl,
-        avatar: file,
-      });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        this.setState({
+          previewImg: objectUrl,
+          avatar: reader.result.split(",")[1], // chỉ lấy phần Base64
+        });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -158,6 +160,7 @@ class UserRedux extends Component {
       positionId: this.state.position,
       roleId: this.state.role,
       phoneNumber: this.state.phoneNumber,
+      avatar: this.state.avatar,
     });
 
     console.log("check saveUser", res);
@@ -380,13 +383,6 @@ class UserRedux extends Component {
                     )}
                   </div>
                 </div>
-
-                {this.state.isOpen && (
-                  <Lightbox
-                    mainSrc={this.state.previewImg}
-                    onCloseRequest={() => this.setState({ isOpen: false })}
-                  />
-                )}
               </div>
             </div>
           </ModalBody>

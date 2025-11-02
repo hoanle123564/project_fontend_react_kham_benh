@@ -1,10 +1,8 @@
 import React, { Component } from "react";
-import { FormattedMessage, injectIntl } from "react-intl";
+import { FormattedMessage } from "react-intl";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { connect } from "react-redux";
 import _ from "lodash";
-import Lightbox from "react-image-lightbox";
-import "react-image-lightbox/style.css";
 
 import { languages } from "../../../utils/constant";
 import * as action from "../../../store/actions";
@@ -36,7 +34,7 @@ class UserEdit extends Component {
     if (user && !_.isEmpty(user)) {
       this.setState({
         ...user,
-        previewImg: user.image ? user.image : "",
+        previewImg: user.image ? `data:image/jpeg;base64,${user.image}` : "",
       });
     }
 
@@ -72,10 +70,14 @@ class UserEdit extends Component {
     const file = e.target.files[0];
     if (file) {
       const objectUrl = URL.createObjectURL(file);
-      this.setState({
-        previewImg: objectUrl,
-        avatar: file,
-      });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        this.setState({
+          previewImg: objectUrl,
+          avatar: reader.result.split(",")[1], // chỉ lấy phần Base64
+        });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -87,8 +89,8 @@ class UserEdit extends Component {
       "phoneNumber",
       "address",
       "gender",
-      "position",
-      "role",
+      "positionId",
+      "roleId",
     ];
     for (let i = 0; i < requiredFields.length; i++) {
       if (
@@ -104,9 +106,13 @@ class UserEdit extends Component {
 
   handleEditUser = async () => {
     const check = this.checkValidateInput();
-    if (check) {
-      this.props.getEditUser(this.state);
+    if (!check) {
+      return;
     }
+    console.log("edit user", this.state);
+
+    this.props.getEditUser(this.state);
+
     this.toggle();
   };
 
@@ -206,7 +212,7 @@ class UserEdit extends Component {
               <select
                 className="form-select"
                 value={this.state.positionId}
-                onChange={(e) => this.handleOnchange(e, "position")}
+                onChange={(e) => this.handleOnchange(e, "positionId")}
               >
                 <option>Choose...</option>
                 {positionArr &&
@@ -225,7 +231,7 @@ class UserEdit extends Component {
               <select
                 className="form-select"
                 value={this.state.roleId}
-                onChange={(e) => this.handleOnchange(e, "role")}
+                onChange={(e) => this.handleOnchange(e, "roleId")}
               >
                 <option>Choose...</option>
                 {roleArr &&
@@ -267,7 +273,7 @@ class UserEdit extends Component {
                 >
                   {previewImg ? (
                     <img
-                      src={previewImg}
+                      src={this.state.previewImg}
                       alt="preview"
                       className="preview-image"
                     />
@@ -276,13 +282,6 @@ class UserEdit extends Component {
                   )}
                 </div>
               </div>
-
-              {this.state.isOpen && (
-                <Lightbox
-                  mainSrc={this.state.previewImg}
-                  onCloseRequest={() => this.setState({ isOpen: false })}
-                />
-              )}
             </div>
           </div>
         </ModalBody>
@@ -317,7 +316,7 @@ const mapDispatchToProps = (dispatch) => ({
   getGender: () => dispatch(action.fetchGender()),
   getPosition: () => dispatch(action.fetchPosition()),
   getRole: () => dispatch(action.fetchRole()),
-  getEditUser: (User) => dispatch(action.fetchDeleteUser(User)),
+  getEditUser: (User) => dispatch(action.fetchEditUser(User)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserEdit);
