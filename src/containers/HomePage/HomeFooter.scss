@@ -1,0 +1,225 @@
+// ...existing code...
+.home-footer {
+    background-color: #f8f9fa;
+    color: #333;
+    font-size: 15px;
+    width: 100%;
+    line-height: 1.6;
+
+    .footer-content {
+        display: flex;
+        justify-content: space-between;
+        gap: 40px;
+        padding: 50px 8%;
+        flex-wrap: wrap;
+
+        .footer-col {
+            flex: 1;
+            min-width: 250px;
+
+            h4 {
+                font-weight: 700;
+                margin-bottom: 10px;
+                color: #2e2e2e;
+            }
+
+            h5 {
+                margin-top: 15px;
+                font-weight: 600;
+            }
+
+            p {
+                margin: 5px 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+
+                /* CHANGED: cố định vùng chứa icon để căn giữa icon luôn đúng hàng chữ */
+                i {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 28px;
+                    min-width: 28px;
+                    height: 28px;
+                    font-size: 16px;
+                    line-height: 1;
+                    color: #ff3366;
+                    flex-shrink: 0;
+                    vertical-align: middle;
+                }
+            }
+        }
+
+        .company-info {
+            flex: 1.2;
+
+            .fa-map-marker-alt,
+            .fa-id-card {
+                transform: translateY(-13px);
+            }
+
+            .fa-phone,
+            .fa-envelope {
+                transform: translateY(-3px);
+            }
+        }
+
+        .links {
+            text-align: center;
+
+            .footer-logo img {
+                width: 150px;
+                margin-bottom: 15px;
+            }
+
+            ul {
+                list-style: none;
+                padding: 0;
+
+                li {
+                    color: #00bcd4;
+                    margin: 6px 0;
+                    cursor: pointer;
+                    transition: 0.2s;
+
+                    &:hover {
+                        color: #008ba3;
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+
+        .partners {
+            text-align: left;
+
+            h4 {
+                font-size: 18px;
+                font-weight: 700;
+                margin-bottom: 18px;
+                color: #222;
+            }
+
+            .partner {
+                margin-bottom: 18px;
+                padding-left: 4px;
+
+                strong {
+                    display: block;
+                    font-weight: 600;
+                    font-size: 16px;
+                    color: #000;
+                    margin-bottom: 4px;
+                    line-height: 1.4;
+                    cursor: pointer;
+                }
+
+                p {
+                    font-size: 14px;
+                    color: #666;
+                    line-height: 1.5;
+                    margin: 0;
+                }
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+
+                /* Hiệu ứng hover nhẹ cho tính hiện đại */
+                &:hover strong {
+                    color: #0097a7;
+                }
+            }
+        }
+
+    }
+
+    .footer-bottom {
+        border-top: 1px solid #ddd;
+        background-color: #e6f5ff;
+        padding: 15px 8%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+
+        span {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .socials {
+            display: flex;
+            gap: 15px;
+
+            /* CHANGED: đảm bảo icon social luôn căn giữa và có vùng nhấn đều */
+            a {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                font-size: 22px;
+                transition: all 0.3s ease;
+                text-decoration: none;
+                color: inherit;
+                background: transparent;
+            }
+
+            a i {
+                line-height: 1;
+                display: inline-block;
+            }
+
+            .facebook {
+                color: #1877f2;
+
+                &:hover {
+                    color: #125ecb;
+                    transform: scale(1.15);
+                }
+            }
+
+            .youtube {
+                color: #ff0000;
+
+                &:hover {
+                    color: #c40000;
+                    transform: scale(1.15);
+                }
+            }
+
+            .tiktok {
+                color: #000;
+
+                &:hover {
+                    color: #25f4ee;
+                    transform: scale(1.15);
+                }
+            }
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .footer-content {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+
+            .footer-col {
+                margin-bottom: 25px;
+            }
+        }
+
+        .footer-bottom {
+            flex-direction: column;
+            gap: 10px;
+            text-align: center;
+        }
+    }
+}
+
+// ...existing code...
