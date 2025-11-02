@@ -40,6 +40,11 @@ const getAllCode = (type) => {
 const getDoctor = (limit) => {
   return axios.get(`/api/top-doctor?limit=${limit}`);
 };
+
+// Thông tin chi tiết bác sĩ
+const getDetailDoctor = (id) => {
+  return axios.get(`/api/get-detail-doctor-by-id?id=${id}`);
+}
 export {
   handleLoginAPI,
   getAllUser,
@@ -48,4 +53,5 @@ export {
   EditUser,
   getAllCode,
   getDoctor,
+  getDetailDoctor
 };

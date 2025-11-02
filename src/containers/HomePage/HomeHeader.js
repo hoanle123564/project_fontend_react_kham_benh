@@ -85,61 +85,63 @@ class HomeHeader extends Component {
                     </div>
 
                 </div>
-                <div className='home-header-banner '>
-                    <div className='content-up pt-5'>
-                        <div className='title1'><FormattedMessage id='banner.title1' /></div>
-                        <div className='search '>
-                            <i className="fa-solid fa-magnifying-glass"></i>
-                            <input type='text' placeholder='Tìm kiếm ....' />
-                        </div>
-                    </div>
-                    <div className='content-down'>
-                        <div className='options'>
-                            {/* Chuyên khoa */}
-                            <div className='option-child'>
-                                <div className='icon-child'>
-                                    <img src={iconChuyenKhoa} alt='icon khám chuyên khoa' />
-                                </div>
-                                <div className='text-child'><FormattedMessage id='banner.child1' /></div>
-                            </div>
-                            {/* Chuyên khoa */}
-                            <div className='option-child'>
-                                <div className='icon-child'>
-                                    <img src={iconNhaKhoa} alt='icon khám nha khoa' />
-                                </div>
-                                <div className='text-child'><FormattedMessage id='banner.child2' /></div>
-                            </div>
-                            {/* Chuyên khoa */}
-                            <div className='option-child'>
-                                <div className='icon-child'>
-                                    <img src={iconCTongquat} alt='icon khám tổng quát' />
-                                </div>
-                                <div className='text-child'><FormattedMessage id='banner.child3' /></div>
-                            </div>
-                            {/* Chuyên khoa */}
-                            <div className='option-child'>
-                                <div className='icon-child'>
-                                    <img src={iconTuXa} alt='icon khám từ xa' />
-                                </div>
-                                <div className='text-child'><FormattedMessage id='banner.child4' /></div>
-                            </div>
-                            {/* Chuyên khoa */}
-                            <div className='option-child'>
-                                <div className='icon-child'>
-                                    <img src={iconSuckhoeTinhthan} alt='icon sức khỏe tinh thần' />
-                                </div>
-                                <div className='text-child'><FormattedMessage id='banner.child5' /></div>
-                            </div>
-                            {/* Chuyên khoa */}
-                            <div className='option-child'>
-                                <div className='icon-child'>
-                                    <img src={iconXetNghiep} alt='icon xét ngiệm' />
-                                </div>
-                                <div className='text-child'><FormattedMessage id='banner.child6' /></div>
+                {this.props.showBanner === true &&
+                    <div className='home-header-banner '>
+                        <div className='content-up pt-5'>
+                            <div className='title1'><FormattedMessage id='banner.title1' /></div>
+                            <div className='search '>
+                                <i className="fa-solid fa-magnifying-glass"></i>
+                                <input type='text' placeholder='Tìm kiếm ....' />
                             </div>
                         </div>
+                        <div className='content-down'>
+                            <div className='options'>
+                                {/* Chuyên khoa */}
+                                <div className='option-child'>
+                                    <div className='icon-child'>
+                                        <img src={iconChuyenKhoa} alt='icon khám chuyên khoa' />
+                                    </div>
+                                    <div className='text-child'><FormattedMessage id='banner.child1' /></div>
+                                </div>
+                                {/* Chuyên khoa */}
+                                <div className='option-child'>
+                                    <div className='icon-child'>
+                                        <img src={iconNhaKhoa} alt='icon khám nha khoa' />
+                                    </div>
+                                    <div className='text-child'><FormattedMessage id='banner.child2' /></div>
+                                </div>
+                                {/* Chuyên khoa */}
+                                <div className='option-child'>
+                                    <div className='icon-child'>
+                                        <img src={iconCTongquat} alt='icon khám tổng quát' />
+                                    </div>
+                                    <div className='text-child'><FormattedMessage id='banner.child3' /></div>
+                                </div>
+                                {/* Chuyên khoa */}
+                                <div className='option-child'>
+                                    <div className='icon-child'>
+                                        <img src={iconTuXa} alt='icon khám từ xa' />
+                                    </div>
+                                    <div className='text-child'><FormattedMessage id='banner.child4' /></div>
+                                </div>
+                                {/* Chuyên khoa */}
+                                <div className='option-child'>
+                                    <div className='icon-child'>
+                                        <img src={iconSuckhoeTinhthan} alt='icon sức khỏe tinh thần' />
+                                    </div>
+                                    <div className='text-child'><FormattedMessage id='banner.child5' /></div>
+                                </div>
+                                {/* Chuyên khoa */}
+                                <div className='option-child'>
+                                    <div className='icon-child'>
+                                        <img src={iconXetNghiep} alt='icon xét ngiệm' />
+                                    </div>
+                                    <div className='text-child'><FormattedMessage id='banner.child6' /></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                }
             </>
         );
     }
