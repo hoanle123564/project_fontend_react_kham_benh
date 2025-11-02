@@ -1,15 +1,20 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { EditUser } from "../../../services/userService";
 import UserRedux from "./UserRedux.js";
 import UserEdit from "./userRedux_Edit.js";
 import * as action from "../../../store/actions";
 import "./TableManageUser.scss";
+// Light Box
+import Lightbox from "react-image-lightbox";
+import "react-image-lightbox/style.css";
+
 class TableManageUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
       Users: [],
+      isOpen: false,
+      previewImg: "",
       IsOpenModalUser: false,
       IsOpenModalEdit: false,
       userEdit: {},
@@ -39,21 +44,6 @@ class TableManageUser extends Component {
       userEdit: user,
     });
   };
-  đoEitUser = async (user) => {
-    try {
-      let respone = await EditUser(user);
-      console.log("edit response: ", respone);
-
-      if (respone && respone.errCode !== 0) {
-        alert(respone.errMessage);
-      } else {
-        await this.getAllUserReact();
-        this.toggleUserEdit();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   toggleUserEdit = () => {
     this.setState({
@@ -80,19 +70,14 @@ class TableManageUser extends Component {
         </h2>
 
         {/* Modal thêm mới */}
-        <UserRedux
-          isOpen={this.state.IsOpenModalUser}
-          toggleUser={this.toggleUserModal}
-        />
+        <UserRedux />
 
         {/* Modal chỉnh sửa */}
         {this.state.IsOpenModalEdit && (
           <UserEdit
             isOpen={this.state.IsOpenModalEdit}
             toggleUser={this.toggleUserEdit}
-            className={"modal-user-container"}
             CurrentUser={this.state.userEdit}
-            EditUser={this.đoEitUser}
           />
         )}
 
@@ -106,6 +91,7 @@ class TableManageUser extends Component {
                 <th scope="col">Last Name</th>
                 <th scope="col">Email</th>
                 <th scope="col">Address</th>
+                <th scope="col">Avatar</th>
                 <th scope="col">Action</th>
               </tr>
             </thead>
@@ -118,6 +104,29 @@ class TableManageUser extends Component {
                     <td>{item.lastName}</td>
                     <td>{item.email}</td>
                     <td>{item.address}</td>
+                    <td>
+                      {/* xử lý ảnh */}
+                      {item.image ? (
+                        <img
+                          src={`data:image/jpeg;base64,${item.image}`}
+                          alt="avatar"
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "50%",
+                          }}
+                          onClick={() =>
+                            this.setState({
+                              isOpen: true,
+                              previewImg: `data:image/jpeg;base64,${item.image}`,
+                            })
+                          }
+                        />
+                      ) : (
+                        // nếu không có ảnh in ra span
+                        <span className="text-muted">No image</span>
+                      )}
+                    </td>
                     <td>
                       <div className="d-flex justify-content-center gap-2">
                         <button
@@ -145,6 +154,14 @@ class TableManageUser extends Component {
               )}
             </tbody>
           </table>
+
+          {/* Phóng to ảnh */}
+          {this.state.isOpen && (
+            <Lightbox
+              mainSrc={this.state.previewImg}
+              onCloseRequest={() => this.setState({ isOpen: false })}
+            />
+          )}
         </div>
       </div>
     );
