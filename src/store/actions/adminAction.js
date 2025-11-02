@@ -167,7 +167,7 @@ export const fetchEditUser = (User) => {
       }
     } catch (error) {
       dispatch(fetchDeleteUserFail());
-      console.log("fetchDeleteUserFail error: ", error);
+      console.log("fetchEditUser error: ", error);
     }
   };
 };
