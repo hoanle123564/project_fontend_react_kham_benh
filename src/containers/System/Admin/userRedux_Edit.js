@@ -35,6 +35,7 @@ class UserEdit extends Component {
       this.setState({
         ...user,
         previewImg: user.image ? `data:image/jpeg;base64,${user.image}` : "",
+        avatar: user.image || "", //  thêm dòng này để giữ base64 cũ
       });
     }
 
