@@ -40,11 +40,19 @@ const getAllCode = (type) => {
 const getDoctor = (limit) => {
   return axios.get(`/api/top-doctor?limit=${limit}`);
 };
+// Lấy tất cả bác sĩ
+const getAllDoctor = () => {
+  return axios.get(`/api/all-doctor`);
+};
+// Lưu thông tin chi tiết bác sĩ
+const postDetailDoctor = (data) => {
+  return axios.post("/api/save-doctor", data);
+};
 
-// Thông tin chi tiết bác sĩ
-const getDetailDoctor = (id) => {
-  return axios.get(`/api/get-detail-doctor-by-id?id=${id}`);
-}
+// Lưu thông tin chi tiết bác sĩ
+const getDetailDoctor = (doctorId) => {
+  return axios.get(`/api/detail-doctor?id=${doctorId}`);
+};
 export {
   handleLoginAPI,
   getAllUser,
@@ -53,5 +61,7 @@ export {
   EditUser,
   getAllCode,
   getDoctor,
-  getDetailDoctor
+  getAllDoctor,
+  postDetailDoctor,
+  getDetailDoctor,
 };

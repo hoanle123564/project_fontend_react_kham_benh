@@ -29,7 +29,7 @@ class HomePage extends Component {
 
         return (
             <>
-                <HomeHeader />
+                <HomeHeader showBanner={false} />
                 <Speciality settings={settings3} />
                 <RemoteExam settings={settings3} />
 

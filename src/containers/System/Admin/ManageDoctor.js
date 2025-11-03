@@ -19,11 +19,8 @@ class ManageDoctor extends Component {
       contentMarkdown: "",
       contentHTML: "",
       selectDoctor: "",
-      options: [
-        { value: "chocolate", label: "Chocolate" },
-        { value: "strawberry", label: "Strawberry" },
-        { value: "vanilla", label: "Vanilla" },
-      ],
+      description: "",
+      options: [],
     };
   }
 
@@ -31,8 +28,8 @@ class ManageDoctor extends Component {
   handleEditorChange = ({ html, text }) => {
     this.setState(
       {
-        contentMarkdown: html,
-        contentHTML: text,
+        contentMarkdown: text,
+        contentHTML: html,
       },
       () => {
         console.log("check state", this.state);
@@ -41,15 +38,27 @@ class ManageDoctor extends Component {
   };
 
   // Save content Markdown
-  handleSaveContent = () => {
+  handleSaveContent = (data) => {
     console.log("check state", this.state);
+    this.props.SaveDetailDoctor({
+      contentHTML: this.state.contentHTML,
+      contentMarkdown: this.state.contentMarkdown,
+      description: this.state.description,
+      doctorId: this.state.selectDoctor.value,
+    });
+    this.setState({
+      contentMarkdown: "",
+      contentHTML: "",
+      selectDoctor: "",
+      description: "",
+    });
   };
 
   // Select change
   handleChange = (selectDoctor) => {
     this.setState(
       {
-        selectDoctor,
+        selectDoctor: selectDoctor,
       },
       () => console.log(`Option selected:`, this.state.selectDoctor)
     );
@@ -62,11 +71,37 @@ class ManageDoctor extends Component {
     });
   };
 
-  componentDidMount() {}
+  buidlDataSelect = (InputData) => {
+    let result = [];
+    if (InputData && InputData.length > 0) {
+      InputData.map((item, index) => {
+        let Object = {};
+        Object.label = `${item.firstName} ${item.lastName}`;
+        Object.value = item.id;
+        result.push(Object);
+        console.log("Object", Object);
+      });
+    }
+    return result;
+  };
 
-  componentDidUpdate = (prevProps) => {};
+  componentDidMount() {
+    this.props.fetchAllDoctor();
+  }
+
+  componentDidUpdate = (prevProps) => {
+    if (prevProps.ListDoctor !== this.props.ListDoctor) {
+      let List = this.buidlDataSelect(this.props.ListDoctor);
+      console.log("this.props.ListDoctor", this.props.ListDoctor);
+      this.setState({
+        options: List,
+      });
+    }
+  };
 
   render() {
+    console.log(this.state);
+
     return (
       <>
         <div className="manage-doctor-container">
@@ -79,7 +114,7 @@ class ManageDoctor extends Component {
                 value={this.state.selectDoctor}
                 onChange={this.handleChange}
                 options={this.state.options}
-              />{" "}
+              />
             </div>
             {/* content right */}
             <div className="content-right">
@@ -115,14 +150,15 @@ class ManageDoctor extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    ListUser: state.admin.user,
+    language: state.app.language,
+    ListDoctor: state.admin.AllDoctor,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchAllUser: () => dispatch(action.fetchAllUser()),
-    DeleteUser: (UserId) => dispatch(action.fetchDeleteUser(UserId)),
+    fetchAllDoctor: () => dispatch(action.fetchAllDoctor()),
+    SaveDetailDoctor: (data) => dispatch(action.SaveDetailDoctor(data)),
   };
 };
 

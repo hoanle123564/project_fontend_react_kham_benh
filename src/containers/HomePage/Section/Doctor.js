@@ -5,6 +5,8 @@ import Slider from "react-slick";
 import * as action from "../../../store/actions";
 import { languages } from "../../../utils";
 import "./Doctor.scss";
+import { withRouter } from "react-router";
+
 class Doctor extends Component {
   constructor(props) {
     super(props);
@@ -22,6 +24,10 @@ class Doctor extends Component {
       });
     }
   };
+  handleViewDetailDoctor = (doctor) => {
+    console.log("Detail Doctor", doctor);
+    this.props.history.push(`/detail_doctor/${doctor.id}`);
+  }
   render() {
     let DoctorArr = this.state.DoctorArr;
     let language = this.props.language;
@@ -43,7 +49,7 @@ class Doctor extends Component {
                     let nameVi = `${item.positionVi},${item.firstName} ${item.lastName}`;
                     let nameEn = `${item.positionEn},${item.firstName} ${item.lastName}`;
                     return (
-                      <div className="image-doctor">
+                      <div className="image-doctor" key={index} onClick={() => this.handleViewDetailDoctor(item)}>
                         <img
                           src={`data:image/jpeg;base64,${item.image}`}
                           alt=""
@@ -78,4 +84,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Doctor);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Doctor));
