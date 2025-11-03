@@ -1,15 +1,13 @@
 .doctor-detail-container {
-    border: 1px solid red;
     padding-top: 80px;
-    margin: 0 40px;
 
     .intro-doctor {
         display: flex;
         height: 150px;
+        margin: 0 40px;
 
         .content-left-doctor {
             width: 20%;
-            border: 1px solid green;
 
             img {
                 width: 120px;
@@ -21,7 +19,6 @@
 
         .content-right-doctor {
             width: 80%;
-            border: 1px solid grey;
             display: flex;
             flex-direction: column;
             padding: 0 10px;
@@ -38,4 +35,41 @@
             }
         }
     }
+
+    .detail-info-doctor {
+        border-top: 1px solid #ccc;
+        padding: 10px 100px;
+        background-color: #f9f9f9;
+    }
+
+    .faq-section {
+        background-color: #00796b;
+        color: #fff;
+        padding: 20px 0;
+        font-size: 16px;
+        font-weight: 500;
+        margin-top: 30px;
+
+        .content-ques {
+            margin-left: 15px;
+
+            span {
+                margin-right: 8px;
+            }
+
+            .faq-link {
+                color: #ffeb3b;
+                font-weight: 500;
+                text-decoration: none;
+                transition: color 0.2s;
+
+                &:hover {
+                    color: #fff176;
+                    text-decoration: underline;
+                }
+            }
+        }
+
+    }
+
 }

@@ -48,8 +48,10 @@ class DetailDoctor extends Component {
               <div className="content-down">{item && item.description}</div>
             </div>
           </div>
+
           {/* Lịch khám bệnh  */}
           <div className="schedule-doctor"></div>
+
           {/* Thông tin chi tiết */}
           <div className="detail-info-doctor">
             {item && item.contentHTML && (
@@ -60,9 +62,26 @@ class DetailDoctor extends Component {
               ></div>
             )}
           </div>
+
           {/* Đánh giá */}
           <div className="comment-doctor"></div>
+
+          {/* Câu hỏi thường gặp */}
+          <div className="faq-section">
+            <div className="content-ques">
+              <span>Bạn cần tìm hiểu thêm?</span>
+              <a
+                href="https://bookingcare.vn/hoi-dap"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="faq-link"
+              >
+                Xem câu hỏi thường gặp
+              </a>
+            </div>
+          </div>
         </div>
+
         <HomeFooter />
       </>
     );

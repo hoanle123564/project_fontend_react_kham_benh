@@ -26,21 +26,16 @@ class ManageDoctor extends Component {
 
   // Edit Markdown
   handleEditorChange = ({ html, text }) => {
-    this.setState(
-      {
-        contentMarkdown: text,
-        contentHTML: html,
-      },
-      () => {
-        console.log("check state", this.state);
-      }
-    );
+    this.setState({
+      contentMarkdown: text,
+      contentHTML: html,
+    });
   };
 
   // Save content Markdown
-  handleSaveContent = (data) => {
+  handleSaveContent = async (data) => {
     console.log("check state", this.state);
-    this.props.SaveDetailDoctor({
+    await this.props.SaveDetailDoctor({
       contentHTML: this.state.contentHTML,
       contentMarkdown: this.state.contentMarkdown,
       description: this.state.description,
@@ -55,13 +50,25 @@ class ManageDoctor extends Component {
   };
 
   // Select change
-  handleChange = (selectDoctor) => {
-    this.setState(
-      {
-        selectDoctor: selectDoctor,
-      },
-      () => console.log(`Option selected:`, this.state.selectDoctor)
-    );
+  handleChangeSelect = async (selectDoctor) => {
+    this.setState({
+      selectDoctor: selectDoctor,
+    });
+    let res = await this.props.GetDetailDoctor(selectDoctor.value);
+    if (res && res.contentHTML) {
+      this.setState({
+        contentHTML: res.contentHTML,
+        contentMarkdown: res.contentMarkdown,
+        description: res.description,
+      });
+    } else {
+      this.setState({
+        contentHTML: "",
+        contentMarkdown: "",
+        description: "",
+      });
+    }
+    console.log("select doctor", this.state);
   };
 
   // change description
@@ -79,7 +86,6 @@ class ManageDoctor extends Component {
         Object.label = `${item.firstName} ${item.lastName}`;
         Object.value = item.id;
         result.push(Object);
-        console.log("Object", Object);
       });
     }
     return result;
@@ -92,7 +98,6 @@ class ManageDoctor extends Component {
   componentDidUpdate = (prevProps) => {
     if (prevProps.ListDoctor !== this.props.ListDoctor) {
       let List = this.buidlDataSelect(this.props.ListDoctor);
-      console.log("this.props.ListDoctor", this.props.ListDoctor);
       this.setState({
         options: List,
       });
@@ -100,8 +105,6 @@ class ManageDoctor extends Component {
   };
 
   render() {
-    console.log(this.state);
-
     return (
       <>
         <div className="manage-doctor-container">
@@ -112,7 +115,7 @@ class ManageDoctor extends Component {
               <label>Chọn bác sĩ</label>
               <Select
                 value={this.state.selectDoctor}
-                onChange={this.handleChange}
+                onChange={this.handleChangeSelect}
                 options={this.state.options}
               />
             </div>
@@ -123,6 +126,7 @@ class ManageDoctor extends Component {
                 className="form-control"
                 placeholder="Nhập thông tin giới thiệu bác sĩ"
                 rows={4}
+                value={this.state.description}
                 onChange={(e) => this.handleChangeDes(e)}
               ></textarea>
             </div>
@@ -132,6 +136,7 @@ class ManageDoctor extends Component {
             <MdEditor
               style={{ height: "500px" }}
               renderHTML={(text) => mdParser.render(text)}
+              value={this.state.contentMarkdown}
               onChange={this.handleEditorChange}
             />
           </div>
@@ -152,6 +157,7 @@ const mapStateToProps = (state) => {
   return {
     language: state.app.language,
     ListDoctor: state.admin.AllDoctor,
+    DetailDoctor: state.admin.DetailDoctor,
   };
 };
 
@@ -159,6 +165,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     fetchAllDoctor: () => dispatch(action.fetchAllDoctor()),
     SaveDetailDoctor: (data) => dispatch(action.SaveDetailDoctor(data)),
+    GetDetailDoctor: (id) => dispatch(action.GetDetailDoctor(id)),
   };
 };
 
