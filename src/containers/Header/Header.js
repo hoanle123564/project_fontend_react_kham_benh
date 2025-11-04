@@ -37,8 +37,8 @@ class Header extends Component {
         menuApp: menu,
       });
     }
-    console.log("chechk user info; ", this.props.userInfo);
   }
+
   render() {
     const { processLogout, language, userInfo } = this.props;
     // chọn cờ dựa trên language1

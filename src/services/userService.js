@@ -1,4 +1,5 @@
 import axios from "../axios";
+import moment from "moment";
 
 // Đăng nhập
 const handleLoginAPI = (email, password) => {
@@ -53,6 +54,11 @@ const postDetailDoctor = (data) => {
 const getDetailDoctor = (doctorId) => {
   return axios.get(`/api/detail-doctor?id=${doctorId}`);
 };
+
+// Lưu thông tin chi tiết bác sĩ
+const postScheduleDoctor = (data) => {
+  return axios.post("/api/create-schedule-doctor", data);
+};
 export {
   handleLoginAPI,
   getAllUser,
@@ -64,4 +70,5 @@ export {
   getAllDoctor,
   postDetailDoctor,
   getDetailDoctor,
+  postScheduleDoctor
 };

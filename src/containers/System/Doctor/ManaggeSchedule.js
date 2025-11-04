@@ -6,6 +6,10 @@ import DatePicker from "../../../components/Input/DatePicker";
 import * as action from "../../../store/actions";
 import "./ManaggeSchedule.scss";
 import moment from "moment";
+import { toast } from "react-toastify";
+import _ from "lodash";
+
+import { postScheduleDoctor } from "../../../services/userService";
 class ManageSchedule extends Component {
   constructor(props) {
     super(props);
@@ -41,22 +45,81 @@ class ManageSchedule extends Component {
   };
 
   // Chọn / bỏ chọn khung giờ
+  // handleClickTime = (time) => {
+  //   let { selectedTime } = this.state;
+
+  //   // Kiểm tra xem khung giờ đã được chọn chưa
+  //   const isSelected = selectedTime.some(
+  //     (item) => item.keyMap === time.keyMap
+  //   );
+
+  //   if (isSelected) {
+  //     // Nếu đã chọn => bỏ chọn
+  //     selectedTime = selectedTime.filter(
+  //       (item) => item.keyMap !== time.keyMap
+  //     );
+  //   } else {
+  //     // Nếu chưa chọn => thêm vào mảng
+  //     selectedTime.push(time);
+  //   }
+
+  //   this.setState({
+  //     selectedTime: [...selectedTime],
+  //   });
+  // };
+
   handleClickTime = (time) => {
-    let { selectedTime } = this.state;
-    const isSelected = selectedTime.includes(time.id); // Kiểm tra time.id có trong selectedTime hay không (true,false)
-    console.log('isSelected', isSelected);
-
-    if (isSelected) {
-      // Nếu có thì sẽ bỏ ra khỏi selectTime
-      selectedTime = selectedTime.filter((item) => item !== time.id);
-    } else {
-      selectedTime.push(time.id);
-    }
-
-    this.setState({
-      selectedTime: selectedTime
+    this.setState(prevState => {
+      const { selectedTime } = prevState;
+      const isSelected = selectedTime.includes(time.keyMap);
+      const updated = isSelected
+        ? selectedTime.filter(item => item !== time.keyMap)
+        : [...selectedTime, time.keyMap];
+      return { selectedTime: updated };
     });
   };
+
+
+
+
+  handleSaveSchedule = async () => {
+    const { selectedTime, selectDoctor, currentDate } = this.state;
+
+    if (!currentDate) {
+      toast.error("Invalid date!");
+      return;
+    }
+    if (!selectDoctor || _.isEmpty(selectDoctor)) {
+      toast.error("Invalid select doctor!");
+      return;
+    }
+    if (!selectedTime || selectedTime.length === 0) {
+      toast.error("Invalid select time!");
+      return;
+    }
+
+    const formattedDate = moment(currentDate).format("DD/MM/YYYY");
+
+    try {
+      const res = await postScheduleDoctor({
+        doctorId: selectDoctor.value,
+        date: formattedDate,
+        timeType: selectedTime,
+      });
+
+      if (res && res.errCode === 0) {
+        toast.success("Lưu kế hoạch thành công!");
+        //  KHÔNG reset selectedTime nữa
+        // Giữ nguyên để nút vẫn active
+      } else {
+        toast.error(res.errMessage || "Lưu thất bại!");
+      }
+    } catch (e) {
+      toast.error("Lưu thất bại!");
+      console.error(e);
+    }
+  };
+
 
   componentDidMount() {
     this.props.fetchAllDoctor();
@@ -69,15 +132,14 @@ class ManageSchedule extends Component {
       this.setState({ options });
     }
 
-    if (prevProps.AllTime !== this.props.AllTime) {
-      this.setState({ AllTime: this.props.AllTime });
+    if (prevProps.AllScheduleTime !== this.props.AllScheduleTime) {
+      this.setState({ AllTime: this.props.AllScheduleTime });
     }
   }
 
   render() {
     const { AllTime, selectedTime, selectDoctor, currentDate, options } =
       this.state;
-    console.log('selectedTime', selectedTime);
 
     return (
       <div className="manage-schedule-container">
@@ -123,7 +185,9 @@ class ManageSchedule extends Component {
                 {AllTime &&
                   AllTime.length > 0 &&
                   AllTime.map((item, index) => {
-                    const active = selectedTime.includes(item.id);
+                    // const active = selectedTime.some((t) => t.keyMap === item.keyMap);
+                    const active = selectedTime.includes(item.keyMap);
+
                     return (
                       <button
                         key={index}
@@ -144,7 +208,8 @@ class ManageSchedule extends Component {
 
           {/* Nút lưu */}
           <div className="text-center mt-4">
-            <button className="btn btn-primary btn-save-schedule">
+            <button className="btn btn-primary btn-save-schedule"
+              onClick={() => this.handleSaveSchedule()}>
               <FormattedMessage id="manage-schedule.save-schedule" />
             </button>
           </div>
@@ -158,7 +223,7 @@ const mapStateToProps = (state) => ({
   isLoggedIn: state.user.isLoggedIn,
   language: state.app.language,
   userInfo: state.user.userInfo,
-  AllTime: state.admin.AllTime,
+  AllScheduleTime: state.admin.AllTime,
   ListDoctor: state.admin.AllDoctor,
 });
 
