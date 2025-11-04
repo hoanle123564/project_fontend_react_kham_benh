@@ -5,6 +5,7 @@ import Select from "react-select";
 import DatePicker from "../../../components/Input/DatePicker";
 import * as action from "../../../store/actions";
 import "./ManaggeSchedule.scss";
+import moment from "moment";
 class ManageSchedule extends Component {
   constructor(props) {
     super(props);
@@ -110,8 +111,7 @@ class ManageSchedule extends Component {
                 onChange={this.handleOnchangeDatePicker}
                 value={currentDate}
                 className="form-control"
-                minDate={new Date()}
-              />
+                minDate={moment().startOf('day').toDate()} />
             </div>
 
             {/* Chọn giờ khám */}
