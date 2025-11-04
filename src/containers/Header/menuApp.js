@@ -1,6 +1,6 @@
 export const adminMenu = [
+  // quản lý người dùng
   {
-    //hệ thống
     name: "menu.admin.manage-user",
     menus: [
       {
@@ -23,10 +23,15 @@ export const adminMenu = [
       //     { name: 'menu.system.system-administrator.user-manage', link: '/system/user-manage' },
       //     { name: 'menu.system.system-administrator.user-redux', link: '/system/user-redux' },
       // ]
+      {
+        name: "menu.doctor.manage-schedule",
+        link: "/doctor/manage-schedule",
+      },
     ],
   },
+
+  // phòng khám
   {
-    // phòng khám
     name: "menu.admin.clinic",
     menus: [
       {
@@ -35,8 +40,9 @@ export const adminMenu = [
       },
     ],
   },
+
+  // chuyên khoa
   {
-    // chuyên khoa
     name: "menu.admin.specialty",
     menus: [
       {
@@ -45,13 +51,26 @@ export const adminMenu = [
       },
     ],
   },
+
+  // phòng khám
   {
-    // phòng khám
     name: "menu.admin.handbook",
     menus: [
       {
         name: "menu.admin.manage-handbook",
         link: "/system/manage-handbook",
+      },
+    ],
+  },
+];
+export const doctorMenu = [
+  // quản lý kế hoạch khám bệnh
+  {
+    name: "menu.admin.manage-user",
+    menus: [
+      {
+        name: "menu.doctor.manage-schedule",
+        link: "/doctor/manage-schedule",
       },
     ],
   },

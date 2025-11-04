@@ -17,6 +17,7 @@ import HomePage from "./HomePage/HomePage";
 import Home from "../routes/Home";
 import Login from "../containers/Auth/Login";
 import System from "../routes/System";
+import Doctor from "../routes/Doctor";
 import DetailDoctor from "./Patient/Doctor/DetailDoctor";
 class App extends Component {
   handlePersistorState = () => {
@@ -53,6 +54,7 @@ class App extends Component {
                   path={path.SYSTEM}
                   component={userIsAuthenticated(System)}
                 />
+                <Route path={path.DOCTOR} component={Doctor} />
                 <Route path={path.HOMEPAGE} component={HomePage} />
                 <Route path={path.DETAIL_DOCTOR} component={DetailDoctor} />
               </Switch>

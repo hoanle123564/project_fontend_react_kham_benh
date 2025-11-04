@@ -46,6 +46,10 @@
       "manage-specialty": "Manage specialty",
       "handbook": "Handbook",
       "manage-handbook": "Manage lý handbook"
+    },
+    "doctor": {
+      "manage-schedule": "Manage schedule",
+      "logout": "Logout"
     }
   },
   "user-manage": {
