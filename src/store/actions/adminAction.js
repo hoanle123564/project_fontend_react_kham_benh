@@ -277,3 +277,27 @@ export const GetDetailDoctor = (doctorId) => {
 export const GetDetailDoctorFail = () => ({
   type: actionTypes.GET_DETAIL_DOCTOR_FAIL,
 });
+
+// GET ALL HOUR
+export const fetchAllHour = () => {
+  return async (dispatch, getState) => {
+    try {
+      let res = await getAllCode('TIME'); // Gọi dịch vụ lấy tất cả bác sĩ
+      if (res && res.errCode === 0) {
+        let listHour = dispatch({
+          type: actionTypes.FETCH_ALL_HOUR,
+          data: res.data,
+        });
+        return listHour;
+      } else {
+        dispatch(fetchAllHourFail());
+      }
+    } catch (error) {
+      dispatch(fetchAllHourFail());
+      console.log("fetchAllHourFail error: ", error);
+    }
+  };
+};
+export const fetchAllHourFail = () => ({
+  type: actionTypes.FETCH_ALL_HOUR_FAIL,
+});

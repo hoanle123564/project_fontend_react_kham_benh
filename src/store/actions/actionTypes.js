@@ -43,6 +43,9 @@ const actionTypes = Object.freeze({
 
   GET_DETAIL_DOCTOR: "GET_DETAIL_DOCTOR",
   GET_DETAIL_DOCTOR_FAIL: "GET_DETAIL_DOCTOR_FAIL",
+
+  FETCH_ALL_HOUR: "FETCH_ALL_HOUR",
+  FETCH_ALL_HOUR_FAIL: "FETCH_ALL_HOUR_FAIL",
 });
 
 export default actionTypes;

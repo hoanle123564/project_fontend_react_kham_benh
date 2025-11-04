@@ -69,5 +69,11 @@
     "save": "Lưu người dùng",
     "save_change": "Lưu thay đổi",
     "cancel": "Hủy"
+  },
+  "manage-schedule": {
+    "title": "Quản lý kế hoạch khám bệnh của bác sĩ",
+    "choose-doctor": "Chọn bác sĩ",
+    "select-date": "Chọn ngày",
+    "save-schedule": "Lưu kế hoạch"
   }
 }

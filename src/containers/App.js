@@ -50,11 +50,13 @@ class App extends Component {
                   path={path.LOGIN}
                   component={userIsNotAuthenticated(Login)}
                 />
+
                 <Route
                   path={path.SYSTEM}
                   component={userIsAuthenticated(System)}
                 />
-                <Route path={path.DOCTOR} component={Doctor} />
+                <Route path={path.DOCTOR} component={userIsAuthenticated(Doctor)} />
+
                 <Route path={path.HOMEPAGE} component={HomePage} />
                 <Route path={path.DETAIL_DOCTOR} component={DetailDoctor} />
               </Switch>

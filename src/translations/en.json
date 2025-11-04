@@ -68,5 +68,11 @@
     "save": "Save user",
     "save_change": "Save change",
     "cancel": "Cancel"
+  },
+  "manage-schedule": {
+    "title": "Doctor's appointment schedule management",
+    "choose-doctor": "Choose doctor",
+    "select-date": "Select date",
+    "save-schedule": "Save schedule"
   }
 }

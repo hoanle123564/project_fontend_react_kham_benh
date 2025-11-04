@@ -1,0 +1,55 @@
+.manage-schedule-container {
+    padding: 20px;
+
+    .m-s-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-align: center;
+        text-transform: uppercase;
+        color: #222;
+    }
+
+    .pick-hour-container {
+        margin-top: 20px;
+
+        .pick-hour-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+
+            .btn-schedule {
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                padding: 10px 0;
+                font-size: 14px;
+                background-color: #f8f9fa;
+                cursor: pointer;
+                transition: all 0.2s ease-in-out;
+                text-align: center;
+                font-weight: 500;
+
+                &:hover {
+                    background-color: #e7f3ff;
+                    border-color: #007bff;
+                    color: #007bff;
+                }
+
+                &.active {
+                    background-color: #007bff;
+                    color: white;
+                    border-color: #007bff;
+                    box-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
+                }
+            }
+        }
+    }
+
+    .btn-save-schedule {
+        padding: 8px 25px;
+        font-size: 15px;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+}
