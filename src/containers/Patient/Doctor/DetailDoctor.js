@@ -5,6 +5,7 @@ import HomeFooter from "../../HomePage/HomeFooter";
 import "./DetailDoctor.scss";
 import * as action from "../../../store/actions";
 import { languages } from "../../../utils";
+import DoctorSchdule from "./DoctorSchdule";
 
 class DetailDoctor extends Component {
   constructor(props) {
@@ -27,9 +28,9 @@ class DetailDoctor extends Component {
   render() {
     // const { id } = this.props.match.params;
     // TODO: fetch doctor detail by id
-    console.log("detail doctor", this.props.DetailDoctor);
     let item = this.props.DetailDoctor;
     let language = this.props.language;
+
     return (
       <>
         <HomeHeader showBanner={false} />
@@ -50,7 +51,13 @@ class DetailDoctor extends Component {
           </div>
 
           {/* Lịch khám bệnh  */}
-          <div className="schedule-doctor"></div>
+          <div className="schedule-doctor">
+            <div className="content-left-schedule">
+              <DoctorSchdule DetailDoctor={item} />
+            </div>
+            <div className="content-right-schedule">
+            </div>
+          </div>
 
           {/* Thông tin chi tiết */}
           <div className="detail-info-doctor">
@@ -80,6 +87,7 @@ class DetailDoctor extends Component {
               </a>
             </div>
           </div>
+
         </div>
 
         <HomeFooter />

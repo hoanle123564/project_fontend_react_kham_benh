@@ -50,15 +50,20 @@ const postDetailDoctor = (data) => {
   return axios.post("/api/save-doctor", data);
 };
 
-// Lưu thông tin chi tiết bác sĩ
+// Lấy thông tin chi tiết bác sĩ
 const getDetailDoctor = (doctorId) => {
   return axios.get(`/api/detail-doctor?id=${doctorId}`);
 };
 
-// Lưu thông tin chi tiết bác sĩ
+// Lưu lịch trình bác sĩ
 const postScheduleDoctor = (data) => {
   return axios.post("/api/create-schedule-doctor", data);
 };
+
+const getScheduleDoctor = (doctorId, date) => {
+  return axios.get(`/api/get-schedule-doctor?doctorId=${doctorId}&date=${date}`);
+};
+
 export {
   handleLoginAPI,
   getAllUser,
@@ -70,5 +75,6 @@ export {
   getAllDoctor,
   postDetailDoctor,
   getDetailDoctor,
-  postScheduleDoctor
+  postScheduleDoctor,
+  getScheduleDoctor
 };

@@ -264,7 +264,6 @@ export const GetDetailDoctor = (doctorId) => {
           type: actionTypes.GET_DETAIL_DOCTOR,
           data: res.data,
         });
-        return res.data;
       } else {
         dispatch(GetDetailDoctorFail());
       }
