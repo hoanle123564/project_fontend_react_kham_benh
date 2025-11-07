@@ -232,6 +232,36 @@ export const fetchAllDoctorFail = () => ({
   type: actionTypes.FETCH_ALL_DOCTOR_FAIL,
 });
 
+
+export const GetDAllRequire = () => {
+  return async (dispatch, getState) => {
+    try {
+      let ResPri = await getAllCode('PRICE');
+      let ResPay = await getAllCode('PAYMENT');
+      if (ResPri && ResPri.errCode === 0 && ResPay && ResPay.errCode === 0) {
+        let data = {
+          ResPri: ResPri.data,
+          ResPay: ResPay.data,
+        }
+        let listRequire = dispatch({
+          type: actionTypes.FETCH_ALL_REQUIRED,
+          data: data
+        });
+        return listRequire;
+      } else {
+        dispatch(GetDAllRequireFail());
+      }
+    } catch (error) {
+      dispatch(GetDAllRequireFail());
+      console.log("GetDAllRequireFail error: ", error);
+    }
+  };
+};
+export const GetDAllRequireFail = () => ({
+  type: actionTypes.FETCH_ALL_REQUIRED_FAIL,
+});
+
+
 export const SaveDetailDoctor = (data) => {
   return async (dispatch, getState) => {
     try {
@@ -264,6 +294,7 @@ export const GetDetailDoctor = (doctorId) => {
           type: actionTypes.GET_DETAIL_DOCTOR,
           data: res.data,
         });
+        return res.data;
       } else {
         dispatch(GetDetailDoctorFail());
       }

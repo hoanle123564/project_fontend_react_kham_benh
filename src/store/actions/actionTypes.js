@@ -46,6 +46,9 @@ const actionTypes = Object.freeze({
 
   FETCH_ALL_HOUR: "FETCH_ALL_HOUR",
   FETCH_ALL_HOUR_FAIL: "FETCH_ALL_HOUR_FAIL",
+
+  FETCH_ALL_REQUIRED: "FETCH_ALL_REQUIRED",
+  FETCH_ALL_REQUIRED_FAIL: "FETCH_ALL_REQUIRED_FAIL",
 });
 
 export default actionTypes;
