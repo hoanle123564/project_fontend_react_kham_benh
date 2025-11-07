@@ -6,6 +6,7 @@ import { languages } from "../../../utils";
 import moment from "moment";
 import localization from "moment/locale/vi"; // phải thêm để đổi sang tiếng việt trong moment mặc đù không dùng trực tiếp
 import { getScheduleDoctor } from "../../../services/userService";
+import { FormattedMessage } from "react-intl";
 class DoctorSchdule extends Component {
     constructor(props) {
         super(props);
@@ -14,7 +15,7 @@ class DoctorSchdule extends Component {
             allAvailableTime: [],
         }
     }
-    setDay = () => {
+    getAllDay = () => {
         let arrDays = [];
         for (let i = 0; i < 7; i++) {
             let object = {};
@@ -26,15 +27,12 @@ class DoctorSchdule extends Component {
             object.value = moment(new Date()).add(i, 'days').startOf('day').valueOf();
             arrDays.push(object);
         }
+        return arrDays;
 
-        this.setState({
-            allDays: arrDays
-        });
     }
 
 
     handleSelect = async (e) => {
-        console.log('selected date', this.props.DetailDoctor.id);
         if (this.props.DetailDoctor && this.props.DetailDoctor.id) {
             let doctorId = this.props.DetailDoctor.id;
             console.log('doctorId', doctorId);
@@ -61,17 +59,35 @@ class DoctorSchdule extends Component {
 
     async componentDidMount() {
 
-        console.log('moment vi', moment().locale('vi').format('dddd - DD/MM'));
-        console.log('moment en', moment().locale('en').format('ddd - DD/MM'));
-        this.setDay();
-
+        let allDays = this.getAllDay();
+        this.setState({
+            allDays: allDays
+        });
 
     }
 
     async componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.language !== prevProps.language) {
-            this.setDay();
+            let arrDays = this.getAllDay();
+            this.setState({
+                allDays: arrDays
+            });
 
+        }
+
+        if (prevProps.DetailDoctor.id !== this.props.DetailDoctor.id) {
+            let date = Number(this.state.allDays[0].value);
+            date = moment(date).format('YYYY-MM-DD');
+            console.log('date now', date);
+            console.log('this.props.DetailDoctor.id', this.props.DetailDoctor.id);
+
+            let res = await getScheduleDoctor(this.props.DetailDoctor.id, date);
+
+            if (res && res.errCode === 0) {
+                this.setState({
+                    allAvailableTime: res.data
+                });
+            }
         }
     }
     handleChange = async (selectedOption) => {
@@ -80,15 +96,15 @@ class DoctorSchdule extends Component {
     render() {
         let { allDays, allAvailableTime } = this.state;
         console.log('allDays', allDays);
-        console.log('allAvailableTime', allAvailableTime);
-
 
         return (
             <>
                 <div className="doctor-schedule-container">
                     <div className="all-schedule">
-                        <select defaultValue="" onChange={(e) => this.handleSelect(e)}>
-                            <option value="" disabled hidden>-- Chọn ngày --</option>
+                        <select defaultValue={allDays[0]} onChange={(e) => this.handleSelect(e)}>
+                            {/* <option value="" disabled hidden>
+                                -- <FormattedMessage id="detail-doctor.text-calendar" /> --
+                            </option> */}
 
                             {allDays && allDays.length > 0 && allDays.map((item, index) => (
                                 <option key={index} value={item.value}>
@@ -102,12 +118,6 @@ class DoctorSchdule extends Component {
                     <div className="all-available-time">
                         {/* <span>Hiển thị khung giờ khả dụng ở đây...</span> */}
                         <div className="text-calendar my-2">
-                            <span>
-                                <i className="fas fa-calendar-alt">
-                                </i>
-                                Lịch khám
-                            </span>
-
                             <div className="time-content">
                                 {
                                     allAvailableTime && allAvailableTime.length > 0 ? (
@@ -123,13 +133,13 @@ class DoctorSchdule extends Component {
                                             </div>
                                             <div className="book-free my-3">
                                                 <span>
-                                                    Chọn và đặt (miễn phí)
+                                                    <FormattedMessage id="detail-doctor.book-free" />
                                                 </span>
                                             </div>
                                         </>
                                     ) : (
                                         <div className="no-schedule my-3">
-                                            Không có lịch khám trong ngày này
+                                            <FormattedMessage id="detail-doctor.no-schedule" />
                                         </div>
                                     )
                                 }

@@ -74,5 +74,30 @@
     "choose-doctor": "Choose doctor",
     "select-date": "Select date",
     "save-schedule": "Save schedule"
+  },
+  "detail-doctor": {
+    "schedule": "Schedule",
+    "book-free": "Select and book (free)",
+    "no-schedule": "No schedule available for this day",
+    "text-calendar": "Select appointment date"
+  },
+  "admin": {
+    "manage-doctor": {
+      "title": "Manage doctor",
+      "select-doctor": "Select doctor",
+      "info-doctor": "Doctor information",
+      "intro": "Introduction",
+      "specialty": "Specialty",
+      "clinic": "Clinic",
+      "address-clinic": "Địa chỉ phòng khám",
+      "note": "Ghi chú",
+      "price": "Giá khám",
+      "payment": "Phương thức thanh toán",
+      "province": "Tỉnh/Thành phố",
+      "select-price": "Chọn giá khám",
+      "select-payment": "Chọn phương thức thanh toán",
+      "select-province": "Chọn tỉnh/thành phố",
+      "save-info": "Save information"
+    }
   }
 }
