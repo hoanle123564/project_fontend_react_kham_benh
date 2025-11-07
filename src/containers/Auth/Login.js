@@ -119,16 +119,26 @@ class Login extends Component {
                                     Login
                                 </button>
                             </div>
-                            <div className="col-12">
-                                <span className="forgot-password">Forgot your password ?</span>
-                            </div>
                             <div className="col-12 text-center">
                                 <span className="text-center">Or login with:</span>
                             </div>
+
                             <div className="col-12 social-login">
-                                <i className="fa-brands fa-facebook-f facebook"></i>
-                                <i className="fa-brands fa-google-plus-g google"></i>
+                                <div className="social-btn facebook-btn">
+                                    <img
+                                        src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png"
+                                        alt="facebook"
+                                    />
+                                </div>
+                                <div className="social-btn google-btn">
+                                    <img
+                                        src="https://cdn-icons-png.flaticon.com/512/300/300221.png"
+                                        alt="google"
+                                    />
+                                </div>
                             </div>
+
+
                         </div>
                     </div>
                 </div>
