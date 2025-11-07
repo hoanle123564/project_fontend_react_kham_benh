@@ -11,6 +11,8 @@
     }
 
     .menu-group {
+        text-align: center;
+
         &:hover {
             cursor: pointer;
             background-color: darken($colormain, 5);
@@ -19,7 +21,6 @@
         .menu-group-name {
             line-height: 40px;
             padding: 0 15px;
-            border-right: 1px solid $border;
 
             &:first-child {
                 border-left: 1px solid $border;
@@ -36,12 +37,13 @@
             padding: 0;
 
             .menu {
-                width: 100%;
                 padding: 0 15px;
                 height: 35px;
-                line-height: 35px;
                 text-transform: none;
-
+                text-align: center;
+                align-items: center;
+                /* Căn giữa chữ */
+                white-space: nowrap;
 
 
                 &.active {
