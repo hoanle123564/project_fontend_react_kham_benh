@@ -6,7 +6,6 @@ import _ from "lodash";
 
 import { languages } from "../../../utils/constant";
 import * as action from "../../../store/actions";
-
 class UserEdit extends Component {
   constructor(props) {
     super(props);
@@ -175,7 +174,7 @@ class UserEdit extends Component {
           </div>
 
           {/* Address */}
-          <div className="row mb-3">
+          {/* <div className="row mb-3">
             <div className="col-md-12">
               <label>Address</label>
               <input
@@ -185,7 +184,32 @@ class UserEdit extends Component {
                 value={this.state.address}
               />
             </div>
+          </div> */}
+          {/* Address (City selection) */}
+          <div className="row mb-3">
+            <div className="col-md-12">
+              <label>
+                <FormattedMessage id="user-manage.address" />
+              </label>
+              <select
+                className="form-select"
+                value={this.state.address}
+                onChange={(e) => this.handleOnchange(e, "address")}
+              >
+                <option value="">
+                  {/* {formatMessage({ id: "user-manage.choose" })} */}
+                  {/* <FormattedMessage id="user-manage.choose" /> */}
+                </option>
+                {this.props.ListVietNamProvinces.map((item, index) => (
+                  <option key={index} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
+
+
 
           {/* Gender + Position + Role */}
           <div className="row mb-3">
@@ -311,6 +335,8 @@ const mapStateToProps = (state) => ({
   gender: state.admin.genderArr,
   position: state.admin.positionArr,
   role: state.admin.roleArr,
+  ListVietNamProvinces: state.admin.vietnamProvinces,
+
 });
 
 const mapDispatchToProps = (dispatch) => ({

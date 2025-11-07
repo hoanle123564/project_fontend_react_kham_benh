@@ -265,12 +265,21 @@ class UserRedux extends Component {
                 <label>
                   <FormattedMessage id="user-manage.address" />
                 </label>
-                <input
-                  type="text"
-                  className="form-control"
+                <select
+                  className="form-select"
                   value={this.state.address}
-                  onChange={(e) => this.handleChangeInput(e, "address")}
-                />
+                  onChange={(e) => this.handleOnchange(e, "address")}
+                >
+                  <option value="">
+                    {/* {formatMessage({ id: "user-manage.choose" })} */}
+                    {/* <FormattedMessage id="user-manage.choose" /> */}
+                  </option>
+                  {this.props.ListVietNamProvinces.map((item, index) => (
+                    <option key={index} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -413,6 +422,7 @@ const mapStateToProps = (state) => ({
   position: state.admin.positionArr,
   role: state.admin.roleArr,
   ListUser: state.admin.user,
+  ListVietNamProvinces: state.admin.vietnamProvinces,
 });
 
 const mapDispatchToProps = (dispatch) => ({
