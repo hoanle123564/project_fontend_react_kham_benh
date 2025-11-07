@@ -13,6 +13,22 @@
     color: white;
     z-index: 100;
 
+    .sidebar-logo {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+
+        border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+
+        img {
+            width: 150px;
+        }
+
+        span {
+            font-size: 22px;
+        }
+    }
+
     /* ===== MENU CHÍNH ===== */
     .sidebar-menu {
         flex: 1;

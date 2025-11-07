@@ -10,7 +10,7 @@ import united from "../../assets/flag/united_kingdom.png";
 import { languages, USER_ROLE } from "../../utils/constant";
 import { FormattedMessage } from "react-intl"; // chuyển đổi ngôn ngữ
 import _ from "lodash";
-
+import LifeCare from '../../assets/logo3.png';
 class Header extends Component {
   constructor(props) {
     super(props);
@@ -45,7 +45,11 @@ class Header extends Component {
     const flagSrc = language === languages.VI ? vietnam : united;
 
     return (
-      <div className="sidebar-container">
+      <div className="sidebar-container ">
+        {/* Logo */}
+        <div className="sidebar-logo">
+          <img src={LifeCare} alt="logo" />
+        </div>
         {/* Menu chính */}
         <div className="sidebar-menu">
           <Navigator menus={this.state.menuApp} />
