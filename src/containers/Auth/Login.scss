@@ -144,11 +144,26 @@
             }
         }
 
+        /* Viền đỏ khi lỗi */
+        .input-error {
+            border-color: red !important;
+            box-shadow: 0 0 4px rgba(255, 0, 0, 0.5);
+        }
+
+        /* Dòng chữ lỗi */
+        .error-text {
+            color: red;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* Giữ kiểu lỗi chung */
         .error-message {
             color: red;
             text-align: center;
-            margin-bottom: 10px;
+            margin: 10px 0;
         }
+
     }
 }
 
