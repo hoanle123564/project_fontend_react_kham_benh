@@ -45,7 +45,7 @@
       "specialty": "specialty",
       "manage-specialty": "Manage specialty",
       "handbook": "Handbook",
-      "manage-handbook": "Manage lý handbook"
+      "manage-handbook": "Manage handbook"
     },
     "doctor": {
       "manage-schedule": "Manage schedule",
@@ -79,7 +79,12 @@
     "schedule": "Schedule",
     "book-free": "Select and book (free)",
     "no-schedule": "No schedule available for this day",
-    "text-calendar": "Select appointment date"
+    "text-calendar": "Select appointment date",
+    "see-detail": "See detail",
+    "address-clinic": "CLINICS ADDRESS",
+    "promotion": "Promotion program",
+    "price": "Price",
+    "applyed-promo": "Applied promotion"
   },
   "admin": {
     "manage-doctor": {
@@ -89,14 +94,13 @@
       "intro": "Introduction",
       "specialty": "Specialty",
       "clinic": "Clinic",
-      "address-clinic": "Địa chỉ phòng khám",
+      "address-clinic": "Clinic address",
+      "name-clinic": "Clinic name",
       "note": "Ghi chú",
-      "price": "Giá khám",
-      "payment": "Phương thức thanh toán",
-      "province": "Tỉnh/Thành phố",
-      "select-price": "Chọn giá khám",
-      "select-payment": "Chọn phương thức thanh toán",
-      "select-province": "Chọn tỉnh/thành phố",
+      "price": "Price",
+      "payment": "Payment",
+      "select-price": "Select price",
+      "select-payment": "Payment method",
       "save-info": "Save information"
     }
   }

@@ -6,7 +6,7 @@ import "./DetailDoctor.scss";
 import * as action from "../../../store/actions";
 import { languages } from "../../../utils";
 import DoctorSchdule from "./DoctorSchdule";
-
+import DoctorExtendInfo from "./DoctorExtendInfo";
 class DetailDoctor extends Component {
   constructor(props) {
     super(props);
@@ -56,6 +56,7 @@ class DetailDoctor extends Component {
               <DoctorSchdule DetailDoctor={item} />
             </div>
             <div className="content-right-schedule">
+              <DoctorExtendInfo DetailDoctor={item} />
             </div>
           </div>
 

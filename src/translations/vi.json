@@ -80,7 +80,12 @@
     "schedule": "Lịch khám",
     "book-free": "Chọn và đặt (miễn phí)",
     "no-schedule": "Không có lịch khám trong ngày này",
-    "text-calendar": "Chọn ngày khám"
+    "text-calendar": "Chọn ngày khám",
+    "see-detail": "Xem chi tiết",
+    "address-clinic": "ĐỊA CHỈ PHÒNG KHÁM",
+    "promotion": "Chương trình khuyến mại",
+    "price": "Giá khám",
+    "applyed-promo": "Áp dụng khuyến mãi"
   },
   "admin": {
     "manage-doctor": {
@@ -91,10 +96,10 @@
       "specialty": "Chuyên khoa",
       "clinic": "Phòng khám",
       "address-clinic": "Địa chỉ phòng khám",
+      "name-clinic": "Tên phòng khám",
       "note": "Ghi chú",
       "price": "Giá khám",
       "payment": "Phương thức thanh toán",
-      "province": "Tỉnh/Thành phố",
       "select-price": "Chọn giá khám",
       "select-payment": "Chọn phương thức thanh toán",
       "select-province": "Chọn tỉnh/thành phố",
