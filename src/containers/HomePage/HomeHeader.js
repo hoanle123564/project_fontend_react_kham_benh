@@ -29,6 +29,7 @@ class HomeHeader extends Component {
     //     changeLanguage: !this.state.changeLanguage
     // })
   };
+
   returnHome = () => {
     if (this.props.history) {
       this.props.history.push(`/home`);
@@ -51,9 +52,10 @@ class HomeHeader extends Component {
               <img src={logoSrc} alt="logo" onClick={() => this.returnHome()} />
               {/* <div className='header-logo'></div> */}
             </div>
+
             <div className="center-content">
               <div className="child-content">
-                <div>
+                <div onClick={() => this.returnHome()}>
                   <b>
                     <FormattedMessage id="home-header.specility" />{" "}
                   </b>
@@ -81,6 +83,8 @@ class HomeHeader extends Component {
                 </div>
               </div>
             </div>
+
+            {/* content right */}
             <div className="right-content">
               <div className="support">
                 <span>
@@ -110,6 +114,8 @@ class HomeHeader extends Component {
             </div>
           </div>
         </div>
+
+        {/* content down */}
         {this.props.showBanner === true && (
           <div className="home-header-banner ">
             <div className="content-up pt-5">
