@@ -99,6 +99,7 @@ class DoctorSchdule extends Component {
 
         return (
             <>
+
                 <div className="doctor-schedule-container">
                     <div className="all-schedule">
                         <select defaultValue={allDays[0]} onChange={(e) => this.handleSelect(e)}>
@@ -115,6 +116,7 @@ class DoctorSchdule extends Component {
 
                     </div>
 
+                    {/* Hiển thị khung giờ */}
                     <div className="all-available-time">
                         {/* <span>Hiển thị khung giờ khả dụng ở đây...</span> */}
                         <div className="text-calendar my-2">
