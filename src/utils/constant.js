@@ -6,6 +6,7 @@ export const path = {
   HOMEPAGE: "/home",
   DETAIL_DOCTOR: "/detail_doctor/:id",
   DOCTOR: "/doctor",
+  CHORAY: "/ChoRay",
 };
 
 export const languages = {

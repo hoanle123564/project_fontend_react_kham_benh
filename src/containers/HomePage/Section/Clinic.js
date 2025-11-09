@@ -11,7 +11,15 @@ import Med_Hanoi from '../../../assets/hospital/logo-med-tai-ha-noi.jpg'
 import VietDuc from '../../../assets/hospital/logo-viet-duc.jpg'
 import YDuoc from '../../../assets/hospital/logo-y-duoc.jpg'
 
+import { withRouter } from "react-router";
+
 class Clinic extends Component {
+
+    returnChoRay = () => {
+        if (this.props.history) {
+            this.props.history.push(`/ChoRay`);
+        }
+    };
     render() {
         return (
             <>
@@ -28,9 +36,9 @@ class Clinic extends Component {
                                     <img src={doctoc_check} alt='' />
                                     <div className='title-img'>Doctor Check - Tầm kiểm soát bệnh để sống thọ hơn</div>
                                 </div>
-                                <div className='image-customize'>
+                                <div className='image-customize' onClick={this.returnChoRay}>
                                     <img src={ChoRay} alt=''></img>
-                                    <div className='title-img'>Bệnh viện chợ rẫy</div>
+                                    <div className='title-img' >Bệnh viện chợ rẫy</div>
                                 </div>
                                 <div className='image-customize'>
                                     <img src={hung_viet} alt=''></img>
@@ -71,4 +79,4 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Clinic);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Clinic));
