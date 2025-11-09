@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import { FormattedMessage, injectIntl } from "react-intl";
 import { connect } from "react-redux";
-
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-
 import { languages } from "../../../utils/constant";
 import * as action from "../../../store/actions";
 import "./UserRedux.scss";
@@ -23,68 +21,32 @@ class UserRedux extends Component {
       role: "",
       avatar: "",
       previewImg: "",
-      isOpen: false,
       isModalOpen: false,
       genderArr: [],
       positionArr: [],
       roleArr: [],
+      // lưu lỗi từng dòng
+      errors: {},
     };
   }
 
   async componentDidMount() {
-    // thực hiện thông qua redux
     this.props.getGender();
     this.props.getPosition();
     this.props.getRole();
   }
 
-  // Change input handler
-  handleChangeInput = (e, field) => {
-    const value = e.target.value;
-    this.setState({
-      [field]: value,
-    });
-  };
-
-  // Image preview handler
-  handleOnChangeImage = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const objectUrl = URL.createObjectURL(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        this.setState({
-          previewImg: objectUrl,
-          avatar: reader.result.split(",")[1], // chỉ lấy phần Base64
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   componentDidUpdate(prevProps) {
-    // render => didupdate
-    // quá khứ (prevProps) và hiện tại (this)
-    // [0]  [3]
-    if (prevProps.gender !== this.props.gender) {
-      this.setState({
-        genderArr: this.props.gender,
-      });
-    }
+    if (prevProps.gender !== this.props.gender)
+      this.setState({ genderArr: this.props.gender });
 
-    if (prevProps.position !== this.props.position) {
-      this.setState({
-        positionArr: this.props.position,
-      });
-    }
+    if (prevProps.position !== this.props.position)
+      this.setState({ positionArr: this.props.position });
 
-    if (prevProps.role !== this.props.role) {
-      this.setState({
-        roleArr: this.props.role,
-      });
-    }
+    if (prevProps.role !== this.props.role)
+      this.setState({ roleArr: this.props.role });
 
-    if (prevProps.ListUser !== this.props.ListUser) {
+    if (prevProps.ListUser !== this.props.ListUser)
       this.setState({
         email: "",
         password: "",
@@ -97,60 +59,104 @@ class UserRedux extends Component {
         role: "",
         avatar: "",
         previewImg: "",
+        errors: {},
       });
-    }
   }
 
-  // Toggle Modal
   toggleModal = () => {
+    this.setState({ isModalOpen: !this.state.isModalOpen });
+  };
+
+  handleChangeInput = (e, field) => {
     this.setState({
-      isModalOpen: !this.state.isModalOpen,
+      [field]: e.target.value,
+      errors: { ...this.state.errors, [field]: "" },
     });
   };
 
-  // Validate input
-  checkValidateInput = () => {
-    const requiredFields = [
-      "email",
-      "password",
-      "firstName",
-      "lastName",
-      "phoneNumber",
-      "address",
-    ];
-
-    for (let i = 0; i < requiredFields.length; i++) {
-      const field = requiredFields[i];
-      if (!this.state[field] || this.state[field].trim() === "") {
-        alert(`Vui lòng nhập đầy đủ thông tin: ${field}`);
-        return false;
-      }
+  handleOnChangeImage = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        this.setState({
+          previewImg: objectUrl,
+          avatar: reader.result.split(",")[1],
+        });
+      };
+      reader.readAsDataURL(file);
     }
-
-    // Kiểm tra định dạng email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(this.state.email)) {
-      alert("Email không hợp lệ!");
-      return false;
-    }
-
-    // Kiểm tra số điện thoại (ít nhất 9 chữ số)
-    const phoneRegex = /^[0-9]{9,11}$/;
-    if (!phoneRegex.test(this.state.phoneNumber)) {
-      alert("Số điện thoại không hợp lệ!");
-      return false;
-    }
-
-    return true;
   };
 
-  // Save user
-  handleSaveUser = async () => {
-    let check = this.checkValidateInput();
-    if (!check) return;
-    console.log("check state:", this.state);
+  // ✅ Kiểm tra và gán lỗi từng dòng
+  checkValidateInput = () => {
+    const { email, password, firstName, lastName, phoneNumber, address } =
+      this.state;
+    const errors = {};
+    const { language } = this.props;
 
-    let res = this.props.saveUser({
+    // email
+    if (!email || email.trim() === "")
+      errors.email =
+        language === languages.VI
+          ? "Vui lòng nhập Email!"
+          : "Please enter your email!";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      errors.email =
+        language === languages.VI
+          ? "Email không hợp lệ!"
+          : "Invalid email address!";
+
+    // password
+    if (!password || password.trim() === "")
+      errors.password =
+        language === languages.VI
+          ? "Vui lòng nhập mật khẩu!"
+          : "Please enter your password!";
+
+    // first name
+    if (!firstName || firstName.trim() === "")
+      errors.firstName =
+        language === languages.VI
+          ? "Vui lòng nhập tên!"
+          : "Please enter first name!";
+
+    // last name
+    if (!lastName || lastName.trim() === "")
+      errors.lastName =
+        language === languages.VI
+          ? "Vui lòng nhập họ!"
+          : "Please enter last name!";
+
+    // phone
+    if (!phoneNumber || phoneNumber.trim() === "")
+      errors.phoneNumber =
+        language === languages.VI
+          ? "Vui lòng nhập số điện thoại!"
+          : "Please enter phone number!";
+    else if (!/^[0-9]{9,11}$/.test(phoneNumber))
+      errors.phoneNumber =
+        language === languages.VI
+          ? "Số điện thoại không hợp lệ!"
+          : "Invalid phone number!";
+
+    // address
+    if (!address || address.trim() === "")
+      errors.address =
+        language === languages.VI
+          ? "Vui lòng chọn địa chỉ!"
+          : "Please select an address!";
+
+    this.setState({ errors });
+    return Object.keys(errors).length === 0;
+  };
+
+  handleSaveUser = async () => {
+    let valid = this.checkValidateInput();
+    if (!valid) return;
+
+    this.props.saveUser({
       email: this.state.email,
       password: this.state.password,
       firstName: this.state.firstName,
@@ -163,13 +169,12 @@ class UserRedux extends Component {
       avatar: this.state.avatar,
     });
 
-    console.log("check saveUser", res);
-    this.toggleModal(); // Đóng modal sau khi lưu
+    this.toggleModal();
   };
 
   render() {
-    const { genderArr, positionArr, roleArr } = this.state;
-    const { language, intl } = this.props;
+    const { genderArr, positionArr, roleArr, errors } = this.state;
+    const { language, intl, ListVietNamProvinces } = this.props;
 
     return (
       <div className="user-redux-container text-center mt-4">
@@ -178,7 +183,6 @@ class UserRedux extends Component {
           <FormattedMessage id="user-manage.add" />
         </Button>
 
-        {/* MODAL */}
         <Modal
           isOpen={this.state.isModalOpen}
           toggle={this.toggleModal}
@@ -187,108 +191,111 @@ class UserRedux extends Component {
           className="user-modal"
         >
           <ModalHeader toggle={this.toggleModal}>
-            <i className="fa-solid fa-user"></i>
+            <i className="fa-solid fa-user me-2"></i>
             <FormattedMessage id="user-manage.add" />
           </ModalHeader>
 
           <ModalBody>
-            {/* Email */}
-            <div className="row mb-6 ">
+            <div className="row mb-3">
               <div className="col-md-6">
-                <label>
-                  <FormattedMessage id="user-manage.email" />
-                </label>
+                <label>Email</label>
                 <input
                   type="email"
-                  className="form-control"
+                  className={`form-control ${errors.email ? "input-error" : ""}`}
                   value={this.state.email}
                   onChange={(e) => this.handleChangeInput(e, "email")}
                 />
+                {errors.email && <div className="error-text">{errors.email}</div>}
               </div>
-            </div>
 
-            {/* Password + Phone */}
-            <div className="row mb-3">
               <div className="col-md-6">
                 <label>
                   <FormattedMessage id="user-manage.password" />
                 </label>
                 <input
                   type="password"
-                  className="form-control"
+                  className={`form-control ${errors.password ? "input-error" : ""
+                    }`}
                   value={this.state.password}
                   onChange={(e) => this.handleChangeInput(e, "password")}
                 />
-              </div>
-              <div className="col-md-6">
-                <label>
-                  <FormattedMessage id="user-manage.phone" />
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={this.state.phoneNumber}
-                  onChange={(e) => this.handleChangeInput(e, "phoneNumber")}
-                />
+                {errors.password && (
+                  <div className="error-text">{errors.password}</div>
+                )}
               </div>
             </div>
 
-            {/* First + Last */}
             <div className="row mb-3">
               <div className="col-md-6">
-                <label>
-                  <FormattedMessage id="user-manage.first-name" />
-                </label>
+                <label>First Name</label>
                 <input
                   type="text"
-                  className="form-control"
+                  className={`form-control ${errors.firstName ? "input-error" : ""
+                    }`}
                   value={this.state.firstName}
                   onChange={(e) => this.handleChangeInput(e, "firstName")}
                 />
+                {errors.firstName && (
+                  <div className="error-text">{errors.firstName}</div>
+                )}
               </div>
               <div className="col-md-6">
-                <label>
-                  <FormattedMessage id="user-manage.last-name" />
-                </label>
+                <label>Last Name</label>
                 <input
                   type="text"
-                  className="form-control"
+                  className={`form-control ${errors.lastName ? "input-error" : ""
+                    }`}
                   value={this.state.lastName}
                   onChange={(e) => this.handleChangeInput(e, "lastName")}
                 />
+                {errors.lastName && (
+                  <div className="error-text">{errors.lastName}</div>
+                )}
               </div>
             </div>
 
-            {/* Address */}
             <div className="row mb-3">
-              <div className="col-md-12">
-                <label>
-                  <FormattedMessage id="user-manage.address" />
-                </label>
+              <div className="col-md-6">
+                <label>Phone</label>
+                <input
+                  type="text"
+                  className={`form-control ${errors.phoneNumber ? "input-error" : ""
+                    }`}
+                  value={this.state.phoneNumber}
+                  onChange={(e) => this.handleChangeInput(e, "phoneNumber")}
+                />
+                {errors.phoneNumber && (
+                  <div className="error-text">{errors.phoneNumber}</div>
+                )}
+              </div>
+
+              <div className="col-md-6">
+                <label>Address</label>
                 <select
-                  className="form-select"
+                  className={`form-select ${errors.address ? "input-error" : ""
+                    }`}
                   value={this.state.address}
-                  onChange={(e) => this.handleOnchange(e, "address")}
+                  onChange={(e) => this.handleChangeInput(e, "address")}
                 >
                   <option value="">
-                    {/* {formatMessage({ id: "user-manage.choose" })} */}
-                    {/* <FormattedMessage id="user-manage.choose" /> */}
+                    {intl.formatMessage({ id: "user-manage.choose" })}
                   </option>
-                  {this.props.ListVietNamProvinces.map((item, index) => (
-                    <option key={index} value={item}>
+                  {ListVietNamProvinces.map((item, i) => (
+                    <option key={i} value={item}>
                       {item}
                     </option>
                   ))}
                 </select>
+                {errors.address && (
+                  <div className="error-text">{errors.address}</div>
+                )}
               </div>
             </div>
 
-            {/* Gender + Position + Role */}
+            {/* Gender - Position - Role */}
             <div className="row mb-3">
               <div className="col-md-4">
-                <label>
-                  <FormattedMessage id="user-manage.gender" />
-                </label>
+                <label>Gender</label>
                 <select
                   className="form-select"
                   value={this.state.gender}
@@ -297,21 +304,18 @@ class UserRedux extends Component {
                   <option>
                     {intl.formatMessage({ id: "user-manage.choose" })}
                   </option>
-                  {genderArr &&
-                    genderArr.map((item, index) => (
-                      <option key={index} value={item.keyMap}>
-                        {language === languages.VI
-                          ? item.value_vi
-                          : item.value_en}
-                      </option>
-                    ))}
+                  {genderArr.map((item, index) => (
+                    <option key={index} value={item.keyMap}>
+                      {language === languages.VI
+                        ? item.value_vi
+                        : item.value_en}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               <div className="col-md-4">
-                <label>
-                  <FormattedMessage id="user-manage.position" />
-                </label>
+                <label>Position</label>
                 <select
                   className="form-select"
                   value={this.state.position}
@@ -320,21 +324,18 @@ class UserRedux extends Component {
                   <option>
                     {intl.formatMessage({ id: "user-manage.choose" })}
                   </option>
-                  {positionArr &&
-                    positionArr.map((item, index) => (
-                      <option key={index} value={item.keyMap}>
-                        {language === languages.VI
-                          ? item.value_vi
-                          : item.value_en}
-                      </option>
-                    ))}
+                  {positionArr.map((item, index) => (
+                    <option key={index} value={item.keyMap}>
+                      {language === languages.VI
+                        ? item.value_vi
+                        : item.value_en}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               <div className="col-md-4">
-                <label>
-                  <FormattedMessage id="user-manage.role" />
-                </label>
+                <label>Role</label>
                 <select
                   className="form-select"
                   value={this.state.role}
@@ -343,14 +344,13 @@ class UserRedux extends Component {
                   <option>
                     {intl.formatMessage({ id: "user-manage.choose" })}
                   </option>
-                  {roleArr &&
-                    roleArr.map((item, index) => (
-                      <option key={index} value={item.keyMap}>
-                        {language === languages.VI
-                          ? item.value_vi
-                          : item.value_en}
-                      </option>
-                    ))}
+                  {roleArr.map((item, index) => (
+                    <option key={index} value={item.keyMap}>
+                      {language === languages.VI
+                        ? item.value_vi
+                        : item.value_en}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -358,9 +358,7 @@ class UserRedux extends Component {
             {/* Avatar */}
             <div className="row mb-4">
               <div className="col-md-12 text-start">
-                <label className="mb-2">
-                  <FormattedMessage id="user-manage.avatar" />
-                </label>
+                <label className="mb-2">Avatar</label>
                 <div className="d-flex align-items-center">
                   <div className="upload-btn-wrapper me-3">
                     <input
@@ -371,9 +369,23 @@ class UserRedux extends Component {
                       onChange={(e) => this.handleOnChangeImage(e)}
                     />
                     <label htmlFor="avatar" className="btn btn-outline-primary">
-                      Chọn ảnh <i className="fa-solid fa-upload ms-2"></i>
+                      <FormattedMessage id="user-manage.choose-image" defaultMessage="Choose image" />
+                      <i className="fa-solid fa-upload ms-2"></i>
                     </label>
                   </div>
+
+                  {this.state.previewImg && (
+                    <button
+                      type="button"
+                      className="btn btn-outline-danger me-3"
+                      onClick={() =>
+                        this.setState({ previewImg: "", avatar: "" })
+                      }
+                    >
+                      <FormattedMessage id="user-manage.remove-image" defaultMessage="Remove" />
+                      <i className="fa-solid fa-xmark ms-2"></i>
+                    </button>
+                  )}
 
                   <div
                     className="preview-image-container"
@@ -388,25 +400,23 @@ class UserRedux extends Component {
                         className="preview-image"
                       />
                     ) : (
-                      <span className="text-muted">Chưa có ảnh</span>
+                      <span className="text-muted">
+                        <FormattedMessage id="user-manage.no-image" defaultMessage="No image" />
+                      </span>
                     )}
                   </div>
                 </div>
+
               </div>
             </div>
           </ModalBody>
 
           <ModalFooter>
-            {/* save user */}
             <Button color="primary" onClick={this.handleSaveUser}>
               <FormattedMessage id="user-manage.save" />
             </Button>
-            {/* cancel */}
             <Button color="secondary" onClick={this.toggleModal}>
-              <FormattedMessage
-                id="user-manage.cancel"
-                defaultMessage="Cancel"
-              />
+              <FormattedMessage id="user-manage.cancel" />
             </Button>
           </ModalFooter>
         </Modal>
@@ -415,7 +425,6 @@ class UserRedux extends Component {
   }
 }
 
-// Redux connect
 const mapStateToProps = (state) => ({
   language: state.app.language,
   gender: state.admin.genderArr,
