@@ -67,7 +67,10 @@
     "avatar": "Avatar",
     "save": "Save user",
     "save_change": "Save change",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "choose-image": "Choose image",
+    "remove-image": "Remove image",
+    "no-image": "No image"
   },
   "manage-schedule": {
     "title": "Doctor's appointment schedule management",
@@ -85,6 +88,21 @@
     "promotion": "Promotion program",
     "price": "Price",
     "applyed-promo": "Applied promotion"
+  },
+  "patient": {
+    "detail-doctor": {
+      "schedule": "Schedule",
+      "no-schedule": "The doctor has no appointments available at this time, please choose another slot.",
+      "choose": "Choose ",
+      "book-free": "and book (free)"
+    },
+    "extra-infor-doctor": {
+      "text-address": "Clinic address",
+      "price": "Consultation fee:",
+      "detail": "See details",
+      "payment": "Patients can pay the fee by:",
+      "hide-price": "Hide price list"
+    }
   },
   "admin": {
     "manage-doctor": {

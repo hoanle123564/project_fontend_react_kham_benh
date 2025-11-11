@@ -68,7 +68,10 @@
     "avatar": "Ảnh đại diện",
     "save": "Lưu người dùng",
     "save_change": "Lưu thay đổi",
-    "cancel": "Hủy"
+    "cancel": "Hủy",
+    "choose-image": "Chọn ảnh",
+    "remove-image": "Bỏ ảnh",
+    "no-image": "Chưa có ảnh"
   },
   "manage-schedule": {
     "title": "Quản lý kế hoạch khám bệnh của bác sĩ",
@@ -86,6 +89,21 @@
     "promotion": "Chương trình khuyến mại",
     "price": "Giá khám",
     "applyed-promo": "Áp dụng khuyến mãi"
+  },
+  "patient": {
+    "detail-doctor": {
+      "schedule": "Lịch khám",
+      "no-schedule": "Bác sĩ không có lịch hẹn trong thời gian này, vui lòng chọn thời gian khác.",
+      "choose": "Chọn ",
+      "book-free": "và đặt (miễn phí)"
+    },
+    "extra-infor-doctor": {
+      "text-address": "Địa chỉ khám",
+      "price": "Giá khám:",
+      "detail": "Xem chi tiết",
+      "payment": "Người bệnh có thể thanh toán chi phí bằng hình thức:",
+      "hide-price": "Ẩn bảng giá"
+    }
   },
   "admin": {
     "manage-doctor": {
