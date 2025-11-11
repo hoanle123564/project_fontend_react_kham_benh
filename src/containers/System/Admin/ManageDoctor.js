@@ -25,7 +25,9 @@ class ManageDoctor extends Component {
       selectPayment: "",
       nameClinic: "",
       addressClinic: "",
+      selectprovince: "",
 
+      ListProvinces: [],
       ListDoctor: [],
       ListPrice: [],
       ListPayment: [],
@@ -51,6 +53,7 @@ class ManageDoctor extends Component {
       paymentId: this.state.selectPayment.value,
       nameClinic: this.state.nameClinic,
       addressClinic: this.state.addressClinic,
+      province: this.state.selectprovince.label,
     });
 
     this.setState({
@@ -58,17 +61,25 @@ class ManageDoctor extends Component {
       contentHTML: "",
       selectDoctor: "",
       description: "",
+      selectPrice: "",
+      selectPayment: "",
+      nameClinic: "",
+      addressClinic: "",
+      selectprovince: "",
     });
   };
 
   // Select change
   handleChangeSelect = async (e, name) => {
-    console.log("e", e);
+    console.log('name', name);
+    console.log('e', e);
+
     let stateCopy = { ...this.state };
     stateCopy[name.name] = e;
     this.setState({
       ...stateCopy,
     });
+
     if (name.name === "selectDoctor") {
       let res = await this.props.GetDetailDoctor(e.value);
 
@@ -84,6 +95,7 @@ class ManageDoctor extends Component {
           selectPayment: findItem || "",
           nameClinic: res.nameClinic,
           addressClinic: res.addressClinic,
+          selectprovince: res.province || "",
         });
       } else {
         this.setState({
@@ -94,6 +106,7 @@ class ManageDoctor extends Component {
           selectPayment: "",
           nameClinic: "",
           addressClinic: "",
+          selectprovince: "",
         });
       }
     }
@@ -170,10 +183,19 @@ class ManageDoctor extends Component {
         this.props.AllRequire.ResPay,
         "PAYMENT"
       );
-
+      //  Chuyển đổi danh sách tỉnh thành
+      let ListProvinceFormatted = [];
+      if (this.props.ListVietNamProvinces && this.props.ListVietNamProvinces.length > 0) {
+        ListProvinceFormatted = this.props.ListVietNamProvinces.map(item => ({
+          label: item,
+          value: item,
+        }));
+      }
       this.setState({
         ListPrice: ListPri,
         ListPayment: ListPay,
+        ListProvinces: ListProvinceFormatted,
+
       });
 
     }
@@ -189,6 +211,8 @@ class ManageDoctor extends Component {
       let selectedPayment = ListPay.find(
         (item) => item.value === this.state.selectPayment?.value
       );
+
+
       this.setState({
         ListPrice: ListPri,
         ListPayment: ListPay,
@@ -197,9 +221,15 @@ class ManageDoctor extends Component {
       });
     }
   };
+
+
+
   render() {
     const { language } = this.props;
-    console.log('this.props.DetailDoctor', this.props.DetailDoctor);
+    const { ListProvinces, ListPayment } = this.state;
+    console.log('ListVietNamProvinces', this.props.ListVietNamProvinces);
+    console.log('ListProvinces', ListProvinces);
+    console.log('ListPayment', ListPayment);
 
     return (
       <div className="manage-doctor-container">
@@ -242,72 +272,68 @@ class ManageDoctor extends Component {
           </div>
         </div>
 
-        {/* --- Thông tin bổ sung (2 hàng 2 cột) --- */}
-        <div className="more-info-extra">
-          {/* Hàng 1 */}
-          <div className="form-group">
-            <label>
-              <FormattedMessage id="admin.manage-doctor.select-price" />
-            </label>
-            <Select
-              value={this.state.selectPrice}
-              onChange={this.handleChangeSelect}
-              name="selectPrice"
-              options={this.state.ListPrice}
-              placeholder={
-                language === "vi"
-                  ? "Chọn giá khám ..."
-                  : "Select examination fee ..."
-              }
-            />
+        {/* --- Thông tin bổ sung (chia 2 hàng: 3 + 2 cột) --- */}
+        <div className="more-info-extra container">
+          {/* Hàng 1: 3 cột */}
+          <div className="row my-3">
+            <div className="col-md-4">
+              <label><FormattedMessage id="admin.manage-doctor.select-price" /></label>
+              <Select
+                value={this.state.selectPrice}
+                onChange={this.handleChangeSelect}
+                name="selectPrice"
+                options={this.state.ListPrice}
+                placeholder={language === "vi" ? "Chọn giá khám ..." : "Select examination fee ..."}
+              />
+            </div>
+
+            <div className="col-md-4">
+              <label><FormattedMessage id="admin.manage-doctor.payment" /></label>
+              <Select
+                value={this.state.selectPayment}
+                onChange={this.handleChangeSelect}
+                name="selectPayment"
+                options={this.state.ListPayment}
+                placeholder={language === "vi" ? "Chọn phương thức ..." : "Select payment method ..."}
+              />
+            </div>
+
+            <div className="col-md-4">
+              <label>Chọn tỉnh thành</label>
+              <Select
+                value={this.state.selectprovince}
+                onChange={this.handleChangeSelect}
+                name="selectprovince"
+                options={this.state.ListProvinces}
+                placeholder={language === "vi" ? "Chọn tỉnh thành ..." : "Select province ..."}
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>
-              <FormattedMessage id="admin.manage-doctor.payment" />
-            </label>
-            <Select
-              value={this.state.selectPayment}
-              onChange={this.handleChangeSelect}
-              name="selectPayment"
-              options={this.state.ListPayment}
-              placeholder={
-                language === "vi"
-                  ? "Chọn phương thức ..."
-                  : "Select payment method ..."
-              }
-            />
-          </div>
+          {/* Hàng 2: 2 cột */}
+          <div className="row my-4">
+            <div className="col-md-6">
+              <label><FormattedMessage id="admin.manage-doctor.name-clinic" /></label>
+              <input
+                className="form-control"
+                value={this.state.nameClinic}
+                onChange={(e) => this.handleOnChangeText(e, "nameClinic")}
+                placeholder={language === "vi" ? "Tên phòng khám" : "Clinic name"}
+              />
+            </div>
 
-          {/* Hàng 2 */}
-          <div className="form-group">
-            <label>
-              <FormattedMessage id="admin.manage-doctor.name-clinic" />
-            </label>
-            <input
-              className="form-control"
-              value={this.state.nameClinic}
-              onChange={(e) => this.handleOnChangeText(e, "nameClinic")}
-              placeholder={
-                language === "vi" ? "Tên phòng khám" : "Clinic name"
-              }
-            />
-          </div>
-
-          <div className="form-group">
-            <label>
-              <FormattedMessage id="admin.manage-doctor.address-clinic" />
-            </label>
-            <input
-              className="form-control"
-              value={this.state.addressClinic}
-              onChange={(e) => this.handleOnChangeText(e, "addressClinic")}
-              placeholder={
-                language === "vi" ? "Địa chỉ phòng khám" : "Clinic address"
-              }
-            />
+            <div className="col-md-6">
+              <label><FormattedMessage id="admin.manage-doctor.address-clinic" /></label>
+              <input
+                className="form-control"
+                value={this.state.addressClinic}
+                onChange={(e) => this.handleOnChangeText(e, "addressClinic")}
+                placeholder={language === "vi" ? "Địa chỉ phòng khám" : "Clinic address"}
+              />
+            </div>
           </div>
         </div>
+
 
         {/* --- Markdown Editor --- */}
         <div className="manage-doctor-editor">
@@ -337,6 +363,8 @@ const mapStateToProps = (state) => {
     ListDoctor: state.admin.AllDoctor,
     DetailDoctor: state.admin.DetailDoctor,
     AllRequire: state.admin.AllRequire,
+    ListVietNamProvinces: state.admin.vietnamProvinces,
+
   };
 };
 

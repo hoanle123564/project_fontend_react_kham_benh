@@ -51,31 +51,22 @@
     }
 
     .more-info-extra {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        column-gap: 25px;
-        row-gap: 15px;
-        margin-top: 25px;
-        align-items: start; // căn trên cùng cho đồng đều
+        margin: 30px 0;
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
+        label {
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
 
-            label {
-                font-weight: 500;
-                margin-bottom: 6px;
-                color: #333;
-            }
+        .form-control,
+        .css-13cymwt-control {
+            border-radius: 8px;
+            font-size: 14px;
+        }
 
-
-            // để tránh label bị đẩy lệch khi focus
-            .css-1pahdxg-control {
-                border-color: #0071ba !important;
-                box-shadow: 0 0 0 1px #0071ba !important;
-            }
+        .row+.row {
+            margin-top: 15px;
         }
     }
-
 
 }
