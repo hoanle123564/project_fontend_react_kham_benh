@@ -4,7 +4,7 @@ import "./BookingModal.scss";
 import * as action from "../../../store/actions";
 import { languages } from "../../../utils";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import { formatMessage, injectIntl } from "react-intl";
+import { injectIntl } from "react-intl";
 import moment from "moment";
 
 class BookingModal extends Component {
@@ -24,7 +24,7 @@ class BookingModal extends Component {
             genderArr: [],
             profile: {},
 
-            // 🔹 Thêm trạng thái lỗi
+            //  Thêm trạng thái lỗi
             errors: {},
         };
     }
