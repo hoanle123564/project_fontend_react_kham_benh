@@ -20,13 +20,16 @@
       vertical-align: middle;
       text-align: center;
     }
+
     img {
       cursor: pointer;
       border: 1px solid black;
+
       &:hover {
         transform: scale(1.05);
       }
     }
+
     .btn {
       border-radius: 8px;
       transition: all 0.2s ease;
@@ -34,6 +37,30 @@
       &:hover {
         transform: scale(1.05);
       }
+    }
+  }
+}
+
+
+.table-manage-user {
+  .form-control {
+    border-radius: 8px;
+    max-width: 280px;
+  }
+
+  .pagination {
+    .page-item.active .page-link {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .page-link {
+      color: #007bff;
+      cursor: pointer;
+    }
+
+    .page-link:hover {
+      background-color: #e9f3ff;
     }
   }
 }
