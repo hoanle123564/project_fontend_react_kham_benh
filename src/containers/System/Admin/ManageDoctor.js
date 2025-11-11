@@ -226,10 +226,6 @@ class ManageDoctor extends Component {
 
   render() {
     const { language } = this.props;
-    const { ListProvinces, ListPayment } = this.state;
-    console.log('ListVietNamProvinces', this.props.ListVietNamProvinces);
-    console.log('ListProvinces', ListProvinces);
-    console.log('ListPayment', ListPayment);
 
     return (
       <div className="manage-doctor-container">
