@@ -64,10 +64,15 @@ const getScheduleDoctor = (doctorId, date) => {
   return axios.get(`/api/get-schedule-doctor?doctorId=${doctorId}&date=${date}`);
 };
 
+// Lưu thông tin đặt lịch khám bệnh
 const postPatientBooking = (data) => {
   return axios.post("/api/patient-book-appointment", data);
 };
 
+// Xác nhận đặt lịch khám bệnh
+const VerifyPatientBooking = (data) => {
+  return axios.post("/api/verify-book-appointment", data);
+};
 export {
   handleLoginAPI,
   getAllUser,
@@ -81,5 +86,6 @@ export {
   getDetailDoctor,
   postScheduleDoctor,
   getScheduleDoctor,
-  postPatientBooking
+  postPatientBooking,
+  VerifyPatientBooking
 };

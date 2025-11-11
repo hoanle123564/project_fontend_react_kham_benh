@@ -20,6 +20,7 @@ import System from "../routes/System";
 import Doctor from "../routes/Doctor";
 import DetailDoctor from "./Patient/Doctor/DetailDoctor";
 import ChoRay from "./Patient/Clinic/ChoRay";
+import VerifyEmailBooking from "./Patient/VerifyEmailBooking";
 class App extends Component {
   handlePersistorState = () => {
     const { persistor } = this.props;
@@ -58,6 +59,7 @@ class App extends Component {
                 />
                 <Route path={path.DOCTOR} component={userIsAuthenticated(Doctor)} />
 
+                <Route path={path.VERIFY_BOOKING} component={VerifyEmailBooking} />
                 <Route path={path.CHORAY} component={ChoRay} />
                 <Route path={path.HOMEPAGE} component={HomePage} />
                 <Route path={path.DETAIL_DOCTOR} component={DetailDoctor} />
