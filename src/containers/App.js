@@ -14,7 +14,7 @@ import {
 
 import { path } from "../utils";
 import HomePage from "./HomePage/HomePage";
-import Home from "../routes/Home";
+import Admin from "../routes/Admin";
 import Login from "../containers/Auth/Login";
 import System from "../routes/System";
 import Doctor from "../routes/Doctor";
@@ -47,7 +47,7 @@ class App extends Component {
           <div className="main-container">
             <span className="content-container">
               <Switch>
-                <Route path={path.HOME} exact component={Home} />
+                <Route path={path.HOME} exact component={Admin} />
                 <Route
                   path={path.LOGIN}
                   component={userIsNotAuthenticated(Login)}
