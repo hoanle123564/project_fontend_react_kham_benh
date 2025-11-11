@@ -1,5 +1,4 @@
 import axios from "../axios";
-import moment from "moment";
 
 // Đăng nhập
 const handleLoginAPI = (email, password) => {
@@ -60,8 +59,13 @@ const postScheduleDoctor = (data) => {
   return axios.post("/api/create-schedule-doctor", data);
 };
 
+// Lấy lịch trình bác sĩ
 const getScheduleDoctor = (doctorId, date) => {
   return axios.get(`/api/get-schedule-doctor?doctorId=${doctorId}&date=${date}`);
+};
+
+const postPatientBooking = (data) => {
+  return axios.post("/api/patient-book-appointment", data);
 };
 
 export {
@@ -76,5 +80,6 @@ export {
   postDetailDoctor,
   getDetailDoctor,
   postScheduleDoctor,
-  getScheduleDoctor
+  getScheduleDoctor,
+  postPatientBooking
 };

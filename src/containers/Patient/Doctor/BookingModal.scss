@@ -1,0 +1,44 @@
+.doctor-booking-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+
+    .doctor-avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+        }
+    }
+
+    .doctor-meta {
+        h5.doctor-name {
+            font-weight: 600;
+            color: #0071ba;
+            font-size: 17px;
+            margin-bottom: 4px;
+        }
+
+        .doctor-time {
+            font-size: 14px;
+            color: #f6a300;
+        }
+    }
+}
+
+.clinic-info {
+    font-size: 14px;
+    color: #666;
+
+    i {
+        color: #888;
+    }
+}

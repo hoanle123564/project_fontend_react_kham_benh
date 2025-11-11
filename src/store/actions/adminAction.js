@@ -9,6 +9,7 @@ import {
   getAllDoctor,
   postDetailDoctor,
   getDetailDoctor,
+  postPatientBooking
 } from "../../services/userService";
 import { toast } from "react-toastify";
 // GENDDER
@@ -330,4 +331,31 @@ export const fetchAllHour = () => {
 };
 export const fetchAllHourFail = () => ({
   type: actionTypes.FETCH_ALL_HOUR_FAIL,
+});
+
+// SAVE PATIENT BOOKING
+export const SavePatientBooking = (data) => {
+  return async (dispatch, getState) => {
+    try {
+      let res = await postPatientBooking(data); // Gọi dịch vụ lưu thông tin đặt lịch khám bệnh
+      if (res && res.errCode === 0) {
+        dispatch({
+          type: actionTypes.FETCH_SAVE_PATIENT_BOOKING,
+        });
+        toast.success("Save patient booking success");
+        return res;
+      } else {
+        toast.error("You already booked this doctor for the same time slot today!");
+        dispatch(SavePatientBookingFail());
+      }
+    } catch (error) {
+      toast.error("Save patient booking failed");
+      dispatch(SavePatientBookingFail());
+      console.log("SavePatientBooking error: ", error);
+
+    }
+  };
+}
+export const SavePatientBookingFail = () => ({
+  type: actionTypes.FETCH_SAVE_PATIENT_BOOKING_FAIL,
 });
