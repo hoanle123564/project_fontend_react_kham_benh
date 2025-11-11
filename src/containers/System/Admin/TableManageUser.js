@@ -4,7 +4,6 @@ import UserRedux from "./UserRedux.js";
 import UserEdit from "./userRedux_Edit.js";
 import * as action from "../../../store/actions";
 import "./TableManageUser.scss";
-// Light Box
 import Lightbox from "react-image-lightbox";
 import "react-image-lightbox/style.css";
 
@@ -13,55 +12,111 @@ class TableManageUser extends Component {
     super(props);
     this.state = {
       Users: [],
+      searchQuery: "",
+      sortField: "id",
+      sortOrder: "asc",
+      currentPage: 1,
+      usersPerPage: 10,
       isOpen: false,
       previewImg: "",
-      IsOpenModalUser: false,
       IsOpenModalEdit: false,
       userEdit: {},
     };
   }
 
   componentDidMount() {
-    // lấy toàn bộ người dùng
     this.props.fetchAllUser();
   }
 
-  toggleUserModal = () => {
+  componentDidUpdate(prevProps) {
+    if (prevProps.ListUser !== this.props.ListUser) {
+      this.setState({ Users: this.props.ListUser });
+    }
+  }
+
+  // Tìm kiếm người dùng
+  handleSearchChange = (e) => {
     this.setState({
-      IsOpenModalUser: !this.state.IsOpenModalUser,
+      searchQuery: e.target.value.toLowerCase(),
+      currentPage: 1,
     });
   };
 
-  // Delete User
-  handleDeleteUser = async (id) => {
+  // Sắp xếp cột
+  handleSort = (field) => {
+    const { sortField, sortOrder } = this.state;
+    const newOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
+    this.setState({ sortField: field, sortOrder: newOrder });
+  };
+
+  // Mở modal edit
+  handleEditUser = (user) => {
+    this.toggleUserEdit();
+    this.setState({ userEdit: user });
+  };
+
+  // Xóa user
+  handleDeleteUser = (id) => {
     this.props.DeleteUser(id);
   };
 
-  // Edit user
-  handleEditUser = async (user) => {
-    this.toggleUserEdit();
-    this.setState({
-      userEdit: user,
-    });
-  };
-
   toggleUserEdit = () => {
-    this.setState({
-      IsOpenModalEdit: !this.state.IsOpenModalEdit,
-    });
+    this.setState({ IsOpenModalEdit: !this.state.IsOpenModalEdit });
   };
 
-  componentDidUpdate = (prevProps) => {
-    if (prevProps.ListUser !== this.props.ListUser) {
-      this.setState({
-        Users: this.props.ListUser,
-      });
-    }
+  // Lọc, sắp xếp, tìm kiếm
+  getFilteredAndSortedUsers = () => {
+    const { Users, searchQuery, sortField, sortOrder } = this.state;
+
+    // Lọc theo từ khóa
+    let filtered = Users.filter((u) => {
+      const fullName = `${u.firstName} ${u.lastName}`.toLowerCase();
+      return fullName.includes(searchQuery);
+    });
+
+    // Sắp xếp
+    filtered.sort((a, b) => {
+      let valA = a[sortField] || "";
+      let valB = b[sortField] || "";
+
+      if (typeof valA === "string") valA = valA.toLowerCase();
+      if (typeof valB === "string") valB = valB.toLowerCase();
+
+      if (valA < valB) return sortOrder === "asc" ? -1 : 1;
+      if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return filtered;
+  };
+
+  // Phân trang
+  handlePageChange = (pageNumber) => {
+    this.setState({ currentPage: pageNumber });
   };
 
   render() {
-    let User = this.state.Users;
-    console.log("user: ", User);
+    const {
+      isOpen,
+      previewImg,
+      IsOpenModalEdit,
+      userEdit,
+      currentPage,
+      usersPerPage,
+      sortField,
+      sortOrder,
+    } = this.state;
+
+    const filteredUsers = this.getFilteredAndSortedUsers();
+
+    // Phân trang
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = filteredUsers.slice(
+      indexOfFirstUser,
+      indexOfLastUser
+    );
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
     return (
       <div className="table-manage-user container mt-4">
@@ -73,39 +128,75 @@ class TableManageUser extends Component {
         <UserRedux />
 
         {/* Modal chỉnh sửa */}
-        {this.state.IsOpenModalEdit && (
+        {IsOpenModalEdit && (
           <UserEdit
-            isOpen={this.state.IsOpenModalEdit}
+            isOpen={IsOpenModalEdit}
             toggleUser={this.toggleUserEdit}
-            CurrentUser={this.state.userEdit}
+            CurrentUser={userEdit}
           />
         )}
 
-        {/* Bảng người dùng */}
-        <div className="table-responsive shadow-sm rounded-3 my-5">
-          <table className="table table-hover align-middle table-bordered text-center mb-0">
+        {/* Thanh tìm kiếm */}
+        <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
+          <input
+            type="text"
+            className="form-control w-25"
+            placeholder="🔍 Search by name..."
+            onChange={this.handleSearchChange}
+          />
+          <span className="text-muted">
+            Total: {filteredUsers.length} users
+          </span>
+        </div>
+
+        {/* Bảng */}
+        <div className="table-responsive shadow-sm rounded-3 my-3">
+          <table className="table table-hover align-middle table-bordered mb-0">
             <thead className="table-primary">
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">First Name</th>
-                <th scope="col">Last Name</th>
-                <th scope="col">Email</th>
-                <th scope="col">Address</th>
-                <th scope="col">Avatar</th>
-                <th scope="col">Action</th>
+                {[
+                  { field: "id", label: "#" },
+                  { field: "firstName", label: "First Name" },
+                  { field: "lastName", label: "Last Name" },
+                  { field: "email", label: "Email" },
+                  { field: "address", label: "Address" },
+                ].map((col) => (
+                  <th
+                    key={col.field}
+                    onClick={() => this.handleSort(col.field)}
+                    style={{ cursor: "pointer", whiteSpace: "nowrap" }}
+                  >
+                    {col.label}{" "}
+                    {sortField === col.field && (
+                      <i
+                        className={`fa-solid fa-sort-${sortOrder === "asc" ? "up" : "down"
+                          } ms-1`}
+                      ></i>
+                    )}
+                  </th>
+                ))}
+                <th>Avatar</th>
+                <th>Action</th>
               </tr>
             </thead>
+
             <tbody>
-              {User?.length > 0 ? (
-                User.map((item, index) => (
+              {currentUsers.length > 0 ? (
+                currentUsers.map((item, index) => (
                   <tr key={item.id}>
-                    <td>{index + 1}</td>
+                    <td>{item.id}</td>
                     <td>{item.firstName}</td>
                     <td>{item.lastName}</td>
                     <td>{item.email}</td>
-                    <td>{item.address}</td>
+                    <td
+                      className="truncate-address"
+                      title={item.address} // Tooltip khi hover
+                    >
+                      {item.address?.length > 25
+                        ? item.address.slice(0, 25) + "..."
+                        : item.address || ""}
+                    </td>
                     <td>
-                      {/* xử lý ảnh */}
                       {item.image ? (
                         <img
                           src={`data:image/jpeg;base64,${item.image}`}
@@ -123,7 +214,6 @@ class TableManageUser extends Component {
                           }
                         />
                       ) : (
-                        // nếu không có ảnh in ra span
                         <span className="text-muted">No image</span>
                       )}
                     </td>
@@ -147,7 +237,7 @@ class TableManageUser extends Component {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="text-muted py-4">
+                  <td colSpan="7" className="text-muted py-4">
                     No users found.
                   </td>
                 </tr>
@@ -155,10 +245,32 @@ class TableManageUser extends Component {
             </tbody>
           </table>
 
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <nav className="mt-3">
+              <ul className="pagination justify-content-center mb-0">
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <li
+                    key={i}
+                    className={`page-item ${currentPage === i + 1 ? "active" : ""
+                      }`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => this.handlePageChange(i + 1)}
+                    >
+                      {i + 1}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
+
           {/* Phóng to ảnh */}
-          {this.state.isOpen && (
+          {isOpen && (
             <Lightbox
-              mainSrc={this.state.previewImg}
+              mainSrc={previewImg}
               onCloseRequest={() => this.setState({ isOpen: false })}
             />
           )}
@@ -168,17 +280,13 @@ class TableManageUser extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    ListUser: state.admin.user,
-  };
-};
+const mapStateToProps = (state) => ({
+  ListUser: state.admin.user,
+});
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    fetchAllUser: () => dispatch(action.fetchAllUser()),
-    DeleteUser: (UserId) => dispatch(action.fetchDeleteUser(UserId)),
-  };
-};
+const mapDispatchToProps = (dispatch) => ({
+  fetchAllUser: () => dispatch(action.fetchAllUser()),
+  DeleteUser: (UserId) => dispatch(action.fetchDeleteUser(UserId)),
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(TableManageUser);
