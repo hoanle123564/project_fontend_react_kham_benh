@@ -52,7 +52,7 @@ class BookingModal extends Component {
         return `${time} - ${day} - ${date}`;
     };
 
-    // 🔹 Hàm kiểm tra dữ liệu hợp lệ
+    //  Hàm kiểm tra dữ liệu hợp lệ
     validateForm = () => {
         const { fỉrstName, lastName, email, phoneNumber, address, reason, gender } =
             this.state;
@@ -120,9 +120,19 @@ class BookingModal extends Component {
             timeString: this.getFormattedDateTime(),
         });
 
-        console.log("res", res);
-    };
-
+        if (res && res.errCode === 0) {
+            this.toggleModal()
+            this.setState({
+                fỉrstName: "",
+                lastName: "",
+                phoneNumber: "",
+                email: "",
+                address: "",
+                reason: "",
+                gender: "",
+            })
+        };
+    }
     componentDidMount() {
         this.props.getGender();
     }
