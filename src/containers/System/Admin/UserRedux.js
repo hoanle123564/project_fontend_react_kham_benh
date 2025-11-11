@@ -89,7 +89,7 @@ class UserRedux extends Component {
     }
   };
 
-  // ✅ Kiểm tra và gán lỗi từng dòng
+  // Kiểm tra và gán lỗi từng dòng
   checkValidateInput = () => {
     const { email, password, firstName, lastName, phoneNumber, address } =
       this.state;
@@ -291,7 +291,9 @@ class UserRedux extends Component {
             {/* Gender - Position - Role */}
             <div className="row mb-3">
               <div className="col-md-4">
-                <label>Gender</label>
+                <label>
+                  <FormattedMessage id="user-manage.gender" />
+                </label>
                 <select
                   className="form-select"
                   value={this.state.gender}
@@ -311,27 +313,41 @@ class UserRedux extends Component {
               </div>
 
               <div className="col-md-4">
-                <label>Position</label>
+                <label>
+                  <FormattedMessage id="user-manage.position" />
+                </label>
                 <select
                   className="form-select"
                   value={this.state.position}
                   onChange={(e) => this.handleChangeInput(e, "position")}
+                  disabled={this.state.role !== "R2"} //  chỉ bật khi role là bác sĩ
                 >
                   <option>
                     {intl.formatMessage({ id: "user-manage.choose" })}
                   </option>
                   {positionArr.map((item, index) => (
                     <option key={index} value={item.keyMap}>
-                      {language === languages.VI
-                        ? item.value_vi
-                        : item.value_en}
+                      {language === languages.VI ? item.value_vi : item.value_en}
                     </option>
                   ))}
                 </select>
+
+                {/* Thông báo nhỏ khi bị disable */}
+                {this.state.role !== "R2" && (
+                  <div className="text-muted small mt-1">
+                    <FormattedMessage
+                      id="user-manage.position-disabled"
+                      defaultMessage="Chức danh chỉ áp dụng cho bác sĩ"
+                    />
+                  </div>
+                )}
               </div>
 
+
               <div className="col-md-4">
-                <label>Role</label>
+                <label>
+                  <FormattedMessage id="user-manage.role" />
+                </label>
                 <select
                   className="form-select"
                   value={this.state.role}

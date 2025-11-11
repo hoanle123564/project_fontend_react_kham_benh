@@ -59,9 +59,20 @@ class UserEdit extends Component {
   };
 
   handleOnchange = (event, field) => {
-    this.setState({
-      [field]: event.target.value,
-      errors: { ...this.state.errors, [field]: "" },
+    const value = event.target.value;
+    this.setState((prevState) => {
+      const updatedState = {
+        ...prevState,
+        [field]: value,
+        errors: { ...prevState.errors, [field]: "" },
+      };
+
+      //  Nếu người dùng đổi vai trò mà KHÔNG phải bác sĩ => xóa chức danh
+      if (field === "roleId" && value !== "R2") {
+        updatedState.positionId = "";
+      }
+
+      return updatedState;
     });
   };
 
@@ -165,7 +176,7 @@ class UserEdit extends Component {
       genderArr,
       positionArr,
       roleArr,
-      previewImg,
+      // previewImg,
       errors,
     } = this.state;
     const { language } = this.props;
@@ -265,7 +276,9 @@ class UserEdit extends Component {
           {/* Gender + Position + Role */}
           <div className="row mb-3">
             <div className="col-md-4">
-              <label>Gender</label>
+              <label>
+                <FormattedMessage id="user-manage .gender" />
+              </label>
               <select
                 className={`form-select ${errors.gender ? "input-error" : ""}`}
                 value={this.state.gender}
@@ -288,24 +301,34 @@ class UserEdit extends Component {
             <div className="col-md-4">
               <label>Position</label>
               <select
-                className={`form-select ${errors.positionId ? "input-error" : ""
-                  }`}
+                className={`form-select ${errors.positionId ? "input-error" : ""}`}
                 value={this.state.positionId}
                 onChange={(e) => this.handleOnchange(e, "positionId")}
+                disabled={this.state.roleId !== "R2"} // ✅ chỉ bật nếu là bác sĩ
               >
                 <option value="">Choose...</option>
                 {positionArr.map((item, index) => (
                   <option key={index} value={item.keyMap}>
-                    {language === languages.VI
-                      ? item.value_vi
-                      : item.value_en}
+                    {language === languages.VI ? item.value_vi : item.value_en}
                   </option>
                 ))}
               </select>
+
+              {/* Thông báo nhỏ khi bị vô hiệu hóa */}
+              {this.state.roleId !== "R2" && (
+                <div className="text-muted small mt-1">
+                  <FormattedMessage
+                    id="user-manage.position-disabled"
+                    defaultMessage="Chức danh chỉ áp dụng cho bác sĩ"
+                  />
+                </div>
+              )}
+
               {errors.positionId && (
                 <div className="error-text">{errors.positionId}</div>
               )}
             </div>
+
 
             <div className="col-md-4">
               <label>Role</label>
