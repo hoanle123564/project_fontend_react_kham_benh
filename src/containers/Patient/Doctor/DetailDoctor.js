@@ -38,8 +38,14 @@ class DetailDoctor extends Component {
           {/* Thông tin giới thiệu */}
           <div className="intro-doctor">
             <div className="content-left-doctor">
-              <img src={`data:image/jpeg;base64,${item.image}`} alt="avatar" />
-            </div>
+              <img
+                src={
+                  item?.image && item.image !== "undefined"
+                    ? `data:image/jpeg;base64,${item.image}`
+                    : "/default-doctor.png"
+                }
+                alt="avatar"
+              />            </div>
             <div className="content-right-doctor">
               <div className="content-up">
                 {language === languages.VI
