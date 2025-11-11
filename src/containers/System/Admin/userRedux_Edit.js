@@ -250,21 +250,12 @@ class UserEdit extends Component {
               <label>
                 <FormattedMessage id="user-manage.address" />
               </label>
-              <select
-                className={`form-select ${errors.address ? "input-error" : ""
-                  }`}
-                value={this.state.address}
+              <input
+                type="text"
+                className={`form-control ${errors.address ? "input-error" : ""}`}
                 onChange={(e) => this.handleOnchange(e, "address")}
-              >
-                <option value="">
-                  <FormattedMessage id="user-manage.choose" />
-                </option>
-                {this.props.ListVietNamProvinces.map((item, index) => (
-                  <option key={index} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
+                value={this.state.address}
+              />
               {errors.address && (
                 <div className="error-text">{errors.address}</div>
               )}

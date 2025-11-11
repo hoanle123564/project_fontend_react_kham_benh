@@ -174,7 +174,7 @@ class UserRedux extends Component {
 
   render() {
     const { genderArr, positionArr, roleArr, errors } = this.state;
-    const { language, intl, ListVietNamProvinces } = this.props;
+    const { language, intl } = this.props;
 
     return (
       <div className="user-redux-container text-center mt-4">
@@ -227,7 +227,9 @@ class UserRedux extends Component {
 
             <div className="row mb-3">
               <div className="col-md-6">
-                <label>First Name</label>
+                <label>
+                  <FormattedMessage id="user-manage.first-name" />
+                </label>
                 <input
                   type="text"
                   className={`form-control ${errors.firstName ? "input-error" : ""
@@ -240,7 +242,9 @@ class UserRedux extends Component {
                 )}
               </div>
               <div className="col-md-6">
-                <label>Last Name</label>
+                <label>
+                  <FormattedMessage id="user-manage.last-name" />
+                </label>
                 <input
                   type="text"
                   className={`form-control ${errors.lastName ? "input-error" : ""
@@ -271,21 +275,13 @@ class UserRedux extends Component {
 
               <div className="col-md-6">
                 <label>Address</label>
-                <select
-                  className={`form-select ${errors.address ? "input-error" : ""
+                <input
+                  type="text"
+                  className={`form-control ${errors.address ? "input-error" : ""
                     }`}
                   value={this.state.address}
                   onChange={(e) => this.handleChangeInput(e, "address")}
-                >
-                  <option value="">
-                    {intl.formatMessage({ id: "user-manage.choose" })}
-                  </option>
-                  {ListVietNamProvinces.map((item, i) => (
-                    <option key={i} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
+                />
                 {errors.address && (
                   <div className="error-text">{errors.address}</div>
                 )}
