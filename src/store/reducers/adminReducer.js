@@ -74,7 +74,8 @@ const initialState = {
     "Vĩnh Phúc",
     "Yên Bái",
   ],
-  AllRequire: []
+  AllRequire: [],
+  specialty: [],
 };
 
 const adminReducer = (state = initialState, action) => {
@@ -198,6 +199,17 @@ const adminReducer = (state = initialState, action) => {
         ...state,
       };
 
+    // get all specialty
+    case actionTypes.FETCH_ALL_SPECIALTY:
+      state.specialty = action.data;
+      return {
+        ...state,
+      };
+    case actionTypes.FETCH_ALL_SPECIALTY_FAIL:
+      state.specialty = [];
+      return {
+        ...state,
+      };
     default:
       return state;
   }

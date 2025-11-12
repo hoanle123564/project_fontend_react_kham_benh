@@ -10,7 +10,8 @@ import {
   postDetailDoctor,
   getDetailDoctor,
   postPatientBooking,
-  postSaveSpecialty
+  postSaveSpecialty,
+  getAllSpecialty
 } from "../../services/userService";
 import { toast } from "react-toastify";
 // GENDDER
@@ -386,4 +387,28 @@ export const SaveSpecialty = (data) => {
 export const SaveSpecialtyFail = () => ({
   type: actionTypes.FETCH_SAVE_SPECIALTY_FAIL,
 });
-// SAVE PATIENT BOOKING
+
+
+// GET ALL SPECIALTY
+export const GetAllSpecialty = () => {
+  return async (dispatch, getState) => {
+    try {
+      let res = await getAllSpecialty(); // Gọi dịch vụ lấy tất cả chuyên khoa
+      if (res && res.errCode === 0) {
+        let listSpecialty = dispatch({
+          type: actionTypes.FETCH_ALL_SPECIALTY,
+          data: res.data,
+        });
+        return listSpecialty;
+      } else {
+        dispatch(GetAllSpecialtyFail());
+      }
+    } catch (error) {
+      dispatch(GetAllSpecialtyFail());
+      console.log("GetAllSpecialtyFail error: ", error);
+    }
+  };
+}
+export const GetAllSpecialtyFail = () => ({
+  type: actionTypes.FETCH_ALL_SPECIALTY_FAIL,
+});

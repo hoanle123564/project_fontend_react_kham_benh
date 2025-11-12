@@ -1,17 +1,37 @@
 import React, { Component } from 'react';
+import { withRouter } from "react-router";
 import { connect } from 'react-redux'; // kết nối như router
+import * as action from "../../../store/actions";
+import "./Speciality.scss";
 // Slider 
 import Slider from "react-slick";
 
-import ThanKinh from '../../../assets/khoa/than-kinh.png'
-import CoXuongKhop from '../../../assets/khoa/co-xuong-khop.png'
-import CotSong from '../../../assets/khoa/cot-song.png'
-import TaiMuiHong from '../../../assets/khoa/tai-mui-hong.png'
-import TieuHoa from '../../../assets/khoa/tieu-hoa.png'
-import TimMach from '../../../assets/khoa/tim-mach.png'
-
 class Speciality extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            ListSpecialty: [],
+        }
+    }
+
+    handleViewDetailClinic = (clinic) => {
+        console.log("Detail clinic", clinic);
+        // this.props.history.push(`/detail_clinic/${clinic.id}`);
+    }
+
+    componentDidMount() {
+        this.props.getAllSpecialty();
+    }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.specialtys !== this.props.specialtys) {
+            this.setState({
+                ListSpecialty: this.props.specialtys
+            })
+        }
+    }
+
     render() {
+        let { ListSpecialty } = this.state;
         return (
             <>
                 <div className='section-share section-specialty'>
@@ -23,34 +43,25 @@ class Speciality extends Component {
                         </div>
                         <div className='section-body'>
                             <Slider {...this.props.settings}>
-                                <div className='image-customize'>
-                                    <img src={ThanKinh} alt=''></img>
-                                    <div className='title-img'>Khoa thần kinh</div>
-                                </div>
-                                <div className='image-customize'>
-                                    <img src={CoXuongKhop} alt=''></img>
-                                    <div className='title-img'>Khoa cơ xương khớp</div>
-                                </div>
-                                <div className='image-customize'>
-                                    <img src={CotSong} alt=''></img>
-                                    <div className='title-img'>Khoa cột Sống</div>
-                                </div>
-                                <div className='image-customize'>
-                                    <img src={TaiMuiHong} alt=''></img>
-                                    <div className='title-img'>Khoa tai mũi họng</div>
-                                </div>
-                                <div className='image-customize'>
-                                    <img src={TieuHoa} alt=''></img>
-                                    <div className='title-img'>Khoa tiêu hóa</div>
-                                </div>
-                                <div className='image-customize'>
-                                    <img src={TimMach} alt=''></img>
-                                    <div className='title-img'>Khoa tim mạch</div>
-                                </div>
+                                {
+                                    ListSpecialty && ListSpecialty.length > 0 &&
+                                    ListSpecialty.map((item, index) => {
+                                        return (
+                                            <div className='image-speciality'
+                                                key={index}
+                                                onClick={() => this.handleViewDetailClinic(item)}
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                <img src={`data:image/jpeg;base64,${item.image}`} alt='' />
+                                                <div className='title-img'>{item.name}</div>
+                                            </div>
+                                        )
+                                    })
+                                }
                             </Slider>
                         </div>
-                    </div>
-                </div>
+                    </div >
+                </div >
             </>
 
         );
@@ -61,13 +72,16 @@ class Speciality extends Component {
 const mapStateToProps = state => {
     return {
         isLoggedIn: state.user.isLoggedIn,
-        language: state.app.language
+        language: state.app.language,
+        specialtys: state.admin.specialty
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
+        getAllSpecialty: () => dispatch(action.GetAllSpecialty()),
+
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Speciality);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Speciality));

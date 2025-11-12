@@ -19,7 +19,7 @@ class ManageSpecialty extends Component {
             previewImg: '',
             name: '',
             descriptionHTML: '',
-            contentMarkdown: '',
+            descriptionMarkdown: '',
             imageSpecialty: '',
         }
     }
@@ -33,7 +33,7 @@ class ManageSpecialty extends Component {
             name: this.state.name,
             image: this.state.imageSpecialty,
             descriptionHTML: this.state.descriptionHTML,
-            contentMarkdown: this.state.contentMarkdown,
+            descriptionMarkdown: this.state.descriptionMarkdown,
         })
         console.log('check res', res);
         if (res && res.errCode === 0) {
@@ -41,7 +41,7 @@ class ManageSpecialty extends Component {
                 previewImg: '',
                 name: '',
                 descriptionHTML: '',
-                contentMarkdown: '',
+                descriptionMarkdown: '',
                 imageSpecialty: '',
             })
         }
@@ -50,7 +50,7 @@ class ManageSpecialty extends Component {
     // Edit Markdown
     handleEditorChange = ({ html, text }) => {
         this.setState({
-            contentMarkdown: text,
+            descriptionMarkdown: text,
             descriptionHTML: html,
         });
     };
@@ -155,7 +155,7 @@ class ManageSpecialty extends Component {
                 <MdEditor
                     style={{ height: '500px' }}
                     renderHTML={(text) => mdParser.render(text)}
-                    value={this.state.contentMarkdown}
+                    value={this.state.descriptionMarkdown}
                     onChange={this.handleEditorChange}
                 />
                 <button

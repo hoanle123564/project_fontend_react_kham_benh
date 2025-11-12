@@ -1,0 +1,30 @@
+   .section-body {
+       .image-speciality {
+           width: 95% !important;
+           border: 2px solid #ddd; // viền bao quanh mỗi carousel
+           border-radius: 5%; // bo góc cho giống ảnh mẫu
+           background: #fff; // nền trắng cho box
+           text-align: center;
+           height: 300px !important;
+           align-items: center;
+           cursor: pointer;
+
+           img {
+               height: 90%;
+               width: 90%;
+               top: 10;
+               margin: 0 auto;
+               object-fit: cover;
+           }
+
+           .title-img {
+               font-size: 18px;
+               font-weight: 700;
+               color: #333;
+           }
+
+       }
+
+
+
+   }
