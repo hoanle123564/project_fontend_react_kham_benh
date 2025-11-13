@@ -7,7 +7,7 @@ import * as action from "../../../store/actions";
 import DoctorSchdule from "../Doctor/DoctorSchdule";
 import DoctorExtendInfo from "../Doctor/DoctorExtendInfo";
 import { getDetailSpecialtyById } from "../../../services/userService";
-
+import { withRouter } from "react-router-dom/cjs/react-router-dom.min";
 class DetailSpeciality extends Component {
     constructor(props) {
         super(props);
@@ -116,6 +116,10 @@ class DetailSpeciality extends Component {
         }
     }
 
+    handleViewDetailDoctor = (doctor) => {
+        this.props.history.push(`/detail_doctor/${doctor.id}`);
+    }
+
 
     render() {
         const { ListDoctor, dateDetailSpecialty } = this.state;
@@ -172,12 +176,11 @@ class DetailSpeciality extends Component {
                                                 {item.description ||
                                                     "Bác sĩ có nhiều năm kinh nghiệm khám và điều trị."}
                                             </div>
-                                            <a
-                                                href={`/detail_doctor/${item.id}`}
-                                                className="see-more"
-                                            >
+
+                                            <div className="see-more" onClick={() => this.handleViewDetailDoctor(item)}>
                                                 Xem thêm
-                                            </a>
+
+                                            </div>
                                         </div>
                                     </div>
 
@@ -205,4 +208,4 @@ const mapDispatchToProps = (dispatch) => ({
 
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(DetailSpeciality);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(DetailSpeciality));
