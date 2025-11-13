@@ -26,11 +26,15 @@ class ManageDoctor extends Component {
       nameClinic: "",
       addressClinic: "",
       selectprovince: "",
+      selectClinic: "",
+      selectSpecialty: "",
 
       ListProvinces: [],
       ListDoctor: [],
       ListPrice: [],
       ListPayment: [],
+      ListSpecialty: [],
+      ListClinic: [],
     };
   }
 
@@ -54,6 +58,8 @@ class ManageDoctor extends Component {
       nameClinic: this.state.nameClinic,
       addressClinic: this.state.addressClinic,
       province: this.state.selectprovince.label,
+      specialtyId: this.state.selectSpecialty.value,
+      clinicId: this.state.selectClinic.value,
     });
 
     this.setState({
@@ -66,6 +72,8 @@ class ManageDoctor extends Component {
       nameClinic: "",
       addressClinic: "",
       selectprovince: "",
+      selectClinic: "",
+      selectSpecialty: "",
     });
   };
 
@@ -86,7 +94,10 @@ class ManageDoctor extends Component {
       let { ListPayment, ListPrice } = this.state;
       let findItem = ListPayment.find(item => item.value === res.paymentId);
       let findPrice = ListPrice.find(item => item.value === res.priceId);
+      let findSpecailty = this.state.ListSpecialty.find(item => item.value === res.specialtyId);
+      let findProvince = this.state.ListProvinces.find(item => item.label === res.province);
       if (res && res.contentHTML) {
+        console.log('res', res);
         this.setState({
           contentHTML: res.contentHTML,
           contentMarkdown: res.contentMarkdown,
@@ -95,7 +106,9 @@ class ManageDoctor extends Component {
           selectPayment: findItem || "",
           nameClinic: res.nameClinic,
           addressClinic: res.addressClinic,
-          selectprovince: res.province || "",
+          selectprovince: findProvince || "",
+          selectSpecialty: findSpecailty || "",
+          selectClinic: res.clinicId || "",
         });
       } else {
         this.setState({
@@ -107,6 +120,8 @@ class ManageDoctor extends Component {
           nameClinic: "",
           addressClinic: "",
           selectprovince: "",
+          selectSpecialty: "",
+          selectClinic: "",
         });
       }
     }
@@ -151,6 +166,12 @@ class ManageDoctor extends Component {
           Object.value = item.keyMap;
           result.push(Object);
         }
+        if (type === "SPECIALTY") {
+          let Object = {};
+          Object.label = item.name;
+          Object.value = item.id;
+          result.push(Object);
+        }
       });
     }
     return result;
@@ -167,6 +188,7 @@ class ManageDoctor extends Component {
   componentDidMount() {
     this.props.fetchAllDoctor();
     this.props.GetDAllRequire();
+    this.props.GetAllSpecialty();
   }
 
   componentDidUpdate = (prevProps) => {
@@ -183,6 +205,10 @@ class ManageDoctor extends Component {
         this.props.AllRequire.ResPay,
         "PAYMENT"
       );
+      let ListSpec = this.buidlDataSelect(
+        this.props.ListSpecialty,
+        "SPECIALTY"
+      );
       //  Chuyển đổi danh sách tỉnh thành
       let ListProvinceFormatted = [];
       if (this.props.ListVietNamProvinces && this.props.ListVietNamProvinces.length > 0) {
@@ -191,11 +217,12 @@ class ManageDoctor extends Component {
           value: item,
         }));
       }
+
       this.setState({
         ListPrice: ListPri,
         ListPayment: ListPay,
         ListProvinces: ListProvinceFormatted,
-
+        ListSpecialty: ListSpec,
       });
 
     }
@@ -203,7 +230,6 @@ class ManageDoctor extends Component {
     if (prevProps.language !== this.props.language) {
       let ListPri = this.buidlDataSelect(this.props.AllRequire.ResPri, "PRICE");
       let ListPay = this.buidlDataSelect(this.props.AllRequire.ResPay, "PAYMENT");
-
       // Tìm lại item đang chọn (vì label thay đổi)
       let selectedPrice = ListPri.find(
         (item) => item.value === this.state.selectPrice?.value
@@ -226,6 +252,7 @@ class ManageDoctor extends Component {
 
   render() {
     const { language } = this.props;
+    console.log('this.state.ListSpecialty ', this.state.ListSpecialty);
 
     return (
       <div className="manage-doctor-container">
@@ -267,6 +294,7 @@ class ManageDoctor extends Component {
             />
           </div>
         </div>
+
 
         {/* --- Thông tin bổ sung (chia 2 hàng: 3 + 2 cột) --- */}
         <div className="more-info-extra container">
@@ -328,6 +356,31 @@ class ManageDoctor extends Component {
               />
             </div>
           </div>
+
+
+          {/* Hàng 2: 2 cột */}
+          <div className="row my-4">
+            <div className="col-md-6">
+              <label>Chọn chuyên khoa</label>
+              <Select
+                value={this.state.selectSpecialty}
+                onChange={this.handleChangeSelect}
+                name="selectSpecialty"
+                options={this.state.ListSpecialty}
+                placeholder={language === "vi" ? "Chọn chuyên khoa ..." : "Select specialty ..."}
+              />
+            </div>
+
+            <div className="col-md-6">
+              <label>Chọn phòng khám</label>
+              <input
+                className="form-control"
+                value={this.state.addressClinic}
+                onChange={(e) => this.handleOnChangeText(e, "addressClinic")}
+                placeholder={language === "vi" ? "Địa chỉ phòng khám" : "Clinic address"}
+              />
+            </div>
+          </div>
         </div>
 
 
@@ -360,7 +413,8 @@ const mapStateToProps = (state) => {
     DetailDoctor: state.admin.DetailDoctor,
     AllRequire: state.admin.AllRequire,
     ListVietNamProvinces: state.admin.vietnamProvinces,
-
+    ListSpecialty: state.admin.specialty,
+    ListClinic: state.admin.clinic,
   };
 };
 
@@ -370,6 +424,7 @@ const mapDispatchToProps = (dispatch) => {
     SaveDetailDoctor: (data) => dispatch(action.SaveDetailDoctor(data)),
     GetDetailDoctor: (id) => dispatch(action.GetDetailDoctor(id)),
     GetDAllRequire: () => dispatch(action.GetDAllRequire()),
+    GetAllSpecialty: () => dispatch(action.GetAllSpecialty()),
   };
 };
 
