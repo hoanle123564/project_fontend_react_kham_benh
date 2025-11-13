@@ -59,10 +59,10 @@ class DetailDoctor extends Component {
           {/* Lịch khám bệnh  */}
           <div className="schedule-doctor">
             <div className="content-left-schedule">
-              <DoctorSchdule DetailDoctor={item} />
+              <DoctorSchdule doctorId={item.id} doctorProfile={item} />
             </div>
             <div className="content-right-schedule">
-              <DoctorExtendInfo DetailDoctor={item} />
+              <DoctorExtendInfo doctorId={item.id} />
             </div>
           </div>
 
