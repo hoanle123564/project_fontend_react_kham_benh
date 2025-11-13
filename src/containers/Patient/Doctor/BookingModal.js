@@ -6,6 +6,7 @@ import { languages } from "../../../utils";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { injectIntl } from "react-intl";
 import moment from "moment";
+import { getDetailDoctor } from "../../../services/userService";
 
 class BookingModal extends Component {
     constructor(props) {
@@ -104,8 +105,6 @@ class BookingModal extends Component {
             return;
         }
 
-        console.log("Thông tin bệnh nhân", this.state);
-
         const res = await this.props.postPatientBooking({
             firstName: this.state.fỉrstName,
             lastName: this.state.lastName,
@@ -133,15 +132,24 @@ class BookingModal extends Component {
             })
         };
     }
-    componentDidMount() {
+    async componentDidMount() {
         this.props.getGender();
+        await this.loadInfo();
     }
 
-    componentDidUpdate(prevProps) {
-        if (prevProps.DetailDoctor !== this.props.DetailDoctor) {
-            this.setState({
-                profile: this.props.DetailDoctor,
-            });
+    loadInfo = async () => {
+        const { profile } = this.props;
+        if (profile?.id) {
+            let res = await getDetailDoctor(profile.id);
+            if (res && res.errCode === 0) {
+                this.setState({ profile: res.data });
+            }
+        }
+    };
+    componentDidUpdate = async (prevProps) => {
+        if (prevProps.profile !== this.props.profile) {
+            // this.setState({ profile: this.props.profile });
+            await this.loadInfo();
         }
         if (prevProps.gender !== this.props.gender) {
             this.setState({
@@ -344,13 +352,11 @@ class BookingModal extends Component {
 const mapStateToProps = (state) => ({
     language: state.app.language,
     isLoggedIn: state.user.isLoggedIn,
-    DetailDoctor: state.admin.DetailDoctor,
     gender: state.admin.genderArr,
 });
 
 const mapDispatchToProps = (dispatch) => ({
     getGender: () => dispatch(action.fetchGender()),
-    GetDetailDoctor: (id) => dispatch(action.GetDetailDoctor(id)),
     postPatientBooking: (data) => dispatch(action.SavePatientBooking(data)),
 });
 
