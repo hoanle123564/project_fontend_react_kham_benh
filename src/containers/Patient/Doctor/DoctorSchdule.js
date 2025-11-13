@@ -5,7 +5,7 @@ import * as action from "../../../store/actions";
 import { languages } from "../../../utils";
 import moment from "moment";
 import localization from "moment/locale/vi"; // phải thêm để đổi sang tiếng việt trong moment mặc đù không dùng trực tiếp
-import { getScheduleDoctor } from "../../../services/userService";
+import { getScheduleDoctor, getDetailDoctor } from "../../../services/userService";
 import { FormattedMessage } from "react-intl";
 import BookingModal from "./BookingModal";
 
@@ -40,29 +40,14 @@ class DoctorSchdule extends Component {
         return arrDays;
     };
 
-    handleSelect = async (e) => {
-        if (this.props.DetailDoctor && this.props.DetailDoctor.id) {
-            let doctorId = this.props.DetailDoctor.id;
-            console.log("doctorId", doctorId);
-            let date = Number(e.target.value);
-            date = moment(date).format("YYYY-MM-DD");
-            console.log("date", date);
-
-            let res = await getScheduleDoctor(doctorId, date);
-            if (res && res.errCode === 0) {
-                this.setState({
-                    allAvailableTime: res.data,
-                });
-            } else {
-                this.setState({
-                    allAvailableTime: [],
-                });
-            }
-            console.log("get schedule doctor", res);
-        } else {
-            console.log("khong co id");
-        }
-    };
+    async handleSelect(e) {
+        if (!this.props.doctorId) return;
+        let date = moment(Number(e.target.value)).format("YYYY-MM-DD");
+        let res = await getScheduleDoctor(this.props.doctorId, date);
+        this.setState({
+            allAvailableTime: res && res.errCode === 0 ? res.data : [],
+        });
+    }
 
     handleChange = async (selectedOption) => {
         this.setState({ selectedOption: selectedOption });
@@ -77,31 +62,32 @@ class DoctorSchdule extends Component {
 
     async componentDidMount() {
         let allDays = this.getAllDay();
-        this.setState({
-            allDays: allDays,
-        });
-    }
+        this.setState({ allDays });
 
-    async componentDidUpdate(prevProps, prevState, snapshot) {
-        if (this.props.language !== prevProps.language) {
-            let arrDays = this.getAllDay();
-            this.setState({
-                allDays: arrDays,
-            });
-        }
-
-        if (prevProps.DetailDoctor.id !== this.props.DetailDoctor.id) {
-            let date = Number(this.state.allDays[0].value);
-            date = moment(date).format("YYYY-MM-DD");
-            console.log("date now", date);
-
-
-            let res = await getScheduleDoctor(this.props.DetailDoctor.id, date);
+        const doctorId = this.props.doctorId || this.props.DoctorId;
+        if (doctorId) {
+            let date = moment(allDays[0].value).format("YYYY-MM-DD");
+            let res = await getScheduleDoctor(doctorId, date);
 
             if (res && res.errCode === 0) {
-                this.setState({
-                    allAvailableTime: res.data,
-                });
+                this.setState({ allAvailableTime: res.data });
+            }
+        }
+    }
+
+    async componentDidUpdate(prevProps) {
+        const doctorId = this.props.doctorId || this.props.DoctorId;
+        const prevId = prevProps.doctorId || prevProps.DoctorId;
+
+        if (prevProps.language !== this.props.language) {
+            this.setState({ allDays: this.getAllDay() });
+        }
+
+        if (doctorId && doctorId !== prevId) {
+            let date = moment(this.state.allDays[0].value).format("YYYY-MM-DD");
+            let res = await getScheduleDoctor(doctorId, date);
+            if (res && res.errCode === 0) {
+                this.setState({ allAvailableTime: res.data });
             }
         }
     }
@@ -165,10 +151,13 @@ class DoctorSchdule extends Component {
                         </div>
                     </div>
                 </div>
-                <BookingModal isOpenModal={this.state.isOpenMondalBooking}
-                    toggleModal={this.handleClickScheduleTime}
+                <BookingModal
+                    isOpenModal={this.state.isOpenMondalBooking}
+                    toggleModal={() =>
+                        this.setState({ isOpenMondalBooking: false })
+                    }
                     ScheduleTime={this.state.ScheduleTime}
-                    DetailDoctor={this.props.DetailDoctor}
+                    profile={this.props.doctorProfile}
                 />
             </>
         );
@@ -179,6 +168,7 @@ const mapStateToProps = (state) => {
     return {
         language: state.app.language,
         isLoggedIn: state.user.isLoggedIn,
+        DetailDoctor: state.admin.DetailDoctor,
     };
 };
 const mapDispatchToProps = (dispatch) => {
