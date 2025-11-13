@@ -19,6 +19,7 @@ import Login from "../containers/Auth/Login";
 import System from "../routes/System";
 import Doctor from "../routes/Doctor";
 import DetailDoctor from "./Patient/Doctor/DetailDoctor";
+import DetailSpeciality from "./Patient/Speciality/DetailSpeciality";
 import ChoRay from "./Patient/Clinic/ChoRay";
 import VerifyEmailBooking from "./Patient/VerifyEmailBooking";
 class App extends Component {
@@ -63,6 +64,7 @@ class App extends Component {
                 <Route path={path.CHORAY} component={ChoRay} />
                 <Route path={path.HOMEPAGE} component={HomePage} />
                 <Route path={path.DETAIL_DOCTOR} component={DetailDoctor} />
+                <Route path={path.DETAIL_SPECIALTY} component={DetailSpeciality} />
               </Switch>
             </span>
 

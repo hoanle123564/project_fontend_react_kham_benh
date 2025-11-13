@@ -16,7 +16,7 @@ class Speciality extends Component {
 
     handleViewDetailClinic = (clinic) => {
         console.log("Detail clinic", clinic);
-        // this.props.history.push(`/detail_clinic/${clinic.id}`);
+        this.props.history.push(`/detail_specialty/${clinic.id}`);
     }
 
     componentDidMount() {
