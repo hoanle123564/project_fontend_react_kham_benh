@@ -147,12 +147,6 @@ class UserEdit extends Component {
           ? "Vui lòng chọn giới tính!"
           : "Please select gender!";
 
-    if (!positionId)
-      errors.positionId =
-        language === languages.VI
-          ? "Vui lòng chọn chức vụ!"
-          : "Please select position!";
-
     if (!roleId)
       errors.roleId =
         language === languages.VI
