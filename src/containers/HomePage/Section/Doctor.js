@@ -25,9 +25,9 @@ class Doctor extends Component {
     }
   };
   handleViewDetailDoctor = (doctor) => {
-    console.log("Detail Doctor", doctor);
     this.props.history.push(`/detail_doctor/${doctor.id}`);
   }
+
   render() {
     let DoctorArr = this.state.DoctorArr;
     let language = this.props.language;
@@ -57,7 +57,7 @@ class Doctor extends Component {
                         <div className="title-img1">
                           {language === languages.VI ? nameVi : nameEn}
                         </div>
-                        <div className="title-img2">Bác sĩ nội trú</div>
+                        {/* <div className="title-img2">Bác sĩ nội trú</div> */}
                       </div>
                     );
                   })}

@@ -190,7 +190,7 @@ export const fetchEditUserFail = () => ({
 export const fetchTopDoctor = () => {
   return async (dispatch, getState) => {
     try {
-      let res = await getDoctor(7);
+      let res = await getDoctor(100);
 
       if (res && res.errCode === 0) {
         let listUser = dispatch({
