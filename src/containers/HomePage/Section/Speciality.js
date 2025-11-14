@@ -14,8 +14,7 @@ class Speciality extends Component {
         }
     }
 
-    handleViewDetailClinic = (clinic) => {
-        console.log("Detail clinic", clinic);
+    handleViewDetailSpecialty = (clinic) => {
         this.props.history.push(`/detail_specialty/${clinic.id}`);
     }
 
@@ -49,7 +48,7 @@ class Speciality extends Component {
                                         return (
                                             <div className='image-speciality'
                                                 key={index}
-                                                onClick={() => this.handleViewDetailClinic(item)}
+                                                onClick={() => this.handleViewDetailSpecialty(item)}
                                                 style={{ cursor: 'pointer' }}
                                             >
                                                 <img src={`data:image/jpeg;base64,${item.image}`} alt='' />
