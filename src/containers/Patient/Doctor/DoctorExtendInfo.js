@@ -49,8 +49,8 @@ class DoctorExtendInfo extends Component {
                     <div className="title">
                         <FormattedMessage id="detail-doctor.address-clinic" />
                     </div>
-                    <div className="clinic-name">{info.nameClinic || "—"}</div>
-                    <div className="clinic-address">{info.addressClinic || "—"}</div>
+                    <div className="clinic-name">{info.clinicName || "—"}</div>
+                    <div className="clinic-address">{info.clinicAddress || "—"}</div>
 
                     <div className="promotion-line">
                         <i className="fas fa-bolt"></i>
