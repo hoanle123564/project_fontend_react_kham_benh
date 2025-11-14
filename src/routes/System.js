@@ -6,6 +6,7 @@ import TableManageUser from "../containers/System/Admin/TableManageUser";
 import Header from "../containers/Header/Header";
 import ManageDoctor from "../containers/System/Admin/ManageDoctor";
 import ManageSpectialty from "../containers/System/Specialty/ManageSpecialty";
+import ManageClinic from "../containers/System/Clinic/ManageClinic";
 class System extends Component {
   render() {
     const { systemMenuPath, isLoggedIn } = this.props;
@@ -18,6 +19,7 @@ class System extends Component {
               <Route path="/system/user-manage" component={UserManage} />
               <Route path="/system/user-redux" component={TableManageUser} />
               <Route path="/system/manage-doctor" component={ManageDoctor} />
+              <Route path="/system/manage-clinic" component={ManageClinic} />
               <Route path="/system/manage-specialty" component={ManageSpectialty} />
 
               <Route
