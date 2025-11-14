@@ -1,0 +1,144 @@
+.speciality-detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 20px 80px 20px;
+    background: #f6f7fb;
+
+    // ===== MÔ TẢ CHUYÊN KHOA =====
+    .description-specialty {
+        background: #fff;
+        padding: 30px 35px;
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        margin-bottom: 40px;
+        line-height: 1.7;
+        font-size: 16px;
+        color: #444;
+
+        h2,
+        h3,
+        h4 {
+            color: #333;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        ul {
+            margin-left: 20px;
+            padding-left: 0;
+
+            li {
+                margin-bottom: 6px;
+            }
+        }
+
+        // ===== FILTER PROVINCE =====
+        .filter-specialty {
+            margin-top: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+
+            span {
+                font-weight: 500;
+                color: #333;
+            }
+
+            select {
+                padding: 6px 12px;
+                border-radius: 6px;
+                border: 1px solid #ccc;
+                background: #fff;
+                outline: none;
+                font-size: 14px;
+                cursor: pointer;
+                transition: 0.2s;
+
+                &:hover {
+                    border-color: #00bcd4;
+                }
+            }
+        }
+    }
+
+    // ===== DANH SÁCH BÁC SĨ =====
+    .detail-specialty-body {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+
+        .each-doctor {
+            display: flex;
+            gap: 35px;
+            padding: 25px;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+
+            // ===== CỘT TRÁI =====
+            .dt-content-left {
+                flex: 1;
+                display: flex;
+                gap: 20px;
+
+                .doctor-image img {
+                    width: 140px;
+                    height: 140px;
+                    object-fit: cover;
+                    border-radius: 10px;
+                    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+                }
+
+                .doctor-info {
+                    display: flex;
+                    flex-direction: column;
+
+                    strong {
+                        font-size: 20px;
+                        font-weight: 600;
+                        color: #007b92;
+                        margin-bottom: 6px;
+                        display: block;
+                    }
+
+                    .doctor-description {
+                        color: #444;
+                        font-size: 14px;
+                        margin-bottom: 10px;
+                        line-height: 1.5;
+                    }
+
+                    .see-more {
+                        color: #00bcd4;
+                        font-weight: 500;
+                        font-size: 14px;
+                        text-decoration: none;
+                        transition: 0.2s;
+                        cursor: pointer;
+
+                        &:hover {
+                            text-decoration: underline;
+                            color: #0095a8;
+                        }
+                    }
+                }
+            }
+
+            // ===== CỘT PHẢI =====
+            .dt-content-right {
+                width: 45%;
+                border-left: 1px solid #e1e3e6;
+                padding-left: 25px;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+
+                .doctor-schedule-container,
+                .doctor-extend-info-container {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}

@@ -76,6 +76,7 @@ const initialState = {
   ],
   AllRequire: [],
   specialty: [],
+  AllClinic: [],
 };
 
 const adminReducer = (state = initialState, action) => {
@@ -210,6 +211,18 @@ const adminReducer = (state = initialState, action) => {
       return {
         ...state,
       };
+    // get all clinic
+    case actionTypes.FETCH_ALL_CLINIC:
+      state.AllClinic = action.data;
+      return {
+        ...state,
+      };
+    case actionTypes.FETCH_ALL_CLINIC_FAIL:
+      state.AllClinic = [];
+      return {
+        ...state,
+      };
+
     default:
       return state;
   }

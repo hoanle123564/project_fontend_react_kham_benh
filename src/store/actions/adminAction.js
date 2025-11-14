@@ -11,7 +11,9 @@ import {
   getDetailDoctor,
   postPatientBooking,
   postSaveSpecialty,
-  getAllSpecialty
+  getAllSpecialty,
+  getAllClinic,
+  postSaveClinic,
 } from "../../services/userService";
 import { toast } from "react-toastify";
 // GENDDER
@@ -362,6 +364,7 @@ export const SavePatientBookingFail = () => ({
   type: actionTypes.FETCH_SAVE_PATIENT_BOOKING_FAIL,
 });
 
+// SAVE SPECIALTY
 export const SaveSpecialty = (data) => {
   return async (dispatch, getState) => {
     try {
@@ -411,4 +414,55 @@ export const GetAllSpecialty = () => {
 }
 export const GetAllSpecialtyFail = () => ({
   type: actionTypes.FETCH_ALL_SPECIALTY_FAIL,
+});
+
+// SAVE CLINIC
+export const SaveClinic = (data) => {
+  return async (dispatch, getState) => {
+    try {
+      let res = await postSaveClinic(data); // Gọi dịch vụ lưu thông tin phòng khám
+      if (res && res.errCode === 0) {
+        dispatch({
+          type: actionTypes.FETCH_SAVE_CLINIC,
+        });
+        toast.success("Save clinic success");
+      } else {
+        toast.error("Save clinic failed");
+        dispatch(SaveClinicFail());
+      }
+      return res;
+
+    } catch (error) {
+      toast.error("Save clinic failed");
+      dispatch(SaveClinicFail());
+      console.log("SaveClinic error: ", error);
+    }
+  }
+}
+export const SaveClinicFail = () => ({
+  type: actionTypes.FETCH_SAVE_CLINIC_FAIL,
+});
+// GET ALL CLINIC
+export const GetAllClinic = () => {
+  return async (dispatch, getState) => {
+    try {
+      let res = await getAllClinic(); // Gọi dịch vụ lấy tất cả phòng khám
+      if (res && res.errCode === 0) {
+        let listClinic = dispatch({
+          type: actionTypes.FETCH_ALL_CLINIC,
+          data: res.data,
+        });
+        return listClinic;
+      }
+      else {
+        dispatch(GetAllClinicFail());
+      }
+    } catch (error) {
+      dispatch(GetAllClinicFail());
+      console.log("GetAllClinicFail error: ", error);
+    }
+  };
+}
+export const GetAllClinicFail = () => ({
+  type: actionTypes.FETCH_ALL_CLINIC_FAIL,
 });
