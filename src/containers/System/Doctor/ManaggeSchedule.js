@@ -15,7 +15,7 @@ class ManageSchedule extends Component {
     super(props);
     this.state = {
       selectDoctor: "",
-      options: [],
+      ListDoctor: [],
       currentDate: new Date(),
       AllTime: [],
       selectedTime: [],
@@ -37,36 +37,13 @@ class ManageSchedule extends Component {
   // Xử lý khi chọn bác sĩ
   handleChangeSelect = (selectDoctor) => {
     this.setState({ selectDoctor });
+
   };
 
   // Xử lý khi chọn ngày
   handleOnchangeDatePicker = (date) => {
     this.setState({ currentDate: date[0] });
   };
-
-  // Chọn / bỏ chọn khung giờ
-  // handleClickTime = (time) => {
-  //   let { selectedTime } = this.state;
-
-  //   // Kiểm tra xem khung giờ đã được chọn chưa
-  //   const isSelected = selectedTime.some(
-  //     (item) => item.keyMap === time.keyMap
-  //   );
-
-  //   if (isSelected) {
-  //     // Nếu đã chọn => bỏ chọn
-  //     selectedTime = selectedTime.filter(
-  //       (item) => item.keyMap !== time.keyMap
-  //     );
-  //   } else {
-  //     // Nếu chưa chọn => thêm vào mảng
-  //     selectedTime.push(time);
-  //   }
-
-  //   this.setState({
-  //     selectedTime: [...selectedTime],
-  //   });
-  // };
 
   handleClickTime = (time) => {
     this.setState(prevState => {
@@ -128,8 +105,8 @@ class ManageSchedule extends Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.ListDoctor !== this.props.ListDoctor) {
-      const options = this.buildDataSelect(this.props.ListDoctor);
-      this.setState({ options });
+      const ListDoctor = this.buildDataSelect(this.props.ListDoctor);
+      this.setState({ ListDoctor });
     }
 
     if (prevProps.AllScheduleTime !== this.props.AllScheduleTime) {
@@ -138,7 +115,7 @@ class ManageSchedule extends Component {
   }
 
   render() {
-    const { AllTime, selectedTime, selectDoctor, currentDate, options } =
+    const { AllTime, selectedTime, selectDoctor, currentDate, ListDoctor } =
       this.state;
 
     return (
@@ -158,7 +135,7 @@ class ManageSchedule extends Component {
               <Select
                 value={selectDoctor}
                 onChange={this.handleChangeSelect}
-                options={options}
+                options={ListDoctor}
                 placeholder={<FormattedMessage id="manage-schedule.choose-doctor" />}
               />
             </div>
