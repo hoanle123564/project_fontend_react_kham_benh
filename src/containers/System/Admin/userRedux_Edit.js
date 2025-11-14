@@ -271,7 +271,7 @@ class UserEdit extends Component {
           <div className="row mb-3">
             <div className="col-md-4">
               <label>
-                <FormattedMessage id="user-manage .gender" />
+                <FormattedMessage id="user-manage.gender" />
               </label>
               <select
                 className={`form-select ${errors.gender ? "input-error" : ""}`}
