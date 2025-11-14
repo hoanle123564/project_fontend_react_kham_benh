@@ -23,8 +23,6 @@ class ManageDoctor extends Component {
       selectDoctor: "",
       selectPrice: "",
       selectPayment: "",
-      nameClinic: "",
-      addressClinic: "",
       selectprovince: "",
       selectClinic: "",
       selectSpecialty: "",
@@ -48,6 +46,7 @@ class ManageDoctor extends Component {
 
   // Save content Markdown
   handleSaveContent = async () => {
+
     await this.props.SaveDetailDoctor({
       contentHTML: this.state.contentHTML,
       contentMarkdown: this.state.contentMarkdown,
@@ -55,8 +54,6 @@ class ManageDoctor extends Component {
       doctorId: this.state.selectDoctor.value,
       priceId: this.state.selectPrice.value,
       paymentId: this.state.selectPayment.value,
-      nameClinic: this.state.nameClinic,
-      addressClinic: this.state.addressClinic,
       province: this.state.selectprovince.label,
       specialtyId: this.state.selectSpecialty.value,
       clinicId: this.state.selectClinic.value,
@@ -69,8 +66,6 @@ class ManageDoctor extends Component {
       description: "",
       selectPrice: "",
       selectPayment: "",
-      nameClinic: "",
-      addressClinic: "",
       selectprovince: "",
       selectClinic: "",
       selectSpecialty: "",
@@ -96,6 +91,7 @@ class ManageDoctor extends Component {
       let findPrice = ListPrice.find(item => item.value === res.priceId);
       let findSpecailty = this.state.ListSpecialty.find(item => item.value === res.specialtyId);
       let findProvince = this.state.ListProvinces.find(item => item.label === res.province);
+      let findClinic = this.state.ListClinic.find(item => item.value === res.clinicId);
       if (res && res.contentHTML) {
         console.log('res', res);
         this.setState({
@@ -108,7 +104,7 @@ class ManageDoctor extends Component {
           addressClinic: res.addressClinic,
           selectprovince: findProvince || "",
           selectSpecialty: findSpecailty || "",
-          selectClinic: res.clinicId || "",
+          selectClinic: findClinic || "",
         });
       } else {
         this.setState({
@@ -172,6 +168,12 @@ class ManageDoctor extends Component {
           Object.value = item.id;
           result.push(Object);
         }
+        if (type === "CLINIC") {
+          let Object = {};
+          Object.label = item.name;
+          Object.value = item.id;
+          result.push(Object);
+        }
       });
     }
     return result;
@@ -189,6 +191,7 @@ class ManageDoctor extends Component {
     this.props.fetchAllDoctor();
     this.props.GetDAllRequire();
     this.props.GetAllSpecialty();
+    this.props.getAllClinic();
   }
 
   componentDidUpdate = (prevProps) => {
@@ -209,6 +212,10 @@ class ManageDoctor extends Component {
         this.props.ListSpecialty,
         "SPECIALTY"
       );
+      let ListClin = this.buidlDataSelect(
+        this.props.ListClinic,
+        "CLINIC"
+      );
       //  Chuyển đổi danh sách tỉnh thành
       let ListProvinceFormatted = [];
       if (this.props.ListVietNamProvinces && this.props.ListVietNamProvinces.length > 0) {
@@ -223,6 +230,7 @@ class ManageDoctor extends Component {
         ListPayment: ListPay,
         ListProvinces: ListProvinceFormatted,
         ListSpecialty: ListSpec,
+        ListClinic: ListClin,
       });
 
     }
@@ -335,27 +343,6 @@ class ManageDoctor extends Component {
           </div>
 
           {/* Hàng 2: 2 cột */}
-          <div className="row my-4">
-            <div className="col-md-6">
-              <label><FormattedMessage id="admin.manage-doctor.name-clinic" /></label>
-              <input
-                className="form-control"
-                value={this.state.nameClinic}
-                onChange={(e) => this.handleOnChangeText(e, "nameClinic")}
-                placeholder={language === "vi" ? "Tên phòng khám" : "Clinic name"}
-              />
-            </div>
-
-            <div className="col-md-6">
-              <label><FormattedMessage id="admin.manage-doctor.address-clinic" /></label>
-              <input
-                className="form-control"
-                value={this.state.addressClinic}
-                onChange={(e) => this.handleOnChangeText(e, "addressClinic")}
-                placeholder={language === "vi" ? "Địa chỉ phòng khám" : "Clinic address"}
-              />
-            </div>
-          </div>
 
 
           {/* Hàng 2: 2 cột */}
@@ -373,11 +360,12 @@ class ManageDoctor extends Component {
 
             <div className="col-md-6">
               <label>Chọn phòng khám</label>
-              <input
-                className="form-control"
-                value={this.state.addressClinic}
-                onChange={(e) => this.handleOnChangeText(e, "addressClinic")}
-                placeholder={language === "vi" ? "Địa chỉ phòng khám" : "Clinic address"}
+              <Select
+                value={this.state.selectClinic}
+                onChange={this.handleChangeSelect}
+                name="selectClinic"
+                options={this.state.ListClinic}
+                placeholder={language === "vi" ? "Chọn phòng khám ..." : "Select clinic ..."}
               />
             </div>
           </div>
@@ -414,7 +402,7 @@ const mapStateToProps = (state) => {
     AllRequire: state.admin.AllRequire,
     ListVietNamProvinces: state.admin.vietnamProvinces,
     ListSpecialty: state.admin.specialty,
-    ListClinic: state.admin.clinic,
+    ListClinic: state.admin.AllClinic,
   };
 };
 
@@ -425,6 +413,7 @@ const mapDispatchToProps = (dispatch) => {
     GetDetailDoctor: (id) => dispatch(action.GetDetailDoctor(id)),
     GetDAllRequire: () => dispatch(action.GetDAllRequire()),
     GetAllSpecialty: () => dispatch(action.GetAllSpecialty()),
+    getAllClinic: () => dispatch(action.GetAllClinic()),
   };
 };
 
