@@ -1,3 +1,4 @@
+// ...existing code...
 import React, { Component } from "react";
 import { connect } from "react-redux"; // kết nối như router
 import "./HomeHeader.scss";
@@ -15,12 +16,16 @@ import { FormattedMessage } from "react-intl"; // chuyển đổi ngôn ngữ
 import { languages } from "../../utils/constant";
 import { changeLangguageApp } from "../../store/actions/appActions";
 import { withRouter } from "react-router";
+import * as action from "../../store/actions";
 
 class HomeHeader extends Component {
   constructor(props) {
     super(props);
     this.state = {
       changeLanguage: true,
+      searchQuery: "",      // giá trị input
+      doctorList: [],       // danh sách bác sĩ
+      filteredDoctors: [],  // danh sách gợi ý
     };
   }
   change = (language) => {
@@ -35,6 +40,64 @@ class HomeHeader extends Component {
       this.props.history.push(`/home`);
     }
   };
+
+  componentDidMount() {
+    this.props.fetchTopDoctor();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.ListDoctor !== this.props.ListDoctor) {
+      this.setState({
+        doctorList: this.props.ListDoctor,
+        filteredDoctors: this.props.ListDoctor,
+      });
+    }
+  }
+
+  // --- thêm các hàm xử lý tìm kiếm ---
+  handleSearchChange = (e) => {
+    const query = e.target.value || "";
+    const q = query.trim().toLowerCase();
+
+    if (!q) {
+      // nếu rỗng thì hiện tất cả hoặc không hiển thị gợi ý
+      this.setState({
+        searchQuery: query,
+        filteredDoctors: this.state.doctorList,
+      });
+      return;
+    }
+
+    const filtered = (this.state.doctorList || []).filter((d) => {
+      const fname = `${d.firstName || ""} ${d.lastName || ""}`.toLowerCase();
+      const lname = `${d.lastName || ""} ${d.firstName || ""}`.toLowerCase();
+      const full = `${fname}`.toLowerCase();
+      return (
+        fname.includes(q) ||
+        lname.includes(q) ||
+        full.includes(q)
+      );
+    });
+
+    this.setState({
+      searchQuery: query,
+      filteredDoctors: filtered,
+    });
+  };
+
+  handleSelectDoctor = (doctor) => {
+    if (!doctor) return;
+    const id = doctor.id || doctor.userId || doctor.doctorId || doctor.DoctorId;
+    if (this.props.history && id) {
+      this.props.history.push(`/detail-doctor/${id}`);
+    }
+    // đóng gợi ý sau khi chọn
+    this.setState({
+      searchQuery: "",
+      filteredDoctors: this.state.doctorList,
+    });
+  };
+
   render() {
     // let language = this.state.changeLanguage;
 
@@ -124,7 +187,43 @@ class HomeHeader extends Component {
               </div>
               <div className="search ">
                 <i className="fa-solid fa-magnifying-glass"></i>
-                <input type="text" placeholder="Tìm kiếm ...." />
+                {/* liên kết input với state và xử lý onChange */}
+                <input
+                  type="text"
+                  placeholder="Tìm bác sĩ ..."
+                  value={this.state.searchQuery}
+                  onChange={this.handleSearchChange}
+                />
+
+                {/* gợi ý kết quả */}
+                {this.state.searchQuery && this.state.filteredDoctors && (
+                  <div className="search-suggestions">
+                    <ul>
+                      {(this.state.filteredDoctors || [])
+                        .slice(0, 7)
+                        .map((doc) => {
+                          const name = `${doc.firstName || ""} ${doc.lastName || ""
+                            }`.trim();
+                          const id =
+                            doc.id || doc.userId || doc.doctorId || doc.DoctorId;
+                          return (
+                            <li
+                              key={id || name}
+                              onClick={() => this.handleSelectDoctor(doc)}
+                            >
+                              <span className="suggest-name">{name || "Bác sĩ"}</span>
+                              {doc.positionData && doc.positionData.valueVi && (
+                                <span className="suggest-position"> - {doc.positionData.valueVi}</span>
+                              )}
+                            </li>
+                          );
+                        })}
+                      {this.state.filteredDoctors.length === 0 && (
+                        <li className="no-result">Không tìm thấy kết quả</li>
+                      )}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
             <div className="content-down">
@@ -200,6 +299,8 @@ const mapStateToProps = (state) => {
     isLoggedIn: state.user.isLoggedIn,
     language: state.app.language,
     userInfo: state.user.userInfo, // <-- thêm dòng này nếu cần hiển thị thông tin user
+    ListDoctor: state.admin.doctor,
+
   };
 };
 
@@ -207,6 +308,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     changeLangguageAppRedux: (languages) =>
       dispatch(changeLangguageApp(languages)),
+    fetchTopDoctor: () => dispatch(action.fetchTopDoctor()),
+
   };
 };
 
