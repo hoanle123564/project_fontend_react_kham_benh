@@ -102,7 +102,9 @@ class HomeHeader extends Component {
     // let language = this.state.changeLanguage;
 
     // Lấy đường dẫn ảnh từ file message
-    const { language } = this.props;
+    const { language, userInfo } = this.props;
+    console.log('userInfo from header: ', userInfo);
+
     // chọn cờ dựa trên language1
     const flagSrc = language === languages.VI ? vietnam : united;
 
@@ -174,6 +176,43 @@ class HomeHeader extends Component {
                   </div>
                 )
               ) : null}
+
+              {/* NÚT LỊCH HẸN — chỉ hiện khi đã đăng nhập */}
+              {this.props.isLoggedIn && (
+                <div
+                  className="menu-appointment"
+                  onClick={() => this.props.history.push("home/appointments")}
+                >
+                  <i className="fas fa-clock"></i>
+                  <span>Lịch hẹn</span>
+                </div>
+              )}
+
+              {/* NÚT LOGIN — chỉ hiện khi chưa đăng nhập */}
+              {!this.props.isLoggedIn && (
+                <div
+                  className="menu-login"
+                  onClick={() => this.props.history.push("/login")}
+                >
+                  <i className="fas fa-sign-in-alt"></i>
+                  <span>Đăng nhập</span>
+                </div>
+              )}
+
+              {/* USER AVATAR — chỉ hiện khi đã đăng nhập */}
+              {this.props.isLoggedIn && userInfo && (
+                <div
+                  className="header-user"
+                  onClick={() => this.props.history.push("/patient-profile")}
+                >
+                  <img
+                    src={`data:image/jpeg;base64,${userInfo.image}`}
+                    alt="avatar"
+                    className="header-avatar"
+                  />
+                  <span>{userInfo.lastName}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -296,10 +335,12 @@ class HomeHeader extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    isLoggedIn: state.user.isLoggedIn,
+    isLoggedIn: state.patient.isLoggedIn,
     language: state.app.language,
-    userInfo: state.user.userInfo, // <-- thêm dòng này nếu cần hiển thị thông tin user
     ListDoctor: state.admin.doctor,
+    userInfo: state.patient.patientInfo
+    // isLoggedIn: state.user.isLoggedIn,
+    // userInfo: state.user.userInfo, // <-- thêm dòng này nếu cần hiển thị thông tin user
 
   };
 };

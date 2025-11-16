@@ -70,7 +70,7 @@ class Speciality extends Component {
 
 const mapStateToProps = state => {
     return {
-        isLoggedIn: state.user.isLoggedIn,
+        isLoggedIn: state.patient.isLoggedIn,
         language: state.app.language,
         specialtys: state.admin.specialty
     };

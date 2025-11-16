@@ -43,27 +43,104 @@
         }
 
         .right-content {
-            width: 25%;
+            display: flex;
             align-items: center;
             justify-content: flex-end;
-            display: flex;
+            gap: 18px;
+            /* giảm khoảng cách */
             padding-right: 10px;
 
+            /* SUPPORT */
             .support {
-                padding-right: 50px;
                 display: flex;
                 align-items: center;
+                gap: 6px;
+                cursor: pointer;
+                font-size: 15px;
+                white-space: nowrap;
+
+                i {
+                    font-size: 16px;
+                }
             }
 
+            /* LANGUAGE SWITCH */
             .language-vi,
             .language-en {
+                display: flex;
+                align-items: center;
+                gap: 6px;
                 cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                white-space: nowrap;
+
+                img {
+                    width: 26px;
+                    height: 18px;
+                    object-fit: cover;
+                    border-radius: 3px;
+                }
 
                 &:hover {
                     opacity: 0.8;
                 }
             }
+
+            /* BUTTON LỊCH HẸN + LOGIN */
+            .menu-appointment,
+            .menu-login {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 10px;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: 0.2s;
+                font-weight: 600;
+                white-space: nowrap;
+
+                i {
+                    font-size: 17px;
+                    color: #00a6bb;
+                }
+
+                span {
+                    color: #00a6bb;
+                    font-size: 14px;
+                }
+
+                &:hover {
+                    background: rgba(0, 166, 187, 0.12);
+                }
+            }
+
+            /* USER INFO */
+            .header-user {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+                white-space: nowrap;
+
+                .header-avatar {
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                }
+
+                span {
+                    font-size: 14px;
+                    font-weight: 600;
+                    max-width: 120px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            }
         }
+
+
     }
 }
 

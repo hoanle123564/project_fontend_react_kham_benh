@@ -107,7 +107,7 @@ const mapStateToProps = (state) => {
   return {
     language: state.app.language,
     systemMenuPath: state.app.systemMenuPath,
-    isLoggedIn: state.user.isLoggedIn,
+    isLoggedIn: state.patient.isLoggedIn,
     DetailDoctor: state.admin.DetailDoctor,
   };
 };

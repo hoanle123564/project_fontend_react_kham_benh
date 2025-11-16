@@ -167,7 +167,7 @@ class DoctorSchdule extends Component {
 const mapStateToProps = (state) => {
     return {
         language: state.app.language,
-        isLoggedIn: state.user.isLoggedIn,
+        isLoggedIn: state.patient.isLoggedIn,
         DetailDoctor: state.admin.DetailDoctor,
     };
 };

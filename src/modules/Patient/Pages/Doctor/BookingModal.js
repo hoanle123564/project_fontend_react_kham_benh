@@ -351,7 +351,7 @@ class BookingModal extends Component {
 
 const mapStateToProps = (state) => ({
     language: state.app.language,
-    isLoggedIn: state.user.isLoggedIn,
+    isLoggedIn: state.patient.isLoggedIn,
     gender: state.admin.genderArr,
 });
 
