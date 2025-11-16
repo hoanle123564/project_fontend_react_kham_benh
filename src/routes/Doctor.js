@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Redirect, Route, Switch } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import Header from "../containers/Header/Header";
-import ManaggeSchedule from "../containers/System/Doctor/ManaggeSchedule";
+import ManagePatient from "../containers/System/Doctor/ManagePatient";
+import ManageSchedulePrivate from "../containers/System/Doctor/ManageSchedulePrivate";
 class Doctor extends Component {
   render() {
     const { isLoggedIn } = this.props;
@@ -13,8 +14,12 @@ class Doctor extends Component {
           <div className="system-list">
             <Switch>
               <Route
-                path="/doctor/manage-schedule"
-                component={ManaggeSchedule}
+                path="/doctor/manage-patient"
+                component={ManagePatient}
+              />
+              <Route exact
+                path="/doctor/manage-schedule-private"
+                component={ManageSchedulePrivate}
               />
             </Switch>
           </div>
