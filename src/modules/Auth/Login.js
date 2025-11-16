@@ -63,19 +63,35 @@ class Login extends Component {
                     passError: data.message,
                 });
             } else {
-                this.props.userLoginSuccess({
-                    user: data.user,
-                    token: data.token
-                });
-                localStorage.setItem("token", data.token); // lưu token vào localStorage
-
                 if (data.user.roleId === "R1") {
+                    // Admin
+                    this.props.adminLoginSuccess({
+                        user: data.user,
+                        token: data.token
+                    });
                     this.props.navigate("/system");
-                } else if (data.user.roleId === "R2") {
-                    this.props.navigate("/doctor/manage-schedule-private");
-                } else {
-                    this.props.navigate("/");
                 }
+
+                else if (data.user.roleId === "R2") {
+                    // Doctor
+                    this.props.doctorLoginSuccess({
+                        user: data.user,
+                        token: data.token
+                    });
+                    this.props.navigate("/doctor/manage-schedule-private");
+                }
+
+                else if (data.user.roleId === "R3") {
+                    // Patient
+                    this.props.patientLoginSuccess({
+                        user: data.user,
+                        token: data.token
+                    });
+                    this.props.navigate("/home");
+                }
+
+                // localStorage.setItem("token", data.token); // lưu token vào localStorage
+
             }
         } catch (error) {
             this.setState({
@@ -178,9 +194,14 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     navigate: (path) => dispatch(push(path)),
-    userLoginFail: () => dispatch(actions.userLoginFail()),
-    userLoginSuccess: (userInfor) =>
-        dispatch(actions.userLoginSuccess(userInfor)),
+    adminLoginSuccess: (data) =>
+        dispatch({ type: "ADMIN_LOGIN_SUCCESS", data }),
+
+    doctorLoginSuccess: (data) =>
+        dispatch({ type: "DOCTOR_LOGIN_SUCCESS", data }),
+
+    patientLoginSuccess: (data) =>
+        dispatch({ type: "PATIENT_LOGIN_SUCCESS", data }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);
