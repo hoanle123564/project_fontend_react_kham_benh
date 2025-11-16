@@ -1,186 +1,151 @@
 import React, { Component } from 'react';
-// import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
-
-import MarkdownIt from "markdown-it";
-import MdEditor from "react-markdown-editor-lite";
+import { withRouter } from "react-router";
+import { Button } from 'reactstrap';
+import { DeleteSpecialty } from '../../../services/userService';
+import { toast } from 'react-toastify';
 import 'react-markdown-editor-lite/lib/index.css';
 import { FormattedMessage } from 'react-intl';
-import './ManageSpecialty.scss';
 import * as action from "../../../store/actions";
-
-// Initialize a markdown parser
-const mdParser = new MarkdownIt(/* Markdown-it options */);
+import './ManageSpecialty.scss';
 class ManageSpecialty extends Component {
-
     constructor(props) {
         super(props)
         this.state = {
-            previewImg: '',
-            name: '',
-            descriptionHTML: '',
-            descriptionMarkdown: '',
-            imageSpecialty: '',
+            ListSpecialty: [],
+            isOpenPreview: false,
+            previewImg: ''
         }
     }
 
     componentDidMount() {
-
+        this.props.getAllSpecialty();
     }
-    handleSaveContent = async () => {
-        console.log('check state', this.state);
-        let res = await this.props.SaveSpecialty({
-            name: this.state.name,
-            image: this.state.imageSpecialty,
-            descriptionHTML: this.state.descriptionHTML,
-            descriptionMarkdown: this.state.descriptionMarkdown,
-        })
-        console.log('check res', res);
-        if (res && res.errCode === 0) {
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.specialtys !== this.props.specialtys) {
             this.setState({
-                previewImg: '',
-                name: '',
-                descriptionHTML: '',
-                descriptionMarkdown: '',
-                imageSpecialty: '',
+                ListSpecialty: this.props.specialtys
             })
         }
-
     }
-    // Edit Markdown
-    handleEditorChange = ({ html, text }) => {
-        this.setState({
-            descriptionMarkdown: text,
-            descriptionHTML: html,
+
+    handleEdit = (item) => {
+        this.props.history.push(`/system/edit-specialty/${item.id}`, { clinicData: item });
+    }
+
+    handleDelete = async (id) => {
+        await DeleteSpecialty(id).then((res) => {
+            if (res && res.errCode === 0) {
+                toast.success('Specialty deleted successfully!');
+                this.props.getAllSpecialty();
+            } else {
+                toast.error('Failed to delete specialty.');
+            }
         });
-    };
-
-    handleOnChangeImage = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const objectUrl = URL.createObjectURL(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                this.setState({
-                    previewImg: objectUrl,
-                    imageSpecialty: reader.result.split(",")[1],
-                });
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    handleOnchange = (event, id) => {
-        const copyState = { ...this.state }
-        copyState[id] = event.target.value;
-        this.setState({
-            ...copyState
-        })
     }
 
+    openPreview = (img) => {
+        this.setState({ isOpenPreview: true, previewImg: img });
+    }
 
+    closePreview = () => {
+        this.setState({ isOpenPreview: false, previewImg: '' });
+    }
+
+    handleAdd = () => {
+        this.props.history.push(`/system/add-specialty`);
+    }
 
     render() {
+        const { ListSpecialty, isOpenPreview, previewImg } = this.state;
+
         return (
-            <div className="manage-specialty-container">
-                <h3 className="title-page">Quản lý chuyên khoa</h3>
+            <div className="manage-specialty-container container mt-4">
+                <h3 className="title-page mb-3">
+                    <FormattedMessage id="specialty-manage.title" defaultMessage="Manage Specialties" />
+                </h3>
 
-                {/* --- Form input hàng đầu --- */}
-                <div className="row align-items-center mb-4">
-                    {/* === Tên chuyên khoa === */}
-                    <div className="col-md-6">
-                        <label className="form-label">Tên chuyên khoa</label>
-                        <input
-                            className="form-control"
-                            type="text"
-                            placeholder="Nhập tên chuyên khoa..."
-                            onChange={(event) => this.handleOnchange(event, 'name')}
-                            value={this.state.name || ''}
-                        />
-                    </div>
+                <Button color="primary" onClick={this.handleAdd} className="mb-3">
+                    <i className="fa-solid fa-user-plus me-2"></i>
+                    <FormattedMessage id="user-manage.add" />
+                </Button>
 
-                    {/* === Ảnh chuyên khoa === */}
-                    <div className="col-md-6">
-                        <label className="form-label">Ảnh chuyên khoa</label>
-                        <div className="d-flex align-items-center">
-                            {/* Nút chọn ảnh */}
-                            <div className="upload-btn-wrapper me-3">
-                                <input
-                                    type="file"
-                                    id="specialtyImg"
-                                    accept="image/*"
-                                    hidden
-                                    onChange={(e) => this.handleOnChangeImage(e)}
-                                />
-                                <label htmlFor="specialtyImg" className="btn btn-outline-primary">
-                                    <FormattedMessage id="user-manage.choose-image" defaultMessage="Chọn ảnh" />
-                                    <i className="fa-solid fa-upload ms-2"></i>
-                                </label>
-                            </div>
-
-                            {/* Nút xóa ảnh */}
-                            {this.state.previewImg && (
-                                <button
-                                    type="button"
-                                    className="btn btn-outline-danger me-3"
-                                    onClick={() => this.setState({ previewImg: '', imageSpecialty: '' })}
-                                >
-                                    <FormattedMessage id="user-manage.remove-image" defaultMessage="Xóa ảnh" />
-                                    <i className="fa-solid fa-xmark ms-2"></i>
-                                </button>
+                <div className="table-responsive shadow-sm">
+                    <table className="table table-hover align-middle table-bordered">
+                        <thead className="table-primary">
+                            <tr>
+                                <th><FormattedMessage id="specialty-manage.id" defaultMessage="ID" /></th>
+                                <th><FormattedMessage id="specialty-manage.name" defaultMessage="Name" /></th>
+                                <th><FormattedMessage id="specialty-manage.image" defaultMessage="Image" /></th>
+                                <th><FormattedMessage id="specialty-manage.action" defaultMessage="Action" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {ListSpecialty && ListSpecialty.length > 0 ? (
+                                ListSpecialty.map((c) => (
+                                    <tr key={c.id}>
+                                        <td>{c.id}</td>
+                                        <td>{c.name}</td>
+                                        <td>
+                                            {c.image ? (
+                                                <img
+                                                    src={c.image.startsWith('data:') ? c.image : `data:image/jpeg;base64,${c.image}`}
+                                                    alt={c.name}
+                                                    style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6, cursor: 'pointer' }}
+                                                    onClick={() => this.openPreview(c.image.startsWith('data:') ? c.image : `data:image/jpeg;base64,${c.image}`)}
+                                                />
+                                            ) : (
+                                                <span className="text-muted">
+                                                    <FormattedMessage id="specialty-manage.no-image" defaultMessage="No image" />
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td>
+                                            <div className="d-flex justify-content-center gap-2">
+                                                <button className="btn btn-md btn-warning" onClick={() => this.handleEdit(c)}>
+                                                    <i className="fas fa-edit"></i>
+                                                </button>
+                                                <button className="btn btn-md btn-danger" onClick={() => this.handleDelete(c.id)}>
+                                                    <i className="fa-solid fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="4" className="text-center py-4 text-muted">
+                                        <FormattedMessage id="specialty-manage.no-specialties" defaultMessage="No specialties found." />
+                                    </td>
+                                </tr>
                             )}
-
-                            {/* Khu vực xem trước ảnh */}
-                            <div
-                                className="preview-image-container"
-                                onClick={() =>
-                                    this.state.previewImg && this.setState({ isOpen: true })
-                                }
-                            >
-                                {this.state.previewImg ? (
-                                    <img
-                                        src={this.state.previewImg}
-                                        alt="preview"
-                                        className="preview-image"
-                                    />
-                                ) : (
-                                    <span className="text-muted">Chưa có ảnh</span>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
 
-                {/* --- Markdown Editor --- */}
-                <MdEditor
-                    style={{ height: '500px' }}
-                    renderHTML={(text) => mdParser.render(text)}
-                    value={this.state.descriptionMarkdown}
-                    onChange={this.handleEditorChange}
-                />
-                <button
-                    className="save-specialty"
-                    onClick={this.handleSaveContent}
-                >
-                    <FormattedMessage id="admin.manage-doctor.save-info" />
-                </button>
+                {isOpenPreview && (
+                    <div className="preview-backdrop" onClick={this.closePreview} style={{
+                        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000
+                    }}>
+                        <img src={previewImg} alt="preview" style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: 8 }} />
+                    </div>
+                )}
             </div>
         );
     }
-
-
 }
 
 const mapStateToProps = state => {
     return {
+        specialtys: state.admin.specialty
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        SaveSpecialty: (data) => dispatch(action.SaveSpecialty(data)),
-
+        getAllSpecialty: () => dispatch(action.GetAllSpecialty()),
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ManageSpecialty);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ManageSpecialty));
