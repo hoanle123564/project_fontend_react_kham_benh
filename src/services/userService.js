@@ -64,6 +64,9 @@ const getScheduleDoctor = (doctorId, date) => {
   return axios.get(`/api/get-schedule-doctor?doctorId=${doctorId}&date=${date}`);
 };
 
+const getAllPatientForDoctor = (doctorId, date) => {
+  return axios.get(`/api/get-list-patient-for-doctor?id=${doctorId}&date=${date}`);
+};
 // Lưu thông tin đặt lịch khám bệnh
 const postPatientBooking = (data) => {
   return axios.post("/api/patient-book-appointment", data);
@@ -86,10 +89,27 @@ const getDetailSpecialtyById = (id, location) => {
   return axios.get(`/api/get-detail-specialty-by-id?id=${id}&location=${location}`);
 }
 
+const EditSpecialtyId = (data) => {
+  return axios.put("/api/edit-specialty", data);
+};
+const DeleteSpecialty = (SpecialtyId) => {
+  return axios.delete("/api/delete-specialty", {
+    data: {
+      id: SpecialtyId,
+    },
+  });
+};
+
+
 // clinic
 const postSaveClinic = (data) => {
   return axios.post("/api/create-clinic", data);
 };
+
+const EditClinicId = (data) => {
+  return axios.put("/api/edit-clinic", data);
+};
+
 const getAllClinic = () => {
   return axios.get("/api/get-clinic");
 };
@@ -98,6 +118,18 @@ const getDetailClinicById = (id, location) => {
   return axios.get(`/api/get-detail-clinic-by-id?id=${id}&location=${location}`);
 }
 
+const DeleteClinic = (ClinicId) => {
+  return axios.delete("/api/delete-clinic", {
+    data: {
+      id: ClinicId,
+    },
+  });
+};
+
+// send remedy
+const postSendRemedy = (data) => {
+  return axios.post("/api/send-remedy", data);
+};
 export {
   handleLoginAPI,
   getAllUser,
@@ -118,5 +150,11 @@ export {
   getDetailSpecialtyById,
   postSaveClinic,
   getAllClinic,
-  getDetailClinicById
+  getDetailClinicById,
+  getAllPatientForDoctor,
+  postSendRemedy,
+  DeleteClinic,
+  EditClinicId,
+  EditSpecialtyId,
+  DeleteSpecialty
 };
