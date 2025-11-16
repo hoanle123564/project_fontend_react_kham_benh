@@ -1,108 +1,106 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import * as actions from "../../store/actions";
-import Navigator from "../Navigator";
 import { adminMenu, doctorMenu } from "./menuApp";
+import Navigator from "../Navigator";
 import "./Header.scss";
+
 import vietnam from "../../assets/flag/vietnam.png";
 import united from "../../assets/flag/united_kingdom.png";
+import LifeCare from "../../assets/logo3.png";
+
+import { jwtDecode } from "jwt-decode";
 import { languages } from "../../utils/constant";
 import { FormattedMessage } from "react-intl";
-import LifeCare from '../../assets/logo3.png';
-import { jwtDecode } from "jwt-decode";
 
 class Header extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      menuApp: [],
-      userDisplayName: "",
-    };
-  }
+  state = {
+    menuApp: [],
+    displayName: "",
+  };
 
   componentDidMount() {
-    this.loadMenuByToken();
+    this.loadMenuByRole();
   }
 
   componentDidUpdate(prevProps) {
-    // Cập nhật menu nếu token thay đổi
-    if (prevProps.token !== this.props.token) {
-      this.loadMenuByToken();
+    if (prevProps.adminToken !== this.props.adminToken ||
+      prevProps.doctorToken !== this.props.doctorToken) {
+      this.loadMenuByRole();
     }
   }
 
-  loadMenuByToken = () => {
-    const token = this.props.token || localStorage.getItem("token");
+  loadMenuByRole = () => {
+    let token = this.props.adminToken || this.props.doctorToken;
 
     if (!token) return;
 
-    let decoded = {};
+    let decoded;
     try {
       decoded = jwtDecode(token);
-    } catch (err) {
-      console.log("Decode JWT failed: ", err);
+    } catch (e) {
+      console.log("Decode token error", e);
       return;
     }
 
     let { roleId, firstName, lastName } = decoded;
-    let menu = [];
 
+    let menu = [];
     if (roleId === "R1") menu = adminMenu;
     if (roleId === "R2") menu = doctorMenu;
 
     this.setState({
       menuApp: menu,
-      userDisplayName: `${firstName || ""} ${lastName || ""}`,
+      displayName: `${firstName} ${lastName}`,
     });
   };
 
-  change = (language) => {
-    this.props.changeLangguageAppRedux(language);
-  };
+  handleLogout = () => {
+    if (this.props.adminToken) {
+      this.props.adminLogout();
+      localStorage.removeItem("adminToken");
+    }
 
-  processLogout = () => {
-    this.props.processLogout();
-    localStorage.removeItem("token");
+    if (this.props.doctorToken) {
+      this.props.doctorLogout();
+      localStorage.removeItem("doctorToken");
+    }
   };
 
   render() {
-    const { language, userInfo } = this.props;
+    const { language, adminInfo, doctorInfo } = this.props;
 
-    // chọn cờ dựa trên language
     const flagSrc = language === languages.VI ? vietnam : united;
+    const userDisplay =
+      adminInfo
+        ? `${adminInfo.firstName} ${adminInfo.lastName}`
+        : doctorInfo
+          ? `${doctorInfo.firstName} ${doctorInfo.lastName}`
+          : "";
 
     return (
       <div className="sidebar-container">
 
-        {/* Logo */}
         <div className="sidebar-logo">
           <img src={LifeCare} alt="logo" />
         </div>
 
-        {/* Menu chính */}
         <div className="sidebar-menu">
           <Navigator menus={this.state.menuApp} />
         </div>
 
-        {/* Footer */}
         <div className="sidebar-footer">
           <div className="footer-top">
             <span>
-              <FormattedMessage id="home-header.welcome" />,{" "}
-              {userInfo && userInfo.firstName && userInfo.lastName
-                ? userInfo.firstName + " " + userInfo.lastName
-                : ""}
+              <FormattedMessage id="home-header.welcome" />, {userDisplay}
             </span>
           </div>
 
           <div className="footer-bottom">
-
-
             <div
               className="flag"
               onClick={() =>
-                this.change(
+                this.props.changeLanguage(
                   language === languages.VI ? languages.EN : languages.VI
                 )
               }
@@ -111,11 +109,12 @@ class Header extends Component {
               <span>{language === languages.VI ? "VN" : "EN"}</span>
             </div>
 
-            <div className="logout-btn" onClick={this.processLogout}>
+            <div className="logout-btn" onClick={this.handleLogout}>
               <i className="fas fa-sign-out-alt"></i>
             </div>
           </div>
         </div>
+
       </div>
     );
   }
@@ -123,14 +122,21 @@ class Header extends Component {
 
 const mapStateToProps = (state) => ({
   language: state.app.language,
-  token: state.user.token, // lấy token từ redux
-  userInfo: state.user.userInfo.user,
+
+  // token riêng cho mỗi role
+  adminToken: state.adminAuth.token,
+  doctorToken: state.doctor.token,
+
+  adminInfo: state.adminAuth.adminInfo,
+  doctorInfo: state.doctor.doctorInfo,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  processLogout: () => dispatch(actions.processLogout()),
-  changeLangguageAppRedux: (languages) =>
-    dispatch(actions.changeLangguageApp(languages)),
+  changeLanguage: (lang) =>
+    dispatch({ type: "CHANGE_LANGUAGE", language: lang }),
+
+  adminLogout: () => dispatch({ type: "ADMIN_LOGOUT" }),
+  doctorLogout: () => dispatch({ type: "DOCTOR_LOGOUT" }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

@@ -166,7 +166,7 @@ class UserRedux extends Component {
       positionId: this.state.position,
       roleId: this.state.role,
       phoneNumber: this.state.phoneNumber,
-      avatar: this.state.avatar,
+      image: this.state.avatar,
     });
 
     this.toggleModal();

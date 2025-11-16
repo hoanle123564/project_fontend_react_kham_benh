@@ -32,9 +32,12 @@ class UserEdit extends Component {
 
   componentDidMount() {
     const user = this.props.CurrentUser;
+    console.log('CurrentUser', user);
+
     if (user && !_.isEmpty(user)) {
       this.setState({
         ...user,
+        positionId: user.positionId || "",
         previewImg: user.image ? `data:image/jpeg;base64,${user.image}` : "",
         avatar: user.image || "",
       });
@@ -100,7 +103,6 @@ class UserEdit extends Component {
       phoneNumber,
       address,
       gender,
-      positionId,
       roleId,
     } = this.state;
     const { language } = this.props;
@@ -161,7 +163,18 @@ class UserEdit extends Component {
     const valid = this.checkValidateInput();
     if (!valid) return;
 
-    this.props.getEditUser(this.state);
+    this.props.getEditUser({
+      id: this.state.id,
+      email: this.state.email,
+      firstName: this.state.firstName,
+      lastName: this.state.lastName,
+      address: this.state.address,
+      gender: this.state.gender,
+      positionId: this.state.positionId,
+      roleId: this.state.roleId,
+      phoneNumber: this.state.phoneNumber,
+      image: this.state.avatar,
+    });
     this.toggle();
   };
 
