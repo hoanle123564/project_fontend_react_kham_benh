@@ -37,10 +37,10 @@
       "manage-user": "Quản lý người dùng",
 
       "manage-user-table": "Manage user table",
-      "manage-doctor": "Quản lý bác sĩ",
+      "manage-doctor": "Quản lý thông tin bác sĩ",
       "manage-admin": "Quản lý admin",
       "crud": "CRUD server",
-      "crud-redux": "CRUD Redux",
+      "crud-redux": "Quản lý danh sách người dùng ",
       "clinic": "Phòng khám",
       "manage-clinic": "Quản lý phòng khám",
       "specialty": "Chuyên khoa",
@@ -49,6 +49,8 @@
       "manage-handbook": "Quản lý cẩm nang"
     },
     "doctor": {
+      "manage-medical": "Quản lý khám bệnh",
+      "manage-patient": "Quản lý bệnh nhân",
       "manage-schedule": "Quản lý kế hoạch khám bệnh",
       "logout": "Đăng xuất"
     }
@@ -107,7 +109,7 @@
   },
   "admin": {
     "manage-doctor": {
-      "title": "Quản lý bác sĩ",
+      "title": "Quản lý thông tin bác sĩ",
       "select-doctor": "Chọn bác sĩ",
       "info-doctor": "Thông tin bác sĩ",
       "intro": "Giới thiệu",
