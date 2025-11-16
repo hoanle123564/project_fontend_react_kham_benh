@@ -260,7 +260,6 @@ class ManageDoctor extends Component {
 
   render() {
     const { language } = this.props;
-    console.log('this.state.ListSpecialty ', this.state.ListSpecialty);
 
     return (
       <div className="manage-doctor-container">
