@@ -1,0 +1,43 @@
+.table-manage-patient {
+    .table {
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: #fff;
+
+        thead th {
+            background-color: #007bff !important;
+            color: white;
+            font-weight: 600;
+            border: 1px solid #dee2e6; // thêm border cho header
+        }
+
+        tbody td {
+            border: 1px solid #dee2e6; // thêm border cho mỗi ô
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+            transition: background-color 0.2s ease;
+        }
+
+        td,
+        th {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .btn {
+            border-radius: 8px;
+            transition: all 0.2s ease;
+
+            &:hover {
+                transform: scale(1.05);
+            }
+        }
+    }
+
+    .form-control {
+        border-radius: 8px;
+        max-width: 280px;
+    }
+}
