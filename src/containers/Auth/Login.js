@@ -54,13 +54,28 @@ class Login extends Component {
         }
 
         try {
+
             const data = await handleLoginAPI(email, pass);
+            console.log('handleLoginAPI data', data);
+
             if (data && data.errCode !== 0) {
                 this.setState({
                     passError: data.message,
                 });
             } else {
-                this.props.userLoginSuccess(data.user);
+                this.props.userLoginSuccess({
+                    user: data.user,
+                    token: data.token
+                });
+                localStorage.setItem("token", data.token); // lưu token vào localStorage
+
+                if (data.user.roleId === "R1") {
+                    this.props.navigate("/system");
+                } else if (data.user.roleId === "R2") {
+                    this.props.navigate("/doctor/manage-schedule-private");
+                } else {
+                    this.props.navigate("/");
+                }
             }
         } catch (error) {
             this.setState({
@@ -159,7 +174,6 @@ class Login extends Component {
 
 const mapStateToProps = (state) => ({
     lang: state.app.language,
-    userInfo: state.user.userInfo,
 });
 
 const mapDispatchToProps = (dispatch) => ({
