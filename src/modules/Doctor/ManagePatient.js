@@ -234,9 +234,9 @@ class ManageSchedulePrivate extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    isLoggedIn: state.user.isLoggedIn,
+    isLoggedIn: state.doctor.isLoggedIn,
     language: state.app.language,
-    userInfo: state.user.userInfo?.user,
+    userInfo: state.doctor.doctorInfo,
     AllScheduleTime: state.admin.AllTime,
 });
 

@@ -6,7 +6,6 @@ import * as action from "../../store/actions";
 import "./ManageSchedule.scss";
 import moment from "moment";
 import { toast } from "react-toastify";
-import _ from "lodash";
 
 import { postScheduleDoctor } from "../../services/userService";
 class ManageSchedulePrivate extends Component {
@@ -172,9 +171,9 @@ class ManageSchedulePrivate extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    isLoggedIn: state.user.isLoggedIn,
+    isLoggedIn: state.doctor.isLoggedIn,
     language: state.app.language,
-    userInfo: state.user.userInfo,
+    userInfo: state.doctor.doctorInfo,
     AllScheduleTime: state.admin.AllTime,
 });
 

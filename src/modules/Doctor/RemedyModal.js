@@ -163,7 +163,8 @@ class RemedyModal extends Component {
 
 const mapStateToProps = (state) => ({
     language: state.app.language,
-    isLoggedIn: state.user.isLoggedIn,
+    isLoggedIn: state.doctor.isLoggedIn,
+    doctorInfo: state.doctor.doctorInfo,
     gender: state.admin.genderArr,
 });
 
