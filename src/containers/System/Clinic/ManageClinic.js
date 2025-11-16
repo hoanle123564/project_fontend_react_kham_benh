@@ -1,201 +1,154 @@
+// ...existing code...
 import React, { Component } from 'react';
-// import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 
-import MarkdownIt from "markdown-it";
-import MdEditor from "react-markdown-editor-lite";
 import 'react-markdown-editor-lite/lib/index.css';
 import { FormattedMessage } from 'react-intl';
 import './ManageClinic.scss';
 import * as action from "../../../store/actions";
-
-// Initialize a markdown parser
-const mdParser = new MarkdownIt(/* Markdown-it options */);
+import { withRouter } from "react-router";
+import { Button } from 'reactstrap';
+import { DeleteClinic } from '../../../services/userService';
+import { toast } from 'react-toastify';
 class ManageClinic extends Component {
-
     constructor(props) {
         super(props)
         this.state = {
-            previewImg: '',
-            name: '',
-            address: '',
-            descriptionHTML: '',
-            descriptionMarkdown: '',
-            imageClinic: '',
+            ListClinic: [],
+            isOpenPreview: false,
+            previewImg: ''
         }
     }
 
     componentDidMount() {
-
+        this.props.getAllClinic();
     }
-    handleSaveContent = async () => {
-        console.log('check state', this.state);
-        let res = await this.props.SaveClinic({
-            name: this.state.name,
-            image: this.state.imageClinic,
-            address: this.state.address,
-            descriptionHTML: this.state.descriptionHTML,
-            descriptionMarkdown: this.state.descriptionMarkdown,
-        })
-        console.log('check res', res);
-        if (res && res.errCode === 0) {
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.clinics !== this.props.clinics) {
             this.setState({
-                previewImg: '',
-                name: '',
-                address: '',
-                descriptionHTML: '',
-                descriptionMarkdown: '',
-                imageClinic: '',
+                ListClinic: this.props.clinics
             })
         }
-
     }
-    // Edit Markdown
-    handleEditorChange = ({ html, text }) => {
-        this.setState({
-            descriptionMarkdown: text,
-            descriptionHTML: html,
+
+    handleEdit = (clinic) => {
+        // TODO: mở modal chỉnh sửa (nếu có). Hiện tại chỉ log.
+        this.props.history.push(`/system/edit-clinic/${clinic.id}`, { clinicData: clinic });
+    }
+
+    handleDelete = async (id) => {
+        await DeleteClinic(id).then((res) => {
+            if (res && res.errCode === 0) {
+                toast.success('Clinic deleted successfully!');
+                this.props.getAllClinic();
+            } else {
+                toast.error('Failed to delete clinic.');
+            }
         });
-    };
-
-    handleOnChangeImage = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const objectUrl = URL.createObjectURL(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                this.setState({
-                    previewImg: objectUrl,
-                    imageClinic: reader.result.split(",")[1],
-                });
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    handleOnchange = (event, id) => {
-        const copyState = { ...this.state }
-        copyState[id] = event.target.value;
-        this.setState({
-            ...copyState
-        })
     }
 
+    openPreview = (img) => {
+        this.setState({ isOpenPreview: true, previewImg: img });
+    }
 
+    closePreview = () => {
+        this.setState({ isOpenPreview: false, previewImg: '' });
+    }
 
+    handleAddClinic = () => {
+        this.props.history.push(`/system/add-clinic`);
+    }
     render() {
+        const { ListClinic, isOpenPreview, previewImg } = this.state;
+
         return (
-            <div className="manage-specialty-container">
-                <h3 className="title-page">Quản lý phòng khám</h3>
+            <div className="manage-clinic-container container mt-4">
+                <h3 className="title-page mb-3">
+                    <FormattedMessage id="clinic-manage.title" defaultMessage="Manage Clinics" />
+                </h3>
 
-                {/* --- Form input hàng đầu --- */}
-                <div className="row align-items-center mb-4">
-                    {/* === Tên phòng khám === */}
-                    <div className="col-md-6">
-                        <label className="form-label">Tên phòng khám</label>
-                        <input
-                            className="form-control"
-                            type="text"
-                            placeholder="Nhập tên phòng khám..."
-                            onChange={(event) => this.handleOnchange(event, 'name')}
-                            value={this.state.name || ''}
-                        />
-                    </div>
+                <Button color="primary" onClick={this.handleAddClinic} className="mb-3">
+                    <i className="fa-solid fa-user-plus me-2"></i>
+                    <FormattedMessage id="user-manage.add" />
+                </Button>
 
-                    {/* === Ảnh phòng khám === */}
-                    <div className="col-md-6">
-                        <label className="form-label">Ảnh phòng khám</label>
-                        <div className="d-flex align-items-center">
-                            {/* Nút chọn ảnh */}
-                            <div className="upload-btn-wrapper me-3">
-                                <input
-                                    type="file"
-                                    id="specialtyImg"
-                                    accept="image/*"
-                                    hidden
-                                    onChange={(e) => this.handleOnChangeImage(e)}
-                                />
-                                <label htmlFor="specialtyImg" className="btn btn-outline-primary">
-                                    <FormattedMessage id="user-manage.choose-image" defaultMessage="Chọn ảnh" />
-                                    <i className="fa-solid fa-upload ms-2"></i>
-                                </label>
-                            </div>
-
-                            {/* Nút xóa ảnh */}
-                            {this.state.previewImg && (
-                                <button
-                                    type="button"
-                                    className="btn btn-outline-danger me-3"
-                                    onClick={() => this.setState({ previewImg: '', imageClinic: '' })}
-                                >
-                                    <FormattedMessage id="user-manage.remove-image" defaultMessage="Xóa ảnh" />
-                                    <i className="fa-solid fa-xmark ms-2"></i>
-                                </button>
+                <div className="table-responsive shadow-sm ">
+                    <table className="table table-hover align-middle table-bordered">
+                        <thead className="table-primary">
+                            <tr>
+                                <th><FormattedMessage id="clinic-manage.id" defaultMessage="ID" /></th>
+                                <th><FormattedMessage id="clinic-manage.name" defaultMessage="Name" /></th>
+                                <th><FormattedMessage id="clinic-manage.image" defaultMessage="Image" /></th>
+                                <th><FormattedMessage id="clinic-manage.action" defaultMessage="Action" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {ListClinic && ListClinic.length > 0 ? (
+                                ListClinic.map((c) => (
+                                    <tr key={c.id}>
+                                        <td>{c.id}</td>
+                                        <td className='name'>{c.name}</td>
+                                        <td>
+                                            {c.image ? (
+                                                <img
+                                                    src={c.image.startsWith('data:') ? c.image : `data:image/jpeg;base64,${c.image}`}
+                                                    alt={c.name}
+                                                    style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6, cursor: 'pointer' }}
+                                                    onClick={() => this.openPreview(c.image.startsWith('data:') ? c.image : `data:image/jpeg;base64,${c.image}`)}
+                                                />
+                                            ) : (
+                                                <span className="text-muted">
+                                                    <FormattedMessage id="clinic-manage.no-image" defaultMessage="No image" />
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td>
+                                            <div className="d-flex justify-content-center gap-2">
+                                                <button className="btn btn-md btn-warning" onClick={() => this.handleEdit(c)}>
+                                                    <i className="fas fa-edit"></i>
+                                                </button>
+                                                <button className="btn btn-md btn-danger" onClick={() => this.handleDelete(c.id)}>
+                                                    <i className="fa-solid fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="4" className="text-center py-4 text-muted">
+                                        <FormattedMessage id="clinic-manage.no-clinics" defaultMessage="No clinics found." />
+                                    </td>
+                                </tr>
                             )}
-
-                            {/* Khu vực xem trước ảnh */}
-                            <div
-                                className="preview-image-container"
-                                onClick={() =>
-                                    this.state.previewImg && this.setState({ isOpen: true })
-                                }
-                            >
-                                {this.state.previewImg ? (
-                                    <img
-                                        src={this.state.previewImg}
-                                        alt="preview"
-                                        className="preview-image"
-                                    />
-                                ) : (
-                                    <span className="text-muted">Chưa có ảnh</span>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
 
-                <div className="row align-items-center mb-4">
-                    {/* Địa chỉ phòng khám */}
-                    <div className="col-md-6">
-                        <label className="form-label">Địa chỉ phòng khám</label>
-                        <input
-                            className="form-control"
-                            type="text"
-                            placeholder="Nhập địa chỉ phòng khám..."
-                            onChange={(event) => this.handleOnchange(event, 'address')}
-                            value={this.state.address || ''}
-                        />
+                {/* Simple image preview modal (native) */}
+                {isOpenPreview && (
+                    <div className="preview-backdrop" onClick={this.closePreview} style={{
+                        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000
+                    }}>
+                        <img src={previewImg} alt="preview" style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: 8 }} />
                     </div>
-                </div>
-                {/* --- Markdown Editor --- */}
-                <MdEditor
-                    style={{ height: '500px' }}
-                    renderHTML={(text) => mdParser.render(text)}
-                    value={this.state.descriptionMarkdown}
-                    onChange={this.handleEditorChange}
-                />
-                <button
-                    className="save-specialty"
-                    onClick={this.handleSaveContent}
-                >
-                    <FormattedMessage id="admin.manage-doctor.save-info" />
-                </button>
+                )}
             </div>
         );
     }
-
-
 }
 
 const mapStateToProps = state => {
     return {
+        clinics: state.admin.AllClinic
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        SaveClinic: (data) => dispatch(action.SaveClinic(data))
+        getAllClinic: () => dispatch(action.GetAllClinic()),
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ManageClinic);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ManageClinic));
