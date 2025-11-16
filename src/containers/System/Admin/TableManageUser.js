@@ -6,6 +6,7 @@ import * as action from "../../../store/actions";
 import "./TableManageUser.scss";
 import Lightbox from "react-image-lightbox";
 import "react-image-lightbox/style.css";
+import { FormattedMessage } from "react-intl";
 
 class TableManageUser extends Component {
   constructor(props) {
@@ -118,10 +119,18 @@ class TableManageUser extends Component {
     );
     const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
+    const columns = [
+      { field: "id", id: "user-manage.id", default: "#" },
+      { field: "firstName", id: "user-manage.first-name", default: "First Name" },
+      { field: "lastName", id: "user-manage.last-name", default: "Last Name" },
+      { field: "email", id: "user-manage.email", default: "Email" },
+      { field: "address", id: "user-manage.address", default: "Address" },
+    ];
+
     return (
       <div className="table-manage-user container mt-4">
         <h2 className="text-center fw-bold mb-4 text-primary">
-          Manage Users with Hoan
+          <FormattedMessage id="menu.admin.manage-user" defaultMessage="User Management" />
         </h2>
 
         {/* Modal thêm mới */}
@@ -138,14 +147,23 @@ class TableManageUser extends Component {
 
         {/* Thanh tìm kiếm */}
         <div className="d-flex justify-content-between align-items-center mt-4 mb-3">
-          <input
-            type="text"
-            className="form-control w-25"
-            placeholder="🔍 Search by name..."
-            onChange={this.handleSearchChange}
-          />
+          <FormattedMessage id="user-manage.search" defaultMessage="🔍 Search by name...">
+            {(msg) => (
+              <input
+                type="text"
+                className="form-control w-25"
+                placeholder={msg}
+                onChange={this.handleSearchChange}
+              />
+            )}
+          </FormattedMessage>
+
           <span className="text-muted">
-            Total: {filteredUsers.length} users
+            <FormattedMessage
+              id="user-manage.total"
+              defaultMessage="Total: {count} users"
+              values={{ count: filteredUsers.length }}
+            />
           </span>
         </div>
 
@@ -154,19 +172,13 @@ class TableManageUser extends Component {
           <table className="table table-hover align-middle table-bordered mb-0">
             <thead className="table-primary">
               <tr>
-                {[
-                  { field: "id", label: "#" },
-                  { field: "firstName", label: "First Name" },
-                  { field: "lastName", label: "Last Name" },
-                  { field: "email", label: "Email" },
-                  { field: "address", label: "Address" },
-                ].map((col) => (
+                {columns.map((col) => (
                   <th
                     key={col.field}
                     onClick={() => this.handleSort(col.field)}
                     style={{ cursor: "pointer", whiteSpace: "nowrap" }}
                   >
-                    {col.label}{" "}
+                    <FormattedMessage id={col.id} defaultMessage={col.default} />{" "}
                     {sortField === col.field && (
                       <i
                         className={`fa-solid fa-sort-${sortOrder === "asc" ? "up" : "down"
@@ -175,8 +187,12 @@ class TableManageUser extends Component {
                     )}
                   </th>
                 ))}
-                <th>Avatar</th>
-                <th>Action</th>
+                <th>
+                  <FormattedMessage id="user-manage.avatar" defaultMessage="Avatar" />
+                </th>
+                <th>
+                  <FormattedMessage id="user-manage.action" defaultMessage="Action" />
+                </th>
               </tr>
             </thead>
 
@@ -214,7 +230,9 @@ class TableManageUser extends Component {
                           }
                         />
                       ) : (
-                        <span className="text-muted">No image</span>
+                        <span className="text-muted">
+                          <FormattedMessage id="user-manage.no-image" defaultMessage="No image" />
+                        </span>
                       )}
                     </td>
                     <td>
@@ -238,7 +256,7 @@ class TableManageUser extends Component {
               ) : (
                 <tr>
                   <td colSpan="7" className="text-muted py-4">
-                    No users found.
+                    <FormattedMessage id="user-manage.no-users" defaultMessage="No users found." />
                   </td>
                 </tr>
               )}
