@@ -49,18 +49,14 @@ class App extends Component {
           <div className="main-container">
             <span className="content-container">
               <Switch>
-                <Route path={path.HOME} exact component={Admin} />
+                <Route path={path.HOME} exact component={HomePage} />
                 <Route
                   path={path.LOGIN}
                   component={userIsNotAuthenticated(Login)}
                 />
 
-                <Route
-                  path={path.SYSTEM}
-                  component={userIsAuthenticated(System)}
-                />
+                <Route path={path.SYSTEM} component={userIsAuthenticated(System)} />
                 <Route path={path.DOCTOR} component={userIsAuthenticated(Doctor)} />
-
                 <Route path={path.VERIFY_BOOKING} component={VerifyEmailBooking} />
                 <Route path={path.CHORAY} component={ChoRay} />
                 <Route path={path.HOMEPAGE} component={HomePage} />
