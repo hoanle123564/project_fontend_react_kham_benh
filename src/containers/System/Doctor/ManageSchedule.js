@@ -4,7 +4,7 @@ import { FormattedMessage } from "react-intl";
 import Select from "react-select";
 import DatePicker from "../../../components/Input/DatePicker";
 import * as action from "../../../store/actions";
-import "./ManaggeSchedule.scss";
+import "./ManageSchedule.scss";
 import moment from "moment";
 import { toast } from "react-toastify";
 import _ from "lodash";
