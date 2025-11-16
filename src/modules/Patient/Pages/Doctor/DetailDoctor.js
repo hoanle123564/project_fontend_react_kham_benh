@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import HomeHeader from "../../HomePage/HomeHeader";
-import HomeFooter from "../../HomePage/HomeFooter";
+import HomeHeader from "../../Layout/HomeHeader";
+import HomeFooter from "../../Layout/HomeFooter";
 import "./DetailDoctor.scss";
-import * as action from "../../../store/actions";
-import { languages } from "../../../utils";
+import * as action from "../../../../store/actions";
+import { languages } from "../../../../utils";
 import DoctorSchdule from "./DoctorSchdule";
 import DoctorExtendInfo from "./DoctorExtendInfo";
 class DetailDoctor extends Component {

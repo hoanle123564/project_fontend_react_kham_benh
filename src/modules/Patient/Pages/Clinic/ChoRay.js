@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import "./ClinicChoRay.scss";
-import HomeHeader from "../../HomePage/HomeHeader";
-import HomeFooter from "../../HomePage/HomeFooter";
-import ChoRay from '../../../assets/ChoRay/benh-vien-cho-ray.png'
-import quy_trinh from '../../../assets/ChoRay/164236-khu-nhan-benh--huong-dan.jpg'
-import so_do from '../../../assets/ChoRay/160246-so-do-bv-rut-gon.jpg'
+import HomeHeader from "../../Layout/HomeHeader";
+import HomeFooter from "../../Layout/HomeFooter";
+import ChoRay from '../../../../assets/ChoRay/benh-vien-cho-ray.png'
+import quy_trinh from '../../../../assets/ChoRay/164236-khu-nhan-benh--huong-dan.jpg'
+import so_do from '../../../../assets/ChoRay/160246-so-do-bv-rut-gon.jpg'
 class ClinicChoRay extends Component {
     render() {
         const infoSections = [

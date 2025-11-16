@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import UserRedux from "./UserRedux.js";
 import UserEdit from "./userRedux_Edit.js";
-import * as action from "../../../store/actions";
+import * as action from "../../../store/actions/index.js";
 import "./TableManageUser.scss";
 import Lightbox from "react-image-lightbox";
 import "react-image-lightbox/style.css";

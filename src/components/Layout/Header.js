@@ -2,14 +2,13 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import * as actions from "../../store/actions";
-import Navigator from "../../components/Navigator";
+import Navigator from "../Navigator";
 import { adminMenu, doctorMenu } from "./menuApp";
 import "./Header.scss";
 import vietnam from "../../assets/flag/vietnam.png";
 import united from "../../assets/flag/united_kingdom.png";
 import { languages } from "../../utils/constant";
 import { FormattedMessage } from "react-intl";
-import _ from "lodash";
 import LifeCare from '../../assets/logo3.png';
 import { jwtDecode } from "jwt-decode";
 

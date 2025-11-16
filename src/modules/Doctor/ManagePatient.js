@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { FormattedMessage } from "react-intl";
-import DatePicker from "../../../components/Input/DatePicker";
-import * as action from "../../../store/actions";
+import DatePicker from "../../components/Input/DatePicker";
+import * as action from "../../store/actions";
 import "./ManagePatient.scss";
 import moment from "moment";
-import { getAllPatientForDoctor, postSendRemedy } from "../../../services/userService";
+import { getAllPatientForDoctor, postSendRemedy } from "../../services/userService";
 import RemedyModal from "./RemedyModal";
 import { toast } from "react-toastify";
 

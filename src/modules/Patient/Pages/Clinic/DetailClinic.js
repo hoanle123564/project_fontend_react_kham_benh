@@ -1,19 +1,19 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import HomeHeader from "../../HomePage/HomeHeader";
-import HomeFooter from "../../HomePage/HomeFooter";
-import "./DetailSpeciality.scss";
-import * as action from "../../../store/actions";
+import HomeHeader from "../../Layout/HomeHeader";
+import HomeFooter from "../../Layout/HomeFooter";
+import "./DetailClinic.scss";
+import * as action from "../../../../store/actions";
 import DoctorSchdule from "../Doctor/DoctorSchdule";
 import DoctorExtendInfo from "../Doctor/DoctorExtendInfo";
-import { getDetailSpecialtyById } from "../../../services/userService";
+import { getDetailClinicById } from "../../../../services/userService";
 import { withRouter } from "react-router-dom/cjs/react-router-dom.min";
-class DetailSpeciality extends Component {
+class DetailClinic extends Component {
     constructor(props) {
         super(props);
         this.state = {
             ListDoctor: [],
-            dateDetailSpecialty: {},
+            DetailClinic: {},
             ListDoctorId: [],
             ListProvince: [],
         };
@@ -27,11 +27,11 @@ class DetailSpeciality extends Component {
             this.props.match.params.id
         ) {
             let id = this.props.match.params.id;
-            let res = await getDetailSpecialtyById(id, "ALL");
+            let res = await getDetailClinicById(id, "ALL");
 
             if (res && res.errCode === 0) {
                 let data = res.data;
-                let arrDoctorId = data[0].doctorSpecialty;
+                let arrDoctorId = data[0].doctorClinic;
                 let arrDoctor = [];
                 let arrProvince = [];
 
@@ -56,7 +56,7 @@ class DetailSpeciality extends Component {
                     ));
                 }
                 this.setState({
-                    dateDetailSpecialty: res.data,
+                    DetailClinic: res.data,
                     ListDoctorId: arrDoctor,
                     ListProvince: ListProvinceFormatted,
                 });
@@ -94,11 +94,11 @@ class DetailSpeciality extends Component {
         ) {
             let id = this.props.match.params.id;
             let location = event.target.value;
-            let res = await getDetailSpecialtyById(id, location);
+            let res = await getDetailClinicById(id, location);
 
             if (res && res.errCode === 0) {
                 let data = res.data;
-                let arrDoctorId = data[0].doctorSpecialty;
+                let arrDoctorId = data[0].doctorClinic;
                 let arrDoctor = [];
 
                 if (arrDoctorId && arrDoctorId.length > 0) {
@@ -108,7 +108,7 @@ class DetailSpeciality extends Component {
                 }
 
                 this.setState({
-                    dateDetailSpecialty: res.data,
+                    DetailClinic: res.data,
                     ListDoctorId: arrDoctor,
                 });
             }
@@ -122,19 +122,19 @@ class DetailSpeciality extends Component {
 
 
     render() {
-        const { ListDoctor, dateDetailSpecialty } = this.state;
+        const { ListDoctor, DetailClinic } = this.state;
         console.log("list doctor", ListDoctor);
-        console.log("detail specialty", this.state.dateDetailSpecialty);
+        console.log("detail specialty", this.state.DetailClinic);
         return (
             <>
                 <HomeHeader showBanner={false} />
                 <div className="speciality-detail-container">
                     <div className="description-specialty">
                         {
-                            dateDetailSpecialty && dateDetailSpecialty[0] && dateDetailSpecialty[0].descriptionHTML &&
+                            DetailClinic && DetailClinic[0] && DetailClinic[0].descriptionHTML &&
                             <div
                                 dangerouslySetInnerHTML={{
-                                    __html: dateDetailSpecialty[0].descriptionHTML,
+                                    __html: DetailClinic[0].descriptionHTML,
                                 }}
                             ></div>
                         }
@@ -208,4 +208,4 @@ const mapDispatchToProps = (dispatch) => ({
 
 });
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(DetailSpeciality));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(DetailClinic));

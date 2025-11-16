@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import "./BookingModal.scss";
-import * as action from "../../../store/actions";
-import { languages } from "../../../utils";
+import * as action from "../../../../store/actions";
+import { languages } from "../../../../utils";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { injectIntl } from "react-intl";
 import moment from "moment";
-import { getDetailDoctor } from "../../../services/userService";
+import { getDetailDoctor } from "../../../../services/userService";
 
 class BookingModal extends Component {
     constructor(props) {

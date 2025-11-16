@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import "./RemedyModal.scss";
-import * as action from "../../../store/actions";
+import * as action from "../../store/actions";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { injectIntl } from "react-intl";
 import { FormattedMessage } from "react-intl";

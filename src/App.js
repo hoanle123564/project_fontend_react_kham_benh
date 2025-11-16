@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter as Router } from "connected-react-router";
-import { history } from "../redux";
+import { history } from "./redux";
 // toastify
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -10,19 +10,19 @@ import "react-toastify/dist/ReactToastify.css";
 import {
   userIsAuthenticated,
   userIsNotAuthenticated,
-} from "../hoc/authentication";
+} from "./hoc/authentication";
 
-import { path } from "../utils";
-import HomePage from "./HomePage/HomePage";
-import Admin from "../routes/Admin";
-import Login from "../containers/Auth/Login";
-import System from "../routes/System";
-import Doctor from "../routes/Doctor";
-import DetailDoctor from "./Patient/Doctor/DetailDoctor";
-import DetailSpeciality from "./Patient/Speciality/DetailSpeciality";
-import DetailClinic from "./Patient/Clinic/DetailClinic";
-import ChoRay from "./Patient/Clinic/ChoRay";
-import VerifyEmailBooking from "./Patient/VerifyEmailBooking";
+import { path } from "./utils";
+import HomePage from "./modules/Patient/Pages/HomePage/HomePage";
+// import Admin from "./routes/Admin";
+import Login from "./modules/Auth/Login";
+import System from "./routes/System";
+import Doctor from "./routes/Doctor";
+import DetailDoctor from "./modules/Patient/Pages/Doctor/DetailDoctor";
+import DetailSpeciality from "./modules/Patient/Pages/Speciality/DetailSpeciality";
+import DetailClinic from "./modules/Patient/Pages/Clinic/DetailClinic";
+import ChoRay from "./modules/Patient/Pages/Clinic/ChoRay";
+import VerifyEmailBooking from "./modules/Patient/Pages/VerifyEmailBooking";
 class App extends Component {
   handlePersistorState = () => {
     const { persistor } = this.props;

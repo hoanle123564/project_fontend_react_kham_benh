@@ -1,5 +1,5 @@
 import './HomeFooter.scss';
-import logoBooking from '../../assets/logo3.png';
+import logoBooking from '../../../assets/logo3.png';
 
 const HomeFooter = () => {
     return (

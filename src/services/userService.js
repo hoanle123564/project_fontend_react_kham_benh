@@ -32,8 +32,8 @@ const EditUser = (data) => {
 };
 
 // Lấy tất cả thuộc tính
-const getAllCode = (type) => {
-  return axios.get(`/api/allcodes?type=${type}`);
+const getLookUp = (type) => {
+  return axios.get(`/api/lookup?type=${type}`);
 };
 
 // Lấy bác sĩ
@@ -136,7 +136,7 @@ export {
   CreateUser,
   DeleteUser,
   EditUser,
-  getAllCode,
+  getLookUp,
   getDoctor,
   getAllDoctor,
   postDetailDoctor,

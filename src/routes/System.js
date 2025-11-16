@@ -1,16 +1,16 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Redirect, Route, Switch } from "react-router-dom";
-import TableManageUser from "../containers/System/Admin/TableManageUser";
-import Header from "../containers/Header/Header";
-import ManageDoctor from "../containers/System/Admin/ManageDoctor";
-import ManageSpectialty from "../containers/System/Specialty/ManageSpecialty";
-import ManageClinic from "../containers/System/Clinic/ManageClinic";
-import ManageSchedule from "../containers/System/Doctor/ManageSchedule";
-import AddClinic from "../containers/System/Clinic/AddClinic";
-import EditClinic from "../containers/System/Clinic/EditClinic";
-import AddSpecialty from "../containers/System/Specialty/AddSpecialty";
-import EditSpecialty from "../containers/System/Specialty/EditSpecialty";
+import TableManageUser from "../modules/Admin/ManageUser/TableManageUser";
+import Header from "../components/Layout/Header";
+import ManageDoctor from "../modules/Admin/ManageUser/ManageDoctor";
+import ManageSpectialty from "../modules/Admin/Specialty/ManageSpecialty";
+import ManageClinic from "../modules/Admin/Clinic/ManageClinic";
+import ManageSchedule from "../modules/Doctor/ManageSchedule";
+import AddClinic from "../modules/Admin/Clinic/AddClinic";
+import EditClinic from "../modules/Admin/Clinic/EditClinic";
+import AddSpecialty from "../modules/Admin/Specialty/AddSpecialty";
+import EditSpecialty from "../modules/Admin/Specialty/EditSpecialty";
 class System extends Component {
   render() {
     const { systemMenuPath, isLoggedIn } = this.props;

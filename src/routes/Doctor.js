@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Route, Switch } from "react-router-dom";
-import Header from "../containers/Header/Header";
-import ManagePatient from "../containers/System/Doctor/ManagePatient";
-import ManageSchedulePrivate from "../containers/System/Doctor/ManageSchedulePrivate";
+import Header from "../components/Layout/Header";
+import ManagePatient from "../modules/Doctor/ManagePatient";
+import ManageSchedulePrivate from "../modules/Doctor/ManageSchedulePrivate";
 class Doctor extends Component {
   render() {
     const { isLoggedIn } = this.props;

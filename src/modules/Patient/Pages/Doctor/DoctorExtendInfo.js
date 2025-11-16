@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import "./DoctorExtendInfo.scss";
 import { FormattedMessage } from "react-intl";
-import { getDetailDoctor } from "../../../services/userService";
+import { getDetailDoctor } from "../../../../services/userService";
 
 class DoctorExtendInfo extends Component {
     constructor(props) {

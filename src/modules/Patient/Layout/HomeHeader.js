@@ -3,20 +3,20 @@ import React, { Component } from "react";
 import { connect } from "react-redux"; // kết nối như router
 import "./HomeHeader.scss";
 // thêm các ảnh thừ assets
-import logoSrc from "../../assets/logo2.png";
-import iconChuyenKhoa from "../../assets/icon-khoa/iconkham-chuyen-khoa.png";
-import iconNhaKhoa from "../../assets/icon-khoa/iconkham-nha-khoa.png";
-import iconCTongquat from "../../assets/icon-khoa/iconkham-tong-quan.png";
-import iconTuXa from "../../assets/icon-khoa/iconkham-tu-xa.png";
-import iconSuckhoeTinhthan from "../../assets/icon-khoa/iconsuc-khoe-tinh-than.png";
-import iconXetNghiep from "../../assets/icon-khoa/iconxet-nghiem-y-hoc.png";
-import vietnam from "../../assets/flag/vietnam.png";
-import united from "../../assets/flag/united_kingdom.png";
+import logoSrc from "../../../assets/logo2.png";
+import iconChuyenKhoa from "../../../assets/icon-khoa/iconkham-chuyen-khoa.png";
+import iconNhaKhoa from "../../../assets/icon-khoa/iconkham-nha-khoa.png";
+import iconCTongquat from "../../../assets/icon-khoa/iconkham-tong-quan.png";
+import iconTuXa from "../../../assets/icon-khoa/iconkham-tu-xa.png";
+import iconSuckhoeTinhthan from "../../../assets/icon-khoa/iconsuc-khoe-tinh-than.png";
+import iconXetNghiep from "../../../assets/icon-khoa/iconxet-nghiem-y-hoc.png";
+import vietnam from "../../../assets/flag/vietnam.png";
+import united from "../../../assets/flag/united_kingdom.png";
 import { FormattedMessage } from "react-intl"; // chuyển đổi ngôn ngữ
-import { languages } from "../../utils/constant";
-import { changeLangguageApp } from "../../store/actions/appActions";
+import { languages } from "../../../utils/constant";
+import { changeLangguageApp } from "../../../store/actions/appActions";
 import { withRouter } from "react-router";
-import * as action from "../../store/actions";
+import * as action from "../../../store/actions";
 
 class HomeHeader extends Component {
   constructor(props) {

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import HomeHeader from "../HomePage/HomeHeader";
-import HomeFooter from "../HomePage/HomeFooter";
-import { VerifyPatientBooking } from "../../services/userService";
+import HomeHeader from "../Layout/HomeHeader";
+import HomeFooter from "../Layout/HomeFooter";
+import { VerifyPatientBooking } from "../../../services/userService";
 import "./VerifyEmailBooking.scss";
 class VerifyEmailBooking extends Component {
     constructor(props) {

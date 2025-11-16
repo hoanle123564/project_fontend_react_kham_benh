@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { FormattedMessage } from "react-intl";
-import DatePicker from "../../../components/Input/DatePicker";
-import * as action from "../../../store/actions";
+import DatePicker from "../../components/Input/DatePicker";
+import * as action from "../../store/actions";
 import "./ManageSchedule.scss";
 import moment from "moment";
 import { toast } from "react-toastify";
 import _ from "lodash";
 
-import { postScheduleDoctor } from "../../../services/userService";
+import { postScheduleDoctor } from "../../services/userService";
 class ManageSchedulePrivate extends Component {
     constructor(props) {
         super(props);

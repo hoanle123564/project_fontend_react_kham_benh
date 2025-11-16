@@ -1,6 +1,6 @@
 import actionTypes from "./actionTypes";
 import {
-  getAllCode,
+  getLookUp,
   CreateUser,
   getAllUser,
   DeleteUser,
@@ -20,7 +20,7 @@ import { toast } from "react-toastify";
 export const fetchGender = () => {
   return async (dispatch, getState) => {
     try {
-      let res = await getAllCode("GENDER");
+      let res = await getLookUp("GENDER");
       if (res && res.errCode === 0) {
         let gender = dispatch({
           type: actionTypes.FETCH_GENDER,
@@ -45,7 +45,7 @@ export const fetchGenderFail = () => ({
 export const fetchPosition = () => {
   return async (dispatch, getState) => {
     try {
-      let res = await getAllCode("POSITION");
+      let res = await getLookUp("POSITION");
       if (res && res.errCode === 0) {
         let position = dispatch({
           type: actionTypes.FETCH_POSITION,
@@ -70,7 +70,7 @@ export const fetchPositionFail = () => ({
 export const fetchRole = () => {
   return async (dispatch, getState) => {
     try {
-      let res = await getAllCode("ROLE");
+      let res = await getLookUp("ROLE");
       if (res && res.errCode === 0) {
         let role = dispatch({
           type: actionTypes.FETCH_ROLE,
@@ -241,8 +241,8 @@ export const fetchAllDoctorFail = () => ({
 export const GetDAllRequire = () => {
   return async (dispatch, getState) => {
     try {
-      let ResPri = await getAllCode('PRICE');
-      let ResPay = await getAllCode('PAYMENT');
+      let ResPri = await getLookUp('PRICE');
+      let ResPay = await getLookUp('PAYMENT');
       if (ResPri && ResPri.errCode === 0 && ResPay && ResPay.errCode === 0) {
         let data = {
           ResPri: ResPri.data,
@@ -317,7 +317,7 @@ export const GetDetailDoctorFail = () => ({
 export const fetchAllHour = () => {
   return async (dispatch, getState) => {
     try {
-      let res = await getAllCode('TIME'); // Gọi dịch vụ lấy tất cả bác sĩ
+      let res = await getLookUp('TIME'); // Gọi dịch vụ lấy tất cả bác sĩ
       if (res && res.errCode === 0) {
         let listHour = dispatch({
           type: actionTypes.FETCH_ALL_HOUR,
