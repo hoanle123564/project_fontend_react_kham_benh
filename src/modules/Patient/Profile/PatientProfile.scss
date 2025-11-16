@@ -1,0 +1,139 @@
+/* ===================
+   COVER BACKGROUND
+===================*/
+.profile-cover {
+    width: 100%;
+    height: 260px;
+    background: linear-gradient(135deg, #4e7fff, #92a8ff);
+    background-size: cover;
+    background-position: center;
+}
+
+
+/* ===================
+   WRAPPER
+===================*/
+.profile-wrapper {
+    max-width: 900px;
+    margin: -120px auto 50px auto;
+    padding: 0 20px;
+}
+
+
+/* ===================
+   PROFILE CARD
+===================*/
+.profile-card {
+    background: white;
+    padding: 40px 45px;
+    border-radius: 18px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ===================
+   HEADER
+===================*/
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 25px;
+}
+
+.avatar-box {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid white;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.avatar-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info-basic .name {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.profile-info-basic .role {
+    margin-top: 6px;
+    font-size: 1.1rem;
+    color: #666;
+}
+
+
+/* ===================
+   DETAIL SECTION
+===================*/
+.profile-details {
+    margin-top: 30px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 1.1rem;
+
+    .left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #444;
+
+        i {
+            width: 20px;
+        }
+    }
+
+    .right {
+        font-weight: 600;
+        color: #222;
+    }
+}
+
+
+/* ===================
+   LOGOUT BUTTON
+===================*/
+.logout-btn-patient {
+    width: 30%;
+    margin-top: 35px;
+    padding: 15px;
+    border: none;
+    background: #ff4d4d;
+    color: white;
+    font-size: 1.2rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.25s;
+
+    &:hover {
+        background: #d93636;
+        box-shadow: 0 4px 18px rgba(255, 0, 0, 0.3);
+    }
+
+    i {
+        margin-right: 10px;
+    }
+}

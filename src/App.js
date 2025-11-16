@@ -23,6 +23,8 @@ import DetailSpeciality from "./modules/Patient/Pages/Speciality/DetailSpecialit
 import DetailClinic from "./modules/Patient/Pages/Clinic/DetailClinic";
 import ChoRay from "./modules/Patient/Pages/Clinic/ChoRay";
 import VerifyEmailBooking from "./modules/Patient/Pages/VerifyEmailBooking";
+import PatientProfile from "./modules/Patient/Profile/PatientProfile";
+
 class App extends Component {
   handlePersistorState = () => {
     const { persistor } = this.props;
@@ -52,12 +54,13 @@ class App extends Component {
                 <Route path={path.HOME} exact component={HomePage} />
                 <Route
                   path={path.LOGIN}
-                  component={userIsNotAuthenticated(Login)}
+                  component={Login}
                 />
 
                 <Route path={path.SYSTEM} component={userIsAuthenticated(System)} />
                 <Route path={path.DOCTOR} component={userIsAuthenticated(Doctor)} />
                 <Route path={path.VERIFY_BOOKING} component={VerifyEmailBooking} />
+                <Route path={path.PROFILE_PATIENT} component={PatientProfile} />
                 <Route path={path.CHORAY} component={ChoRay} />
                 <Route path={path.HOMEPAGE} component={HomePage} />
                 <Route path={path.DETAIL_DOCTOR} component={DetailDoctor} />
@@ -88,7 +91,6 @@ class App extends Component {
 const mapStateToProps = (state) => {
   return {
     started: state.app.started,
-    isLoggedIn: state.user.isLoggedIn,
   };
 };
 
