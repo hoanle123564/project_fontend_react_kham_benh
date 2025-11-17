@@ -14,6 +14,8 @@ import {
   getAllSpecialty,
   getAllClinic,
   postSaveClinic,
+  getListAppoinmentForPatient,
+  postCancelBookingAppointment
 } from "../../services/userService";
 import { toast } from "react-toastify";
 // GENDDER
@@ -99,6 +101,7 @@ export const saveUser = (dataUser) => {
       if (res?.errCode === 0) {
         toast.success("Create user success");
         dispatch(fetchAllUser());
+        return res;
       }
     } catch (error) {
       dispatch(fetchRoleFail());
@@ -465,4 +468,53 @@ export const GetAllClinic = () => {
 }
 export const GetAllClinicFail = () => ({
   type: actionTypes.FETCH_ALL_CLINIC_FAIL,
+});
+
+// GET LIST APPOINTMENT FOR PATIENT
+export const GetListAppoinmentForPatient = (patientId) => {
+  return async (dispatch, getState) => {
+    try {
+      let res = await getListAppoinmentForPatient(patientId); // Gọi dịch vụ lấy tất cả phòng khám
+      if (res && res.errCode === 0) {
+        let listAppoinment = dispatch({
+          type: actionTypes.FETCH_LIST_APPOINTMENT_FOR_PATIENT,
+          data: res.data,
+        });
+        return listAppoinment;
+      }
+      else {
+        dispatch(GetListAppoinmentForPatientFail());
+      }
+    } catch (error) {
+      dispatch(GetListAppoinmentForPatientFail());
+      console.log("GetListAppoinmentForPatientFail error: ", error);
+    }
+  };
+}
+export const GetListAppoinmentForPatientFail = () => ({
+  type: actionTypes.FETCH_LIST_APPOINTMENT_FOR_PATIENT_FAIL,
+});
+
+// CANCEL BOOKING APPOINTMENT
+export const CancelBookingAppointment = (data) => {
+  return async (dispatch, getState) => {
+    try {
+      let res = await postCancelBookingAppointment(data); // Gọi dịch vụ hủy lịch khám bệnh
+      if (res && res.errCode === 0) {
+        toast.success("Cancel booking appointment success");
+        return res;
+      }
+      else {
+        toast.error("Cancel booking appointment failed");
+        dispatch(CancelBookingAppointmentFail());
+      }
+    } catch (error) {
+      toast.error("Cancel booking appointment failed");
+      dispatch(CancelBookingAppointmentFail());
+      console.log("CancelBookingAppointment error: ", error);
+    }
+  };
+}
+export const CancelBookingAppointmentFail = () => ({
+  type: actionTypes.CANCEL_BOOKING_APPOINTMENT_FAIL,
 });
