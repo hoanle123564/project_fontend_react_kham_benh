@@ -7,7 +7,7 @@ const initialState = {
 
 export default function doctorReducer(state = initialState, action) {
     switch (action.type) {
-        case action.TypesDOCTOR_LOGIN_SUCCESS:
+        case actionTypes.DOCTOR_LOGIN_SUCCESS:
             return {
                 ...state,
                 isLoggedIn: true,

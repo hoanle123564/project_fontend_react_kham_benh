@@ -4,7 +4,7 @@ import appReducer from "./appReducer";
 import adminReducer from "./adminReducer";
 import patientReducer from "./patientReducer";
 import doctorReducer from "./doctorReducer";
-import adminAuthReducer from "./adminAuthReducer";  // <--- thêm mới
+import adminAuthReducer from "./adminAuthReducer";
 
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 import storage from "redux-persist/lib/storage";
