@@ -1,0 +1,116 @@
+.register-background {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #22c1c3 0%, #fdbb2d 100%);
+    font-family: 'Poppins', sans-serif;
+
+    .register-container {
+        width: 650px; // tăng để phù hợp 2 cột
+        background-color: #fff;
+        border-radius: 16px;
+        padding: 40px 35px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+
+        .text-register {
+            font-size: 26px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .register-input {
+            label {
+                font-weight: 500;
+                margin-bottom: 6px;
+                display: block;
+                color: #444;
+            }
+
+            input,
+            select {
+                width: 100%;
+                padding: 10px 14px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                font-size: 14px;
+
+                &:focus {
+                    border-color: #22c1c3;
+                    box-shadow: 0 0 5px rgba(34, 193, 195, 0.4);
+                }
+            }
+
+            .preview-img {
+                width: 70px;
+                height: 70px;
+                border-radius: 8px;
+                object-fit: cover;
+                border: 1px solid #ccc;
+            }
+
+            .input-error {
+                border-color: red !important;
+                box-shadow: 0 0 4px rgba(255, 0, 0, 0.4);
+            }
+
+            .error-text {
+                color: red;
+                font-size: 12px;
+                margin-top: 4px;
+            }
+
+            /* Nút upload giống modal */
+            .upload-btn-wrapper {
+                display: inline-block;
+
+                .btn-upload {
+                    padding: 5px 15px;
+                    border-radius: 8px;
+                    border: 1px solid #0d6efd;
+                    color: #0d6efd;
+                    cursor: pointer;
+                    font-weight: 500;
+                    transition: 0.2s;
+
+                    &:hover {
+                        background-color: #0d6efd;
+                        color: white;
+                    }
+
+                    i {
+                        margin-left: 6px;
+                    }
+                }
+            }
+
+            /* Preview ảnh */
+            .preview-img {
+                margin-left: 20px;
+                width: 130px;
+                height: 130px;
+                object-fit: cover;
+                border-radius: 8px;
+                border: 1px solid #ccc;
+            }
+
+        }
+
+        .btn-register {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(90deg, #22c1c3 0%, #fdbb2d 100%);
+
+            &:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 10px rgba(34, 193, 195, 0.4);
+            }
+        }
+    }
+}

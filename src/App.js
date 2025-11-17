@@ -8,8 +8,9 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import {
-  userIsAuthenticated,
-  userIsNotAuthenticated,
+  doctorIsAuthenticated,
+  adminIsAuthenticated,
+  patientIsAuthenticated,
 } from "./hoc/authentication";
 
 import { path } from "./utils";
@@ -21,30 +22,35 @@ import Doctor from "./routes/Doctor";
 import DetailDoctor from "./modules/Patient/Pages/Doctor/DetailDoctor";
 import DetailSpeciality from "./modules/Patient/Pages/Speciality/DetailSpeciality";
 import DetailClinic from "./modules/Patient/Pages/Clinic/DetailClinic";
-import ChoRay from "./modules/Patient/Pages/Clinic/ChoRay";
 import VerifyEmailBooking from "./modules/Patient/Pages/VerifyEmailBooking";
-import PatientProfile from "./modules/Patient/Profile/PatientProfile";
+import PatientProfile from "./modules/Patient/Pages/Profile/PatientProfile";
+import Appointments from "./modules/Patient/Pages/Appointment/Appointments";
+import Register from "./modules/Auth/Register";
 
 class App extends Component {
-  handlePersistorState = () => {
-    const { persistor } = this.props;
-    let { bootstrapped } = persistor.getState();
-    if (bootstrapped) {
-      if (this.props.onBeforeLift) {
-        Promise.resolve(this.props.onBeforeLift())
-          .then(() => this.setState({ bootstrapped: true }))
-          .catch(() => this.setState({ bootstrapped: true }));
-      } else {
-        this.setState({ bootstrapped: true });
-      }
-    }
+
+  state = {
+    appReady: false,   // <--- Thêm state này
   };
 
   componentDidMount() {
-    this.handlePersistorState();
+    const { persistor } = this.props;
+
+    persistor.subscribe(() => {
+      const { bootstrapped } = persistor.getState();
+      if (bootstrapped && !this.state.appReady) {
+        this.setState({ appReady: true });
+      }
+    });
   }
 
+
+
+
   render() {
+    if (!this.state.appReady) {
+      return <div />; // hoặc loading spinner
+    }
     return (
       <Fragment>
         <Router history={history}>
@@ -52,17 +58,16 @@ class App extends Component {
             <span className="content-container">
               <Switch>
                 <Route path={path.HOME} exact component={HomePage} />
-                <Route
-                  path={path.LOGIN}
-                  component={Login}
-                />
+                <Route path={path.LOGIN} component={Login} />
+                <Route path={path.REGISTER} component={Register} />
 
-                <Route path={path.SYSTEM} component={userIsAuthenticated(System)} />
-                <Route path={path.DOCTOR} component={userIsAuthenticated(Doctor)} />
+                <Route path={path.SYSTEM} component={adminIsAuthenticated(System)} />
+                <Route path={path.DOCTOR} component={doctorIsAuthenticated(Doctor)} />
                 <Route path={path.VERIFY_BOOKING} component={VerifyEmailBooking} />
-                <Route path={path.PROFILE_PATIENT} component={PatientProfile} />
-                <Route path={path.CHORAY} component={ChoRay} />
+                <Route path={path.PROFILE_PATIENT} component={patientIsAuthenticated(PatientProfile)} />
+                <Route path={path.APPOINTMENTS} component={patientIsAuthenticated(Appointments)} />
                 <Route path={path.HOMEPAGE} component={HomePage} />
+
                 <Route path={path.DETAIL_DOCTOR} component={DetailDoctor} />
                 <Route path={path.DETAIL_SPECIALTY} component={DetailSpeciality} />
                 <Route path={path.DETAIL_CLINIC} component={DetailClinic} />

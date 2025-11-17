@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import * as actions from "../../store/actions";
 import { KeyCodeUtils } from "../../utils";
 import { handleLoginAPI } from "../../services/userService";
 import "./Login.scss";
@@ -40,7 +39,8 @@ class Login extends Component {
     };
 
     handleOnClick = async () => {
-        const { email, pass } = this.state;
+        let email = this.state.email.trim();
+        let pass = this.state.pass.trim();
 
         let emailError = "";
         let passError = "";
@@ -113,16 +113,16 @@ class Login extends Component {
             <div className="login-background">
                 <div className="login-container">
                     <div className="login-content row">
-                        <div className="col-12 text-center text-login">Login</div>
+                        <div className="col-12 text-center text-login">Đăng nhập</div>
 
                         {/* Email */}
                         <div className="col-12 form-group login-input">
-                            <label>Username :</label>
+                            <label>Email</label>
                             <input
                                 type="text"
                                 value={this.state.email}
                                 className={`form-control ${emailError ? "input-error" : ""}`}
-                                placeholder="Enter your name"
+                                placeholder="Nhập email "
                                 onChange={this.handleOnchangeName}
                             />
                             {emailError && <div className="error-text">{emailError}</div>}
@@ -130,13 +130,13 @@ class Login extends Component {
 
                         {/* Password */}
                         <div className="col-12 form-group login-input">
-                            <label>Password :</label>
+                            <label>Password</label>
                             <div className="custom-input-pass">
                                 <input
                                     type={this.state.ShowPass ? "text" : "password"}
                                     value={this.state.pass}
                                     className={`form-control ${passError ? "input-error" : ""}`}
-                                    placeholder="Enter your password"
+                                    placeholder="Nhập mật khẩu "
                                     onChange={this.handleOnchangePass}
                                     onKeyDown={this.handlerKeyDown}
                                 />
@@ -159,27 +159,18 @@ class Login extends Component {
                                 className="btn-login"
                                 onClick={() => this.handleOnClick()}
                             >
-                                Login
+                                Đăng nhập
                             </button>
                         </div>
 
-                        <div className="col-12 text-center">
-                            <span>Or login with:</span>
-                        </div>
-
-                        <div className="col-12 social-login">
-                            <div className="social-btn facebook-btn">
-                                <img
-                                    src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png"
-                                    alt="facebook"
-                                />
-                            </div>
-                            <div className="social-btn google-btn">
-                                <img
-                                    src="https://cdn-icons-png.flaticon.com/512/300/300221.png"
-                                    alt="google"
-                                />
-                            </div>
+                        <div className="text-center mt-3">
+                            <span>Bạn chưa có tài khoản?</span>
+                            <button
+                                className="btn btn-link p-0 ms-1"
+                                onClick={() => this.props.history.push("/register")}
+                            >
+                                Đăng ký ngay
+                            </button>
                         </div>
                     </div>
                 </div>
