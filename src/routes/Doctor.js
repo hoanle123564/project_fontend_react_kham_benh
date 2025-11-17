@@ -4,6 +4,7 @@ import { Route, Switch } from "react-router-dom";
 import Header from "../components/Layout/Header";
 import ManagePatient from "../modules/Doctor/ManagePatient";
 import ManageSchedulePrivate from "../modules/Doctor/ManageSchedulePrivate";
+import { doctorIsAuthenticated } from "../hoc/authentication";
 class Doctor extends Component {
   render() {
     const { isLoggedIn } = this.props;
@@ -13,13 +14,11 @@ class Doctor extends Component {
         <div className="system-container">
           <div className="system-list">
             <Switch>
-              <Route
-                path="/doctor/manage-patient"
-                component={ManagePatient}
+              <Route path="/doctor/manage-patient"
+                component={doctorIsAuthenticated(ManagePatient)}
               />
-              <Route exact
-                path="/doctor/manage-schedule-private"
-                component={ManageSchedulePrivate}
+              <Route path="/doctor/manage-schedule-private"
+                component={doctorIsAuthenticated(ManageSchedulePrivate)}
               />
             </Switch>
           </div>
@@ -32,7 +31,7 @@ class Doctor extends Component {
 const mapStateToProps = (state) => {
   return {
     systemMenuPath: state.app.systemMenuPath,
-    isLoggedIn: state.user.isLoggedIn,
+    isLoggedIn: state.doctor.isLoggedIn,
   };
 };
 

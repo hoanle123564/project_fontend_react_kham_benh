@@ -13,6 +13,9 @@ import EditClinic from "../modules/Admin/Clinic/EditClinic";
 import AddSpecialty from "../modules/Admin/Specialty/AddSpecialty";
 import EditSpecialty from "../modules/Admin/Specialty/EditSpecialty";
 
+import {
+  adminIsAuthenticated,
+} from "../hoc/authentication";
 class System extends Component {
   render() {
     const { systemMenuPath, adminToken, isLoggedIn } = this.props;
@@ -26,15 +29,15 @@ class System extends Component {
         <div className="system-container">
           <div className="system-list">
             <Switch>
-              <Route path="/system/user-manage" component={TableManageUser} />
-              <Route path="/system/manage-doctor" component={ManageDoctor} />
-              <Route path="/system/manage-clinic" component={ManageClinic} />
-              <Route path="/system/add-clinic" component={AddClinic} />
-              <Route path="/system/edit-clinic/:id" component={EditClinic} />
-              <Route path="/system/manage-schedule" component={ManageSchedule} />
-              <Route path="/system/manage-specialty" component={ManageSpecialty} />
-              <Route path="/system/add-specialty" component={AddSpecialty} />
-              <Route path="/system/edit-specialty/:id" component={EditSpecialty} />
+              <Route path="/system/user-manage" component={adminIsAuthenticated(TableManageUser)} />
+              <Route path="/system/manage-doctor" component={adminIsAuthenticated(ManageDoctor)} />
+              <Route path="/system/manage-clinic" component={adminIsAuthenticated(ManageClinic)} />
+              <Route path="/system/add-clinic" component={adminIsAuthenticated(AddClinic)} />
+              <Route path="/system/edit-clinic/:id" component={adminIsAuthenticated(EditClinic)} />
+              <Route path="/system/manage-schedule" component={adminIsAuthenticated(ManageSchedule)} />
+              <Route path="/system/manage-specialty" component={adminIsAuthenticated(ManageSpecialty)} />
+              <Route path="/system/add-specialty" component={adminIsAuthenticated(AddSpecialty)} />
+              <Route path="/system/edit-specialty/:id" component={adminIsAuthenticated(EditSpecialty)} />
 
               <Route component={() => <Redirect to={systemMenuPath} />} />
             </Switch>

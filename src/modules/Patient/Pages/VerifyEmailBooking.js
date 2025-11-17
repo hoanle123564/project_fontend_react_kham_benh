@@ -58,7 +58,6 @@ class VerifyEmailBooking extends Component {
 const mapStateToProps = (state) => {
     return {
         language: state.app.language,
-        isLoggedIn: state.patient.isLoggedIn,
     };
 };
 const mapDispatchToProps = (dispatch) => {

@@ -1,16 +1,25 @@
 import axios from "axios";
+import reduxStore from "./redux"; // đường dẫn store của bạn
 
 const instance = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_URL || "http://localhost:8080",
 });
 
-// Gửi token lên server trong mỗi request
+// Gửi token cho tất cả request
 instance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const state = reduxStore.getState();
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Lấy token từ Redux Persist của từng role
+    const adminToken = state.adminAuth?.token;
+    const doctorToken = state.doctor?.token;
+    const patientToken = state.patient?.token;
+
+    // Ưu tiên role nào đang đăng nhập
+    const finalToken = adminToken || doctorToken || patientToken;
+
+    if (finalToken) {
+      config.headers.Authorization = `Bearer ${finalToken}`;
     }
 
     return config;
@@ -18,10 +27,13 @@ instance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Luôn trả response.data
+// Luôn trả về response.data
 instance.interceptors.response.use(
   (response) => response.data,
-  (error) => Promise.reject(error)
+  (error) => {
+    console.log("AXIOS ERROR:", error);
+    return Promise.reject(error);
+  }
 );
 
 export default instance;
