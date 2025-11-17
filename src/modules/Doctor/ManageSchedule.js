@@ -8,8 +8,12 @@ import "./ManageSchedule.scss";
 import moment from "moment";
 import { toast } from "react-toastify";
 import _ from "lodash";
+import {
+  postScheduleDoctor,
+  getScheduleDoctor,
+  DeleteScheduleDoctor
+} from "../../services/userService";
 
-import { postScheduleDoctor } from "../../services/userService";
 class ManageSchedule extends Component {
   constructor(props) {
     super(props);
@@ -19,84 +23,102 @@ class ManageSchedule extends Component {
       currentDate: new Date(),
       AllTime: [],
       selectedTime: [],
+      registeredSchedule: []
     };
   }
 
-  // Xây dựng dữ liệu cho Select bác sĩ
-  buildDataSelect = (inputData) => {
-    let result = [];
-    if (inputData && inputData.length > 0) {
-      result = inputData.map((item) => ({
-        label: `${item.firstName} ${item.lastName}`,
-        value: item.id,
-      }));
-    }
-    return result;
-  };
-
-  // Xử lý khi chọn bác sĩ
-  handleChangeSelect = (selectDoctor) => {
-    this.setState({ selectDoctor });
-
-  };
-
-  // Xử lý khi chọn ngày
-  handleOnchangeDatePicker = (date) => {
-    this.setState({ currentDate: date[0] });
-  };
-
-  handleClickTime = (time) => {
-    this.setState(prevState => {
-      const { selectedTime } = prevState;
-      const isSelected = selectedTime.includes(time.keyMap);
-      const updated = isSelected
-        ? selectedTime.filter(item => item !== time.keyMap)
-        : [...selectedTime, time.keyMap];
-      return { selectedTime: updated };
+  // Sắp xếp giờ theo value_vi (giống Private)
+  sortTimeSlots = (timeList) => {
+    return [...timeList].sort((a, b) => {
+      const t1 = a.value_vi.split(" - ")[0].trim();
+      const t2 = b.value_vi.split(" - ")[0].trim();
+      return moment(t1, "H:mm") - moment(t2, "H:mm");
     });
   };
 
+  // Tạo option cho Select bác sĩ
+  buildDataSelect = (inputData) => {
+    if (!inputData || inputData.length === 0) return [];
+    return inputData.map((item) => ({
+      label: `${item.firstName} ${item.lastName}`,
+      value: item.id,
+    }));
+  };
 
+  // Khi chọn bác sĩ => load lịch theo ngày hiện tại
+  handleChangeSelect = async (selectDoctor) => {
+    this.setState({ selectDoctor });
+    await this.loadScheduleForDate(selectDoctor.value, this.state.currentDate);
+  };
 
+  // Khi chọn ngày => load lịch
+  handleOnchangeDatePicker = async (date) => {
+    this.setState({ currentDate: date[0] });
 
-  handleSaveSchedule = async () => {
-    const { selectedTime, selectDoctor, currentDate } = this.state;
-
-    if (!currentDate) {
-      toast.error("Invalid date!");
-      return;
-    }
-    if (!selectDoctor || _.isEmpty(selectDoctor)) {
-      toast.error("Invalid select doctor!");
-      return;
-    }
-    if (!selectedTime || selectedTime.length === 0) {
-      toast.error("Invalid select time!");
-      return;
-    }
-
-    const formattedDate = moment(currentDate).format("DD/MM/YYYY");
-
-    try {
-      const res = await postScheduleDoctor({
-        doctorId: selectDoctor.value,
-        date: formattedDate,
-        timeType: selectedTime,
-      });
-
-      if (res && res.errCode === 0) {
-        toast.success("Lưu kế hoạch thành công!");
-        //  KHÔNG reset selectedTime nữa
-        // Giữ nguyên để nút vẫn active
-      } else {
-        toast.error(res.errMessage || "Lưu thất bại!");
-      }
-    } catch (e) {
-      toast.error("Lưu thất bại!");
-      console.error(e);
+    if (this.state.selectDoctor?.value) {
+      await this.loadScheduleForDate(this.state.selectDoctor.value, date[0]);
     }
   };
 
+  // Tải lịch đã đăng ký
+  loadScheduleForDate = async (doctorId, date) => {
+    const formatDate = moment(date).format("DD/MM/YYYY");
+    let res = await getScheduleDoctor(doctorId, formatDate);
+
+    if (res && res.errCode === 0) {
+      this.setState({ registeredSchedule: res.data });
+    } else {
+      this.setState({ registeredSchedule: [] });
+    }
+  };
+
+  // Chọn giờ
+  handleClickTime = (time) => {
+    this.setState(prev => {
+      const isSelected = prev.selectedTime.includes(time.keyMap);
+      return {
+        selectedTime: isSelected
+          ? prev.selectedTime.filter(t => t !== time.keyMap)
+          : [...prev.selectedTime, time.keyMap]
+      };
+    });
+  };
+
+  // Lưu lịch
+  handleSaveSchedule = async () => {
+    const { selectedTime, selectDoctor, currentDate } = this.state;
+
+    if (!currentDate) return toast.error("Invalid date!");
+    if (!selectDoctor) return toast.error("Vui lòng chọn bác sĩ!");
+    if (selectedTime.length === 0) return toast.error("Chưa chọn khung giờ!");
+
+    const formattedDate = moment(currentDate).format("DD/MM/YYYY");
+
+    const res = await postScheduleDoctor({
+      doctorId: selectDoctor.value,
+      date: formattedDate,
+      timeType: selectedTime,
+    });
+
+    if (res && res.errCode === 0) {
+      toast.success("Lưu kế hoạch thành công!");
+      this.loadScheduleForDate(selectDoctor.value, currentDate);
+    } else {
+      toast.error(res.errMessage || "Lưu thất bại!");
+    }
+  };
+
+  // Xoá lịch
+  handleDeleteSchedule = async (id) => {
+    let res = await DeleteScheduleDoctor(id);
+
+    if (res && res.errCode === 0) {
+      toast.success("Xoá thành công!");
+      this.loadScheduleForDate(this.state.selectDoctor?.value, this.state.currentDate);
+    } else {
+      toast.error(res.errMessage || "Delete failed!");
+    }
+  };
 
   componentDidMount() {
     this.props.fetchAllDoctor();
@@ -110,28 +132,34 @@ class ManageSchedule extends Component {
     }
 
     if (prevProps.AllScheduleTime !== this.props.AllScheduleTime) {
-      this.setState({ AllTime: this.props.AllScheduleTime });
+      const sorted = this.sortTimeSlots(this.props.AllScheduleTime);
+      this.setState({ AllTime: sorted });
     }
   }
 
   render() {
-    const { AllTime, selectedTime, selectDoctor, currentDate, ListDoctor } =
-      this.state;
+    const {
+      AllTime,
+      selectedTime,
+      selectDoctor,
+      currentDate,
+      ListDoctor,
+      registeredSchedule
+    } = this.state;
 
     return (
       <div className="manage-schedule-container">
+
         <div className="m-s-title">
           <FormattedMessage id="manage-schedule.title" />
         </div>
 
         <div className="container">
           <div className="row">
+
             {/* Select bác sĩ */}
             <div className="col-6 form-group">
-              <label>
-                <FormattedMessage id="manage-schedule.choose-doctor" />
-
-              </label>
+              <label><FormattedMessage id="manage-schedule.choose-doctor" /></label>
               <Select
                 value={selectDoctor}
                 onChange={this.handleChangeSelect}
@@ -142,51 +170,77 @@ class ManageSchedule extends Component {
 
             {/* Chọn ngày */}
             <div className="col-6 form-group">
-              <label>
-                <FormattedMessage id="manage-schedule.select-date" />
-              </label>
-
+              <label><FormattedMessage id="manage-schedule.select-date" /></label>
               <DatePicker
                 onChange={this.handleOnchangeDatePicker}
                 value={currentDate}
                 className="form-control"
-                minDate={moment().startOf('day').toDate()} />
+                minDate={moment().startOf("day").toDate()}
+              />
             </div>
 
-            {/* Chọn giờ khám */}
+            {/* Chọn giờ */}
             <div className="col-12 pick-hour-container">
-              <label>
-                <FormattedMessage id="manage-schedule.select-date" />
-              </label>
+              <label>Chọn giờ khám</label>
               <div className="pick-hour-content">
-                {AllTime &&
-                  AllTime.length > 0 &&
-                  AllTime.map((item, index) => {
-                    // const active = selectedTime.some((t) => t.keyMap === item.keyMap);
-                    const active = selectedTime.includes(item.keyMap);
+                {AllTime.map((item, index) => {
+                  const active = selectedTime.includes(item.keyMap);
 
-                    return (
-                      <button
-                        key={index}
-                        className={
-                          active
-                            ? "btn btn-schedule active"
-                            : "btn btn-schedule"
-                        }
-                        onClick={() => this.handleClickTime(item)}
-                      >
-                        {item.value_vi}
-                      </button>
-                    );
-                  })}
+                  return (
+                    <button
+                      key={index}
+                      className={active ? "btn btn-schedule active" : "btn btn-schedule"}
+                      onClick={() => this.handleClickTime(item)}
+                    >
+                      {item.value_vi}
+                    </button>
+                  );
+                })}
               </div>
             </div>
+
+            {/* Bảng lịch đã đăng ký */}
+            <div className="col-12 registered-table">
+              <h5>Ca đã đăng ký trong ngày</h5>
+
+              {registeredSchedule.length === 0 ? (
+                <div className="text-muted">Chưa có ca nào.</div>
+              ) : (
+                <table className="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Khung giờ</th>
+                      <th>Xoá</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {registeredSchedule.map((item, index) => (
+                      <tr key={item.id}>
+                        <td>{index + 1}</td>
+                        <td>{item.value_vi}</td>
+                        <td>
+                          <button
+                            className="btn-delete"
+                            onClick={() => this.handleDeleteSchedule(item.id)}
+                          >
+                            Xoá
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+
           </div>
 
-          {/* Nút lưu */}
           <div className="text-center mt-4">
-            <button className="btn btn-primary btn-save-schedule"
-              onClick={() => this.handleSaveSchedule()}>
+            <button
+              className="btn btn-primary btn-save-schedule"
+              onClick={this.handleSaveSchedule}
+            >
               <FormattedMessage id="manage-schedule.save-schedule" />
             </button>
           </div>

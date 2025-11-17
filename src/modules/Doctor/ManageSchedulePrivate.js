@@ -6,8 +6,12 @@ import * as action from "../../store/actions";
 import "./ManageSchedule.scss";
 import moment from "moment";
 import { toast } from "react-toastify";
+import {
+    postScheduleDoctor,
+    getScheduleDoctor,
+    DeleteScheduleDoctor
+} from "../../services/userService";
 
-import { postScheduleDoctor } from "../../services/userService";
 class ManageSchedulePrivate extends Component {
     constructor(props) {
         super(props);
@@ -15,152 +19,206 @@ class ManageSchedulePrivate extends Component {
             currentDate: new Date(),
             AllTime: [],
             selectedTime: [],
+            registeredSchedule: []
         };
     }
 
-    // Xử lý khi chọn ngày
-    handleOnchangeDatePicker = (date) => {
-        this.setState({ currentDate: date[0] });
-    };
+    // Sắp xếp giờ theo value_vi
+    sortTimeSlots = (timeList) => {
+        return [...timeList].sort((a, b) => {
+            const t1 = a.value_vi.split(" - ")[0].trim();
+            const t2 = b.value_vi.split(" - ")[0].trim();
 
-    handleClickTime = (time) => {
-        this.setState(prevState => {
-            const { selectedTime } = prevState;
-            const isSelected = selectedTime.includes(time.keyMap);
-            const updated = isSelected
-                ? selectedTime.filter(item => item !== time.keyMap)
-                : [...selectedTime, time.keyMap];
-            return { selectedTime: updated };
+            return moment(t1, "H:mm") - moment(t2, "H:mm");
         });
     };
 
+    // Khi chọn ngày => tải lịch đã đăng ký
+    handleOnchangeDatePicker = async (date) => {
+        const doctorId = this.props.userInfo?.id;
+        const selectedDate = moment(date[0]).format("DD/MM/YYYY");
 
+        this.setState({ currentDate: date[0] });
 
-    handleSaveSchedule = async () => {
-        const { selectedTime, currentDate } = this.state;
-        const doctorId = this.props.userInfo?.user?.id;
-
-        if (!doctorId) {
-            toast.error("Không tìm thấy thông tin bác sĩ!");
-            return;
-        }
-
-        if (!currentDate) {
-            toast.error("Invalid date!");
-            return;
-        }
-
-        if (!selectedTime || selectedTime.length === 0) {
-            toast.error("Invalid select time!");
-            return;
-        }
-
-        const formattedDate = moment(currentDate).format("DD/MM/YYYY");
-
-        try {
-            const res = await postScheduleDoctor({
-                doctorId: doctorId,
-                date: formattedDate,
-                timeType: selectedTime,
-            });
+        if (doctorId) {
+            let res = await getScheduleDoctor(doctorId, selectedDate);
+            console.log('res.data.data: ', res);
 
             if (res && res.errCode === 0) {
-                toast.success("Lưu kế hoạch thành công!");
-            } else {
-                toast.error(res.errMessage || "Lưu thất bại!");
+
+                this.setState({ registeredSchedule: res.data });
             }
-        } catch (e) {
-            toast.error("Lưu thất bại!");
-            console.error(e);
         }
     };
 
+    // Chọn giờ
+    handleClickTime = (time) => {
+        this.setState(prev => {
+            const isSelected = prev.selectedTime.includes(time.keyMap);
+            return {
+                selectedTime: isSelected
+                    ? prev.selectedTime.filter(t => t !== time.keyMap)
+                    : [...prev.selectedTime, time.keyMap]
+            };
+        });
+    };
 
+    // Lưu lịch
+    handleSaveSchedule = async () => {
+        const { selectedTime, currentDate } = this.state;
+        const doctorId = this.props.userInfo?.id;
 
-    componentDidMount() {
+        if (!doctorId) return toast.error("Không tìm thấy thông tin bác sĩ!");
+        if (!currentDate) return toast.error("Invalid date!");
+        if (selectedTime.length === 0) return toast.error("Chưa chọn khung giờ!");
+
+        const formattedDate = moment(currentDate).format("DD/MM/YYYY");
+
+        let res = await postScheduleDoctor({
+            doctorId,
+            date: formattedDate,
+            timeType: selectedTime
+        });
+
+        if (res && res.errCode === 0) {
+            toast.success("Lưu lịch thành công!");
+            this.handleOnchangeDatePicker([currentDate]); // reload lịch đã đăng ký
+        } else {
+            toast.error(res.errMessage || "Save failed!");
+        }
+    };
+
+    // Xoá lịch theo ID
+    handleDeleteSchedule = async (id) => {
+        let res = await DeleteScheduleDoctor(id);
+        if (res && res.errCode === 0) {
+            toast.success("Delete success!");
+            this.handleOnchangeDatePicker([this.state.currentDate]);
+        } else {
+            toast.error(res.errMessage || "Delete failed!");
+        }
+    };
+
+    loadScheduleForDate = async (date) => {
+        const doctorId = this.props.userInfo?.id;
+        const selectedDate = moment(date).format("DD/MM/YYYY");
+        if (doctorId) {
+            let res = await getScheduleDoctor(doctorId, selectedDate);
+            if (res && res.errCode === 0) {
+                this.setState({ registeredSchedule: res.data });
+            }
+        }
+    };
+
+    async componentDidMount() {
         this.props.fetchAllHour();
+        await this.loadScheduleForDate(this.state.currentDate);
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.AllScheduleTime !== this.props.AllScheduleTime) {
-            this.setState({ AllTime: this.props.AllScheduleTime });
+            const sorted = this.sortTimeSlots(this.props.AllScheduleTime);
+            this.setState({ AllTime: sorted });
         }
     }
 
     render() {
-        const { AllTime, selectedTime, currentDate } =
-            this.state;
-        console.log("this.props.userInfo", this.props.userInfo);
+        const { AllTime, selectedTime, registeredSchedule, currentDate } = this.state;
 
         return (
             <div className="manage-schedule-container">
+
                 <div className="m-s-title">
                     <FormattedMessage id="manage-schedule.title" />
                 </div>
 
                 <div className="container">
                     <div className="row">
-                        {/* Select bác sĩ */}
-                        <div className="col-6 form-group">
-                            <label className="mr-3" style={{ marginRight: "10px", fontWeight: "600" }}>
-                                Bác sĩ hiện tại:
-                            </label>
 
-                            <span style={{ fontSize: "16px" }}>
-                                {
-                                    this.props.userInfo?.user
-                                        ? `${this.props.userInfo.user.firstName} ${this.props.userInfo.user.lastName}`
-                                        : ""
-                                }
+                        <div className="col-6 form-group">
+                            <label style={{ fontWeight: 600 }}>Bác sĩ hiện tại:</label>
+                            <span style={{ marginLeft: 10 }}>
+                                {this.props.userInfo
+                                    ? `${this.props.userInfo.firstName} ${this.props.userInfo.lastName}`
+                                    : ""}
                             </span>
                         </div>
 
-                        {/* Chọn ngày */}
                         <div className="col-6 form-group">
                             <label>
                                 <FormattedMessage id="manage-schedule.select-date" />
                             </label>
-
                             <DatePicker
                                 onChange={this.handleOnchangeDatePicker}
                                 value={currentDate}
                                 className="form-control"
-                                minDate={moment().startOf('day').toDate()} />
+                                minDate={moment().startOf("day").toDate()}
+                            />
                         </div>
 
-                        {/* Chọn giờ khám */}
+                        {/* Chọn giờ */}
                         <div className="col-12 pick-hour-container">
-                            <label>
-                                <FormattedMessage id="manage-schedule.select-date" />
-                            </label>
+                            <label>Chọn giờ khám</label>
                             <div className="pick-hour-content">
-                                {AllTime &&
-                                    AllTime.length > 0 &&
-                                    AllTime.map((item, index) => {
-                                        const active = selectedTime.includes(item.keyMap);
-
-                                        return (
-                                            <button
-                                                key={index}
-                                                className={
-                                                    active
-                                                        ? "btn btn-schedule active"
-                                                        : "btn btn-schedule"
-                                                }
-                                                onClick={() => this.handleClickTime(item)}
-                                            >
-                                                {item.value_vi}
-                                            </button>
-                                        );
-                                    })}
+                                {AllTime.map((item, index) => {
+                                    const active = selectedTime.includes(item.keyMap);
+                                    return (
+                                        <button
+                                            key={index}
+                                            className={
+                                                active ? "btn btn-schedule active" : "btn btn-schedule"
+                                            }
+                                            onClick={() => this.handleClickTime(item)}
+                                        >
+                                            {item.value_vi}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
+
+                        {/* Bảng lịch đã đăng ký */}
+                        <div className="col-12 registered-table">
+                            <h5>Ca đã đăng ký trong ngày</h5>
+
+                            {registeredSchedule.length === 0 ? (
+                                <div className="text-muted">Chưa có ca nào.</div>
+                            ) : (
+                                <table className="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Khung giờ</th>
+                                            <th>Xoá</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {registeredSchedule.map((item, index) => (
+                                            <tr key={item.id}>
+                                                <td>{index + 1}</td>
+                                                <td>{item.value_vi}</td>
+                                                <td>
+                                                    <button
+                                                        className="btn-delete"
+                                                        onClick={() => this.handleDeleteSchedule(item.id)}
+                                                    >
+                                                        Xoá
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+
                     </div>
 
-                    {/* Nút lưu */}
                     <div className="text-center mt-4">
-                        <button className="btn btn-primary btn-save-schedule"
-                            onClick={() => this.handleSaveSchedule()}>
+                        <button
+                            className="btn btn-primary btn-save-schedule"
+                            onClick={this.handleSaveSchedule}
+                        >
                             <FormattedMessage id="manage-schedule.save-schedule" />
                         </button>
                     </div>
@@ -171,9 +229,8 @@ class ManageSchedulePrivate extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    isLoggedIn: state.doctor.isLoggedIn,
     language: state.app.language,
-    userInfo: state.doctor.doctorInfo,
+    userInfo: state.doctor.doctorInfo,   // cố định đúng reducer
     AllScheduleTime: state.admin.AllTime,
 });
 

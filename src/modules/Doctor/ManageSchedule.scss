@@ -2,20 +2,27 @@
     padding: 20px;
 
     .m-s-title {
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 700;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
         text-align: center;
         text-transform: uppercase;
         color: #222;
     }
 
+    /* KHUNG CHỌN GIỜ */
     .pick-hour-container {
         margin-top: 20px;
 
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
         .pick-hour-content {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
             gap: 12px;
             margin-top: 10px;
 
@@ -26,7 +33,7 @@
                 font-size: 14px;
                 background-color: #f8f9fa;
                 cursor: pointer;
-                transition: all 0.2s ease-in-out;
+                transition: all 0.2s ease;
                 text-align: center;
                 font-weight: 500;
 
@@ -46,10 +53,55 @@
         }
     }
 
+    /* NÚT LƯU */
     .btn-save-schedule {
-        padding: 8px 25px;
+        padding: 10px 28px;
         font-size: 15px;
         border-radius: 6px;
         font-weight: 500;
+        margin-top: 10px;
+    }
+
+    /* BẢNG LỊCH ĐÃ ĐĂNG KÝ */
+    .registered-table {
+        margin-top: 35px;
+
+        h5 {
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        table {
+            width: 100%;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            overflow: hidden;
+
+            th {
+                background-color: #f1f3f5;
+                font-weight: 600;
+                text-align: center;
+            }
+
+            td {
+                text-align: center;
+                padding: 10px 0;
+                font-size: 14px;
+            }
+
+            .btn-delete {
+                background: #dc3545;
+                color: #fff;
+                border: none;
+                padding: 5px 12px;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: 0.2s;
+
+                &:hover {
+                    background: #bb2d3b;
+                }
+            }
+        }
     }
 }
