@@ -5,7 +5,7 @@ import * as action from "../../../../store/actions";
 import { languages } from "../../../../utils";
 import moment from "moment";
 import localization from "moment/locale/vi"; // phải thêm để đổi sang tiếng việt trong moment mặc đù không dùng trực tiếp
-import { getScheduleDoctor, getDetailDoctor } from "../../../../services/userService";
+import { getScheduleDoctor } from "../../../../services/userService";
 import { FormattedMessage } from "react-intl";
 import BookingModal from "./BookingModal";
 

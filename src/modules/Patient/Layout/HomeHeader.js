@@ -18,6 +18,8 @@ import { changeLangguageApp } from "../../../store/actions/appActions";
 import { withRouter } from "react-router";
 import * as action from "../../../store/actions";
 
+import user_default from "../../../assets/user_default_1.png";
+
 class HomeHeader extends Component {
   constructor(props) {
     super(props);
@@ -181,7 +183,7 @@ class HomeHeader extends Component {
               {this.props.isLoggedIn && (
                 <div
                   className="menu-appointment"
-                  onClick={() => this.props.history.push("home/appointments")}
+                  onClick={() => this.props.history.push("/appointments")}
                 >
                   <i className="fas fa-clock"></i>
                   <span>Lịch hẹn</span>
@@ -206,7 +208,8 @@ class HomeHeader extends Component {
                   onClick={() => this.props.history.push("/patient-profile")}
                 >
                   <img
-                    src={`data:image/jpeg;base64,${userInfo.image}`}
+                    src={userInfo?.image
+                      ? `data:image/jpeg;base64,${userInfo.image}` : user_default}
                     alt="avatar"
                     className="header-avatar"
                   />
