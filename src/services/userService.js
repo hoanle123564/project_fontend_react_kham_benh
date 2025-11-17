@@ -1,5 +1,6 @@
 import axios from "../axios";
 
+
 // Đăng nhập
 const handleLoginAPI = (email, password) => {
   return axios.post("/api/login", { email, password });
@@ -36,6 +37,7 @@ const getLookUp = (type) => {
   return axios.get(`/api/lookup?type=${type}`);
 };
 
+//==========================================
 // Lấy bác sĩ
 const getDoctor = (limit) => {
   return axios.get(`/api/top-doctor?limit=${limit}`);
@@ -64,9 +66,19 @@ const getScheduleDoctor = (doctorId, date) => {
   return axios.get(`/api/get-schedule-doctor?doctorId=${doctorId}&date=${date}`);
 };
 
+// Lấy danh sách bệnh nhân theo ngày khám của bác sĩ
 const getAllPatientForDoctor = (doctorId, date) => {
   return axios.get(`/api/get-list-patient-for-doctor?id=${doctorId}&date=${date}`);
 };
+
+const DeleteScheduleDoctor = (ScheduleId) => {
+  return axios.delete("/api/delete-schedule-doctor", {
+    data: {
+      id: ScheduleId,
+    },
+  });
+};
+//==========================================
 // Lưu thông tin đặt lịch khám bệnh
 const postPatientBooking = (data) => {
   return axios.post("/api/patient-book-appointment", data);
@@ -77,6 +89,15 @@ const VerifyPatientBooking = (data) => {
   return axios.post("/api/verify-book-appointment", data);
 };
 
+const getListAppoinmentForPatient = (patientId) => {
+  return axios.get(`/api/get-list-booking-appointment-patient?id=${patientId}`);
+}
+
+const postCancelBookingAppointment = (data) => {
+  return axios.post("/api/cancel-book-appointment", data);
+};
+
+//==========================================
 // specialty
 const postSaveSpecialty = (data) => {
   return axios.post("/api/create-specialty", data);
@@ -101,6 +122,7 @@ const DeleteSpecialty = (SpecialtyId) => {
 };
 
 
+//==========================================
 // clinic
 const postSaveClinic = (data) => {
   return axios.post("/api/create-clinic", data);
@@ -156,5 +178,8 @@ export {
   DeleteClinic,
   EditClinicId,
   EditSpecialtyId,
-  DeleteSpecialty
+  DeleteSpecialty,
+  getListAppoinmentForPatient,
+  postCancelBookingAppointment,
+  DeleteScheduleDoctor
 };
