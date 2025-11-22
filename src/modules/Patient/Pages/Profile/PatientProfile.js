@@ -7,77 +7,79 @@ import HomeFooter from "../../Layout/HomeFooter";
 import "./PatientProfile.scss";
 import user_default from "../../../../assets/user_default_1.png";
 
-class PatientProfile extends Component {
+import EditModal from "./EditModal";
+import * as action from "../../../../store/actions";
 
-    handleLogout = () => {
-        this.props.patientLogout();
-        localStorage.removeItem("patientToken");
+class PatientProfile extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isEditing: false
+        };
+    }
+
+    toggleEdit = () => {
+        this.setState({ isEditing: !this.state.isEditing });
+    };
+
+    handleUpdate = async (data) => {
+        let res = await this.props.fetchEditUser(data);
+        console.log('res edit patient profile', res);
+
+        if (res && res.errCode === 0) {
+            this.props.patientEditSuccess(res.data);
+            this.toggleEdit();
+        }
     };
 
     render() {
         const { patientInfo } = this.props;
 
         if (!patientInfo) {
-            return (
-                <div className="profile-main">
-                    Không tìm thấy thông tin bệnh nhân
-                </div>
-            );
+            return <div>Không tìm thấy thông tin bệnh nhân</div>;
         }
 
         const user = patientInfo;
-        const fullName = `${user.firstName} ${user.lastName}`;
-        const avatar = user.image
-            ? `data:image/jpeg;base64,${user.image}`
-            : user_default;
+        const avatar = user.image ? `data:image/jpeg;base64,${user.image}` : user_default;
 
         return (
             <>
                 <HomeHeader />
 
-                {/* COVER */}
                 <div className="profile-cover"></div>
 
                 <div className="profile-wrapper">
-
-                    {/* CARD PROFILE */}
                     <div className="profile-card">
 
-                        {/* Avatar + Name */}
                         <div className="profile-header">
                             <div className="avatar-box">
                                 <img src={avatar} alt="avatar" />
                             </div>
 
                             <div className="basic-info">
-                                <h2 className="name">{fullName}</h2>
+                                <h2 className="name">{user.firstName} {user.lastName}</h2>
                                 <p className="role">Bệnh nhân</p>
                             </div>
                         </div>
 
-                        {/* DETAILS */}
                         <div className="profile-details">
-
                             <div className="detail-item">
                                 <div className="left">
-                                    <i className="far fa-envelope"></i>
-                                    <span>Email</span>
+                                    <i className="far fa-envelope"></i>Email
                                 </div>
                                 <div className="right">{user.email}</div>
                             </div>
 
                             <div className="detail-item">
                                 <div className="left">
-                                    <i className="fas fa-phone-alt"></i>
-                                    <span>Số điện thoại</span>
+                                    <i className="fas fa-phone-alt"></i>Số điện thoại
                                 </div>
-                                <div className="right">{user.phoneNumber || "Chưa cập nhật"}</div>
+                                <div className="right">{user.phoneNumber}</div>
                             </div>
 
                             <div className="detail-item">
                                 <div className="left">
-                                    <i className="fas fa-venus-mars"></i>
-                                    <span>Giới tính</span>
+                                    <i className="fas fa-venus-mars"></i>Giới tính
                                 </div>
                                 <div className="right">
                                     {user.gender === "M" ? "Nam" :
@@ -87,33 +89,53 @@ class PatientProfile extends Component {
 
                             <div className="detail-item">
                                 <div className="left">
-                                    <i className="fas fa-map-marker-alt"></i>
-                                    <span>Địa chỉ</span>
+                                    <i className="fas fa-map-marker-alt"></i>Địa chỉ
                                 </div>
-                                <div className="right">{user.address || "Chưa cập nhật"}</div>
+                                <div className="right">{user.address}</div>
                             </div>
-
                         </div>
 
-                        {/* LOGOUT */}
-                        <button className="logout-btn-patient" onClick={this.handleLogout}>
-                            <i className="fas fa-sign-out-alt"></i> Đăng xuất
-                        </button>
+                        <div className="profile-buttons">
+                            <button className="edit-btn" onClick={this.toggleEdit}>
+                                <i className="fas fa-edit"></i> Chỉnh sửa
+                            </button>
+
+                            <button className="logout-btn-patient" onClick={() => {
+                                this.props.patientLogout();
+                                localStorage.removeItem("patientToken");
+                            }}>
+                                <i className="fas fa-sign-out-alt"></i> Đăng xuất
+                            </button>
+                        </div>
 
                     </div>
                 </div>
 
                 <HomeFooter />
+
+                <EditModal
+                    isOpen={this.state.isEditing}
+                    toggle={this.toggleEdit}
+                    currentUser={patientInfo}
+                    onSave={this.handleUpdate}
+                />
             </>
         );
     }
 }
 
-export default connect(
-    state => ({
+const mapStateToProps = (state) => {
+    return {
         patientInfo: state.patient.patientInfo
-    }),
-    dispatch => ({
-        patientLogout: () => dispatch({ type: "PATIENT_LOGOUT" })
-    })
-)(PatientProfile);
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        patientLogout: () => dispatch({ type: "PATIENT_LOGOUT" }),
+        patientEditSuccess: (data) => dispatch({ type: "PATIENT_EDIT_SUCCESS", data }),
+        fetchEditUser: (data) => dispatch(action.fetchEditUser(data)),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(PatientProfile);

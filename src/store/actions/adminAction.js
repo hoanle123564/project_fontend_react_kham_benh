@@ -177,6 +177,7 @@ export const fetchEditUser = (User) => {
           type: actionTypes.FETCH_EDIT_USERS,
         });
         dispatch(fetchAllUser());
+        return res;
       } else {
         toast.error("Update user failed");
         dispatch(fetchEditUserFail());
@@ -192,10 +193,10 @@ export const fetchEditUserFail = () => ({
   type: actionTypes.FETCH_EDIT_USERS_FAIL,
 });
 
-export const fetchTopDoctor = () => {
+export const fetchTopDoctor = (top) => {
   return async (dispatch, getState) => {
     try {
-      let res = await getDoctor(100);
+      let res = await getDoctor(top || 100);
 
       if (res && res.errCode === 0) {
         let listUser = dispatch({

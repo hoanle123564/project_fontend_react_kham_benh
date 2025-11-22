@@ -23,3 +23,15 @@ export const patientLogin = (email, password) => {
 export const patientLogout = () => ({
     type: actionTypes.PATIENT_LOGOUT
 });
+
+export const fetchUpdatePatientInfo = (data) => {
+    return (dispatch) => {
+        try {
+            dispatch({
+                type: actionTypes.PATIENT_EDIT_SUCCESS,
+                data: data
+            });
+        } catch (e) {
+        }
+    };
+};

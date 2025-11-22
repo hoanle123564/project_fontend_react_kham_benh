@@ -31,7 +31,11 @@ export default function patientReducer(state = initialState, action) {
                 ...state,
                 listAppointment: [],
             };
-
+        case actionTypes.PATIENT_EDIT_SUCCESS:
+            return {
+                ...state,
+                patientInfo: action.data,
+            };
         default:
             return state;
     }
