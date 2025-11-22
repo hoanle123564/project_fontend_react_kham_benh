@@ -7,7 +7,6 @@ import MdEditor from "react-markdown-editor-lite";
 import 'react-markdown-editor-lite/lib/index.css';
 import { FormattedMessage } from 'react-intl';
 import './EditClinic.scss';
-import * as action from "../../../store/actions";
 import { EditClinicId } from '../../../services/userService';
 import { toast } from 'react-toastify';
 // Initialize a markdown parser
