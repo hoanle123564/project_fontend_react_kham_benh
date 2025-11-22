@@ -1,12 +1,17 @@
 {
   "home-header": {
-    "specility": "Tất cả",
-    "place_home": "Tại nhà",
+    "all": "Tất cả",
+    "specialty": "Chuyên khoa",
     "language": "VN",
-    "place_hospital": "Tại bệnh viện",
-    "message": "Sống khỏe",
+    "facility": "Cơ sở y tế",
+    "doctor": "Bác sĩ",
     "support": "Hỗ trợ",
-    "welcome": "Chào mừng "
+    "welcome": "Chào mừng ",
+    "appointment": "Lịch hẹn",
+    "find-doctor": "Tìm bác sĩ",
+    "register": "Đăng ký",
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất"
   },
   "banner": {
     "title1": "NỀN TẢNG Y TẾ, ĐẶT LỊCH KHÁM BỆNH",
@@ -16,7 +21,10 @@
     "child3": "Khám tổng quát",
     "child4": "Khám từ xa",
     "child5": "Sức khỏe tinh thần",
-    "child6": "Xét nghiệm"
+    "child6": "Xét nghiệm",
+    "see-more": "Xem thêm",
+    "specialty-popular": "Chuyên khoa phổ biến",
+    "clinic-popular": "Cơ sở y tế phổ biến"
   },
   "menu": {
     "system": {
@@ -52,7 +60,8 @@
       "manage-medical": "Quản lý khám bệnh",
       "manage-patient": "Quản lý bệnh nhân",
       "manage-schedule": "Quản lý kế hoạch khám bệnh",
-      "logout": "Đăng xuất"
+      "logout": "Đăng xuất",
+      "history-appointment": "Lịch sử khám bệnh"
     }
   },
   "user-manage": {

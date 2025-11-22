@@ -6,6 +6,7 @@ import * as action from "../../../store/actions";
 import { languages } from "../../../utils";
 import "./Doctor.scss";
 import { withRouter } from "react-router";
+import { FormattedMessage } from "react-intl";
 
 class Doctor extends Component {
   constructor(props) {
@@ -27,7 +28,9 @@ class Doctor extends Component {
   handleViewDetailDoctor = (doctor) => {
     this.props.history.push(`/detail_doctor/${doctor.id}`);
   }
-
+  hendleListDoctor = () => {
+    this.props.history.push(`/list-doctor`);
+  }
   render() {
     let DoctorArr = this.state.DoctorArr;
     let language = this.props.language;
@@ -39,7 +42,9 @@ class Doctor extends Component {
           <div className="section-container">
             <div className="section-header">
               <span className="title-section">Bác sĩ nổi bật</span>
-              <button className="btn-section">Xem thêm</button>
+              <button className="btn-section" onClick={this.hendleListDoctor}>
+                <FormattedMessage id="banner.see-more" />
+              </button>
             </div>
             <div className="section-body">
               <Slider {...this.props.settings}>

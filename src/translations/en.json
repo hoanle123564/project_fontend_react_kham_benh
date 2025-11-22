@@ -1,12 +1,17 @@
 {
   "home-header": {
-    "specility": "All",
-    "place_home": "At home",
+    "all": "All",
+    "specialty": "specialty",
     "language": "EN",
-    "place_hospital": "At hospital",
-    "message": "Live Healthy",
+    "facility": "Medical facility",
+    "doctor": "Doctor",
     "support": "Support",
-    "welcome": "Welcome "
+    "welcome": "Welcome ",
+    "appointment": "Appointment",
+    "find-doctor": "Find doctor",
+    "register": "Register",
+    "login": "Login",
+    "logout": "Logout"
   },
   "banner": {
     "title1": "HEALTHCARE PLATFORM, MEDICAL APPOINTMENT BOOKING",
@@ -16,7 +21,10 @@
     "child3": "General Check-up",
     "child4": "Telemedicine",
     "child5": "Mental Health",
-    "child6": "Lab Tests"
+    "child6": "Lab Tests",
+    "see-more": "See more",
+    "specialty-popular": "Popular Specialties",
+    "clinic-popular": "Popular Medical Facilities"
   },
   "menu": {
     "system": {
@@ -51,7 +59,8 @@
       "manage-medical": "Medical examination management",
       "manage-patient": "Manage patient",
       "manage-schedule": "Manage schedule",
-      "logout": "Logout"
+      "logout": "Logout",
+      "history-appointment": "Appointment history"
     }
   },
   "user-manage": {

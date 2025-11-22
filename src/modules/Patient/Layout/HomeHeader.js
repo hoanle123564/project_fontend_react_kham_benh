@@ -100,6 +100,21 @@ class HomeHeader extends Component {
     });
   };
 
+  handleListDoctor = () => {
+    if (this.props.history) {
+      this.props.history.push(`/list-doctor`);
+    }
+  };
+  handleListClinic = () => {
+    if (this.props.history) {
+      this.props.history.push(`/list-clinic`);
+    }
+  };
+  handleListSpecialty = () => {
+    if (this.props.history) {
+      this.props.history.push(`/list-specialty`);
+    }
+  };
   render() {
     // let language = this.state.changeLanguage;
 
@@ -115,7 +130,7 @@ class HomeHeader extends Component {
         <div className="home-header-container">
           <div className="home-header-content">
             <div className="left-content">
-              <i className="fa-solid fa-bars"></i>
+              {/* <i className="fa-solid fa-bars"></i> */}
               <img src={logoSrc} alt="logo" onClick={() => this.returnHome()} />
               {/* <div className='header-logo'></div> */}
             </div>
@@ -124,28 +139,28 @@ class HomeHeader extends Component {
               <div className="child-content">
                 <div onClick={() => this.returnHome()}>
                   <b>
-                    <FormattedMessage id="home-header.specility" />{" "}
+                    <FormattedMessage id="home-header.all" />{" "}
                   </b>
                 </div>
               </div>
               <div className="child-content">
-                <div>
+                <div onClick={this.handleListSpecialty}>
                   <b>
-                    <FormattedMessage id="home-header.place_home" />{" "}
+                    <FormattedMessage id="home-header.specialty" />{" "}
                   </b>
                 </div>
               </div>
               <div className="child-content">
-                <div>
+                <div onClick={this.handleListClinic}>
                   <b>
-                    <FormattedMessage id="home-header.place_hospital" />
+                    <FormattedMessage id="home-header.facility" />
                   </b>
                 </div>
               </div>
               <div className="child-content">
-                <div>
+                <div onClick={this.handleListDoctor}>
                   <b>
-                    <FormattedMessage id="home-header.message" />
+                    <FormattedMessage id="home-header.doctor" />
                   </b>
                 </div>
               </div>
@@ -186,7 +201,9 @@ class HomeHeader extends Component {
                   onClick={() => this.props.history.push("/appointments")}
                 >
                   <i className="fas fa-clock"></i>
-                  <span>Lịch hẹn</span>
+                  <span>
+                    <FormattedMessage id="home-header.appointment" />
+                  </span>
                 </div>
               )}
 

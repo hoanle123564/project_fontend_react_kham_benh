@@ -12,6 +12,9 @@ export const path = {
   DETAIL_CLINIC: "/detail_clinic/:id",
   PROFILE_PATIENT: "/patient-profile",
   APPOINTMENTS: "/appointments",
+  LIST_DOCTOR: "/list-doctor",
+  LIST_CLINIC: "/list-clinic",
+  LIST_SPECIALTY: "/list-specialty",
 };
 
 export const languages = {

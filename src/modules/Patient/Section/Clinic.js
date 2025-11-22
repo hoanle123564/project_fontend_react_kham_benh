@@ -7,6 +7,7 @@ import "./Clinic.scss";
 import * as action from "../../../store/actions";
 
 import { withRouter } from "react-router";
+import { FormattedMessage } from 'react-intl';
 
 class Clinic extends Component {
     constructor(props) {
@@ -34,6 +35,12 @@ class Clinic extends Component {
             })
         }
     }
+    handleListClinic = () => {
+        if (this.props.history) {
+            this.props.history.push(`/list-clinic`);
+        }
+    };
+
     render() {
         let { ListSpecialty } = this.state;
         return (
@@ -41,8 +48,12 @@ class Clinic extends Component {
                 <div className='section-share section-clinic'>
                     <div className='section-container'>
                         <div className='section-header'>
-                            <span className='title-section'>Cơ sở ý tế</span>
-                            <button className='btn-section'>Xem thêm</button>
+                            <span className='title-section'>
+                                <FormattedMessage id="banner.clinic-popular" />
+                            </span>
+                            <button className='btn-section' onClick={this.handleListClinic}>
+                                <FormattedMessage id="banner.see-more" />
+                            </button>
 
                         </div>
                         <div className='section-body'>

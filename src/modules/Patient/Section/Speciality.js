@@ -3,6 +3,7 @@ import { withRouter } from "react-router";
 import { connect } from 'react-redux'; // kết nối như router
 import * as action from "../../../store/actions";
 import "./Speciality.scss";
+import { FormattedMessage } from 'react-intl';
 // Slider 
 import Slider from "react-slick";
 
@@ -29,6 +30,11 @@ class Speciality extends Component {
         }
     }
 
+    handleListSpecialty = () => {
+        if (this.props.history) {
+            this.props.history.push(`/list-specialty`);
+        }
+    };
     render() {
         let { ListSpecialty } = this.state;
         return (
@@ -36,8 +42,12 @@ class Speciality extends Component {
                 <div className='section-share section-specialty'>
                     <div className='section-container'>
                         <div className='section-header'>
-                            <span className='title-section'>Chuyên khoa phổ biến</span>
-                            <button className='btn-section'>Xem thêm</button>
+                            <span className='title-section'>
+                                <FormattedMessage id="banner.specialty-popular" />
+                            </span>
+                            <button className='btn-section' onClick={this.handleListSpecialty}>
+                                <FormattedMessage id="banner.see-more" />
+                            </button>
 
                         </div>
                         <div className='section-body'>

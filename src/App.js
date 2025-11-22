@@ -26,7 +26,9 @@ import VerifyEmailBooking from "./modules/Patient/Pages/VerifyEmailBooking";
 import PatientProfile from "./modules/Patient/Pages/Profile/PatientProfile";
 import Appointments from "./modules/Patient/Pages/Appointment/Appointments";
 import Register from "./modules/Auth/Register";
-
+import ListDoctor from "./modules/Patient/Pages/Doctor/ListDoctor";
+import ListClinic from "./modules/Patient/Pages/Clinic/ListClinic";
+import ListSpecialty from "./modules/Patient/Pages/Speciality/ListSpecialty";
 class App extends Component {
 
   state = {
@@ -68,6 +70,9 @@ class App extends Component {
                 <Route path={path.APPOINTMENTS} component={patientIsAuthenticated(Appointments)} />
                 <Route path={path.HOMEPAGE} component={HomePage} />
 
+                <Route path={path.LIST_DOCTOR} component={ListDoctor} />
+                <Route path={path.LIST_CLINIC} component={ListClinic} />
+                <Route path={path.LIST_SPECIALTY} component={ListSpecialty} />
                 <Route path={path.DETAIL_DOCTOR} component={DetailDoctor} />
                 <Route path={path.DETAIL_SPECIALTY} component={DetailSpeciality} />
                 <Route path={path.DETAIL_CLINIC} component={DetailClinic} />
