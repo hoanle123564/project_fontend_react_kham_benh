@@ -60,4 +60,13 @@ export const doctorMenu = [
       },
     ],
   },
+  {
+    name: "menu.doctor.history-appointment",
+    menus: [
+      {
+        name: "menu.doctor.history-appointment",
+        link: "/doctor/list-appointment",
+      },
+    ],
+  }
 ];

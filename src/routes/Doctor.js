@@ -4,6 +4,7 @@ import { Route, Switch } from "react-router-dom";
 import Header from "../components/Layout/Header";
 import ManagePatient from "../modules/Doctor/ManagePatient";
 import ManageSchedulePrivate from "../modules/Doctor/ManageSchedulePrivate";
+import ListAppointment from "../modules/Doctor/ListAppointment";
 import { doctorIsAuthenticated } from "../hoc/authentication";
 class Doctor extends Component {
   render() {
@@ -19,6 +20,9 @@ class Doctor extends Component {
               />
               <Route path="/doctor/manage-schedule-private"
                 component={doctorIsAuthenticated(ManageSchedulePrivate)}
+              />
+              <Route path="/doctor/list-appointment"
+                component={doctorIsAuthenticated(ListAppointment)}
               />
             </Switch>
           </div>

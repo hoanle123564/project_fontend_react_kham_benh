@@ -78,6 +78,9 @@ const DeleteScheduleDoctor = (ScheduleId) => {
     },
   });
 };
+const getAppointmentDoctor = (doctorId) => {
+  return axios.get(`/api/get-list-booking-appointment-doctor?id=${doctorId}`);
+};
 //==========================================
 // Lưu thông tin đặt lịch khám bệnh
 const postPatientBooking = (data) => {
@@ -181,5 +184,6 @@ export {
   DeleteSpecialty,
   getListAppoinmentForPatient,
   postCancelBookingAppointment,
-  DeleteScheduleDoctor
+  DeleteScheduleDoctor,
+  getAppointmentDoctor
 };
