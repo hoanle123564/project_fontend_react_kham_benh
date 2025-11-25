@@ -29,6 +29,8 @@ import Register from "./modules/Auth/Register";
 import ListDoctor from "./modules/Patient/Pages/Doctor/ListDoctor";
 import ListClinic from "./modules/Patient/Pages/Clinic/ListClinic";
 import ListSpecialty from "./modules/Patient/Pages/Speciality/ListSpecialty";
+import NotFound from "./modules/NotFound";
+import Remote from "./modules/Patient/Pages/Speciality/Remote";
 class App extends Component {
 
   state = {
@@ -60,22 +62,24 @@ class App extends Component {
             <span className="content-container">
               <Switch>
                 <Route path={path.HOME} exact component={HomePage} />
+                <Route path={path.HOMEPAGE} exact component={HomePage} />
                 <Route path={path.LOGIN} component={Login} />
                 <Route path={path.REGISTER} component={Register} />
 
                 <Route path={path.SYSTEM} component={adminIsAuthenticated(System)} />
                 <Route path={path.DOCTOR} component={doctorIsAuthenticated(Doctor)} />
-                <Route path={path.VERIFY_BOOKING} component={VerifyEmailBooking} />
+                <Route path={path.VERIFY_BOOKING} exact component={VerifyEmailBooking} />
                 <Route path={path.PROFILE_PATIENT} component={patientIsAuthenticated(PatientProfile)} />
-                <Route path={path.APPOINTMENTS} component={patientIsAuthenticated(Appointments)} />
-                <Route path={path.HOMEPAGE} component={HomePage} />
+                <Route path={path.APPOINTMENTS} exact component={patientIsAuthenticated(Appointments)} />
 
-                <Route path={path.LIST_DOCTOR} component={ListDoctor} />
-                <Route path={path.LIST_CLINIC} component={ListClinic} />
-                <Route path={path.LIST_SPECIALTY} component={ListSpecialty} />
-                <Route path={path.DETAIL_DOCTOR} component={DetailDoctor} />
-                <Route path={path.DETAIL_SPECIALTY} component={DetailSpeciality} />
-                <Route path={path.DETAIL_CLINIC} component={DetailClinic} />
+                <Route path={path.LIST_DOCTOR} exact component={ListDoctor} />
+                <Route path={path.LIST_CLINIC} exact component={ListClinic} />
+                <Route path={path.LIST_SPECIALTY} exact component={ListSpecialty} />
+                <Route path={path.DETAIL_DOCTOR} exact component={DetailDoctor} />
+                <Route path={path.DETAIL_SPECIALTY} exact component={DetailSpeciality} />
+                <Route path={path.DETAIL_CLINIC} exact component={DetailClinic} />
+                <Route path={path.REMOTE} exact component={Remote} />
+                <Route component={NotFound} />
               </Switch>
             </span>
 

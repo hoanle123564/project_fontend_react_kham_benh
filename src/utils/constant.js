@@ -15,6 +15,7 @@ export const path = {
   LIST_DOCTOR: "/list-doctor",
   LIST_CLINIC: "/list-clinic",
   LIST_SPECIALTY: "/list-specialty",
+  LIST_REMOTE: "/list-remote",
 };
 
 export const languages = {
