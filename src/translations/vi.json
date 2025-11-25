@@ -24,7 +24,9 @@
     "child6": "Xét nghiệm",
     "see-more": "Xem thêm",
     "specialty-popular": "Chuyên khoa phổ biến",
-    "clinic-popular": "Cơ sở y tế phổ biến"
+    "clinic-popular": "Cơ sở y tế phổ biến",
+    "doctor-popular": "Bác sĩ nổi bật",
+    "About-life-care": "Truyền thông về LIFECARE"
   },
   "menu": {
     "system": {
@@ -43,7 +45,7 @@
     },
     "admin": {
       "manage-user": "Quản lý người dùng",
-
+      "dashboard": "Dashboard",
       "manage-user-table": "Manage user table",
       "manage-doctor": "Quản lý thông tin bác sĩ",
       "manage-admin": "Quản lý admin",
@@ -83,6 +85,25 @@
     "choose-image": "Chọn ảnh",
     "remove-image": "Bỏ ảnh",
     "no-image": "Chưa có ảnh"
+  },
+  "manage-clinic": {
+    "title": "Quản lý phòng khám",
+    "name-clinic": "Tên phòng khám",
+    "address-clinic": "Địa chỉ phòng khám",
+    "image-clinic": "Ảnh phòng khám",
+    "description-clinic": "Mô tả phòng khám",
+    "save-clinic": "Lưu phòng khám",
+    "add": "Thêm phòng khám mới",
+    "description-html": "Mô tả bằng HTML",
+    "description-markdown": "Mô tả bằng Markdown",
+    "save-info": "Lưu thông tin"
+  },
+  "manage-specialty": {
+    "title": "Quản lý chuyên khoa",
+    "name-specialty": "Tên chuyên khoa",
+    "image-specialty": "Ảnh chuyên khoa",
+    "description-specialty": "Mô tả chuyên khoa",
+    "save-specialty": "Lưu chuyên khoa"
   },
   "manage-schedule": {
     "title": "Quản lý kế hoạch khám bệnh của bác sĩ",

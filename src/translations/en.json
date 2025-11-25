@@ -24,7 +24,9 @@
     "child6": "Lab Tests",
     "see-more": "See more",
     "specialty-popular": "Popular Specialties",
-    "clinic-popular": "Popular Medical Facilities"
+    "clinic-popular": "Popular Medical Facilities",
+    "doctor-popular": "Top Doctors",
+    "About-life-care": "Community About LIFECARE"
   },
   "menu": {
     "system": {
@@ -42,7 +44,7 @@
     },
     "admin": {
       "manage-user": "Manage user",
-
+      "dashboard": "Dashboard",
       "manage-user-table": "Manage user table",
       "manage-doctor": "Manage doctor",
       "manage-admin": "Manage admin",
@@ -82,6 +84,26 @@
     "choose-image": "Choose image",
     "remove-image": "Remove image",
     "no-image": "No image"
+  },
+  "manage-clinic": {
+    "title": "Clinic management",
+    "name-clinic": "Clinic name",
+    "address-clinic": "Clinic address",
+    "image-clinic": "Clinic image",
+    "description-html": "Description in HTML",
+    "description-markdown": "Description in Markdown",
+    "save-info": "Save information",
+    "description-clinic": "Clinic description",
+    "save-clinic": "Save clinic",
+    "add": "Add new clinic"
+  },
+  "manage-specialty": {
+    "title": "Specialty management",
+    "name-specialty": "Specialty name",
+    "image-specialty": "Specialty image",
+    "description-html": "Description in HTML",
+    "description-markdown": "Description in Markdown",
+    "save-info": "Save information"
   },
   "manage-schedule": {
     "title": "Doctor's appointment schedule management",
