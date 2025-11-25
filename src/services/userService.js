@@ -155,6 +155,11 @@ const DeleteClinic = (ClinicId) => {
 const postSendRemedy = (data) => {
   return axios.post("/api/send-remedy", data);
 };
+
+// get list booking
+const getAllBooking = () => {
+  return axios.get("/api/get-all-list-booking");
+};
 export {
   handleLoginAPI,
   getAllUser,
@@ -185,5 +190,6 @@ export {
   getListAppoinmentForPatient,
   postCancelBookingAppointment,
   DeleteScheduleDoctor,
-  getAppointmentDoctor
+  getAppointmentDoctor,
+  getAllBooking
 };
