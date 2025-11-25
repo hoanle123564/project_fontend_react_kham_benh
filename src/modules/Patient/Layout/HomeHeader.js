@@ -115,6 +115,16 @@ class HomeHeader extends Component {
       this.props.history.push(`/list-specialty`);
     }
   };
+  handleDestist = () => {
+    if (this.props.history) {
+      this.props.history.push(`/detail_specialty/16`);
+    }
+  }
+  handleRemote = () => {
+    if (this.props.history) {
+      this.props.history.push(`/list-remote`);
+    }
+  }
   render() {
     // let language = this.state.changeLanguage;
 
@@ -285,10 +295,11 @@ class HomeHeader extends Component {
                 )}
               </div>
             </div>
+
             <div className="content-down">
               <div className="options">
                 {/* Chuyên khoa */}
-                <div className="option-child">
+                <div className="option-child" onClick={this.handleListSpecialty}>
                   <div className="icon-child">
                     <img src={iconChuyenKhoa} alt="icon khám chuyên khoa" />
                   </div>
@@ -297,7 +308,7 @@ class HomeHeader extends Component {
                   </div>
                 </div>
                 {/* Chuyên khoa */}
-                <div className="option-child">
+                <div className="option-child" onClick={this.handleDestist}>
                   <div className="icon-child">
                     <img src={iconNhaKhoa} alt="icon khám nha khoa" />
                   </div>
@@ -306,16 +317,7 @@ class HomeHeader extends Component {
                   </div>
                 </div>
                 {/* Chuyên khoa */}
-                <div className="option-child">
-                  <div className="icon-child">
-                    <img src={iconCTongquat} alt="icon khám tổng quát" />
-                  </div>
-                  <div className="text-child">
-                    <FormattedMessage id="banner.child3" />
-                  </div>
-                </div>
-                {/* Chuyên khoa */}
-                <div className="option-child">
+                <div className="option-child" onClick={this.handleRemote}>
                   <div className="icon-child">
                     <img src={iconTuXa} alt="icon khám từ xa" />
                   </div>
@@ -323,8 +325,18 @@ class HomeHeader extends Component {
                     <FormattedMessage id="banner.child4" />
                   </div>
                 </div>
+
                 {/* Chuyên khoa */}
-                <div className="option-child">
+                {/* <div className="option-child">
+                  <div className="icon-child">
+                    <img src={iconCTongquat} alt="icon khám tổng quát" />
+                  </div>
+                  <div className="text-child">
+                    <FormattedMessage id="banner.child3" />
+                  </div>
+                </div> */}
+                {/* Chuyên khoa */}
+                {/* <div className="option-child">
                   <div className="icon-child">
                     <img
                       src={iconSuckhoeTinhthan}
@@ -334,16 +346,16 @@ class HomeHeader extends Component {
                   <div className="text-child">
                     <FormattedMessage id="banner.child5" />
                   </div>
-                </div>
+                </div> */}
                 {/* Chuyên khoa */}
-                <div className="option-child">
+                {/* <div className="option-child">
                   <div className="icon-child">
                     <img src={iconXetNghiep} alt="icon xét ngiệm" />
                   </div>
                   <div className="text-child">
                     <FormattedMessage id="banner.child6" />
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -359,8 +371,7 @@ const mapStateToProps = (state) => {
     language: state.app.language,
     ListDoctor: state.admin.doctor,
     userInfo: state.patient.patientInfo
-    // isLoggedIn: state.user.isLoggedIn,
-    // userInfo: state.user.userInfo, // <-- thêm dòng này nếu cần hiển thị thông tin user
+
 
   };
 };
