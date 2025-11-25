@@ -1,0 +1,110 @@
+.dashboard-container {
+    padding: 20px;
+}
+
+.dashboard-title {
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+.dashboard-subtitle {
+    font-size: 24px;
+    margin: 25px 0 15px;
+    font-weight: 600;
+}
+
+/* Biểu đồ */
+.chart-container {
+    margin-top: 40px;
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== DASHBOARD ===== */
+.dashboard-container {
+    padding: 25px 30px;
+    background: #f4f7fc;
+    min-height: 100vh;
+}
+
+.dashboard-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+/* ===== TOP STAT CARDS ===== */
+
+.top-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    margin-bottom: 35px;
+}
+
+.stat-box {
+    position: relative;
+    padding: 25px;
+    border-radius: 12px;
+    color: white;
+    height: 140px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Icon background mờ phía sau */
+.stat-box::after {
+    content: "👤";
+    position: absolute;
+    right: 15px;
+    bottom: -10px;
+    font-size: 70px;
+    opacity: 0.18;
+}
+
+/* Hover effect */
+.stat-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+.stat-number {
+    font-size: 40px;
+    font-weight: 800;
+}
+
+.stat-label {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.stat-manage {
+    font-size: 14px;
+    opacity: 0.95;
+    margin-top: 8px;
+}
+
+/* ===== COLOR CARDS ===== */
+.blue-box {
+    background: linear-gradient(135deg, #1e90ff, #4aaeff);
+}
+
+.green-box {
+    background: linear-gradient(135deg, #2ecc71, #48e68f);
+}
+
+.orange-box {
+    background: linear-gradient(135deg, #f39c12, #ffb347);
+}
+
+.red-box {
+    background: linear-gradient(135deg, #e74c3c, #ff6f61);
+}
