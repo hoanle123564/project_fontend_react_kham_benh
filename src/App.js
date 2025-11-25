@@ -15,7 +15,6 @@ import {
 
 import { path } from "./utils";
 import HomePage from "./modules/Patient/Pages/HomePage/HomePage";
-// import Admin from "./routes/Admin";
 import Login from "./modules/Auth/Login";
 import System from "./routes/System";
 import Doctor from "./routes/Doctor";
@@ -31,6 +30,7 @@ import ListClinic from "./modules/Patient/Pages/Clinic/ListClinic";
 import ListSpecialty from "./modules/Patient/Pages/Speciality/ListSpecialty";
 import NotFound from "./modules/NotFound";
 import Remote from "./modules/Patient/Pages/Speciality/Remote";
+
 class App extends Component {
 
   state = {
