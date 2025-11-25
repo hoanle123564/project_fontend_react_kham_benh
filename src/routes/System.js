@@ -12,7 +12,7 @@ import AddClinic from "../modules/Admin/Clinic/AddClinic";
 import EditClinic from "../modules/Admin/Clinic/EditClinic";
 import AddSpecialty from "../modules/Admin/Specialty/AddSpecialty";
 import EditSpecialty from "../modules/Admin/Specialty/EditSpecialty";
-
+import DashBoard from "../modules/Admin/DashBoard";
 import {
   adminIsAuthenticated,
 } from "../hoc/authentication";
@@ -29,6 +29,7 @@ class System extends Component {
         <div className="system-container">
           <div className="system-list">
             <Switch>
+              <Route path="/system/dashboard" component={adminIsAuthenticated(DashBoard)} />
               <Route path="/system/user-manage" component={adminIsAuthenticated(TableManageUser)} />
               <Route path="/system/manage-doctor" component={adminIsAuthenticated(ManageDoctor)} />
               <Route path="/system/manage-clinic" component={adminIsAuthenticated(ManageClinic)} />
@@ -38,7 +39,6 @@ class System extends Component {
               <Route path="/system/manage-specialty" component={adminIsAuthenticated(ManageSpecialty)} />
               <Route path="/system/add-specialty" component={adminIsAuthenticated(AddSpecialty)} />
               <Route path="/system/edit-specialty/:id" component={adminIsAuthenticated(EditSpecialty)} />
-
               <Route component={() => <Redirect to={systemMenuPath} />} />
             </Switch>
           </div>
@@ -50,7 +50,6 @@ class System extends Component {
 
 const mapStateToProps = (state) => ({
   systemMenuPath: state.app.systemMenuPath,
-
   isLoggedIn: state.adminAuth.isLoggedIn,
   adminToken: state.adminAuth.token,
 });
