@@ -83,13 +83,18 @@ class AddSpecialty extends Component {
     render() {
         return (
             <div className="manage-specialty-container">
-                <h3 className="title-page">Quản lý chuyên khoa</h3>
+                <h3 className="title-page">
+                    <FormattedMessage id="manage-specialty.title" />
+                </h3>
 
                 {/* --- Form input hàng đầu --- */}
                 <div className="row align-items-center mb-4">
                     {/* === Tên chuyên khoa === */}
                     <div className="col-md-6">
-                        <label className="form-label">Tên chuyên khoa</label>
+                        <label className="form-label">
+                            <FormattedMessage id="manage-specialty.name-specialty" />
+
+                        </label>
                         <input
                             className="form-control"
                             type="text"
@@ -101,7 +106,9 @@ class AddSpecialty extends Component {
 
                     {/* === Ảnh chuyên khoa === */}
                     <div className="col-md-6">
-                        <label className="form-label">Ảnh chuyên khoa</label>
+                        <label className="form-label">
+                            <FormattedMessage id="manage-specialty.image-specialty" />
+                        </label>
                         <div className="d-flex align-items-center">
                             {/* Nút chọn ảnh */}
                             <div className="upload-btn-wrapper me-3">

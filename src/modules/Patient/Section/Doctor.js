@@ -41,7 +41,9 @@ class Doctor extends Component {
         <div className=" section-doctor">
           <div className="section-container">
             <div className="section-header">
-              <span className="title-section">Bác sĩ nổi bật</span>
+              <span className="title-section">
+                <FormattedMessage id="banner.doctor-popular" />
+              </span>
               <button className="btn-section" onClick={this.hendleListDoctor}>
                 <FormattedMessage id="banner.see-more" />
               </button>

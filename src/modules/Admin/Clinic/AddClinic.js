@@ -86,13 +86,17 @@ class AddClinic extends Component {
     render() {
         return (
             <div className="manage-specialty-container">
-                <h3 className="title-page">Quản lý phòng khám</h3>
+                <h3 className="title-page">
+                    <FormattedMessage id="manage-clinic.title" />
+                </h3>
 
                 {/* --- Form input hàng đầu --- */}
                 <div className="row align-items-center mb-4">
                     {/* === Tên phòng khám === */}
                     <div className="col-md-6">
-                        <label className="form-label">Tên phòng khám</label>
+                        <label className="form-label">
+                            <FormattedMessage id="manage-clinic.name-clinic" />
+                        </label>
                         <input
                             className="form-control"
                             type="text"
@@ -104,7 +108,9 @@ class AddClinic extends Component {
 
                     {/* === Ảnh phòng khám === */}
                     <div className="col-md-6">
-                        <label className="form-label">Ảnh phòng khám</label>
+                        <label className="form-label">
+                            <FormattedMessage id="manage-clinic.image-clinic" />
+                        </label>
                         <div className="d-flex align-items-center">
                             {/* Nút chọn ảnh */}
                             <div className="upload-btn-wrapper me-3">
@@ -157,7 +163,9 @@ class AddClinic extends Component {
                 <div className="row align-items-center mb-4">
                     {/* Địa chỉ phòng khám */}
                     <div className="col-md-6">
-                        <label className="form-label">Địa chỉ phòng khám</label>
+                        <label className="form-label">
+                            <FormattedMessage id="manage-clinic.address-clinic" />
+                        </label>
                         <input
                             className="form-control"
                             type="text"

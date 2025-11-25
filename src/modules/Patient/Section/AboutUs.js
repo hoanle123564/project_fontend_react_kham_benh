@@ -6,7 +6,7 @@ import VNexpress from '../../../assets/communicate/vnexpress.png'
 import VNNet from '../../../assets/communicate/vnnet.png'
 import VTCNews from '../../../assets/communicate/vtcnews.png'
 import VTV1 from '../../../assets/communicate/vtv1.png'
-
+import { FormattedMessage } from 'react-intl';
 class AboutUs extends Component {
 
     render() {
@@ -17,7 +17,7 @@ class AboutUs extends Component {
                 <div className='section-share section-about'>
                     <div className='section-container'>
                         <div className='secton-header-about'>
-                            Truyền thông nói về LIFECARE
+                            <FormattedMessage id="banner.About-life-care" />
                         </div>
                         <div className='secton-body-about'>
                             <div className='secton-left-about'>

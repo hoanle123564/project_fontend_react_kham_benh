@@ -65,12 +65,12 @@ class ManageClinic extends Component {
         return (
             <div className="manage-clinic-container container mt-4">
                 <h3 className="title-page mb-3">
-                    <FormattedMessage id="clinic-manage.title" defaultMessage="Manage Clinics" />
+                    <FormattedMessage id="manage-clinic.title" defaultMessage="Manage Clinics" />
                 </h3>
 
                 <Button color="primary" onClick={this.handleAddClinic} className="mb-3">
                     <i className="fa-solid fa-user-plus me-2"></i>
-                    <FormattedMessage id="user-manage.add" />
+                    <FormattedMessage id="manage-clinic.add" />
                 </Button>
 
                 <div className="table-responsive shadow-sm ">
