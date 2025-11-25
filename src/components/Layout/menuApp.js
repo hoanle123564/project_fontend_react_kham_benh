@@ -1,4 +1,14 @@
 export const adminMenu = [
+  // quản lý tổng hợp
+  {
+    name: "menu.admin.dashboard",
+    menus: [
+      {
+        name: "menu.admin.dashboard",
+        link: "/system/dashboard",
+      },
+    ],
+  },
   // quản lý người dùng
   {
     name: "menu.admin.manage-user",
@@ -10,10 +20,6 @@ export const adminMenu = [
       {
         name: "menu.admin.crud-redux",
         link: "/system/user-manage",
-      },
-      {
-        name: "menu.admin.manage-admin",
-        link: "/system/user-admin",
       },
       {
         name: "menu.doctor.manage-schedule",
