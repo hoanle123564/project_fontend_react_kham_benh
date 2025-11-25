@@ -54,6 +54,29 @@ class EditModal extends Component {
         }));
     };
 
+    handleOnChangeImage = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const objectUrl = URL.createObjectURL(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                this.setState({
+                    previewImg: objectUrl,
+                    avatar: reader.result.split(",")[1],
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    // Nút xoá ảnh
+    clearImage = () => {
+        this.setState({
+            avatar: "",
+            previewImg: user_default
+        });
+    };
+
     handleImageChange = (e) => {
         let file = e.target.files[0];
         if (file) {
@@ -69,6 +92,7 @@ class EditModal extends Component {
             reader.readAsDataURL(file);
         }
     };
+
 
     validate = () => {
         let { firstName, lastName, phoneNumber, address, gender } = this.state;
@@ -107,6 +131,7 @@ class EditModal extends Component {
 
     render() {
         const { errors } = this.state;
+        const isDefaultImage = this.state.previewImg === user_default;
 
         return (
             <Modal isOpen={this.props.isOpen} toggle={this.toggle} size="lg" centered>
@@ -197,16 +222,51 @@ class EditModal extends Component {
                     </div>
 
                     {/* Avatar */}
-                    <div className="row mb-4">
-                        <div className="col-md-12">
+                    <div className="row mb-4 align-items-center">
+                        <div className="col-md-7">
                             <label>Ảnh đại diện</label>
-                            <input type="file" className="form-control" onChange={this.handleImageChange} />
+
+                            <div className="d-flex align-items-center gap-3 mt-2">
+
+                                {/* Nút chọn ảnh */}
+                                <label className="btn btn-select-image">
+                                    Chọn ảnh <i className="fa-solid fa-upload ms-1"></i>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        hidden
+                                        onChange={this.handleImageChange}
+                                    />
+                                </label>
+
+                                {/* Nút bỏ ảnh */}
+                                {!isDefaultImage && (
+                                    <button
+                                        type="button"
+                                        className="btn btn-remove-image"
+                                        onClick={this.clearImage}
+                                    >
+                                        Bỏ ảnh <i className="fa-solid fa-xmark ms-1"></i>
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
-                        <div className="col-md-12 text-center mt-3">
-                            <img src={this.state.previewImg} className="avatar-preview" alt="preview" />
+                        <div className="col-md-5 text-center">
+                            {isDefaultImage ? (
+                                <div className="no-image-box">
+                                    Chưa có ảnh
+                                </div>
+                            ) : (
+                                <img
+                                    src={this.state.previewImg}
+                                    className="avatar-preview"
+                                    alt="preview"
+                                />
+                            )}
                         </div>
                     </div>
+
                 </ModalBody>
 
                 <ModalFooter>
