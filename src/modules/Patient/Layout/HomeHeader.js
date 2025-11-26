@@ -224,7 +224,9 @@ class HomeHeader extends Component {
                   onClick={() => this.props.history.push("/login")}
                 >
                   <i className="fas fa-sign-in-alt"></i>
-                  <span>Đăng nhập</span>
+                  <span>
+                    {language === languages.VI ? "Đăng nhập" : "Login"}
+                  </span>
                 </div>
               )}
 
@@ -378,6 +380,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+
     changeLangguageAppRedux: (languages) =>
       dispatch(changeLangguageApp(languages)),
     fetchTopDoctor: () => dispatch(action.fetchTopDoctor()),

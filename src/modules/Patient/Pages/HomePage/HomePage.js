@@ -7,6 +7,7 @@ import Doctor from "../../Section/Doctor";
 import AboutUs from "../../Section/AboutUs";
 import HomeFooter from "../../Layout/HomeFooter";
 import Clinic from "../../Section/Clinic";
+import Commercial from "../../Section/Commercial";
 import "./HomePage.scss";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -31,7 +32,8 @@ class HomePage extends Component {
       <>
         <HomeHeader showBanner={true} />
         <Speciality settings={settings3} />
-        <RemoteExam settings={settings3} />
+        {/* <RemoteExam settings={settings3} /> */}
+        <Commercial />
         <Clinic settings={settings3} />
         <Doctor settings={settings4} />
         <AboutUs />
