@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { FormattedMessage } from "react-intl";
 import HomeHeader from "../Layout/HomeHeader";
 import HomeFooter from "../Layout/HomeFooter";
 import { VerifyPatientBooking } from "../../../services/userService";
@@ -41,11 +42,25 @@ class VerifyEmailBooking extends Component {
                 {
                     ResponseVerify && ResponseVerify.errCode === 0 ? (
                         <div className="verify-email-booking-container">
-                            Xác nhận lịch hẹn thành công
+                            <div className="verify-success">
+                                <h3>
+                                    <FormattedMessage
+                                        id="verify-booking.success"
+                                        defaultMessage="Xác nhận lịch hẹn thành công"
+                                    />
+                                </h3>
+                            </div>
                         </div>
                     ) : (
                         <div className="verify-email-booking-container">
-                            Lịch hẹn không tồn tại hoặc đã được xác nhận
+                            <div className="verify-failed">
+                                <h3>
+                                    <FormattedMessage
+                                        id="verify-booking.failed"
+                                        defaultMessage="Lịch hẹn không tồn tại hoặc đã được xác nhận"
+                                    />
+                                </h3>
+                            </div>
                         </div>
                     )
                 }

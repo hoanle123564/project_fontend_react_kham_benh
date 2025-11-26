@@ -102,6 +102,10 @@
     "error-address": "Vui lòng nhập địa chỉ liên hệ.",
     "error-gender": "Vui lòng chọn giới tính."
   },
+  "verify-booking": {
+    "success": "Xác nhận lịch hẹn thành công",
+    "failed": "Lịch hẹn không tồn tại hoặc đã được xác nhận"
+  },
   "dashboard": {
     "total-user": "Tổng số người dùng",
     "total-doctor": "Tổng số bác sĩ",

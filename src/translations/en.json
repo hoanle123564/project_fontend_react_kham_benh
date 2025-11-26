@@ -101,6 +101,10 @@
     "error-address": "Please enter address.",
     "error-gender": "Please select gender."
   },
+  "verify-booking": {
+    "success": "Appointment confirmed successfully",
+    "failed": "Appointment does not exist or has already been confirmed"
+  },
   "dashboard": {
     "total-user": "Total users",
     "total-doctor": "Total doctors",
