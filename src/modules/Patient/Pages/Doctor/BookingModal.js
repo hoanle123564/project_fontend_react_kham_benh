@@ -4,7 +4,7 @@ import "./BookingModal.scss";
 import * as action from "../../../../store/actions";
 import { languages } from "../../../../utils";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import { injectIntl } from "react-intl";
+import { injectIntl, FormattedMessage } from "react-intl";
 import moment from "moment";
 import { getDetailDoctor } from "../../../../services/userService";
 class BookingModal extends Component {
@@ -51,23 +51,42 @@ class BookingModal extends Component {
 
     validateForm = (isLoggedIn) => {
         const { fỉrstName, lastName, email, phoneNumber, address, reason, gender } = this.state;
+        const { intl } = this.props;
         let errors = {};
         let isValid = true;
 
         // Lý do khám luôn phải có
         if (!reason.trim()) {
-            errors.reason = "Vui lòng nhập lý do khám.";
+            errors.reason = intl.formatMessage({ id: "booking-modal.error-reason", defaultMessage: "Vui lòng nhập lý do khám." });
             isValid = false;
         }
 
         // Nếu KHÔNG đăng nhập → phải nhập full form
         if (!isLoggedIn) {
-            if (!fỉrstName.trim()) { errors.fỉrstName = "Vui lòng nhập họ và tên lót."; isValid = false; }
-            if (!lastName.trim()) { errors.lastName = "Vui lòng nhập tên."; isValid = false; }
-            if (!email.trim()) { errors.email = "Vui lòng nhập email."; isValid = false; }
-            if (!phoneNumber.trim()) { errors.phoneNumber = "Vui lòng nhập số điện thoại."; isValid = false; }
-            if (!address.trim()) { errors.address = "Vui lòng nhập địa chỉ liên hệ."; isValid = false; }
-            if (!gender.trim()) { errors.gender = "Vui lòng chọn giới tính."; isValid = false; }
+            if (!fỉrstName.trim()) {
+                errors.fỉrstName = intl.formatMessage({ id: "booking-modal.error-firstname", defaultMessage: "Vui lòng nhập họ và tên lót." });
+                isValid = false;
+            }
+            if (!lastName.trim()) {
+                errors.lastName = intl.formatMessage({ id: "booking-modal.error-lastname", defaultMessage: "Vui lòng nhập tên." });
+                isValid = false;
+            }
+            if (!email.trim()) {
+                errors.email = intl.formatMessage({ id: "booking-modal.error-email", defaultMessage: "Vui lòng nhập email." });
+                isValid = false;
+            }
+            if (!phoneNumber.trim()) {
+                errors.phoneNumber = intl.formatMessage({ id: "booking-modal.error-phone", defaultMessage: "Vui lòng nhập số điện thoại." });
+                isValid = false;
+            }
+            if (!address.trim()) {
+                errors.address = intl.formatMessage({ id: "booking-modal.error-address", defaultMessage: "Vui lòng nhập địa chỉ liên hệ." });
+                isValid = false;
+            }
+            if (!gender.trim()) {
+                errors.gender = intl.formatMessage({ id: "booking-modal.error-gender", defaultMessage: "Vui lòng chọn giới tính." });
+                isValid = false;
+            }
         }
 
         this.setState({ errors });
@@ -164,7 +183,7 @@ class BookingModal extends Component {
             >
                 <ModalHeader toggle={this.toggleModal}>
                     <i className="fa-solid fa-user me-2"></i>
-                    Đặt lịch khám bệnh
+                    <FormattedMessage id="booking-modal.title" defaultMessage="Đặt lịch khám bệnh" />
                 </ModalHeader>
 
                 <ModalBody>
@@ -182,7 +201,9 @@ class BookingModal extends Component {
                         </div>
                         <div className="doctor-meta">
                             <h5 className="doctor-name mb-1">
-                                {`${profile?.positionVi || ""}, Bác sĩ ${profile?.firstName || ""} ${profile?.lastName || ""}`}
+                                {language === languages.VI
+                                    ? `${profile?.positionVi || ""}, Bác sĩ ${profile?.firstName || ""} ${profile?.lastName || ""}`
+                                    : `${profile?.positionEn || ""}, Dr. ${profile?.firstName || ""} ${profile?.lastName || ""}`}
                             </h5>
                             <p className="doctor-time text-warning fw-semibold mb-0">
                                 <i className="fa-regular fa-clock me-1"></i>
@@ -194,16 +215,16 @@ class BookingModal extends Component {
                     {/* Nếu đã đăng nhập → KHÔNG hiển thị full form */}
                     {isLoggedIn ? (
                         <div className="alert alert-info">
-                            Bạn đang đăng nhập bằng email: <b>{patientInfo.email}</b>
+                            <FormattedMessage id="booking-modal.logged-in" defaultMessage="Bạn đang đăng nhập bằng email" />: <b>{patientInfo.email}</b>
                             <br />
-                            Thông tin cá nhân sẽ được dùng để đặt lịch.
+                            <FormattedMessage id="booking-modal.logged-in-note" defaultMessage="Thông tin cá nhân sẽ được dùng để đặt lịch." />
                         </div>
                     ) : (
                         <>
                             {/* FORM CŨ — GIỮ NGUYÊN 100% */}
                             <div className="row mb-3">
                                 <div className="col-md-6">
-                                    <label>Họ và tên lót</label>
+                                    <label><FormattedMessage id="user-manage.first-name" defaultMessage="Họ và tên lót" /></label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -214,7 +235,7 @@ class BookingModal extends Component {
                                 </div>
 
                                 <div className="col-md-6">
-                                    <label>Tên</label>
+                                    <label><FormattedMessage id="user-manage.last-name" defaultMessage="Tên" /></label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -227,7 +248,7 @@ class BookingModal extends Component {
 
                             <div className="row mb-3">
                                 <div className="col-md-6">
-                                    <label>Email</label>
+                                    <label><FormattedMessage id="user-manage.email" defaultMessage="Email" /></label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -238,7 +259,7 @@ class BookingModal extends Component {
                                 </div>
 
                                 <div className="col-md-6">
-                                    <label>Địa chỉ liên hệ</label>
+                                    <label><FormattedMessage id="user-manage.address" defaultMessage="Địa chỉ liên hệ" /></label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -251,7 +272,7 @@ class BookingModal extends Component {
 
                             <div className="row mb-3">
                                 <div className="col-md-6">
-                                    <label>SĐT</label>
+                                    <label><FormattedMessage id="user-manage.phone-number" defaultMessage="Số điện thoại" /></label>
                                     <input
                                         type="text"
                                         className="form-control"
@@ -262,7 +283,7 @@ class BookingModal extends Component {
                                 </div>
 
                                 <div className="col-md-6">
-                                    <label>Giới tính</label>
+                                    <label><FormattedMessage id="user-manage.gender" defaultMessage="Giới tính" /></label>
                                     <select
                                         className="form-select"
                                         value={this.state.gender}
@@ -284,7 +305,7 @@ class BookingModal extends Component {
                     {/* Lý do khám – luôn hiển thị */}
                     <div className="row mb-3">
                         <div className="col-md-12">
-                            <label>Lý do khám</label>
+                            <label><FormattedMessage id="booking-modal.reason" defaultMessage="Lý do khám" /></label>
                             <input
                                 type="text"
                                 className="form-control"
@@ -298,10 +319,10 @@ class BookingModal extends Component {
 
                 <ModalFooter>
                     <Button color="primary" onClick={this.SavePatient}>
-                        Xác nhận đặt khám
+                        <FormattedMessage id="booking-modal.confirm" defaultMessage="Xác nhận đặt khám" />
                     </Button>
                     <Button color="secondary" onClick={this.toggleModal}>
-                        Đóng
+                        <FormattedMessage id="booking-modal.close" defaultMessage="Đóng" />
                     </Button>
                 </ModalFooter>
             </Modal>

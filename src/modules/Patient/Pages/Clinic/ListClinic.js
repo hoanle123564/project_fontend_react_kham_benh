@@ -29,19 +29,21 @@ class ListClinic extends Component {
 
     handleViewDetail = (clinic) => {
         if (this.props.history) {
-            this.props.history.push(`/detail_clinic/${clinic.id}`);
+            this.props.history.push(`/detail-clinic/${clinic.id}`);
         }
     };
 
     render() {
         let { clinicList } = this.state;
-
+        let { language } = this.props;
         return (
             <>
                 <HomeHeader showBanner={false} />
 
                 <div className="list-clinic-container">
-                    <div className="breadcrumb">Cơ sở y tế</div>
+                    <div className="breadcrumb">
+                        {language === "vi" ? "Cơ sở y tế" : "Clinics"}
+                    </div>
 
                     <div className="grid-container">
                         {clinicList &&
@@ -79,6 +81,7 @@ class ListClinic extends Component {
 const mapStateToProps = (state) => {
     return {
         clinics: state.admin.AllClinic,
+        language: state.app.language,
     };
 };
 

@@ -63,22 +63,22 @@ class ManageSpecialty extends Component {
         return (
             <div className="manage-specialty-container container mt-4">
                 <h3 className="title-page mb-3">
-                    <FormattedMessage id="specialty-manage.title" defaultMessage="Manage Specialties" />
+                    <FormattedMessage id="manage-specialty.title" defaultMessage="Manage Specialties" />
                 </h3>
 
                 <Button color="primary" onClick={this.handleAdd} className="mb-3">
                     <i className="fa-solid fa-user-plus me-2"></i>
-                    <FormattedMessage id="user-manage.add" />
+                    <FormattedMessage id="manage-specialty.add" />
                 </Button>
 
                 <div className="table-responsive shadow-sm">
                     <table className="table table-hover align-middle table-bordered">
                         <thead className="table-primary">
                             <tr>
-                                <th><FormattedMessage id="specialty-manage.id" defaultMessage="ID" /></th>
-                                <th><FormattedMessage id="specialty-manage.name" defaultMessage="Name" /></th>
-                                <th><FormattedMessage id="specialty-manage.image" defaultMessage="Image" /></th>
-                                <th><FormattedMessage id="specialty-manage.action" defaultMessage="Action" /></th>
+                                <th><FormattedMessage id="manage-specialty.id" defaultMessage="ID" /></th>
+                                <th><FormattedMessage id="manage-specialty.name" defaultMessage="Name" /></th>
+                                <th><FormattedMessage id="manage-specialty.image" defaultMessage="Image" /></th>
+                                <th><FormattedMessage id="manage-specialty.action" defaultMessage="Action" /></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -97,7 +97,7 @@ class ManageSpecialty extends Component {
                                                 />
                                             ) : (
                                                 <span className="text-muted">
-                                                    <FormattedMessage id="specialty-manage.no-image" defaultMessage="No image" />
+                                                    <FormattedMessage id="manage-specialty.no-image" defaultMessage="No image" />
                                                 </span>
                                             )}
                                         </td>
@@ -116,7 +116,7 @@ class ManageSpecialty extends Component {
                             ) : (
                                 <tr>
                                     <td colSpan="4" className="text-center py-4 text-muted">
-                                        <FormattedMessage id="specialty-manage.no-specialties" defaultMessage="No specialties found." />
+                                        <FormattedMessage id="manage-specialty.no-specialties" defaultMessage="No specialties found." />
                                     </td>
                                 </tr>
                             )}

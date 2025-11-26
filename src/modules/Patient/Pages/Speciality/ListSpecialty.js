@@ -29,19 +29,21 @@ class ListSpecialty extends Component {
 
     handleViewDetail = (item) => {
         if (this.props.history) {
-            this.props.history.push(`/detail_specialty/${item.id}`);
+            this.props.history.push(`/detail-specialty/${item.id}`);
         }
     };
 
     render() {
         let { specialtyList } = this.state;
-
+        let { language } = this.props;
         return (
             <>
                 <HomeHeader showBanner={false} />
 
                 <div className="list-specialty-container">
-                    <div className="breadcrumb">Khám Chuyên khoa</div>
+                    <div className="breadcrumb">
+                        {language === "vi" ? "Khám chuyên khoa" : "Specialties"}
+                    </div>
 
                     <div className="grid-container">
                         {specialtyList &&
@@ -79,6 +81,7 @@ class ListSpecialty extends Component {
 const mapStateToProps = (state) => {
     return {
         specialtys: state.admin.specialty,
+        language: state.app.language,
     };
 };
 

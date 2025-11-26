@@ -35,7 +35,7 @@ class DashBoard extends Component {
     }
 
     render() {
-        const { userList, doctorList, clinics, specialty } = this.props;
+        const { userList, doctorList, clinics, specialty, language } = this.props;
         const { allBooking } = this.state;
 
         const patientCount = userList?.filter(u => u.roleId === "R3")?.length || 0;
@@ -46,46 +46,48 @@ class DashBoard extends Component {
 
         // Dữ liệu PieChart (Recharts 2.1 version)
         const pieData = [
-            { name: "Lịch mới (S1)", value: statusNew },
-            { name: "Đã xác nhận (S2)", value: statusConfirmed },
-            { name: "Hoàn thành (S3)", value: statusDone },
-            { name: "Huỷ (S4)", value: statusCancel },
+            { name: language === 'vi' ? "Lịch mới (S1)" : "New (S1)", value: statusNew },
+            { name: language === 'vi' ? "Đã xác nhận (S2)" : "Confirmed (S2)", value: statusConfirmed },
+            { name: language === 'vi' ? "Hoàn thành (S3)" : "Completed (S3)", value: statusDone },
+            { name: language === 'vi' ? "Huỷ (S4)" : "Cancelled (S4)", value: statusCancel },
         ];
 
         const COLORS = ["#0ea5e9", "#f59e0b", "#16a34a", "#dc2626"];
 
         return (
             <div className="dashboard-container">
-                <h1 className="dashboard-title">Thống kê hệ thống</h1>
+                <h1 className="dashboard-title">{language === 'vi' ? 'Thống kê hệ thống' : 'System Statistics'}</h1>
                 <div className="top-stats">
                     <div className="stat-box blue-box">
                         <div className="stat-number">{patientCount}</div>
-                        <div className="stat-label">Bệnh nhân</div>
-                        <div className="stat-manage">Quản lý</div>
+                        <div className="stat-label">{language === 'vi' ? 'Bệnh nhân' : 'Patients'}</div>
+                        <div className="stat-manage">{language === 'vi' ? 'Quản lý' : 'Manage'}</div>
                     </div>
 
                     <div className="stat-box green-box">
                         <div className="stat-number">{doctorList?.length || 0}</div>
-                        <div className="stat-label">Bác sĩ</div>
-                        <div className="stat-manage">Quản lý</div>
+                        <div className="stat-label">{language === 'vi' ? 'Bác sĩ' : 'Doctors'}</div>
+                        <div className="stat-manage">{language === 'vi' ? 'Quản lý' : 'Manage'}</div>
                     </div>
 
                     <div className="stat-box orange-box">
                         <div className="stat-number">{clinics?.length || 0}</div>
-                        <div className="stat-label">Cơ sở y tế</div>
-                        <div className="stat-manage">Quản lý</div>
+                        <div className="stat-label">{language === 'vi' ? 'Cơ sở y tế' : 'Clinics'}</div>
+                        <div className="stat-manage">{language === 'vi' ? 'Quản lý' : 'Manage'}</div>
                     </div>
 
                     <div className="stat-box red-box">
                         <div className="stat-number">{specialty?.length || 0}</div>
-                        <div className="stat-label">Chuyên khoa</div>
-                        <div className="stat-manage">Quản lý</div>
+                        <div className="stat-label">{language === 'vi' ? 'Chuyên khoa' : 'Specialties'}</div>
+                        <div className="stat-manage">{language === 'vi' ? 'Quản lý' : 'Manage'}</div>
                     </div>
                 </div>
 
                 {/* BIỂU ĐỒ TRÒN  */}
                 <div className="chart-container">
-                    <h2 style={{ marginBottom: "20px" }}>Biểu đồ trạng thái lịch khám</h2>
+                    <h2 style={{ marginBottom: "20px" }}>
+                        {language === 'vi' ? 'Biểu đồ trạng thái lịch khám' : 'Appointment Status Chart'}
+                    </h2>
 
                     <ResponsiveContainer width="100%" height={350}>
                         <PieChart>
@@ -116,6 +118,7 @@ const mapStateToProps = (state) => ({
     doctorList: state.admin.AllDoctor,
     clinics: state.admin.AllClinic,
     specialty: state.admin.specialty,
+    language: state.app.language,
 });
 
 const mapDispatchToProps = (dispatch) => ({

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { FormattedMessage } from "react-intl";
 
 import HomeHeader from "../../Layout/HomeHeader";
 import HomeFooter from "../../Layout/HomeFooter";
@@ -33,10 +34,10 @@ class PatientProfile extends Component {
     };
 
     render() {
-        const { patientInfo } = this.props;
+        const { patientInfo, language } = this.props;
 
         if (!patientInfo) {
-            return <div>Không tìm thấy thông tin bệnh nhân</div>;
+            return <div>{language === 'vi' ? 'Không tìm thấy thông tin bệnh nhân' : 'Patient information not found'}</div>;
         }
 
         const user = patientInfo;
@@ -58,38 +59,39 @@ class PatientProfile extends Component {
 
                             <div className="basic-info">
                                 <h2 className="name">{user.firstName} {user.lastName}</h2>
-                                <p className="role">Bệnh nhân</p>
+                                <p className="role">{this.props.language === 'vi' ? 'Bệnh nhân' : 'Patient'}</p>
                             </div>
                         </div>
 
                         <div className="profile-details">
                             <div className="detail-item">
                                 <div className="left">
-                                    <i className="far fa-envelope"></i>Email
+                                    <i className="far fa-envelope"></i><FormattedMessage id="manage-patient.email" />
                                 </div>
                                 <div className="right">{user.email}</div>
                             </div>
 
                             <div className="detail-item">
                                 <div className="left">
-                                    <i className="fas fa-phone-alt"></i>Số điện thoại
+                                    <i className="fas fa-phone-alt"></i><FormattedMessage id="manage-patient.phone-number" />
                                 </div>
                                 <div className="right">{user.phoneNumber}</div>
                             </div>
 
                             <div className="detail-item">
                                 <div className="left">
-                                    <i className="fas fa-venus-mars"></i>Giới tính
+                                    <i className="fas fa-venus-mars"></i><FormattedMessage id="manage-patient.gender" />
                                 </div>
                                 <div className="right">
-                                    {user.gender === "M" ? "Nam" :
-                                        user.gender === "F" ? "Nữ" : "Khác"}
+                                    {user.gender === "M" ? (this.props.language === 'vi' ? "Nam" : "Male") :
+                                        user.gender === "F" ? (this.props.language === 'vi' ? "Nữ" : "Female") :
+                                            (this.props.language === 'vi' ? "Khác" : "Other")}
                                 </div>
                             </div>
 
                             <div className="detail-item">
                                 <div className="left">
-                                    <i className="fas fa-map-marker-alt"></i>Địa chỉ
+                                    <i className="fas fa-map-marker-alt"></i><FormattedMessage id="manage-patient.address" />
                                 </div>
                                 <div className="right">{user.address}</div>
                             </div>
@@ -97,14 +99,14 @@ class PatientProfile extends Component {
 
                         <div className="profile-buttons">
                             <button className="edit-btn" onClick={this.toggleEdit}>
-                                <i className="fas fa-edit"></i> Chỉnh sửa
+                                <i className="fas fa-edit"></i> {this.props.language === 'vi' ? 'Chỉnh sửa' : 'Edit'}
                             </button>
 
                             <button className="logout-btn-patient" onClick={() => {
                                 this.props.patientLogout();
                                 localStorage.removeItem("patientToken");
                             }}>
-                                <i className="fas fa-sign-out-alt"></i> Đăng xuất
+                                <i className="fas fa-sign-out-alt"></i> <FormattedMessage id="home-header.logout" />
                             </button>
                         </div>
 
@@ -126,7 +128,8 @@ class PatientProfile extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        patientInfo: state.patient.patientInfo
+        patientInfo: state.patient.patientInfo,
+        language: state.app.language
     };
 };
 

@@ -109,11 +109,15 @@ class EditSpecialty extends Component {
     render() {
         return (
             <div className="manage-specialty-container">
-                <h3 className="title-page">Quản lý chuyên khoa</h3>
+                <h3 className="title-page">
+                    <FormattedMessage id="manage-specialty.title" defaultMessage="Manage Specialties" />
+                </h3>
 
                 <div className="row align-items-center mb-4">
                     <div className="col-md-6">
-                        <label className="form-label">Tên chuyên khoa</label>
+                        <label className="form-label">
+                            <FormattedMessage id="manage-specialty.name-specialty" defaultMessage="Specialty Name" />
+                        </label>
                         <input
                             className="form-control"
                             type="text"
@@ -124,7 +128,9 @@ class EditSpecialty extends Component {
                     </div>
 
                     <div className="col-md-6">
-                        <label className="form-label">Ảnh chuyên khoa</label>
+                        <label className="form-label">
+                            <FormattedMessage id="manage-specialty.image-specialty" defaultMessage="Specialty Image" />
+                        </label>
                         <div className="d-flex align-items-center">
                             <div className="upload-btn-wrapper me-3">
                                 <input
@@ -164,7 +170,9 @@ class EditSpecialty extends Component {
                                         className="preview-image"
                                     />
                                 ) : (
-                                    <span className="text-muted">Chưa có ảnh</span>
+                                    <span className="text-muted">
+                                        <FormattedMessage id="user-manage.no-image" defaultMessage="Chưa có ảnh" />
+                                    </span>
                                 )}
                             </div>
                         </div>

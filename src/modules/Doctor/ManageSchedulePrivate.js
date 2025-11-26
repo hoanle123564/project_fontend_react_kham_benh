@@ -38,7 +38,10 @@ class ManageSchedulePrivate extends Component {
         const doctorId = this.props.userInfo?.id;
         const selectedDate = moment(date[0]).format("DD/MM/YYYY");
 
-        this.setState({ currentDate: date[0] });
+        this.setState({
+            currentDate: date[0],
+            selectedTime: [] // Reset select time khi đổi ngày
+        });
 
         if (doctorId) {
             let res = await getScheduleDoctor(doctorId, selectedDate);
@@ -82,6 +85,7 @@ class ManageSchedulePrivate extends Component {
 
         if (res && res.errCode === 0) {
             toast.success("Lưu lịch thành công!");
+            this.setState({ selectedTime: [] }); // Reset select time sau khi lưu
             this.handleOnchangeDatePicker([currentDate]); // reload lịch đã đăng ký
         } else {
             toast.error(res.errMessage || "Save failed!");
@@ -136,7 +140,9 @@ class ManageSchedulePrivate extends Component {
                     <div className="row">
 
                         <div className="col-6 form-group">
-                            <label style={{ fontWeight: 600 }}>Bác sĩ hiện tại:</label>
+                            <label style={{ fontWeight: 600 }}>
+                                <FormattedMessage id="manage-patient.choose-doctor" />:
+                            </label>
                             <span style={{ marginLeft: 10 }}>
                                 {this.props.userInfo
                                     ? `${this.props.userInfo.firstName} ${this.props.userInfo.lastName}`
@@ -158,7 +164,7 @@ class ManageSchedulePrivate extends Component {
 
                         {/* Chọn giờ */}
                         <div className="col-12 pick-hour-container">
-                            <label>Chọn giờ khám</label>
+                            <label>{this.props.language === 'vi' ? 'Chọn giờ khám' : 'Select time slot'}</label>
                             <div className="pick-hour-content">
                                 {AllTime.map((item, index) => {
                                     const active = selectedTime.includes(item.keyMap);
@@ -179,17 +185,17 @@ class ManageSchedulePrivate extends Component {
 
                         {/* Bảng lịch đã đăng ký */}
                         <div className="col-12 registered-table">
-                            <h5>Ca đã đăng ký trong ngày</h5>
+                            <h5>{this.props.language === 'vi' ? 'Ca đã đăng ký trong ngày' : 'Registered shifts today'}</h5>
 
                             {registeredSchedule.length === 0 ? (
-                                <div className="text-muted">Chưa có ca nào.</div>
+                                <div className="text-muted">{this.props.language === 'vi' ? 'Chưa có ca nào.' : 'No shifts yet.'}</div>
                             ) : (
                                 <table className="table table-bordered">
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Khung giờ</th>
-                                            <th>Xoá</th>
+                                            <th>{this.props.language === 'vi' ? 'Khung giờ' : 'Time slot'}</th>
+                                            <th>{this.props.language === 'vi' ? 'Xoá' : 'Delete'}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -202,7 +208,7 @@ class ManageSchedulePrivate extends Component {
                                                         className="btn-delete"
                                                         onClick={() => this.handleDeleteSchedule(item.id)}
                                                     >
-                                                        Xoá
+                                                        {this.props.language === 'vi' ? 'Xoá' : 'Delete'}
                                                     </button>
                                                 </td>
                                             </tr>

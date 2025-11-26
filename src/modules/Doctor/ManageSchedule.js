@@ -7,7 +7,6 @@ import * as action from "../../store/actions";
 import "./ManageSchedule.scss";
 import moment from "moment";
 import { toast } from "react-toastify";
-import _ from "lodash";
 import {
   postScheduleDoctor,
   getScheduleDoctor,
@@ -47,13 +46,19 @@ class ManageSchedule extends Component {
 
   // Khi chọn bác sĩ => load lịch theo ngày hiện tại
   handleChangeSelect = async (selectDoctor) => {
-    this.setState({ selectDoctor });
+    this.setState({
+      selectDoctor,
+      selectedTime: [] // Reset select time khi đổi bác sĩ
+    });
     await this.loadScheduleForDate(selectDoctor.value, this.state.currentDate);
   };
 
   // Khi chọn ngày => load lịch
   handleOnchangeDatePicker = async (date) => {
-    this.setState({ currentDate: date[0] });
+    this.setState({
+      currentDate: date[0],
+      selectedTime: [] // Reset select time khi đổi ngày
+    });
 
     if (this.state.selectDoctor?.value) {
       await this.loadScheduleForDate(this.state.selectDoctor.value, date[0]);
@@ -102,6 +107,7 @@ class ManageSchedule extends Component {
 
     if (res && res.errCode === 0) {
       toast.success("Lưu kế hoạch thành công!");
+      this.setState({ selectedTime: [] }); // Reset select time sau khi lưu
       this.loadScheduleForDate(selectDoctor.value, currentDate);
     } else {
       toast.error(res.errMessage || "Lưu thất bại!");
@@ -181,7 +187,7 @@ class ManageSchedule extends Component {
 
             {/* Chọn giờ */}
             <div className="col-12 pick-hour-container">
-              <label>Chọn giờ khám</label>
+              <label>{this.props.language === 'vi' ? 'Chọn giờ khám' : 'Select time slot'}</label>
               <div className="pick-hour-content">
                 {AllTime.map((item, index) => {
                   const active = selectedTime.includes(item.keyMap);
@@ -201,17 +207,17 @@ class ManageSchedule extends Component {
 
             {/* Bảng lịch đã đăng ký */}
             <div className="col-12 registered-table">
-              <h5>Ca đã đăng ký trong ngày</h5>
+              <h5>{this.props.language === 'vi' ? 'Ca đã đăng ký trong ngày' : 'Registered shifts today'}</h5>
 
               {registeredSchedule.length === 0 ? (
-                <div className="text-muted">Chưa có ca nào.</div>
+                <div className="text-muted">{this.props.language === 'vi' ? 'Chưa có ca nào.' : 'No shifts yet.'}</div>
               ) : (
                 <table className="table table-bordered">
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Khung giờ</th>
-                      <th>Xoá</th>
+                      <th>{this.props.language === 'vi' ? 'Khung giờ' : 'Time slot'}</th>
+                      <th>{this.props.language === 'vi' ? 'Xoá' : 'Delete'}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -224,7 +230,7 @@ class ManageSchedule extends Component {
                             className="btn-delete"
                             onClick={() => this.handleDeleteSchedule(item.id)}
                           >
-                            Xoá
+                            {this.props.language === 'vi' ? 'Xoá' : 'Delete'}
                           </button>
                         </td>
                       </tr>

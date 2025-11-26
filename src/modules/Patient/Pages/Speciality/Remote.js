@@ -24,11 +24,11 @@ class Remote extends Component {
     render() {
 
         const staticRemoteList = [
-            { img: CoXuongKhop, title: "Bác sĩ Cơ-Xương-Khớp từ xa", link: "/detail_specialty/10" },
-            { img: TamLy, title: "Tư vấn, trị liệu Tâm lý từ xa", link: "/detail_specialty/19" },
-            { img: TamThan, title: "Sức khỏe tâm thần từ xa", link: "/detail_specialty/18" },
-            { img: TieuHoa, title: "Bác sĩ Tiêu hóa từ xa", link: "/detail_specialty/12" },
-            { img: TimMach, title: "Bác sĩ Tim mạch từ xa", link: "/detail_specialty/13" },
+            { img: CoXuongKhop, title: "Bác sĩ Cơ-Xương-Khớp từ xa", link: "/detail-specialty/10" },
+            { img: TamLy, title: "Tư vấn, trị liệu Tâm lý từ xa", link: "/detail-specialty/19" },
+            { img: TamThan, title: "Sức khỏe tâm thần từ xa", link: "/detail-specialty/18" },
+            { img: TieuHoa, title: "Bác sĩ Tiêu hóa từ xa", link: "/detail-specialty/12" },
+            { img: TimMach, title: "Bác sĩ Tim mạch từ xa", link: "/detail-specialty/13" },
             { img: DaLieu, title: "Bác sĩ Da liễu từ xa", link: "/remote/da-lieu" },
         ];
 

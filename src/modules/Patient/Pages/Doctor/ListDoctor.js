@@ -28,19 +28,21 @@ class ListDoctor extends Component {
 
     handleViewDetailDoctor = (doctor) => {
         if (this.props.history) {
-            this.props.history.push(`/detail_doctor/${doctor.id}`);
+            this.props.history.push(`/detail-doctor/${doctor.id}`);
         }
     };
 
     render() {
         let { doctorList } = this.state;
         console.log("list doctor", doctorList);
-
+        let language = this.props.language;
         return (
             <>
                 <HomeHeader showBanner={false} />
                 <div className="list-doctor-container">
-                    <div className="list-doctor-header">Danh sách bác sĩ</div>
+                    <div className="list-doctor-header">
+                        {language === "vi" ? "Danh sách bác sĩ" : "List of doctors"}
+                    </div>
 
                     <div className="list-doctor-body">
                         {doctorList && doctorList.length > 0 &&
@@ -84,6 +86,7 @@ class ListDoctor extends Component {
 const mapStateToProps = (state) => {
     return {
         ListDoctor: state.admin.doctor,
+        language: state.app.language,
     };
 };
 

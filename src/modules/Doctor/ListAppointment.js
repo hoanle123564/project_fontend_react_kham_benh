@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { FormattedMessage } from "react-intl";
 import "./ListAppointment.scss";
 import moment from "moment";
 import { getAppointmentDoctor } from "../../services/userService";
@@ -21,13 +22,14 @@ class ListAppointment extends Component {
 
     // Mapping status
     renderStatus = (statusId) => {
+        const { language } = this.props;
         const statusMap = {
-            S1: "Chờ xác nhận",
-            S2: "Đã xác nhận",
-            S3: "Đã khám",
-            S4: "Đã hủy"
+            S1: language === 'vi' ? "Chờ xác nhận" : "Pending",
+            S2: language === 'vi' ? "Đã xác nhận" : "Confirmed",
+            S3: language === 'vi' ? "Đã khám" : "Completed",
+            S4: language === 'vi' ? "Đã hủy" : "Cancelled"
         };
-        return statusMap[statusId] || "Không xác định";
+        return statusMap[statusId] || (language === 'vi' ? "Không xác định" : "Unknown");
     };
 
     render() {
@@ -35,18 +37,20 @@ class ListAppointment extends Component {
 
         return (
             <div className="list-appointment-container">
-                <div className="title">Lịch sử cuộc hẹn</div>
+                <div className="title">
+                    <FormattedMessage id="menu.doctor.history-appointment" />
+                </div>
 
                 <table className="appointment-table">
                     <thead>
                         <tr>
-                            <th>Họ tên bệnh nhân</th>
-                            <th>Email</th>
-                            <th>Số điện thoại</th>
-                            <th>Ngày khám</th>
-                            <th>Khung giờ</th>
-                            <th>Triệu chứng</th>
-                            <th>Trạng thái</th>
+                            <th><FormattedMessage id="manage-patient.patient-name" /></th>
+                            <th><FormattedMessage id="manage-patient.email" /></th>
+                            <th><FormattedMessage id="manage-patient.phone-number" /></th>
+                            <th>{this.props.language === 'vi' ? 'Ngày khám' : 'Appointment date'}</th>
+                            <th>{this.props.language === 'vi' ? 'Khung giờ' : 'Time slot'}</th>
+                            <th><FormattedMessage id="manage-patient.reason-appointment" /></th>
+                            <th><FormattedMessage id="manage-patient.status" /></th>
                         </tr>
                     </thead>
 
@@ -72,7 +76,7 @@ class ListAppointment extends Component {
                         ) : (
                             <tr>
                                 <td colSpan="7" style={{ textAlign: "center", padding: "20px" }}>
-                                    Không có lịch hẹn nào
+                                    {this.props.language === 'vi' ? 'Không có lịch hẹn nào' : 'No appointments'}
                                 </td>
                             </tr>
                         )}
@@ -85,6 +89,7 @@ class ListAppointment extends Component {
 
 const mapStateToProps = (state) => ({
     userInfo: state.doctor?.doctorInfo || state.user?.userInfo,
+    language: state.app.language,
 });
 
 export default connect(mapStateToProps)(ListAppointment);

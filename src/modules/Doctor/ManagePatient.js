@@ -115,7 +115,7 @@ class ManageSchedulePrivate extends Component {
             <>
                 <div className="manage-schedule-container">
                     <div className="m-s-title">
-                        <FormattedMessage id="manage-schedule.title" />
+                        <FormattedMessage id="manage-patient.title" />
                     </div>
 
                     <div className="container">
@@ -123,7 +123,7 @@ class ManageSchedulePrivate extends Component {
                             {/* Thông tin bác sĩ */}
                             <div className="col-6 form-group">
                                 <label style={{ marginRight: "10px", fontWeight: "600" }}>
-                                    Bác sĩ hiện tại:
+                                    <FormattedMessage id="manage-patient.choose-doctor" />:
                                 </label>
                                 <span style={{ fontSize: "16px" }}>
                                     {this.props.userInfo
@@ -135,7 +135,7 @@ class ManageSchedulePrivate extends Component {
                             {/* Chọn ngày */}
                             <div className="col-6 form-group">
                                 <label>
-                                    <FormattedMessage id="manage-schedule.select-date" />
+                                    <FormattedMessage id="manage-patient.select-date" />
                                 </label>
                                 <DatePicker
                                     onChange={this.handleOnchangeDatePicker}
@@ -152,11 +152,11 @@ class ManageSchedulePrivate extends Component {
                                     <input
                                         type="text"
                                         className="form-control w-25"
-                                        placeholder="🔍 Tìm theo tên bệnh nhân..."
+                                        placeholder={this.props.language === 'vi' ? '🔍 Tìm theo tên bệnh nhân...' : '🔍 Search patient by name...'}
                                         onChange={this.handleSearchChange}
                                     />
                                     <span className="text-muted">
-                                        Tổng: {filteredPatients.length} lịch khám
+                                        {this.props.language === 'vi' ? `Tổng: ${filteredPatients.length} lịch khám` : `Total: ${filteredPatients.length} appointments`}
                                     </span>
                                 </div>
 
@@ -167,23 +167,23 @@ class ManageSchedulePrivate extends Component {
                                             <tr>
                                                 <th>#</th>
                                                 {[
-                                                    { field: "timeTypeVi", label: "Thời gian" },
-                                                    { field: "firstName", label: "Họ và tên" },
-                                                    { field: "address", label: "Địa chỉ" },
-                                                    { field: "reason", label: "Lý do" }
+                                                    { field: "timeTypeVi", labelVi: "Thời gian", labelEn: "Time" },
+                                                    { field: "firstName", labelVi: "Họ và tên", labelEn: "Full name" },
+                                                    { field: "address", labelVi: "Địa chỉ", labelEn: "Address" },
+                                                    { field: "reason", labelVi: "Lý do", labelEn: "Reason" }
                                                 ].map(col => (
                                                     <th
                                                         key={col.field}
                                                         onClick={() => col.field !== "address" && this.handleSort(col.field)}
                                                         style={{ cursor: col.field !== "address" ? "pointer" : "default", whiteSpace: "nowrap" }}
                                                     >
-                                                        {col.label}{" "}
+                                                        {this.props.language === 'vi' ? col.labelVi : col.labelEn}{" "}
                                                         {sortField === col.field && (
                                                             <i className={`fa-solid fa-sort-${sortOrder === "asc" ? "up" : "down"} ms-1`}></i>
                                                         )}
                                                     </th>
                                                 ))}
-                                                <th>Hành động</th>
+                                                <th>{this.props.language === 'vi' ? 'Hành động' : 'Actions'}</th>
                                             </tr>
                                         </thead>
 
@@ -201,7 +201,7 @@ class ManageSchedulePrivate extends Component {
                                                                 className="btn btn-sm btn-warning"
                                                                 onClick={() => this.handleConfirm(item)}
                                                             >
-                                                                Xác nhận khám xong
+                                                                {this.props.language === 'vi' ? 'Xác nhận khám xong' : 'Confirm completion'}
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -209,7 +209,7 @@ class ManageSchedulePrivate extends Component {
                                             ) : (
                                                 <tr>
                                                     <td colSpan="6" className="text-center text-muted py-3">
-                                                        Không có lịch khám
+                                                        {this.props.language === 'vi' ? 'Không có lịch khám' : 'No appointments'}
                                                     </td>
                                                 </tr>
                                             )}

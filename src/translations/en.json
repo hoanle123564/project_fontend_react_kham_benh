@@ -73,6 +73,7 @@
     "last-name": "Last name",
     "address": "Address",
     "phone": "Phone number",
+    "phone-number": "Phone number",
     "gender": "Gender",
     "role": "Role",
     "choose": "Choose...",
@@ -84,6 +85,27 @@
     "choose-image": "Choose image",
     "remove-image": "Remove image",
     "no-image": "No image"
+  },
+  "booking-modal": {
+    "title": "Book Medical Appointment",
+    "logged-in": "You are logged in with email",
+    "logged-in-note": "Your personal information will be used for booking.",
+    "reason": "Reason for visit",
+    "confirm": "Confirm Booking",
+    "close": "Close",
+    "error-reason": "Please enter reason for visit.",
+    "error-firstname": "Please enter first name.",
+    "error-lastname": "Please enter last name.",
+    "error-email": "Please enter email.",
+    "error-phone": "Please enter phone number.",
+    "error-address": "Please enter address.",
+    "error-gender": "Please select gender."
+  },
+  "dashboard": {
+    "total-user": "Total users",
+    "total-doctor": "Total doctors",
+    "total-admin": "Total admins",
+    "total-new-user": "Total new users this month"
   },
   "manage-clinic": {
     "title": "Clinic management",
@@ -100,6 +122,7 @@
   "manage-specialty": {
     "title": "Specialty management",
     "name-specialty": "Specialty name",
+    "add": "Add new specialty",
     "image-specialty": "Specialty image",
     "description-html": "Description in HTML",
     "description-markdown": "Description in Markdown",
@@ -110,6 +133,24 @@
     "choose-doctor": "Choose doctor",
     "select-date": "Select date",
     "save-schedule": "Save schedule"
+  },
+  "manage-patient": {
+    "title": "Patient management",
+    "choose-doctor": "Choose doctor",
+    "select-date": "Select date",
+    "search-patient": "Search patient by name or phone number",
+    "patient-name": "Patient name",
+    "time-booking": "Booking time",
+    "reason-appointment": "Reason for appointment",
+    "time-appointment": "Appointment time",
+    "address-clinic": "Clinic address",
+    "gender": "Gender",
+    "address": "Address",
+    "phone-number": "Phone number",
+    "email": "Email",
+    "status": "Status",
+    "confirm": "Confirm",
+    "send-remedy": "Send remedy"
   },
   "detail-doctor": {
     "schedule": "Schedule",

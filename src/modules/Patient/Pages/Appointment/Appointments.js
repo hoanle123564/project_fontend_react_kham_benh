@@ -4,7 +4,6 @@ import HomeHeader from "../../Layout/HomeHeader";
 import HomeFooter from "../../Layout/HomeFooter";
 import * as actions from "../../../../store/actions";
 import "./Appointments.scss";
-import { toast } from "react-toastify";
 import moment from "moment";
 
 class Appointments extends Component {
@@ -46,9 +45,16 @@ class Appointments extends Component {
             S3: "blue",
             S4: "red",
         };
+        const statusEn = {
+            S1: "Pending",
+            S2: "Confirmed",
+            S3: "Completed",
+            S4: "Cancelled"
+        };
+        const displayText = this.props.language === 'vi' ? statusVi : statusEn[statusId];
         return (
             <span className="status-label" style={{ color: colorMap[statusId] }}>
-                {statusVi}
+                {displayText}
             </span>
         );
     };
@@ -60,20 +66,22 @@ class Appointments extends Component {
             <>
                 <HomeHeader showBanner={false} />
                 <div className="appointments-container">
-                    <h2 className="appointments-title">Lịch hẹn của tôi</h2>
+                    <h2 className="appointments-title">
+                        {this.props.language === 'vi' ? 'Lịch hẹn của tôi' : 'My Appointments'}
+                    </h2>
 
                     <div className="appointments-content">
                         {appointments.length === 0 ? (
-                            <p>Không có lịch hẹn nào.</p>
+                            <p>{this.props.language === 'vi' ? 'Không có lịch hẹn nào.' : 'No appointments.'}</p>
                         ) : (
                             <table className="appointments-table">
                                 <thead>
                                     <tr>
-                                        <th>Ngày</th>
-                                        <th>Giờ</th>
-                                        <th>Bác sĩ</th>
-                                        <th>Trạng thái</th>
-                                        <th>Hành động</th>
+                                        <th>{this.props.language === 'vi' ? 'Ngày' : 'Date'}</th>
+                                        <th>{this.props.language === 'vi' ? 'Giờ' : 'Time'}</th>
+                                        <th>{this.props.language === 'vi' ? 'Bác sĩ' : 'Doctor'}</th>
+                                        <th>{this.props.language === 'vi' ? 'Trạng thái' : 'Status'}</th>
+                                        <th>{this.props.language === 'vi' ? 'Hành động' : 'Actions'}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -95,7 +103,7 @@ class Appointments extends Component {
                                                             className="btn-cancel"
                                                             onClick={() => this.handleCancel(item.id)}
                                                         >
-                                                            Hủy lịch
+                                                            {this.props.language === 'vi' ? 'Hủy lịch' : 'Cancel'}
                                                         </button>
                                                     )}
                                             </td>
