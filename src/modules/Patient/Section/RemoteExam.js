@@ -21,27 +21,27 @@ class RemoteExam extends Component {
     };
     handleCoXuong = () => {
         if (this.props.history) {
-            this.props.history.push(`/detail_specialty/10`);
+            this.props.history.push(`/detail-specialty/10`);
         }
     };
     handleTamLy = () => {
         if (this.props.history) {
-            this.props.history.push(`/detail_specialty/19`);
+            this.props.history.push(`/detail-specialty/19`);
         }
     };
     handleTamThan = () => {
         if (this.props.history) {
-            this.props.history.push(`/detail_specialty/18`);
+            this.props.history.push(`/detail-specialty/18`);
         }
     }
     handleTieuHoa = () => {
         if (this.props.history) {
-            this.props.history.push(`/detail_specialty/12`);
+            this.props.history.push(`/detail-specialty/12`);
         }
     }
     handleTimMach = () => {
         if (this.props.history) {
-            this.props.history.push(`/detail_specialty/13`);
+            this.props.history.push(`/detail-specialty/13`);
         }
     }
     render() {

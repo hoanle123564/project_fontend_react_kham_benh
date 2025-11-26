@@ -66,19 +66,20 @@ class App extends Component {
                 <Route path={path.LOGIN} component={Login} />
                 <Route path={path.REGISTER} component={Register} />
 
-                <Route path={path.SYSTEM} component={adminIsAuthenticated(System)} />
-                <Route path={path.DOCTOR} component={doctorIsAuthenticated(Doctor)} />
+                <Route path={path.DETAIL_DOCTOR} exact component={DetailDoctor} />
+                <Route path={path.DETAIL_SPECIALTY} exact component={DetailSpeciality} />
+                <Route path={path.DETAIL_CLINIC} exact component={DetailClinic} />
+                <Route path={path.LIST_DOCTOR} exact component={ListDoctor} />
+                <Route path={path.LIST_CLINIC} exact component={ListClinic} />
+                <Route path={path.LIST_SPECIALTY} exact component={ListSpecialty} />
+                <Route path={path.REMOTE} exact component={Remote} />
                 <Route path={path.VERIFY_BOOKING} exact component={VerifyEmailBooking} />
                 <Route path={path.PROFILE_PATIENT} component={patientIsAuthenticated(PatientProfile)} />
                 <Route path={path.APPOINTMENTS} exact component={patientIsAuthenticated(Appointments)} />
 
-                <Route path={path.LIST_DOCTOR} exact component={ListDoctor} />
-                <Route path={path.LIST_CLINIC} exact component={ListClinic} />
-                <Route path={path.LIST_SPECIALTY} exact component={ListSpecialty} />
-                <Route path={path.DETAIL_DOCTOR} exact component={DetailDoctor} />
-                <Route path={path.DETAIL_SPECIALTY} exact component={DetailSpeciality} />
-                <Route path={path.DETAIL_CLINIC} exact component={DetailClinic} />
-                <Route path={path.REMOTE} exact component={Remote} />
+                <Route path={path.SYSTEM} component={adminIsAuthenticated(System)} />
+                <Route path={path.DOCTOR} component={doctorIsAuthenticated(Doctor)} />
+
                 <Route component={NotFound} />
               </Switch>
             </span>

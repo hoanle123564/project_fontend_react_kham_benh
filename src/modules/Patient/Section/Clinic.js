@@ -17,7 +17,7 @@ class Clinic extends Component {
         }
     }
     handleViewDetailClinic = (clinic) => {
-        this.props.history.push(`/detail_clinic/${clinic.id}`);
+        this.props.history.push(`/detail-clinic/${clinic.id}`);
     }
 
     returnChoRay = () => {

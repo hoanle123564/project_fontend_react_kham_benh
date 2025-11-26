@@ -6,10 +6,10 @@ import "./HomeHeader.scss";
 import logoSrc from "../../../assets/logo2.png";
 import iconChuyenKhoa from "../../../assets/icon-khoa/iconkham-chuyen-khoa.png";
 import iconNhaKhoa from "../../../assets/icon-khoa/iconkham-nha-khoa.png";
-import iconCTongquat from "../../../assets/icon-khoa/iconkham-tong-quan.png";
 import iconTuXa from "../../../assets/icon-khoa/iconkham-tu-xa.png";
-import iconSuckhoeTinhthan from "../../../assets/icon-khoa/iconsuc-khoe-tinh-than.png";
-import iconXetNghiep from "../../../assets/icon-khoa/iconxet-nghiem-y-hoc.png";
+// import iconCTongquat from "../../../assets/icon-khoa/iconkham-tong-quan.png";
+// import iconSuckhoeTinhthan from "../../../assets/icon-khoa/iconsuc-khoe-tinh-than.png";
+// import iconXetNghiep from "../../../assets/icon-khoa/iconxet-nghiem-y-hoc.png";
 import vietnam from "../../../assets/flag/vietnam.png";
 import united from "../../../assets/flag/united_kingdom.png";
 import { FormattedMessage } from "react-intl"; // chuyển đổi ngôn ngữ
@@ -117,7 +117,7 @@ class HomeHeader extends Component {
   };
   handleDestist = () => {
     if (this.props.history) {
-      this.props.history.push(`/detail_specialty/16`);
+      this.props.history.push(`/detail-specialty/16`);
     }
   }
   handleRemote = () => {

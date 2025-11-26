@@ -5,17 +5,17 @@ export const path = {
   LOG_OUT: "/logout",
   SYSTEM: "/system",
   HOMEPAGE: "/home/",
-  DETAIL_DOCTOR: "/detail_doctor/:id",
-  DETAIL_SPECIALTY: "/detail_specialty/:id",
+  DETAIL_DOCTOR: "/detail-doctor/:id",
+  DETAIL_SPECIALTY: "/detail-specialty/:id",
   DOCTOR: "/doctor",
   VERIFY_BOOKING: "/verify-booking",
-  DETAIL_CLINIC: "/detail_clinic/:id",
+  DETAIL_CLINIC: "/detail-clinic/:id",
   PROFILE_PATIENT: "/patient-profile",
   APPOINTMENTS: "/appointments",
   LIST_DOCTOR: "/list-doctor",
   LIST_CLINIC: "/list-clinic",
   LIST_SPECIALTY: "/list-specialty",
-  LIST_REMOTE: "/list-remote",
+  REMOTE: "/list-remote",
 };
 
 export const languages = {
