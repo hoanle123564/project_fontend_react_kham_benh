@@ -16,7 +16,6 @@ import { FormattedMessage } from "react-intl";
 class Header extends Component {
   state = {
     menuApp: [],
-    displayName: "",
   };
 
   componentDidMount() {
@@ -24,16 +23,29 @@ class Header extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.adminToken !== this.props.adminToken ||
-      prevProps.doctorToken !== this.props.doctorToken) {
+    if (
+      prevProps.adminToken !== this.props.adminToken ||
+      prevProps.doctorToken !== this.props.doctorToken
+    ) {
       this.loadMenuByRole();
     }
   }
 
   loadMenuByRole = () => {
-    let token = this.props.adminToken || this.props.doctorToken;
+    const path = window.location.pathname;
 
-    if (!token) return;
+    let token = null;
+
+    if (path.includes("/system")) {
+      token = this.props.adminToken;
+    } else if (path.includes("/doctor")) {
+      token = this.props.doctorToken;
+    }
+
+    if (!token) {
+      this.setState({ menuApp: [] });
+      return;
+    }
 
     let decoded;
     try {
@@ -43,16 +55,13 @@ class Header extends Component {
       return;
     }
 
-    let { roleId, firstName, lastName } = decoded;
+    const { roleId } = decoded;
 
     let menu = [];
     if (roleId === "R1") menu = adminMenu;
     if (roleId === "R2") menu = doctorMenu;
 
-    this.setState({
-      menuApp: menu,
-      displayName: `${firstName} ${lastName}`,
-    });
+    this.setState({ menuApp: menu });
   };
 
   handleLogout = () => {
@@ -71,16 +80,20 @@ class Header extends Component {
     const { language, adminInfo, doctorInfo } = this.props;
 
     const flagSrc = language === languages.VI ? vietnam : united;
-    const userDisplay =
-      adminInfo
-        ? `${adminInfo.firstName} ${adminInfo.lastName}`
-        : doctorInfo
-          ? `${doctorInfo.firstName} ${doctorInfo.lastName}`
-          : "";
+    const path = window.location.pathname;
+
+    let displayName = "";
+
+    if (path.includes("/system") && adminInfo) {
+      displayName = `${adminInfo.firstName} ${adminInfo.lastName}`;
+    }
+
+    if (path.includes("/doctor") && doctorInfo) {
+      displayName = `${doctorInfo.firstName} ${doctorInfo.lastName}`;
+    }
 
     return (
       <div className="sidebar-container">
-
         <div className="sidebar-logo">
           <img src={LifeCare} alt="logo" />
         </div>
@@ -92,7 +105,7 @@ class Header extends Component {
         <div className="sidebar-footer">
           <div className="footer-top">
             <span>
-              <FormattedMessage id="home-header.welcome" />, {userDisplay}
+              <FormattedMessage id="home-header.welcome" />, {displayName}
             </span>
           </div>
 
@@ -114,7 +127,6 @@ class Header extends Component {
             </div>
           </div>
         </div>
-
       </div>
     );
   }
@@ -123,7 +135,6 @@ class Header extends Component {
 const mapStateToProps = (state) => ({
   language: state.app.language,
 
-  // token riêng cho mỗi role
   adminToken: state.adminAuth.token,
   doctorToken: state.doctor.token,
 
