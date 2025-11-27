@@ -138,7 +138,7 @@ class DetailClinic extends Component {
                                 }}
                             ></div>
                         }
-                        <div className="filter-specialty">
+                        {/* <div className="filter-specialty">
                             <span>Chọn tỉnh thành:</span>
                             <select onChange={(event) => this.handleOnchange(event)}>
                                 {this.state.ListProvince &&
@@ -149,7 +149,7 @@ class DetailClinic extends Component {
                                         </option>
                                     ))}
                             </select>
-                        </div>
+                        </div> */}
                     </div>
 
                     <div className="detail-specialty-body">
