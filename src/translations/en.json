@@ -28,6 +28,22 @@
     "doctor-popular": "Top Doctors",
     "About-life-care": "Community About LIFECARE"
   },
+  "footer": {
+    "company-name": "LifeCare Technology Joint Stock Company",
+    "office-hcm": "Office in Ho Chi Minh City",
+    "contact-cooperation": "Contact for Cooperation",
+    "digital-transformation": "Digital Transformation",
+    "privacy-policy": "Privacy Policy",
+    "operating-regulations": "Operating Regulations",
+    "recruitment": "Recruitment",
+    "terms-of-use": "Terms of Use",
+    "faq": "Frequently Asked Questions",
+    "corporate-health": "Corporate Health",
+    "content-partners": "Content Sponsoring Partners",
+    "partner-mental-health": "Sponsoring \"Mental Health\" content section",
+    "partner-advanced-medical": "Sponsoring \"Advanced Medical\" content section",
+    "partner-general-health": "Sponsoring \"General Health\" content section"
+  },
   "menu": {
     "system": {
       "header": "System",

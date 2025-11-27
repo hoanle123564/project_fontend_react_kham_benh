@@ -28,6 +28,22 @@
     "doctor-popular": "Bác sĩ nổi bật",
     "About-life-care": "Truyền thông về LIFECARE"
   },
+  "footer": {
+    "company-name": "Công ty Cổ phần Công nghệ LifeCare",
+    "office-hcm": "Văn phòng tại TP Hồ Chí Minh",
+    "contact-cooperation": "Liên hệ hợp tác",
+    "digital-transformation": "Chuyển đổi số",
+    "privacy-policy": "Chính sách bảo mật",
+    "operating-regulations": "Quy chế hoạt động",
+    "recruitment": "Tuyển dụng",
+    "terms-of-use": "Điều khoản sử dụng",
+    "faq": "Câu hỏi thường gặp",
+    "corporate-health": "Sức khỏe doanh nghiệp",
+    "content-partners": "Đối tác bảo trợ nội dung",
+    "partner-mental-health": "Bảo trợ chuyên mục nội dung \"Sức khỏe tinh thần\"",
+    "partner-advanced-medical": "Bảo trợ chuyên mục nội dung \"Y khoa chuyên sâu\"",
+    "partner-general-health": "Bảo trợ chuyên mục nội dung \"Sức khỏe tổng quát\""
+  },
   "menu": {
     "system": {
       "header": "Hệ thống",
