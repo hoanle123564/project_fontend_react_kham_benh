@@ -97,14 +97,23 @@ class Register extends Component {
             address: this.state.address,
             gender: this.state.gender,
             image: this.state.avatar,
-            roleId: "R3", // bệnh nhân
+            roleId: "R3",
         };
 
         let res = await this.props.saveUser(data);
-        if (res && res.errCode === 0) {
+
+        // Thành công
+        if (res?.errCode === 0) {
             this.props.history.push("/login");
         }
+        else {
+            this.setState({
+                errors: { email: "Email đã tồn tại, vui lòng chọn email khác!" }
+            });
+        }
+
     };
+
 
     render() {
         const { errors, genderArr } = this.state;

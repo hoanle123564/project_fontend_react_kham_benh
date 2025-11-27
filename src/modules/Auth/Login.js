@@ -60,7 +60,7 @@ class Login extends Component {
 
             if (data && data.errCode !== 0) {
                 this.setState({
-                    passError: data.message,
+                    passError: data.errMessage,
                 });
             } else {
                 if (data.user.roleId === "R1") {

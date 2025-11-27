@@ -94,7 +94,7 @@ class UserEdit extends Component {
     }
   };
 
-  // ✅ Kiểm tra và gán lỗi song ngữ
+  // Kiểm tra và gán lỗi song ngữ
   checkValidateInput = () => {
     const {
       email,

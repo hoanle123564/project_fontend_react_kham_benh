@@ -68,9 +68,20 @@ class UserRedux extends Component {
   };
 
   handleChangeInput = (e, field) => {
-    this.setState({
-      [field]: e.target.value,
-      errors: { ...this.state.errors, [field]: "" },
+    const value = e.target.value;
+    this.setState((prevState) => {
+      const updatedState = {
+        ...prevState,
+        [field]: value,
+        errors: { ...prevState.errors, [field]: "" },
+      };
+
+      // Nếu người dùng đổi vai trò mà KHÔNG phải bác sĩ => xóa chức danh
+      if (field === "role" && value !== "R2") {
+        updatedState.position = "";
+      }
+
+      return updatedState;
     });
   };
 
