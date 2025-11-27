@@ -160,21 +160,22 @@ class EditModal extends Component {
                         <div className="col-md-6">
                             <label>{this.props.language === 'vi' ? 'Họ' : 'Last name'}</label>
                             <input
-                                className={`form-control ${errors.lastName ? "input-error" : ""}`}
-                                value={this.state.lastName}
-                                onChange={(e) => this.handleChange(e, "lastName")}
-                            />
-                            {errors.lastName && <div className="error-text">{errors.lastName}</div>}
-                        </div>
-
-                        <div className="col-md-6">
-                            <label>{this.props.language === 'vi' ? 'Tên' : 'First name'}</label>
-                            <input
                                 className={`form-control ${errors.firstName ? "input-error" : ""}`}
                                 value={this.state.firstName}
                                 onChange={(e) => this.handleChange(e, "firstName")}
                             />
                             {errors.firstName && <div className="error-text">{errors.firstName}</div>}
+                        </div>
+
+                        <div className="col-md-6">
+                            <label>{this.props.language === 'vi' ? 'Tên' : 'First name'}</label>
+
+                            <input
+                                className={`form-control ${errors.lastName ? "input-error" : ""}`}
+                                value={this.state.lastName}
+                                onChange={(e) => this.handleChange(e, "lastName")}
+                            />
+                            {errors.lastName && <div className="error-text">{errors.lastName}</div>}
                         </div>
                     </div>
 
