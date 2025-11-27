@@ -154,7 +154,8 @@
     "send-remedy": "Gửi hóa đơn",
     "note": "Ghi chú",
     "save": "Lưu",
-    "cancel": "Hủy"
+    "cancel": "Hủy",
+    "email": "Email"
   },
   "detail-doctor": {
     "schedule": "Lịch khám",
