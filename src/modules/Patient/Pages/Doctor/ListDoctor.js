@@ -15,7 +15,7 @@ class ListDoctor extends Component {
     }
 
     async componentDidMount() {
-        await this.props.fetchTopDoctor();
+        await this.props.fetchTopDoctor(6);
     }
 
     componentDidUpdate(prevProps) {
@@ -92,7 +92,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        fetchTopDoctor: () => dispatch(action.fetchTopDoctor()),
+        fetchTopDoctor: (slot) => dispatch(action.fetchTopDoctor(slot)),
     };
 };
 
