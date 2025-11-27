@@ -280,12 +280,16 @@ export const SaveDetailDoctor = (data) => {
         dispatch({
           type: actionTypes.SAVE_DETAIL_DOCTOR,
         });
+
       } else {
-        toast.success("Save detail doctor failed");
+        toast.error("Save detail doctor failed");
         dispatch(fetchAllDoctorFail());
+        dispatch(fetchAllDoctor());
+
       }
     } catch (error) {
       dispatch(fetchAllDoctorFail());
+      dispatch(fetchAllDoctor());
       console.log("SaveDetailDoctor error: ", error);
     }
   };
