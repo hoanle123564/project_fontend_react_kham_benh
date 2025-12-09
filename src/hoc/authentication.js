@@ -12,23 +12,6 @@ const isTokenValid = (token) => {
         return false;
     }
 };
-// Route yêu cầu đăng nhập
-export const userIsAuthenticated = connectedRouterRedirect({
-    authenticatedSelector: state =>
-        state.adminAuth.isLoggedIn && isTokenValid(state.adminAuth.token),
-    wrapperDisplayName: "UserIsAuthenticated",
-    redirectPath: "/login",
-    allowRedirectBack: false,   // ❗ KHÔNG cho trở về URL cũ
-});
-
-// Route KHÔNG yêu cầu đăng nhập
-export const userIsNotAuthenticated = connectedRouterRedirect({
-    authenticatedSelector: () => !isTokenValid(),
-    wrapperDisplayName: "UserIsNotAuthenticated",
-    redirectPath: "/",          // ❗ KHÔNG dùng redirect-back
-    allowRedirectBack: false,
-});
-
 
 // ===================================
 export const adminIsAuthenticated = connectedRouterRedirect({

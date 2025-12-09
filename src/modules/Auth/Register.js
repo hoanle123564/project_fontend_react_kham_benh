@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { FormattedMessage, injectIntl } from "react-intl";
+import { injectIntl } from "react-intl";
 import { languages } from "../../utils/constant";
 import * as action from "../../store/actions";
 import "./Register.scss";
