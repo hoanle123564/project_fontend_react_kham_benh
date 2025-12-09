@@ -83,9 +83,9 @@ class ManageSpecialty extends Component {
                         </thead>
                         <tbody>
                             {ListSpecialty && ListSpecialty.length > 0 ? (
-                                ListSpecialty.map((c) => (
+                                ListSpecialty.map((c, index) => (
                                     <tr key={c.id}>
-                                        <td>{c.id}</td>
+                                        <td>{index + 1}</td>
                                         <td>{c.name}</td>
                                         <td>
                                             {c.image ? (

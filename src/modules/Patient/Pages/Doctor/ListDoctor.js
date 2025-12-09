@@ -21,7 +21,7 @@ class ListDoctor extends Component {
     componentDidUpdate(prevProps) {
         if (prevProps.ListDoctor !== this.props.ListDoctor) {
             this.setState({
-                doctorList: this.props.ListDoctor,
+                doctorList: this.props.ListDoctor.slice(0, 6), //lấy 6 bác sĩ đầu tiên
             });
         }
     }

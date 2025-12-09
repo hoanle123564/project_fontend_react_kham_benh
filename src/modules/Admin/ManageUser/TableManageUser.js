@@ -200,7 +200,7 @@ class TableManageUser extends Component {
               {currentUsers.length > 0 ? (
                 currentUsers.map((item, index) => (
                   <tr key={item.id}>
-                    <td>{item.id}</td>
+                    <td>{index + 1}</td>
                     <td>{item.firstName}</td>
                     <td>{item.lastName}</td>
                     <td>{item.email}</td>

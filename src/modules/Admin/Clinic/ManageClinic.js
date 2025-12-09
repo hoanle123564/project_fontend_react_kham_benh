@@ -85,9 +85,9 @@ class ManageClinic extends Component {
                         </thead>
                         <tbody>
                             {ListClinic && ListClinic.length > 0 ? (
-                                ListClinic.map((c) => (
+                                ListClinic.map((c, index) => (
                                     <tr key={c.id}>
-                                        <td>{c.id}</td>
+                                        <td>{index + 1}</td>
                                         <td className='name'>{c.name}</td>
                                         <td>
                                             {c.image ? (
