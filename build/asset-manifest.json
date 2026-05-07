@@ -1,0 +1,41 @@
+{
+  "files": {
+    "main.css": "/static/css/main.fe736fcf.css",
+    "main.js": "/static/js/main.53983cdd.js",
+    "static/media/background.png": "/static/media/background.8d3efe0d767a08626b3e.png",
+    "static/media/20251126_1521_image.png": "/static/media/20251126_1521_image.b6c4046001ed49668bb7.png",
+    "static/media/20251126_1518_image.png": "/static/media/20251126_1518_image.46bf9c99ec748e49993a.png",
+    "static/media/20251126_1519_image.png": "/static/media/20251126_1519_image.0255daecfe983395d62b.png",
+    "static/media/20251126_1520_image.png": "/static/media/20251126_1520_image.acfcb363aeb32293c8d1.png",
+    "static/media/20251126_1517_image.png": "/static/media/20251126_1517_image.aab371c1dc91352027cf.png",
+    "static/media/fa-solid-900.woff2": "/static/media/fa-solid-900.ce9a3fa740bd60b4ac3b.woff2",
+    "static/media/fa-brands-400.woff2": "/static/media/fa-brands-400.f276979f97f1cf375d23.woff2",
+    "static/media/user_default_1.png": "/static/media/user_default_1.360369d758c9e8e94611.png",
+    "static/media/NotFound.png": "/static/media/NotFound.df160df9bb7d4b583cd3.png",
+    "static/media/logo3.png": "/static/media/logo3.d6a7aed5b6bb1872aad5.png",
+    "static/media/tam-than-tu-xa-1.png": "/static/media/tam-than-tu-xa-1.ef90546d2492a99280d8.png",
+    "static/media/dantrilogo.png": "/static/media/dantrilogo.7072cf02cebeae7da516.png",
+    "static/media/fa-regular-400.woff2": "/static/media/fa-regular-400.cfbad32c79d9dda6af4a.woff2",
+    "static/media/tam-ly-tu-xa.png": "/static/media/tam-ly-tu-xa.8f3b2cda341d3f951a67.png",
+    "static/media/tieu-hoa-tu--xa.png": "/static/media/tieu-hoa-tu--xa.8e3e25fc73d72fce8193.png",
+    "static/media/cxk-tu--xa.png": "/static/media/cxk-tu--xa.817ed94a50ad06a710ed.png",
+    "static/media/tim-mach-tu--xa.png": "/static/media/tim-mach-tu--xa.96662ddb132d95b21ccc.png",
+    "static/media/da-lieu-tu--xa.png": "/static/media/da-lieu-tu--xa.88974cad670a9728f721.png",
+    "static/media/vtcnews.png": "/static/media/vtcnews.9a1705d8b4baf32e5d11.png",
+    "static/media/suckhoedoisong.png": "/static/media/suckhoedoisong.ef7a42a2de045b29a31d.png",
+    "static/media/vtv1.png": "/static/media/vtv1.44154b3bc3e75223fc55.png",
+    "static/media/vnexpress.png": "/static/media/vnexpress.70f57fb3624768fa5763.png",
+    "static/media/slick.svg": "/static/media/slick.2630a3e3eab21c607e21.svg",
+    "static/media/slick.eot": "/static/media/slick.a4e97f5a2a64f0ab1323.eot",
+    "static/media/slick.ttf": "/static/media/slick.c94f7671dcc99dce43e2.ttf",
+    "static/media/slick.woff": "/static/media/slick.295183786cd8a1389865.woff",
+    "index.html": "/index.html",
+    "static/media/dropdown.svg": "/static/media/dropdown.49a7f14ce9161b4982ed.svg",
+    "main.fe736fcf.css.map": "/static/css/main.fe736fcf.css.map",
+    "main.53983cdd.js.map": "/static/js/main.53983cdd.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.fe736fcf.css",
+    "static/js/main.53983cdd.js"
+  ]
+}

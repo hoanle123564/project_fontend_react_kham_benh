@@ -1,5 +1,5 @@
 .manage-specialty-container {
-    padding: 25px 40px;
+    padding: 25px 0px;
     background: #fff;
     border-radius: 10px;
 
@@ -29,7 +29,6 @@
     .preview-image-container {
         border-radius: 6px;
         padding: 6px 15px;
-        min-width: 160px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -37,14 +36,19 @@
         cursor: pointer;
         transition: all 0.3s ease;
 
-        &:hover {
-            background-color: #f8f9fa;
-        }
-
         img.preview-image {
             width: 100%;
             height: 100%;
+            max-width: 150px;
             object-fit: cover;
+
+            &:hover {
+                background-color: #f8f9fa;
+            }
+        }
+
+        .text-muted {
+            display: inline-block;
         }
     }
 

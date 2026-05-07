@@ -109,89 +109,92 @@ class EditSpecialty extends Component {
     render() {
         return (
             <div className="manage-specialty-container">
-                <h3 className="title-page">
-                    <FormattedMessage id="manage-specialty.title" defaultMessage="Manage Specialties" />
-                </h3>
+                <div className="container">
 
-                <div className="row align-items-center mb-4">
-                    <div className="col-md-6">
-                        <label className="form-label">
-                            <FormattedMessage id="manage-specialty.name-specialty" defaultMessage="Specialty Name" />
-                        </label>
-                        <input
-                            className="form-control"
-                            type="text"
-                            placeholder="Nhập tên chuyên khoa..."
-                            onChange={(event) => this.handleOnchange(event, 'name')}
-                            value={this.state.name || ''}
-                        />
-                    </div>
+                    <h3 className="title-page">
+                        <FormattedMessage id="manage-specialty.title" defaultMessage="Manage Specialties" />
+                    </h3>
 
-                    <div className="col-md-6">
-                        <label className="form-label">
-                            <FormattedMessage id="manage-specialty.image-specialty" defaultMessage="Specialty Image" />
-                        </label>
-                        <div className="d-flex align-items-center">
-                            <div className="upload-btn-wrapper me-3">
-                                <input
-                                    type="file"
-                                    id="specialtyImg"
-                                    accept="image/*"
-                                    hidden
-                                    onChange={(e) => this.handleOnChangeImage(e)}
-                                />
-                                <label htmlFor="specialtyImg" className="btn btn-outline-primary">
-                                    <FormattedMessage id="user-manage.choose-image" defaultMessage="Chọn ảnh" />
-                                    <i className="fa-solid fa-upload ms-2"></i>
-                                </label>
-                            </div>
+                    <div className="row align-items-center mb-4">
+                        <div className="col-md-6">
+                            <label className="form-label">
+                                <FormattedMessage id="manage-specialty.name-specialty" defaultMessage="Specialty Name" />
+                            </label>
+                            <input
+                                className="form-control"
+                                type="text"
+                                placeholder="Nhập tên chuyên khoa..."
+                                onChange={(event) => this.handleOnchange(event, 'name')}
+                                value={this.state.name || ''}
+                            />
+                        </div>
 
-                            {this.state.previewImg && (
-                                <button
-                                    type="button"
-                                    className="btn btn-outline-danger me-3"
-                                    onClick={() => this.setState({ previewImg: '', imageSpecialty: '' })}
-                                >
-                                    <FormattedMessage id="user-manage.remove-image" defaultMessage="Xóa ảnh" />
-                                    <i className="fa-solid fa-xmark ms-2"></i>
-                                </button>
-                            )}
-
-                            <div
-                                className="preview-image-container"
-                                onClick={() =>
-                                    this.state.previewImg && this.setState({ isOpen: true })
-                                }
-                            >
-                                {this.state.previewImg ? (
-                                    <img
-                                        src={this.state.previewImg}
-                                        alt="preview"
-                                        className="preview-image"
+                        <div className="col-md-6">
+                            <label className="form-label">
+                                <FormattedMessage id="manage-specialty.image-specialty" defaultMessage="Specialty Image" />
+                            </label>
+                            <div className="d-flex align-items-center">
+                                <div className="upload-btn-wrapper me-3">
+                                    <input
+                                        type="file"
+                                        id="specialtyImg"
+                                        accept="image/*"
+                                        hidden
+                                        onChange={(e) => this.handleOnChangeImage(e)}
                                     />
-                                ) : (
-                                    <span className="text-muted">
-                                        <FormattedMessage id="user-manage.no-image" defaultMessage="Chưa có ảnh" />
-                                    </span>
+                                    <label htmlFor="specialtyImg" className="btn btn-outline-primary">
+                                        <FormattedMessage id="user-manage.choose-image" defaultMessage="Chọn ảnh" />
+                                        <i className="fa-solid fa-upload ms-2"></i>
+                                    </label>
+                                </div>
+
+                                {this.state.previewImg && (
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-danger me-3"
+                                        onClick={() => this.setState({ previewImg: '', imageSpecialty: '' })}
+                                    >
+                                        <FormattedMessage id="user-manage.remove-image" defaultMessage="Xóa ảnh" />
+                                        <i className="fa-solid fa-xmark ms-2"></i>
+                                    </button>
                                 )}
+
+                                <div
+                                    className="preview-image-container"
+                                    onClick={() =>
+                                        this.state.previewImg && this.setState({ isOpen: true })
+                                    }
+                                >
+                                    {this.state.previewImg ? (
+                                        <img
+                                            src={this.state.previewImg}
+                                            alt="preview"
+                                            className="preview-image"
+                                        />
+                                    ) : (
+                                        <span className="text-muted">
+                                            <FormattedMessage id="user-manage.no-image" defaultMessage="Chưa có ảnh" />
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* === Mô tả chuyên khoa === */}
-                <MdEditor
-                    style={{ height: '500px' }}
-                    renderHTML={(text) => mdParser.render(text)}
-                    value={this.state.descriptionMarkdown}
-                    onChange={this.handleEditorChange}
-                />
-                <button
-                    className="save-specialty"
-                    onClick={this.handleSaveContent}
-                >
-                    <FormattedMessage id="admin.manage-doctor.save-info" />
-                </button>
+                    {/* === Mô tả chuyên khoa === */}
+                    <MdEditor
+                        style={{ height: '500px' }}
+                        renderHTML={(text) => mdParser.render(text)}
+                        value={this.state.descriptionMarkdown}
+                        onChange={this.handleEditorChange}
+                    />
+                    <button
+                        className="save-specialty"
+                        onClick={this.handleSaveContent}
+                    >
+                        <FormattedMessage id="admin.manage-doctor.save-info" />
+                    </button>
+                </div>
             </div>
         );
     }
