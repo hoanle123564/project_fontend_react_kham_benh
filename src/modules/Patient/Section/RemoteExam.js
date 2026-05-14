@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'; // kết nối như router
-// Slider 
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+// Swiper 
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import "./SectionShare.scss";
 import DaLieu from '../../../assets/remote/da-lieu-tu--xa.png'
 import CoXuongKhop from '../../../assets/remote/cxk-tu--xa.png'
 import TamLy from '../../../assets/remote/tam-ly-tu-xa.png'
@@ -48,38 +50,70 @@ class RemoteExam extends Component {
         return (
             <>
                 <div className='section-share section-remote'>
-                    <div className='section-container'>
-                        <div className='section-header'>
-                            <span className='title-section'>Khám từ xa</span>
-                            <button className='btn-section' onClick={this.handleListRemote}>Xem thêm</button>
-                        </div>
-                        <div className='section-body'>
-                            <Slider {...this.props.settings}>
-                                <div className='image-customize' onClick={this.handleCoXuong}>
-                                    <img src={CoXuongKhop} alt=''></img>
-                                    <div className='title-img'>Bác sĩ Cơ-Xương-Khớp từ xa</div>
-                                </div>
-                                <div className='image-customize' onClick={this.handleTamLy}>
-                                    <img src={TamLy} alt=''></img>
-                                    <div className='title-img'>Tư vấn, trị liệu Tâm lý từ xa</div>
-                                </div>
-                                <div className='image-customize' onClick={this.handleTamThan}>
-                                    <img src={TamThan} alt=''></img>
-                                    <div className='title-img'>Sức khỏe tâm thần từ xa</div>
-                                </div>
-                                <div className='image-customize' onClick={this.handleTieuHoa}>
-                                    <img src={TieuHoa} alt=''></img>
-                                    <div className='title-img'>Bác sĩ Tiêu hóa từ xa</div>
-                                </div>
-                                <div className='image-customize' onClick={this.handleTimMach}>
-                                    <img src={TimMach} alt=''></img>
-                                    <div className='title-img'>Bác sĩ Tim mạch từ xa</div>
-                                </div>
-                                <div className='image-customize' onClick={this.handleDaLieu}>
-                                    <img src={DaLieu} alt=''></img>
-                                    <div className='title-img'>Bác sĩ Da liễu từ xa</div>
-                                </div>
-                            </Slider>
+                    <div className="container">
+                        <div className='section-container'>
+                            <div className='section-header'>
+                                <span className='title-section'>Khám từ xa</span>
+                                <button className='btn-section' onClick={this.handleListRemote}>Xem thêm</button>
+                            </div>
+                            <div className='section-body'>
+                                <Swiper
+                                    spaceBetween={20}
+                                    slidesPerView={4}
+                                    navigation={true}
+                                    modules={[Navigation]}
+                                    className="remote-swiper"
+                                >
+                                    <SwiperSlide className='item-specialty'>
+                                        <div className='image-customize' onClick={this.handleCoXuong}>
+                                            <div className="box-img">
+                                                <img src={CoXuongKhop} alt=''></img>
+                                            </div>
+                                            <div className='title-img'>Bác sĩ Cơ-Xương-Khớp từ xa</div>
+                                        </div>
+                                    </SwiperSlide>
+                                    <SwiperSlide className='item-specialty'>
+                                        <div className='image-customize' onClick={this.handleTamLy}>
+                                            <div className="box-img">
+                                                <img src={TamLy} alt=''></img>
+                                            </div>
+                                            <div className='title-img'>Tư vấn, trị liệu Tâm lý từ xa</div>
+                                        </div>
+                                    </SwiperSlide>
+                                    <SwiperSlide className='item-specialty'>
+                                        <div className='image-customize' onClick={this.handleTamThan}>
+                                            <div className="box-img">
+                                                <img src={TamThan} alt=''></img>
+                                            </div>
+                                            <div className='title-img'>Sức khỏe tâm thần từ xa</div>
+                                        </div>
+                                    </SwiperSlide>
+                                    <SwiperSlide className='item-specialty'>
+                                        <div className='image-customize' onClick={this.handleTieuHoa}>
+                                            <div className="box-img">
+                                                <img src={TieuHoa} alt=''></img>
+                                            </div>
+                                            <div className='title-img'>Bác sĩ Tiêu hóa từ xa</div>
+                                        </div>
+                                    </SwiperSlide>
+                                    <SwiperSlide className='item-specialty'>
+                                        <div className='image-customize' onClick={this.handleTimMach}>
+                                            <div className="box-img">
+                                                <img src={TimMach} alt=''></img>
+                                            </div>
+                                            <div className='title-img'>Bác sĩ Tim mạch từ xa</div>
+                                        </div>
+                                    </SwiperSlide>
+                                    <SwiperSlide className='item-specialty'>
+                                        <div className='image-customize' onClick={this.handleDaLieu}>
+                                            <div className="box-img">
+                                                <img src={DaLieu} alt=''></img>
+                                            </div>
+                                            <div className='title-img'>Bác sĩ Da liễu từ xa</div>
+                                        </div>
+                                    </SwiperSlide>
+                                </Swiper>
+                            </div>
                         </div>
                     </div>
                 </div >

@@ -2,10 +2,13 @@ import React, { Component } from 'react';
 import { withRouter } from "react-router";
 import { connect } from 'react-redux'; // kết nối như router
 import * as action from "../../../store/actions";
-import "./Speciality.scss";
+import "./SectionShare.scss";
 import { FormattedMessage } from 'react-intl';
-// Slider 
-import Slider from "react-slick";
+// Swiper
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 class Speciality extends Component {
     constructor(props) {
@@ -22,7 +25,8 @@ class Speciality extends Component {
     componentDidMount() {
         this.props.getAllSpecialty();
     }
-    componentDidUpdate(prevProps, prevState, snapshot) {
+
+    componentDidUpdate(prevProps) {
         if (prevProps.specialtys !== this.props.specialtys) {
             this.setState({
                 ListSpecialty: this.props.specialtys
@@ -39,38 +43,48 @@ class Speciality extends Component {
         let { ListSpecialty } = this.state;
         return (
             <>
-                <div className='section-share section-specialty'>
-                    <div className='section-container'>
-                        <div className='section-header'>
-                            <span className='title-section'>
-                                <FormattedMessage id="banner.specialty-popular" />
-                            </span>
-                            <button className='btn-section' onClick={this.handleListSpecialty}>
-                                <FormattedMessage id="banner.see-more" />
-                            </button>
+                <section className='section-share section-specialty'>
+                    <div className="container">
+                        <div className='section-container'>
+                            <div className='section-header'>
+                                <span className='title-section'>
+                                    <FormattedMessage id="banner.specialty-popular" />
+                                </span>
+                                <button className='btn-section' onClick={this.handleListSpecialty}>
+                                    <FormattedMessage id="banner.see-more" />
+                                </button>
 
-                        </div>
-                        <div className='section-body'>
-                            <Slider {...this.props.settings}>
-                                {
-                                    ListSpecialty && ListSpecialty.length > 0 &&
-                                    ListSpecialty.map((item, index) => {
-                                        return (
-                                            <div className='image-speciality'
-                                                key={index}
-                                                onClick={() => this.handleViewDetailSpecialty(item)}
-                                                style={{ cursor: 'pointer' }}
-                                            >
-                                                <img src={`data:image/jpeg;base64,${item.image}`} alt='' />
-                                                <div className='title-img'>{item.name}</div>
-                                            </div>
-                                        )
-                                    })
-                                }
-                            </Slider>
-                        </div>
+                            </div>
+                            <div className='section-body'>
+                                <Swiper
+                                    spaceBetween={20}
+                                    slidesPerView={4}
+                                    navigation={true}
+                                    modules={[Navigation]}
+                                    className="specialty-swiper"
+                                >
+                                    {
+                                        ListSpecialty && ListSpecialty.length > 0 &&
+                                        ListSpecialty.map((item, index) => {
+                                            return (
+                                                <SwiperSlide key={index} className='item-specialty' >
+                                                    <div className='image-speciality'
+                                                        onClick={() => this.handleViewDetailSpecialty(item)}
+                                                    >
+                                                        <div className="box-img">
+                                                            <img src={`data:image/jpeg;base64,${item.image}`} alt='' />
+                                                        </div>
+                                                        <h4 className='title-img'>{item.name}</h4>
+                                                    </div>
+                                                </SwiperSlide>
+                                            )
+                                        })
+                                    }
+                                </Swiper>
+                            </div>
+                        </div >
                     </div >
-                </div >
+                </section >
             </>
 
         );

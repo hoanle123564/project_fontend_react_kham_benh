@@ -1,0 +1,90 @@
+.section-share {
+    .section-container {
+        .section-body {
+            position: relative;
+
+            .swiper {
+                padding: 0 20px;
+            }
+
+            .image-speciality,
+            .image-customize {
+                display: flex;
+                flex-direction: column;
+                border: 2px solid #ddd;
+                border-radius: 10px;
+                background: #fff;
+                text-align: center;
+                align-items: center;
+                cursor: pointer;
+                padding: 10px;
+                // box-sizing: border-box;
+                transition: transform 0.3s ease;
+
+                &:hover {
+                    transform: translateY(-5px);
+                }
+
+                .box-img {
+                    width: 100%;
+                    height: 200px;
+
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: contain;
+                        border-radius: 10px;
+                    }
+                }
+
+                .title-img {
+                    font-size: 18px;
+                    font-weight: 700;
+                    color: #333;
+                    line-height: 1.4;
+                    /*  cụm 3 này để giải quyết vấn đề text bị tràn 
+                    và chỉ muốn hiện 1 dòng*/
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+
+                    height: 40px;
+                    width: 100%;
+                }
+            }
+
+            // Swiper Navigation Buttons
+            .swiper-button-next,
+            .swiper-button-prev {
+                position: absolute;
+                background-color: #fff;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+                color: #45c3d2;
+                transition: all 0.3s ease;
+                // z-index: 10;
+                // margin-top: -20px;
+
+                .swiper-navigation-icon {
+                    width: 20px !important;
+                    height: 20px !important;
+                }
+
+                &:hover {
+                    background-color: #45c3d2;
+                    color: #fff;
+                }
+            }
+
+            .swiper-button-next {
+                right: 10px;
+            }
+
+            .swiper-button-prev {
+                left: 10px;
+            }
+        }
+    }
+}

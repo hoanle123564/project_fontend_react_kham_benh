@@ -1,21 +1,29 @@
 .section-doctor {
-  background-color: #eaf9fb; // nền xanh nhạt nhẹ
-  padding: 40px 0;
+  // background-color: #eaf9fb; // nền xanh nhạt nhẹ
+  // padding-top: 50px;
 
-  .section-container {
-    width: 85%;
-    margin: 0 auto;
+  .section-header {
+    margin-bottom: 30px;
+    position: relative;
+    background-color: rgba(0, 89, 99, .7);
+    min-height: 400px;
 
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
+    .bg_doctor {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .doctor-content {
 
       .title-section {
-        font-size: 28px;
+        font-size: 30px;
         font-weight: 700;
-        color: #000;
+        color: #fff;
       }
 
       .btn-section {
@@ -24,63 +32,97 @@
         font-weight: 600;
         border: none;
         border-radius: 25px;
-        padding: 8px 25px;
+        padding: 8px 20px;
         font-size: 18px;
         transition: all 0.3s ease;
       }
     }
+  }
 
-    .section-body {
-      text-align: center;
+  .section-body {
+    margin-top: -250px;
 
-      .image-doctor {
-        display: flex !important;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 10px 0;
-        outline: none;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        cursor: pointer;
+    .doctor-item {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      outline: none;
+      cursor: pointer;
+      box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+      overflow: hidden;
+      height: 100%;
+
+      .img-wrapper {
+        width: 100%;
+        aspect-ratio: 1 / 1.1;
+        /* slightly taller than square */
+        overflow: hidden;
 
         img {
-          width: 200px;
-          height: 200px;
-          border-radius: 50%;
+          width: 100%;
+          height: 100%;
           object-fit: cover;
-          margin: 0 auto;
-          border: 1px solid #fff;
-          box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+          transition: transform 0.4s ease;
         }
+      }
 
-        &:hover {
-          transform: translateY(-5px);
-        }
+      &:hover .img-wrapper img {
+        transform: scale(1.1);
+      }
+
+      .doctor-info {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        background-color: #fff;
 
         .title-img1 {
-          font-size: 20px;
+          font-size: 18px;
           font-weight: 700;
-          color: #000;
-          margin-top: 15px;
+          color: #005963;
+          margin-bottom: 5px;
         }
 
         .title-img2 {
-          font-size: 16px;
-          color: #444;
-          margin-top: 5px;
+          font-size: 14px;
+          color: #005963;
+          font-weight: 600;
+          margin-bottom: 15px;
+        }
+
+        .location {
+          font-size: 13px;
+          color: #888;
+          display: flex;
+          align-items: center;
+
+          i {
+            color: #72e8d2;
+            margin-right: 5px;
+            font-size: 14px;
+          }
         }
       }
     }
   }
 
-  // Slick arrow style riêng, không ảnh hưởng component khác
-  .slick-prev,
-  .slick-next {
-    background: #fff;
-    border: 1px solid #ddd;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    z-index: 10;
-  }
+  // Swiper Navigation arrows customization
+  // .swiper-button-next,
+  // .swiper-button-prev {
+  //   color: #fff;
+  //   background: rgba(0, 0, 0, 0.5);
+  //   width: 40px;
+  //   height: 40px;
+  //   border-radius: 50%;
+
+  //   &::after {
+  //     font-size: 18px;
+  //   }
+
+  //   &:hover {
+  //     background: #005963;
+  //   }
+  // }
 }

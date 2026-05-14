@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'; // kết nối như router
-// Slider 
-import Slider from "react-slick";
-import "./Clinic.scss";
+// Swiper 
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import "./SectionShare.scss";
 
 import * as action from "../../../store/actions";
 
@@ -46,42 +49,47 @@ class Clinic extends Component {
         return (
             <>
                 <div className='section-share section-clinic'>
-                    <div className='section-container'>
-                        <div className='section-header'>
-                            <span className='title-section'>
-                                <FormattedMessage id="banner.clinic-popular" />
-                            </span>
-                            <button className='btn-section' onClick={this.handleListClinic}>
-                                <FormattedMessage id="banner.see-more" />
-                            </button>
+                    <div className="container">
+                        <div className='section-container'>
+                            <div className='section-header'>
+                                <span className='title-section'>
+                                    <FormattedMessage id="banner.clinic-popular" />
+                                </span>
+                                <button className='btn-section' onClick={this.handleListClinic}>
+                                    <FormattedMessage id="banner.see-more" />
+                                </button>
 
-                        </div>
-                        <div className='section-body'>
-                            <Slider {...this.props.settings}>
-                                {/* <div className='image-customize'>
-                                    <img src={doctoc_check} alt='' />
-                                    <div className='title-img'>Doctor Check - Tầm kiểm soát bệnh để sống thọ hơn</div>
-                                </div> */}
-                                {/* <div className='image-customize' onClick={this.returnChoRay}>
-                                    <img src={ChoRay} alt=''></img>
-                                    <div className='title-img' >Bệnh viện chợ rẫy</div>
-                                </div> */}
-                                {
-                                    ListSpecialty && ListSpecialty.length > 0 &&
-                                    ListSpecialty.map((item, index) => {
-                                        return (
-                                            <div className='image-speciality'
-                                                key={index}
-                                                onClick={() => this.handleViewDetailClinic(item)}
-                                                style={{ cursor: 'pointer' }}
-                                            >
-                                                <img src={`data:image/jpeg;base64,${item.image}`} alt='' />
-                                                <div className='title-img'>{item.name}</div>
-                                            </div>
-                                        )
-                                    })
-                                }
-                            </Slider>
+                            </div>
+                            <div className='section-body'>
+                                <Swiper
+                                    spaceBetween={20}
+                                    slidesPerView={4}
+                                    navigation={true}
+                                    modules={[Navigation]}
+                                    className="clinic-swiper"
+                                >
+                                    {
+                                        ListSpecialty && ListSpecialty.length > 0 &&
+                                        ListSpecialty.map((item, index) => {
+                                            return (
+                                                <SwiperSlide key={index} className='item-specialty'>
+                                                    <div className='image-speciality'
+                                                        onClick={() => this.handleViewDetailClinic(item)}
+                                                        style={{ cursor: 'pointer' }}
+                                                    >
+                                                        <div className="box-img">
+                                                            <img src={`data:image/jpeg;base64,${item.image}`} alt='' />
+                                                        </div>
+                                                        <h4 className='title-img'>
+                                                            {item.name}
+                                                        </h4>
+                                                    </div>
+                                                </SwiperSlide>
+                                            )
+                                        })
+                                    }
+                                </Swiper>
+                            </div>
                         </div>
                     </div>
                 </div>
