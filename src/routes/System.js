@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Redirect, Route, Switch } from "react-router-dom";
 
 import TableManageUser from "../modules/Admin/ManageUser/TableManageUser";
+import SlideBar from "../components/Layout/SlideBar";
 import Header from "../components/Layout/Header";
 import ManageDoctor from "../modules/Admin/ManageUser/ManageDoctor";
 import ManageSpecialty from "../modules/Admin/Specialty/ManageSpecialty";
@@ -17,16 +18,27 @@ import {
   adminIsAuthenticated,
 } from "../hoc/authentication";
 class System extends Component {
+  state = {
+    isSidebarCollapsed: false
+  }
+
+  toggleSidebar = () => {
+    this.setState({
+      isSidebarCollapsed: !this.state.isSidebarCollapsed
+    });
+  }
+
   render() {
     const { systemMenuPath, adminToken, isLoggedIn } = this.props;
 
-    const shouldShowHeader = adminToken || isLoggedIn;
+    const showSlideBar = adminToken || isLoggedIn;
 
     return (
-      <>
-        {shouldShowHeader && <Header />}
+      <div className="main-app-layout">
+        {showSlideBar && <SlideBar isCollapsed={this.state.isSidebarCollapsed} />}
 
         <div className="system-container">
+          <Header toggleSidebar={this.toggleSidebar} />
           <div className="system-list">
             <Switch>
               <Route path="/system/dashboard" component={adminIsAuthenticated(DashBoard)} />
@@ -43,7 +55,7 @@ class System extends Component {
             </Switch>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 }
