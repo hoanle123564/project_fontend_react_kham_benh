@@ -1,153 +1,148 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-
-import { adminMenu, doctorMenu } from "./menuApp";
-import Navigator from "../Navigator";
-import "./Header.scss";
-
-import vietnam from "../../assets/flag/vietnam.png";
-import united from "../../assets/flag/united_kingdom.png";
-import LifeCare from "../../assets/logo3.png";
-
-import { jwtDecode } from "jwt-decode";
-import { languages } from "../../utils/constant";
-import { FormattedMessage } from "react-intl";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import './Header.scss';
+import Breadcrumb from '../Breadcrumb/breadcrumb';
 
 class Header extends Component {
-  state = {
-    menuApp: [],
-  };
-
-  componentDidMount() {
-    this.loadMenuByRole();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (
-      prevProps.adminToken !== this.props.adminToken ||
-      prevProps.doctorToken !== this.props.doctorToken
-    ) {
-      this.loadMenuByRole();
-    }
-  }
-
-  loadMenuByRole = () => {
-    const path = window.location.pathname;
-
-    let token = null;
-
-    if (path.includes("/system")) {
-      token = this.props.adminToken;
-    } else if (path.includes("/doctor")) {
-      token = this.props.doctorToken;
+    constructor(props) {
+        super(props);
+        this.state = {
+            isDropdownOpen: false
+        };
+        this.dropdownRef = React.createRef();
     }
 
-    if (!token) {
-      this.setState({ menuApp: [] });
-      return;
+    componentDidMount() {
+        document.addEventListener('mousedown', this.handleClickOutside);
     }
 
-    let decoded;
-    try {
-      decoded = jwtDecode(token);
-    } catch (e) {
-      console.log("Decode token error", e);
-      return;
+    componentWillUnmount() {
+        document.removeEventListener('mousedown', this.handleClickOutside);
     }
 
-    const { roleId } = decoded;
-
-    let menu = [];
-    if (roleId === "R1") menu = adminMenu;
-    if (roleId === "R2") menu = doctorMenu;
-
-    this.setState({ menuApp: menu });
-  };
-
-  handleLogout = () => {
-    if (this.props.adminToken) {
-      this.props.adminLogout();
-      localStorage.removeItem("adminToken");
+    handleClickOutside = (event) => {
+        if (this.dropdownRef && !this.dropdownRef.current.contains(event.target)) {
+            this.setState({ isDropdownOpen: false });
+        }
     }
 
-    if (this.props.doctorToken) {
-      this.props.doctorLogout();
-      localStorage.removeItem("doctorToken");
-    }
-  };
+    toggleDropdown = () => {
+        // có 2 cách viết
+        // cách 1: khuyên dùng vì nó đảm bảo luôn lấy giá trị mới nhất
+        this.setState(prevState => ({
+            isDropdownOpen: !prevState.isDropdownOpen
+        }));
 
-  render() {
-    const { language, adminInfo, doctorInfo } = this.props;
-
-    const flagSrc = language === languages.VI ? vietnam : united;
-    const path = window.location.pathname;
-
-    let displayName = "";
-
-    if (path.includes("/system") && adminInfo) {
-      displayName = `${adminInfo.firstName} ${adminInfo.lastName}`;
+        // cách 2: đôi khi sẽ bị sai, nó lấy giá trị c
+        // this.setState({
+        //     isDropdownOpen: !this.state.isDropdownOpen
+        // })
     }
 
-    if (path.includes("/doctor") && doctorInfo) {
-      displayName = `${doctorInfo.firstName} ${doctorInfo.lastName}`;
+    handleLogout = () => {
+        const path = window.location.pathname;
+        // Chỉ logout đúng role đang dùng, tránh logout cả admin lẫn doctor cùng lúc
+        if (path.includes("/system")) {
+            this.props.adminLogout();
+        } else if (path.includes("/doctor")) {
+            this.props.doctorLogout();
+        }
+        this.props.history.push('/login');
     }
 
-    return (
-      <div className="sidebar-container">
-        <div className="sidebar-logo">
-          <img src={LifeCare} alt="logo" />
-        </div>
+    goToProfile = () => {
+        this.setState({ isDropdownOpen: false });
+    }
 
-        <div className="sidebar-menu">
-          <Navigator menus={this.state.menuApp} />
-        </div>
+    render() {
+        const { isDropdownOpen } = this.state;
+        const { adminInfo, doctorInfo, toggleSidebar } = this.props;
 
-        <div className="sidebar-footer">
-          <div className="footer-top">
-            <span>
-              <FormattedMessage id="home-header.welcome" />, {displayName}
-            </span>
-          </div>
+        const path = window.location.pathname;
+        const isAdminPath = path.includes("/system");
+        const isDocPath = path.includes("/doctor");
 
-          <div className="footer-bottom">
-            <div
-              className="flag"
-              onClick={() =>
-                this.props.changeLanguage(
-                  language === languages.VI ? languages.EN : languages.VI
-                )
-              }
-            >
-              <img src={flagSrc} alt="flag" />
-              <span>{language === languages.VI ? "VN" : "EN"}</span>
-            </div>
+        // Lấy đúng thông tin user theo role đang active
+        const currentInfo = isAdminPath ? adminInfo : isDocPath ? doctorInfo : null;
 
-            <div className="logout-btn" onClick={this.handleLogout}>
-              <i className="fas fa-sign-out-alt"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+        let displayName = "User";
+        if (isAdminPath && adminInfo) {
+            displayName = `${adminInfo.firstName} ${adminInfo.lastName}`;
+        } else if (isDocPath && doctorInfo) {
+            displayName = `${doctorInfo.firstName} ${doctorInfo.lastName}`;
+        }
+
+        // Avatar dùng đúng info của role đang active
+        const avatarSrc = currentInfo?.image
+            ? `data:image/jpeg;base64,${currentInfo.image}`
+            : "https://i.ibb.co/L5T1YhY/avatar.png";
+
+        return (
+            <>
+                <header>
+                    <div className="container">
+                        <div className="header-container">
+                            <div className="header-left">
+                                <span className="toggle-btn" onClick={toggleSidebar}>
+                                    <i className="fas fa-bars"></i>
+                                </span>
+                                {/* Breadcrumb — hiển thị đường dẫn ngay dưới header */}
+                                <Breadcrumb variant={isAdminPath ? 'admin' : 'doctor'} />
+                            </div>
+
+                            <div className="header-right">
+                                <div className="notification-icon">
+                                    <i className="fas fa-bell"></i>
+                                    {/* <span className="badge">3</span> */}
+                                </div>
+
+                                <div className="user-profile" ref={this.dropdownRef} onClick={this.toggleDropdown}>
+                                    <span className="username">{displayName}</span>
+                                    <img src={avatarSrc} alt="avatar" />
+                                    {
+                                        this.state.isDropdownOpen ?
+                                            <i className="fas fa-chevron-up ChevronDown"></i> :
+                                            <i className="fas fa-chevron-down ChevronDown"></i>
+                                    }
+
+                                    <div className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
+                                        <div className="dropdown-item" onClick={this.goToProfile}>
+                                            <i className="fas fa-user fa-sm fa-fw"></i>
+                                            Chỉnh sửa thông tin cá nhân
+                                        </div>
+                                        <div className="dropdown-divider"></div>
+                                        <div className="dropdown-item" onClick={this.handleLogout}>
+                                            <i className="fas fa-sign-out-alt fa-sm fa-fw" style={{ color: "red" }}></i>
+                                            Đăng xuất
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+
+            </>
+        );
+    }
 }
 
-const mapStateToProps = (state) => ({
-  language: state.app.language,
+const mapStateToProps = state => {
+    return {
+        adminToken: state.adminAuth.token,
+        doctorToken: state.doctor.token,
+        adminInfo: state.adminAuth.adminInfo,
+        doctorInfo: state.doctor.doctorInfo,
+    };
+};
 
-  adminToken: state.adminAuth.token,
-  doctorToken: state.doctor.token,
+const mapDispatchToProps = dispatch => {
+    return {
+        adminLogout: () => dispatch({ type: "ADMIN_LOGOUT" }),
+        doctorLogout: () => dispatch({ type: "DOCTOR_LOGOUT" }),
+    };
+};
 
-  adminInfo: state.adminAuth.adminInfo,
-  doctorInfo: state.doctor.doctorInfo,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  changeLanguage: (lang) =>
-    dispatch({ type: "CHANGE_LANGUAGE", language: lang }),
-
-  adminLogout: () => dispatch({ type: "ADMIN_LOGOUT" }),
-  doctorLogout: () => dispatch({ type: "DOCTOR_LOGOUT" }),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Header);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Header));

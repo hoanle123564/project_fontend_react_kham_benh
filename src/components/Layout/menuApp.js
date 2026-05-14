@@ -5,6 +5,7 @@ export const adminMenu = [
     menus: [
       {
         name: "menu.admin.dashboard",
+        icon: "fa-solid fa-chart-line",
         link: "/system/dashboard",
       },
     ],
@@ -15,14 +16,17 @@ export const adminMenu = [
     menus: [
       {
         name: "menu.admin.manage-doctor",
+        icon: "fas fa-users",
         link: "/system/manage-doctor",
       },
       {
         name: "menu.admin.crud-redux",
+        icon: "fa-solid fa-user-group",
         link: "/system/user-manage",
       },
       {
         name: "menu.doctor.manage-schedule",
+        icon: "fas fa-users",
         link: "/system/manage-schedule",
       },
     ],
@@ -34,6 +38,7 @@ export const adminMenu = [
     menus: [
       {
         name: "menu.admin.manage-clinic",
+        icon: "fas fa-hospital",
         link: "/system/manage-clinic",
       },
     ],
@@ -45,6 +50,7 @@ export const adminMenu = [
     menus: [
       {
         name: "menu.admin.manage-specialty",
+        icon: "fas fa-stethoscope",
         link: "/system/manage-specialty",
       },
     ],
@@ -58,10 +64,12 @@ export const doctorMenu = [
     menus: [
       {
         name: "menu.doctor.manage-schedule",
+        icon: "fas fa-notes-medical",
         link: "/doctor/manage-schedule-private",
       },
       {
         name: "menu.doctor.manage-patient",
+        icon: "fas fa-notes-medical",
         link: "/doctor/manage-patient",
       },
     ],
@@ -71,6 +79,7 @@ export const doctorMenu = [
     menus: [
       {
         name: "menu.doctor.history-appointment",
+        icon: "fas fa-history",
         link: "/doctor/list-appointment",
       },
     ],

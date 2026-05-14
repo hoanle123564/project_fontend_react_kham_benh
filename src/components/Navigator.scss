@@ -1,128 +1,120 @@
 @import "../styles/common.scss";
 
 .navigator-menu {
-    display: flex;
-    margin: 0;
-    padding: 0;
+    padding: 8px 0;
 
-    &.list-unstyled,
-    .list-unstyled {
-        list-style-type: none;
+    // ---- Group label (icon + title) ----
+    .nav-group {
+        margin-bottom: 2px;
     }
 
-    .menu-group {
-        text-align: center;
+    .nav-group-label {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px 4px;
+        color: #9ca3af;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        user-select: none;
 
+        .nav-group-icon {
+            font-size: 13px;
+            margin-right: 8px;
+            color: #9ca3af;
+        }
+
+        .nav-group-title {
+            white-space: nowrap;
+        }
+    }
+
+    // ---- Menu item chung ----
+    .nav-menu-item {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 5px;
+
+        font-size: 14px;
+        font-weight: 500;
+        color: #1f2937; // chữ đen
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.18s ease, color 0.18s ease;
+        border-radius: 7px;
+        margin: 5px 0;
+        background: transparent;
+
+
+        .nav-group-icon {
+            font-size: 13px;
+            margin-right: 8px;
+            color: #9ca3af;
+        }
+
+        // Hover → background đậm hơn
         &:hover {
-            cursor: pointer;
-            background-color: darken($colormain, 5);
+            background-color: #eaecf4; // xám nhạt đậm hơn nền
+            color: #1f2937;
         }
 
-        .menu-group-name {
-            line-height: 40px;
-            padding: 0 15px;
+        // Đang active (được chọn) → background đậm + chữ xanh #72e8d2
+        &.active {
+            background-color: #eaecf4; // background đậm
+            color: #0f9c89; // xanh #72e8d2 đậm hơn để đọc rõ
+            font-weight: 600;
+        }
 
-            &:first-child {
-                border-left: 1px solid $border;
+        // Arrow icon
+        .nav-arrow {
+            font-size: 11px;
+            opacity: 0.7;
+            transition: transform 0.25s ease;
+            flex-shrink: 0;
+        }
+    }
+
+    // ---- Collapse container ----
+    .nav-collapse {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+
+        &.show {
+            max-height: 500px; // đủ lớn để chứa sub-menu
+        }
+    }
+
+    // ---- Sub-menu list ----
+    .nav-submenu-list {
+        background-color: #f3f4f6; // nền hơi xám để phân biệt
+
+        .nav-submenu-item {
+            padding: 9px 20px 9px 36px; // lùi vào so với menu cha
+            font-size: 13.5px;
+            font-weight: 400;
+            color: #374151;
+            text-decoration: none;
+            transition: background-color 0.18s ease, color 0.18s ease;
+
+            &::before {
+                content: "–";
+                margin-right: 8px;
+                color: #9ca3af;
+                font-size: 12px;
             }
-        }
 
-        .menu-list {
-            display: none;
-            background-color: $bg-menu-color;
-            box-shadow: 2px 2px 4px 0 $box-shadow-color;
-            -webkit-box-shadow: 2px 2px 4px 0 $box-shadow-color;
-            color: $text-in-light;
-            position: absolute;
-            padding: 0;
-
-            .menu {
-                padding: 0 15px;
-                height: 35px;
-                text-transform: none;
-                text-align: center;
-                align-items: center;
-                /* Căn giữa chữ */
-                white-space: nowrap;
-
-
-                &.active {
-                    a {
-                        color: orange !important;
-
-                    }
-
-                    background-color: #ededed;
-                }
-
-                .menu-link {
-                    text-decoration: none;
-                    color: $text-in-light;
-                }
-
-                .sub-menu-list {
-                    display: none;
-                    background-color: $bg-menu-color;
-                    box-shadow: 2px 2px 4px 0 $box-shadow-color;
-                    -webkit-box-shadow: 2px 2px 4px 0 $box-shadow-color;
-                    position: absolute;
-                    top: 0;
-                    left: 205px;
-                    padding: 0;
-
-                    .sub-menu {
-                        padding: 0 15px;
-                        height: 35px;
-                        line-height: 35px;
-                        white-space: nowrap;
-
-                        &:hover {
-                            background-color: darken($bg-menu-color, 5);
-                        }
-
-                        .sub-menu-link {
-                            text-decoration: none;
-                            color: $text-in-light;
-                        }
-
-                        a {
-                            display: block;
-                        }
-
-                        &.active a {
-                            font-weight: 500;
-                            color: $colormain;
-                        }
-                    }
-                }
-
-
-
-                &.active span {
-                    font-weight: 500;
-                    color: $colormain;
-                }
-
-                &:hover {
-                    background-color: darken($bg-menu-color, 3);
-
-                    .sub-menu-list {
-                        display: block;
-                    }
-                }
-
-                .icon-right {
-                    display: block;
-                    position: absolute;
-                    top: 0;
-                    right: 10px;
-                }
+            &:hover {
+                background-color: #dde1e7;
+                color: #1f2937;
             }
-        }
 
-        &:hover {
-            .menu-list {
-                display: block;
+            &.active {
+                background-color: #d1d5db;
+                color: #0f9c89;
+                font-weight: 600;
             }
         }
     }
