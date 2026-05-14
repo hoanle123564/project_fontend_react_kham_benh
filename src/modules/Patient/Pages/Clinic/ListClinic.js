@@ -6,7 +6,12 @@ import HomeFooter from "../../Layout/HomeFooter";
 import "./ListClinic.scss";
 import * as action from "../../../../store/actions";
 import { withRouter } from "react-router";
-
+import BackToTop from "../../../../components/BackToTop/BackToTop";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Grid, Pagination, Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/grid';
+import 'swiper/css/pagination';
 class ListClinic extends Component {
     constructor(props) {
         super(props);
@@ -39,36 +44,59 @@ class ListClinic extends Component {
         return (
             <>
                 <HomeHeader showBanner={false} />
-
+                <BackToTop />
                 <div className="list-clinic-container">
-                    <div className="breadcrumb">
-                        {language === "vi" ? "Cơ sở y tế" : "Clinics"}
-                    </div>
+                    <div className="container">
 
-                    <div className="grid-container">
-                        {clinicList &&
-                            clinicList.length > 0 &&
-                            clinicList.map((item, index) => {
-                                return (
-                                    <div
-                                        className="grid-item"
-                                        key={index}
-                                        onClick={() => this.handleViewDetail(item)}
-                                    >
-                                        <div className="image-box">
-                                            <img
-                                                src={
-                                                    item.image
-                                                        ? `data:image/jpeg;base64,${item.image}`
-                                                        : "/default-image.png"
-                                                }
-                                                alt={item.name}
-                                            />
-                                        </div>
-                                        <div className="title">{item.name}</div>
-                                    </div>
-                                );
-                            })}
+                        <h1 className="breadcrumb">
+                            {language === "vi" ? "Cơ sở y tế" : "Clinics"}
+                        </h1>
+
+                        <Swiper
+                            slidesPerView={4}
+                            grid={{
+                                rows: 2,
+                                fill: 'row'
+                            }}
+                            navigation={{
+                                prevEl: '.custom-prev',
+                                nextEl: '.custom-next',
+                            }}
+                            spaceBetween={20}
+                            pagination={Pagination}
+                            modules={[Grid, Pagination, Navigation]}
+                            className="grid-container"
+                        >
+                            {clinicList &&
+                                clinicList.length > 0 &&
+                                clinicList.map((item, index) => {
+                                    return (
+                                        <SwiperSlide
+                                            className="swiper-item"
+                                            key={index}
+                                            onClick={() => this.handleViewDetail(item)}
+                                        >
+                                            <div className="image-box">
+                                                <img
+                                                    src={
+                                                        item.image
+                                                            ? `data:image/jpeg;base64,${item.image}`
+                                                            : "/default-image.png"
+                                                    }
+                                                    alt={item.name}
+                                                />
+                                            </div>
+                                            <h4 className="title">{item.name}</h4>
+                                        </SwiperSlide>
+                                    );
+                                })}
+
+                            <div className="custom-control-bar">
+                                <button className="custom-prev">&#10094;</button>
+                                <div className="custom-pagination"></div>
+                                <button className="custom-next">&#10095;</button>
+                            </div>
+                        </Swiper>
                     </div>
                 </div>
 

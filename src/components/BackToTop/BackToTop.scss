@@ -1,0 +1,21 @@
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+    background-color: #22c1c3;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    color: #ffff;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: all 0.3s ease;
+
+    i {
+        font-size: 20px;
+    }
+}

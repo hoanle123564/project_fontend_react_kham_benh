@@ -1,52 +1,140 @@
 .list-specialty-container {
-    padding: 100px 80px;
+    padding: 50px 0px;
     background: #f9f9f9;
-    min-height: 100vh;
 
     .breadcrumb {
-        font-size: 20px;
-        font-weight: 600;
+        font-size: 30px;
+        font-weight: 700;
         margin-bottom: 25px;
+        text-align: center;
     }
 
     .grid-container {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 25px;
-    }
+        padding-bottom: 50px;
 
-    .grid-item {
-        background: #fff;
-        border-radius: 12px;
-        padding: 20px;
-        text-align: center;
-        cursor: pointer;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-        transition: 0.2s;
+        .grid-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+            height: calc((100% - 30px) / 2) !important;
 
-        &:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
+            &:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            }
 
-        .image-box {
-            width: 100%;
-            height: 150px;
-            overflow: hidden;
-            border-radius: 10px;
-
-            img {
+            .image-box {
                 width: 100%;
                 height: 100%;
-                object-fit: contain;
+                max-height: 150px;
+                overflow: hidden;
+                border-radius: 10px;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    border-radius: 10px;
+                }
+            }
+
+            .title {
+                font-size: 16px;
+                font-weight: 600;
+                margin-top: 15px;
+                color: #333;
+                text-align: center;
             }
         }
 
-        .title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-top: 15px;
-            color: #333;
+        .custom-control-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px; // Khoảng cách giữa Prev, cụm số, và Next
+            margin-top: 35px; // Khoảng cách với các thẻ slide ở trên
+
+            /* CSS chung cho nút Prev và Next */
+            .custom-prev,
+            .custom-next {
+                width: 36px;
+                height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #fff;
+                border: 1px solid #e2e8f0;
+                border-radius: 5px;
+                color: black;
+                font-size: 14px;
+                font-weight: 600;
+                transition: all 0.2s ease;
+
+                &:hover {
+                    background: #f8fafc;
+                    border-color: #cbd5e1;
+                }
+
+                /* Khi đang ở trang đầu hoặc trang cuối, làm mờ nút tương ứng */
+                &.swiper-button-disabled {
+                    opacity: 0.4;
+                    cursor: not-allowed;
+                }
+            }
+
+            /* CSS cụm Pagination (các nút đánh số) */
+            .custom-pagination {
+                display: flex;
+                align-items: center;
+                gap: 8px; // Khoảng cách giữa các số
+                width: auto; // Ghi đè CSS width:100% mặc định của Swiper
+
+                .swiper-pagination-bullet {
+                    width: 36px;
+                    height: 36px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: black;
+                    background: #fff;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 6px;
+                    opacity: 1;
+                    transition: all 0.2s;
+
+                    &:hover {
+                        background: #f8fafc;
+                    }
+
+                    // &-active {
+                    //     background: #3b82f6; //
+                    //     color: #fff;
+                    //     border-color: #3b82f6;
+                    //     font-weight: 600;
+
+                    //     &:hover {
+                    //         background: #2563eb;
+                    //     }
+                    // }
+                }
+
+                .swiper-pagination-bullet-active {
+                    background: #3b82f6;
+                    color: #fff;
+                    border-color: #3b82f6;
+                    font-weight: 600;
+
+                    &:hover {
+                        background: #2563eb;
+                    }
+                }
+            }
         }
     }
 }

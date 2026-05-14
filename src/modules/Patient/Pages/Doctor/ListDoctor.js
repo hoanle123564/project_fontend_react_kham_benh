@@ -6,6 +6,7 @@ import HomeFooter from "../../Layout/HomeFooter";
 import "./ListDoctor.scss";
 import * as action from "../../../../store/actions";
 import { withRouter } from "react-router";
+import BackToTop from "../../../../components/BackToTop/BackToTop";
 class ListDoctor extends Component {
     constructor(props) {
         super(props);
@@ -39,10 +40,11 @@ class ListDoctor extends Component {
         return (
             <>
                 <HomeHeader showBanner={false} />
+                <BackToTop />
                 <div className="list-doctor-container">
-                    <div className="list-doctor-header">
+                    <h1 className="list-doctor-header">
                         {language === "vi" ? "Danh sách bác sĩ" : "List of doctors"}
-                    </div>
+                    </h1>
 
                     <div className="list-doctor-body">
                         {doctorList && doctorList.length > 0 &&
