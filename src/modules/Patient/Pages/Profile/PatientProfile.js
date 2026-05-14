@@ -4,6 +4,7 @@ import { FormattedMessage } from "react-intl";
 
 import HomeHeader from "../../Layout/HomeHeader";
 import HomeFooter from "../../Layout/HomeFooter";
+import PatientSidebar from "../../Layout/PatientSidebar";
 
 import "./PatientProfile.scss";
 import user_default from "../../../../assets/user_default_1.png";
@@ -45,76 +46,69 @@ class PatientProfile extends Component {
 
         return (
             <>
-                <HomeHeader />
+                <HomeHeader showBanner={false} />
+                <div className="patient-dashboard-layout">
+                    <div className="container d-flex flex-start gap-3">
+                        <PatientSidebar />
+                        <div className="patient-page-content">
+                            <div className="profile-card">
 
-                <div className="profile-cover"></div>
+                                <div className="profile-header">
+                                    <div className="avatar-box">
+                                        <img src={avatar} alt="avatar" />
+                                    </div>
 
-                <div className="profile-wrapper">
-                    <div className="profile-card">
+                                    <div className="basic-info">
+                                        <h2 className="name">{user.firstName} {user.lastName}</h2>
+                                        <p className="role">{language === 'vi' ? 'Bệnh nhân' : 'Patient'}</p>
+                                    </div>
+                                </div>
 
-                        <div className="profile-header">
-                            <div className="avatar-box">
-                                <img src={avatar} alt="avatar" />
-                            </div>
+                                <div className="profile-details">
+                                    <div className="detail-item">
+                                        <div className="left">
+                                            <i className="far fa-envelope"></i><FormattedMessage id="manage-patient.email" />
+                                        </div>
+                                        <div className="right">{user.email}</div>
+                                    </div>
 
-                            <div className="basic-info">
-                                <h2 className="name">{user.firstName} {user.lastName}</h2>
-                                <p className="role">{this.props.language === 'vi' ? 'Bệnh nhân' : 'Patient'}</p>
+                                    <div className="detail-item">
+                                        <div className="left">
+                                            <i className="fas fa-phone-alt"></i><FormattedMessage id="manage-patient.phone-number" />
+                                        </div>
+                                        <div className="right">{user.phoneNumber}</div>
+                                    </div>
+
+                                    <div className="detail-item">
+                                        <div className="left">
+                                            <i className="fas fa-venus-mars"></i><FormattedMessage id="manage-patient.gender" />
+                                        </div>
+                                        <div className="right">
+                                            {user.gender === "M" ? (language === 'vi' ? "Nam" : "Male") :
+                                                user.gender === "F" ? (language === 'vi' ? "Nữ" : "Female") :
+                                                    (language === 'vi' ? "Khác" : "Other")}
+                                        </div>
+                                    </div>
+
+                                    <div className="detail-item">
+                                        <div className="left">
+                                            <i className="fas fa-map-marker-alt"></i><FormattedMessage id="manage-patient.address" />
+                                        </div>
+                                        <div className="right">{user.address}</div>
+                                    </div>
+                                </div>
+
+                                <div className="profile-buttons">
+                                    <button className="edit-btn" onClick={this.toggleEdit}>
+                                        <i className="fas fa-edit"></i> {language === 'vi' ? 'Chỉnh sửa' : 'Edit'}
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
-
-                        <div className="profile-details">
-                            <div className="detail-item">
-                                <div className="left">
-                                    <i className="far fa-envelope"></i><FormattedMessage id="manage-patient.email" />
-                                </div>
-                                <div className="right">{user.email}</div>
-                            </div>
-
-                            <div className="detail-item">
-                                <div className="left">
-                                    <i className="fas fa-phone-alt"></i><FormattedMessage id="manage-patient.phone-number" />
-                                </div>
-                                <div className="right">{user.phoneNumber}</div>
-                            </div>
-
-                            <div className="detail-item">
-                                <div className="left">
-                                    <i className="fas fa-venus-mars"></i><FormattedMessage id="manage-patient.gender" />
-                                </div>
-                                <div className="right">
-                                    {user.gender === "M" ? (this.props.language === 'vi' ? "Nam" : "Male") :
-                                        user.gender === "F" ? (this.props.language === 'vi' ? "Nữ" : "Female") :
-                                            (this.props.language === 'vi' ? "Khác" : "Other")}
-                                </div>
-                            </div>
-
-                            <div className="detail-item">
-                                <div className="left">
-                                    <i className="fas fa-map-marker-alt"></i><FormattedMessage id="manage-patient.address" />
-                                </div>
-                                <div className="right">{user.address}</div>
-                            </div>
-                        </div>
-
-                        <div className="profile-buttons">
-                            <button className="edit-btn" onClick={this.toggleEdit}>
-                                <i className="fas fa-edit"></i> {this.props.language === 'vi' ? 'Chỉnh sửa' : 'Edit'}
-                            </button>
-
-                            <button className="logout-btn-patient" onClick={() => {
-                                this.props.patientLogout();
-                                localStorage.removeItem("patientToken");
-                            }}>
-                                <i className="fas fa-sign-out-alt"></i> <FormattedMessage id="home-header.logout" />
-                            </button>
-                        </div>
-
                     </div>
                 </div>
-
                 <HomeFooter />
-
                 <EditModal
                     isOpen={this.state.isEditing}
                     toggle={this.toggleEdit}

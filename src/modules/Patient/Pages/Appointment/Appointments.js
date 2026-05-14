@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import HomeHeader from "../../Layout/HomeHeader";
 import HomeFooter from "../../Layout/HomeFooter";
+import PatientSidebar from "../../Layout/PatientSidebar";
 import * as actions from "../../../../store/actions";
 import "./Appointments.scss";
 import moment from "moment";
@@ -33,7 +34,6 @@ class Appointments extends Component {
         let res = await this.props.CancelBooking({ BookingId: bookingId });
 
         if (res.errCode === 0) {
-            // reload data
             this.props.ListAppointments(this.props.patientInfo.id);
         }
     };
@@ -61,57 +61,65 @@ class Appointments extends Component {
 
     render() {
         const { appointments } = this.state;
+        const { language } = this.props;
 
         return (
             <>
                 <HomeHeader showBanner={false} />
-                <div className="appointments-container">
-                    <h2 className="appointments-title">
-                        {this.props.language === 'vi' ? 'Lịch hẹn của tôi' : 'My Appointments'}
-                    </h2>
+                <div className="patient-dashboard-layout">
+                    <div className="container d-flex flex-start gap-3">
+                        <PatientSidebar />
+                        <div className="patient-page-content">
+                            <h2 className="appointments-title">
+                                {language === 'vi' ? 'Lịch hẹn của tôi' : 'My Appointments'}
+                            </h2>
 
-                    <div className="appointments-content">
-                        {appointments.length === 0 ? (
-                            <p>{this.props.language === 'vi' ? 'Không có lịch hẹn nào.' : 'No appointments.'}</p>
-                        ) : (
-                            <table className="appointments-table">
-                                <thead>
-                                    <tr>
-                                        <th>{this.props.language === 'vi' ? 'Ngày' : 'Date'}</th>
-                                        <th>{this.props.language === 'vi' ? 'Giờ' : 'Time'}</th>
-                                        <th>{this.props.language === 'vi' ? 'Bác sĩ' : 'Doctor'}</th>
-                                        <th>{this.props.language === 'vi' ? 'Trạng thái' : 'Status'}</th>
-                                        <th>{this.props.language === 'vi' ? 'Hành động' : 'Actions'}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {appointments.map((item) => (
-                                        <tr key={item.id}>
-                                            <td>{moment(item.date).format("DD/MM/YYYY")}</td>
-                                            <td>{item.timeVi}</td>
-                                            <td>
-                                                {item.doctorFirstName}{" "}
-                                                {item.doctorLastName}
-                                            </td>
-                                            <td>
-                                                {this.renderStatus(item.statusId, item.statusVi)}
-                                            </td>
-                                            <td>
-                                                {(item.statusId === "S1" ||
-                                                    item.statusId === "S2") && (
-                                                        <button
-                                                            className="btn-cancel"
-                                                            onClick={() => this.handleCancel(item.id)}
-                                                        >
-                                                            {this.props.language === 'vi' ? 'Hủy lịch' : 'Cancel'}
-                                                        </button>
-                                                    )}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        )}
+                            <div className="appointments-content">
+                                {appointments.length === 0 ? (
+                                    <p className="appointments-empty">
+                                        {language === 'vi' ? 'Không có lịch hẹn nào.' : 'No appointments.'}
+                                    </p>
+                                ) : (
+                                    <table className="appointments-table">
+                                        <thead>
+                                            <tr>
+                                                <th>{language === 'vi' ? 'Ngày' : 'Date'}</th>
+                                                <th>{language === 'vi' ? 'Giờ' : 'Time'}</th>
+                                                <th>{language === 'vi' ? 'Bác sĩ' : 'Doctor'}</th>
+                                                <th>{language === 'vi' ? 'Trạng thái' : 'Status'}</th>
+                                                <th>{language === 'vi' ? 'Hành động' : 'Actions'}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {appointments.map((item) => (
+                                                <tr key={item.id}>
+                                                    <td>{moment(item.date).format("DD/MM/YYYY")}</td>
+                                                    <td>{item.timeVi}</td>
+                                                    <td>
+                                                        {item.doctorFirstName}{" "}
+                                                        {item.doctorLastName}
+                                                    </td>
+                                                    <td>
+                                                        {this.renderStatus(item.statusId, item.statusVi)}
+                                                    </td>
+                                                    <td>
+                                                        {(item.statusId === "S1" ||
+                                                            item.statusId === "S2") && (
+                                                                <button
+                                                                    className="btn-cancel"
+                                                                    onClick={() => this.handleCancel(item.id)}
+                                                                >
+                                                                    {language === 'vi' ? 'Hủy lịch' : 'Cancel'}
+                                                                </button>
+                                                            )}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <HomeFooter />
@@ -122,7 +130,7 @@ class Appointments extends Component {
 
 const mapStateToProps = (state) => ({
     language: state.app.language,
-    patientInfo: state.patient.patientInfo, // user login info
+    patientInfo: state.patient.patientInfo,
     listAppointment: state.patient?.listAppointment || [],
 });
 

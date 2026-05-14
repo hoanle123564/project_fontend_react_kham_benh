@@ -1,49 +1,73 @@
-.appointments-container {
-    padding: 100px 80px;
-    background: #f9f9f9;
-    min-height: 80vh;
-}
-
+// Appointments — nội dung nằm trong cột phải patient-dashboard-layout
 .appointments-title {
-    font-size: 28px;
-    font-weight: 600;
-    margin-bottom: 30px;
-    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    color: #222;
 }
 
 .appointments-content {
     background: #fff;
-    padding: 30px 40px;
+    padding: 20px 24px;
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.appointments-empty {
+    color: #888;
+    text-align: center;
+    padding: 30px 0;
+    font-size: 0.95rem;
 }
 
 .appointments-table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 0.93rem;
 }
 
-.appointments-table th,
-.appointments-table td {
-    padding: 14px 10px;
-    border-bottom: 1px solid #eee;
+.appointments-table th {
+    padding: 12px 10px;
+    border-bottom: 2px solid #f0f0f0;
     text-align: left;
+    color: #555;
+    font-weight: 600;
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.appointments-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #f5f5f5;
+    color: #333;
+}
+
+.appointments-table tbody tr:hover {
+    background: rgba(15, 156, 137, 0.03);
+}
+
+.appointments-table tbody tr:last-child td {
+    border-bottom: none;
 }
 
 .btn-cancel {
     background: #ff4d4f;
     border: none;
-    padding: 8px 14px;
+    padding: 6px 14px;
     color: white;
     border-radius: 6px;
     cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
     transition: 0.2s;
-}
 
-.btn-cancel:hover {
-    opacity: 0.8;
+    &:hover {
+        opacity: 0.85;
+    }
 }
 
 .status-label {
     font-weight: 600;
+    font-size: 0.9rem;
 }
