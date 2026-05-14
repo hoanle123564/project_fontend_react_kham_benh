@@ -10,48 +10,47 @@ import { FormattedMessage } from 'react-intl';
 class AboutUs extends Component {
 
     render() {
-
-
         return (
             <>
                 <div className='section-share section-about'>
-                    <div className='section-container'>
-                        <div className='secton-header-about'>
-                            <FormattedMessage id="banner.About-life-care" />
-                        </div>
-                        <div className='secton-body-about'>
-                            <div className='secton-left-about'>
-                                <iframe width="560" height="330"
-                                    src="https://www.youtube.com/embed/HwGzmRVBsdw?list=PLearCtxlLjlcKWhwO3k9PGtDdxUNb6YCC"
-                                    title="Medical Hospital Clinic Background Music For Videos" frameBorder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    referrerPolicy="strict-origin-when-cross-origin" allowFullScreen >
-
-                                </iframe>
+                    <div className="container">
+                        <div className='section-container'>
+                            <div className='secton-header-about'>
+                                <FormattedMessage id="banner.About-life-care" />
                             </div>
-                            <div className='secton-right-about'>
-                                <div className='section-row'>
-                                    <div className='section-items'>
-                                        <img src={VNexpress} alt='VNexpress' />
-                                    </div>
-                                    <div className='section-items'>
-                                        <img src={SucKhoeDoiSong} alt='SucKhoeDoiSong' />
-                                    </div>
-                                </div>
-                                <div className='section-row'>
-                                    <div className='section-items'>
-                                        <img src={VNNet} alt='VNNet' />
-                                    </div>
-                                    <div className='section-items'>
-                                        <img src={VTV1} alt='VTV1' />
+                            <div className="row">
+                                <div className="col-lg-6">
+                                    <div className='content-left-about'>
+                                        <iframe width="560" height="330"
+                                            src="https://www.youtube.com/embed/HwGzmRVBsdw?list=PLearCtxlLjlcKWhwO3k9PGtDdxUNb6YCC"
+                                            title="Medical Hospital Clinic Background Music For Videos" frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                            referrerPolicy="strict-origin-when-cross-origin" allowFullScreen >
+
+                                        </iframe>
                                     </div>
                                 </div>
-                                <div className='section-row'>
-                                    <div className='section-items'>
-                                        <img src={VTCNews} alt='VTCNews' />
-                                    </div>
-                                    <div className='section-items'>
-                                        <img src={DanTri} alt='DanTri' />
+
+                                <div className="col-lg-6">
+                                    <div className='content-right-about'>
+                                        <div className='section-items'>
+                                            <img src={VNexpress} alt='VNexpress' />
+                                        </div>
+                                        <div className='section-items'>
+                                            <img src={SucKhoeDoiSong} alt='SucKhoeDoiSong' />
+                                        </div>
+                                        <div className='section-items'>
+                                            <img src={VNNet} alt='VNNet' />
+                                        </div>
+                                        <div className='section-items'>
+                                            <img src={VTV1} alt='VTV1' />
+                                        </div>
+                                        <div className='section-items'>
+                                            <img src={VTCNews} alt='VTCNews' />
+                                        </div>
+                                        <div className='section-items'>
+                                            <img src={DanTri} alt='DanTri' />
+                                        </div>
                                     </div>
                                 </div>
                             </div>

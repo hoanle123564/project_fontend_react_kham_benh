@@ -263,130 +263,132 @@ class ManageDoctor extends Component {
 
     return (
       <div className="manage-doctor-container">
-        <div className="manage-doctor-title">
-          <FormattedMessage id="admin.manage-doctor.title" />
-        </div>
+        <div className="container">
+          <div className="manage-doctor-title">
+            <FormattedMessage id="admin.manage-doctor.title" />
+          </div>
 
-        {/* --- Chọn bác sĩ + mô tả --- */}
-        <div className="more-info-doctor">
-          <div className="content-left">
-            <label>
-              <FormattedMessage id="admin.manage-doctor.select-doctor" />
-            </label>
-            <Select
-              value={this.state.selectDoctor}
-              onChange={this.handleChangeSelect}
-              name="selectDoctor"
-              options={this.state.ListDoctor}
-              placeholder={
-                language === "vi" ? "Chọn bác sĩ ..." : "Select doctor ..."
-              }
+          {/* --- Chọn bác sĩ + mô tả --- */}
+          <div className="more-info-doctor">
+            <div className="content-left">
+              <label>
+                <FormattedMessage id="admin.manage-doctor.select-doctor" />
+              </label>
+              <Select
+                value={this.state.selectDoctor}
+                onChange={this.handleChangeSelect}
+                name="selectDoctor"
+                options={this.state.ListDoctor}
+                placeholder={
+                  language === "vi" ? "Chọn bác sĩ ..." : "Select doctor ..."
+                }
+              />
+            </div>
+
+            <div className="content-right">
+              <label>
+                <FormattedMessage id="admin.manage-doctor.intro" />
+              </label>
+              <textarea
+                className="form-control"
+                placeholder={
+                  language === "vi"
+                    ? "Giới thiệu bác sĩ ..."
+                    : "Introduce the doctor ..."
+                }
+                rows={4}
+                value={this.state.description}
+                onChange={(e) => this.handleOnChangeText(e, "description")}
+              />
+            </div>
+          </div>
+
+
+          {/* --- Thông tin bổ sung (chia 2 hàng: 3 + 2 cột) --- */}
+          <div className="more-info-extra container">
+            {/* Hàng 1: 3 cột */}
+            <div className="row my-3">
+              <div className="col-md-4">
+                <label><FormattedMessage id="admin.manage-doctor.select-price" /></label>
+                <Select
+                  value={this.state.selectPrice}
+                  onChange={this.handleChangeSelect}
+                  name="selectPrice"
+                  options={this.state.ListPrice}
+                  placeholder={language === "vi" ? "Chọn giá khám ..." : "Select examination fee ..."}
+                />
+              </div>
+
+              <div className="col-md-4">
+                <label><FormattedMessage id="admin.manage-doctor.payment" /></label>
+                <Select
+                  value={this.state.selectPayment}
+                  onChange={this.handleChangeSelect}
+                  name="selectPayment"
+                  options={this.state.ListPayment}
+                  placeholder={language === "vi" ? "Chọn phương thức ..." : "Select payment method ..."}
+                />
+              </div>
+
+              <div className="col-md-4">
+                <label>Chọn tỉnh thành</label>
+                <Select
+                  value={this.state.selectprovince}
+                  onChange={this.handleChangeSelect}
+                  name="selectprovince"
+                  options={this.state.ListProvinces}
+                  placeholder={language === "vi" ? "Chọn tỉnh thành ..." : "Select province ..."}
+                />
+              </div>
+            </div>
+
+            {/* Hàng 2: 2 cột */}
+
+
+            {/* Hàng 2: 2 cột */}
+            <div className="row my-4">
+              <div className="col-md-6">
+                <label>Chọn chuyên khoa</label>
+                <Select
+                  value={this.state.selectSpecialty}
+                  onChange={this.handleChangeSelect}
+                  name="selectSpecialty"
+                  options={this.state.ListSpecialty}
+                  placeholder={language === "vi" ? "Chọn chuyên khoa ..." : "Select specialty ..."}
+                />
+              </div>
+
+              <div className="col-md-6">
+                <label>Chọn phòng khám</label>
+                <Select
+                  value={this.state.selectClinic}
+                  onChange={this.handleChangeSelect}
+                  name="selectClinic"
+                  options={this.state.ListClinic}
+                  placeholder={language === "vi" ? "Chọn phòng khám ..." : "Select clinic ..."}
+                />
+              </div>
+            </div>
+          </div>
+
+
+          {/* --- Markdown Editor --- */}
+          <div className="manage-doctor-editor">
+            <MdEditor
+              style={{ height: "500px" }}
+              renderHTML={(text) => mdParser.render(text)}
+              value={this.state.contentMarkdown}
+              onChange={this.handleEditorChange}
             />
           </div>
 
-          <div className="content-right">
-            <label>
-              <FormattedMessage id="admin.manage-doctor.intro" />
-            </label>
-            <textarea
-              className="form-control"
-              placeholder={
-                language === "vi"
-                  ? "Giới thiệu bác sĩ ..."
-                  : "Introduce the doctor ..."
-              }
-              rows={4}
-              value={this.state.description}
-              onChange={(e) => this.handleOnChangeText(e, "description")}
-            />
-          </div>
+          <button
+            className="save-content-doctor"
+            onClick={this.handleSaveContent}
+          >
+            <FormattedMessage id="admin.manage-doctor.save-info" />
+          </button>
         </div>
-
-
-        {/* --- Thông tin bổ sung (chia 2 hàng: 3 + 2 cột) --- */}
-        <div className="more-info-extra container">
-          {/* Hàng 1: 3 cột */}
-          <div className="row my-3">
-            <div className="col-md-4">
-              <label><FormattedMessage id="admin.manage-doctor.select-price" /></label>
-              <Select
-                value={this.state.selectPrice}
-                onChange={this.handleChangeSelect}
-                name="selectPrice"
-                options={this.state.ListPrice}
-                placeholder={language === "vi" ? "Chọn giá khám ..." : "Select examination fee ..."}
-              />
-            </div>
-
-            <div className="col-md-4">
-              <label><FormattedMessage id="admin.manage-doctor.payment" /></label>
-              <Select
-                value={this.state.selectPayment}
-                onChange={this.handleChangeSelect}
-                name="selectPayment"
-                options={this.state.ListPayment}
-                placeholder={language === "vi" ? "Chọn phương thức ..." : "Select payment method ..."}
-              />
-            </div>
-
-            <div className="col-md-4">
-              <label>Chọn tỉnh thành</label>
-              <Select
-                value={this.state.selectprovince}
-                onChange={this.handleChangeSelect}
-                name="selectprovince"
-                options={this.state.ListProvinces}
-                placeholder={language === "vi" ? "Chọn tỉnh thành ..." : "Select province ..."}
-              />
-            </div>
-          </div>
-
-          {/* Hàng 2: 2 cột */}
-
-
-          {/* Hàng 2: 2 cột */}
-          <div className="row my-4">
-            <div className="col-md-6">
-              <label>Chọn chuyên khoa</label>
-              <Select
-                value={this.state.selectSpecialty}
-                onChange={this.handleChangeSelect}
-                name="selectSpecialty"
-                options={this.state.ListSpecialty}
-                placeholder={language === "vi" ? "Chọn chuyên khoa ..." : "Select specialty ..."}
-              />
-            </div>
-
-            <div className="col-md-6">
-              <label>Chọn phòng khám</label>
-              <Select
-                value={this.state.selectClinic}
-                onChange={this.handleChangeSelect}
-                name="selectClinic"
-                options={this.state.ListClinic}
-                placeholder={language === "vi" ? "Chọn phòng khám ..." : "Select clinic ..."}
-              />
-            </div>
-          </div>
-        </div>
-
-
-        {/* --- Markdown Editor --- */}
-        <div className="manage-doctor-editor">
-          <MdEditor
-            style={{ height: "500px" }}
-            renderHTML={(text) => mdParser.render(text)}
-            value={this.state.contentMarkdown}
-            onChange={this.handleEditorChange}
-          />
-        </div>
-
-        <button
-          className="save-content-doctor"
-          onClick={this.handleSaveContent}
-        >
-          <FormattedMessage id="admin.manage-doctor.save-info" />
-        </button>
       </div>
     );
   }

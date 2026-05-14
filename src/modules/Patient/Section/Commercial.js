@@ -59,35 +59,37 @@ class Commercial extends Component {
 
         return (
             <div className="commercial-wrapper">
+                <div className="container">
 
-                {/* Slider ảnh lớn */}
-                <Slider
-                    {...mainSettings}
-                    asNavFor={this.state.nav2}
-                    ref={this.slider1}
-                    className="main-slider"
-                >
-                    {bannerList.map((img, index) => (
-                        <div className="main-slide" key={index}>
-                            <img src={img} alt={`banner-${index}`} />
-                        </div>
-                    ))}
-                </Slider>
+                    {/* Slider ảnh lớn */}
+                    <Slider
+                        {...mainSettings}
+                        asNavFor={this.state.nav2}
+                        ref={this.slider1}
+                        className="main-slider"
+                    >
+                        {bannerList.map((img, index) => (
+                            <div className="main-slide" key={index}>
+                                <img src={img} alt={`banner-${index}`} />
+                            </div>
+                        ))}
+                    </Slider>
 
-                {/* Slider thumbnail điều hướng */}
-                <Slider
-                    {...thumbSettings}
-                    asNavFor={this.state.nav1}
-                    ref={this.slider2}
-                    className="thumb-slider"
-                >
-                    {bannerList.map((img, index) => (
-                        <div className="thumb-slide" key={index}>
-                            <img src={img} alt={`thumb-${index}`} />
-                        </div>
-                    ))}
-                </Slider>
+                    {/* Slider thumbnail điều hướng */}
+                    <Slider
+                        {...thumbSettings}
+                        asNavFor={this.state.nav1}
+                        ref={this.slider2}
+                        className="thumb-slider"
+                    >
+                        {bannerList.map((img, index) => (
+                            <div className="thumb-slide" key={index}>
+                                <img src={img} alt={`thumb-${index}`} />
+                            </div>
+                        ))}
+                    </Slider>
 
+                </div>
             </div>
         );
     }

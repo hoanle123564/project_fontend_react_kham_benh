@@ -1,5 +1,5 @@
 .dashboard-container {
-    padding: 20px;
+    padding: 20px 0;
 }
 
 .dashboard-title {
@@ -25,7 +25,7 @@
 
 /* ===== DASHBOARD ===== */
 .dashboard-container {
-    padding: 25px 30px;
+    padding: 25px 0;
     background: #f4f7fc;
     min-height: 100vh;
 }
@@ -39,51 +39,34 @@
 /* ===== TOP STAT CARDS ===== */
 
 .top-stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 25px;
+
     margin-bottom: 35px;
 }
 
 .stat-box {
-    position: relative;
-    padding: 25px;
-    border-radius: 12px;
-    color: white;
-    height: 140px;
+    padding: 15px;
+    border-radius: 5px;
+    color: black;
+    height: 100%;
     overflow: hidden;
-    cursor: pointer;
-    transition: 0.25s ease;
     display: flex;
-    flex-direction: column;
+    background-color: #fff;
     justify-content: space-between;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* Icon background mờ phía sau */
-.stat-box::after {
-    content: "👤";
-    position: absolute;
-    right: 15px;
-    bottom: -10px;
-    font-size: 70px;
-    opacity: 0.18;
-}
 
 /* Hover effect */
-.stat-box:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
-}
-
 .stat-number {
-    font-size: 40px;
-    font-weight: 800;
+    font-size: 30px;
+    font-weight: 600;
+    color: #000;
+    opacity: 0.8;
 }
 
 .stat-label {
-    font-size: 18px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .stat-manage {
@@ -92,19 +75,31 @@
     margin-top: 8px;
 }
 
+.icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: #dddfeb !important;
+}
+
 /* ===== COLOR CARDS ===== */
-.blue-box {
-    background: linear-gradient(135deg, #1e90ff, #4aaeff);
+.blue-line {
+    border-left: 4px solid #1e90ff;
+    color: #1e90ff;
 }
 
-.green-box {
-    background: linear-gradient(135deg, #2ecc71, #48e68f);
+.green-line {
+    border-left: 4px solid #2ecc71;
+    color: #2ecc71;
 }
 
-.orange-box {
-    background: linear-gradient(135deg, #f39c12, #ffb347);
+.orange-line {
+    border-left: 4px solid #f39c12;
+    color: #f39c12;
 }
 
-.red-box {
-    background: linear-gradient(135deg, #e74c3c, #ff6f61);
+.red-line {
+    border-left: 4px solid #e74c3c;
+    color: #e74c3c;
 }

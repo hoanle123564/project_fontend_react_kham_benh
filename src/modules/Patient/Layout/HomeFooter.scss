@@ -1,6 +1,5 @@
-// ...existing code...
-.home-footer {
-    background-color: #f8f9fa;
+footer {
+    background-color: #ffff;
     color: #333;
     font-size: 15px;
     width: 100%;
@@ -9,18 +8,15 @@
     .footer-content {
         display: flex;
         justify-content: space-between;
-        gap: 40px;
-        padding: 50px 8%;
-        flex-wrap: wrap;
+        padding: 50px 0;
 
         .footer-col {
             flex: 1;
-            min-width: 250px;
+            height: 100%;
 
             h4 {
                 font-weight: 700;
                 margin-bottom: 10px;
-                color: #2e2e2e;
             }
 
             h5 {
@@ -33,6 +29,7 @@
                 display: flex;
                 align-items: center;
                 gap: 8px;
+                font-size: 14px;
 
                 /* CHANGED: cố định vùng chứa icon để căn giữa icon luôn đúng hàng chữ */
                 i {
@@ -138,11 +135,7 @@
     .footer-bottom {
         border-top: 1px solid #ddd;
         background-color: #e6f5ff;
-        padding: 15px 8%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
+        padding: 15px 0px;
 
         span {
             color: #333;
@@ -177,8 +170,7 @@
                 color: #1877f2;
 
                 &:hover {
-                    color: #125ecb;
-                    transform: scale(1.15);
+                    transform: scale(1.1);
                 }
             }
 
@@ -186,8 +178,7 @@
                 color: #ff0000;
 
                 &:hover {
-                    color: #c40000;
-                    transform: scale(1.15);
+                    transform: scale(1.1);
                 }
             }
 
@@ -195,8 +186,7 @@
                 color: #000;
 
                 &:hover {
-                    color: #25f4ee;
-                    transform: scale(1.15);
+                    transform: scale(1.1);
                 }
             }
         }
@@ -221,5 +211,3 @@
         }
     }
 }
-
-// ...existing code...
