@@ -1,4 +1,3 @@
-// ...existing code...
 import React, { Component } from "react";
 import { connect } from "react-redux"; // kết nối như router
 import "./HomeHeader.scss";
@@ -17,8 +16,25 @@ import { languages } from "../../../utils/constant";
 import { changeLangguageApp } from "../../../store/actions/appActions";
 import { withRouter } from "react-router";
 import * as action from "../../../store/actions";
-
 import user_default from "../../../assets/user_default_1.png";
+import ListSpecialty from "../Pages/Speciality/ListSpecialty";
+import Breadcrumb from "../../../components/Breadcrumb/breadcrumb";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/autoplay';
+import { jwtDecode } from 'jwt-decode';
+
+// Kiểm tra token còn hạn không
+const isTokenValid = (token) => {
+  if (!token) return false;
+  try {
+    const decoded = jwtDecode(token);
+    return decoded.exp * 1000 > Date.now();
+  } catch {
+    return false;
+  }
+};
 
 class HomeHeader extends Component {
   constructor(props) {
@@ -28,7 +44,10 @@ class HomeHeader extends Component {
       searchQuery: "",      // giá trị input
       doctorList: [],       // danh sách bác sĩ
       filteredDoctors: [],  // danh sách gợi ý
+      specialtyList: [],
+      isDropdown: false
     };
+    this.dropdownRef = React.createRef();
   }
   change = (language) => {
     this.props.changeLangguageAppRedux(language);
@@ -43,8 +62,20 @@ class HomeHeader extends Component {
     }
   };
 
-  componentDidMount() {
-    this.props.fetchTopDoctor();
+  async componentDidMount() {
+    await this.props.fetchTopDoctor();
+    await this.props.getAllSpecialty();
+    document.addEventListener("mousedown", this.handleClickOutside)
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("mousedown", this.handleClickOutside)
+  }
+
+  handleClickOutside = (event) => {
+    if (this.dropdownRef.current && !this.dropdownRef.current.contains(event.target)) {
+      this.setState({ isDropdown: false });
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -53,6 +84,11 @@ class HomeHeader extends Component {
         doctorList: this.props.ListDoctor,
         filteredDoctors: this.props.ListDoctor,
       });
+    }
+    if (prevProps.specialtys != this.props.specialtys) {
+      this.setState({
+        specialtyList: this.props.specialtys
+      })
     }
   }
 
@@ -86,7 +122,10 @@ class HomeHeader extends Component {
       filteredDoctors: filtered,
     });
   };
-
+  handleLogout = () => {
+    this.props.userLogout();
+    this.props.history.push(`/home`);
+  }
   handleSelectDoctor = (doctor) => {
     if (!doctor) return;
     const id = doctor.id || doctor.userId || doctor.doctorId || doctor.DoctorId;
@@ -98,6 +137,12 @@ class HomeHeader extends Component {
       searchQuery: "",
       filteredDoctors: this.state.doctorList,
     });
+  };
+
+  handleViewDetailSpecialty = (item) => {
+    if (this.props.history) {
+      this.props.history.push(`/detail-specialty/${item.id}`);
+    }
   };
 
   handleListDoctor = () => {
@@ -125,211 +170,280 @@ class HomeHeader extends Component {
       this.props.history.push(`/list-remote`);
     }
   }
+  // show dropdown khi click vào icon user
+  handleDropdown = () => {
+    this.setState({
+      isDropdown: !this.state.isDropdown
+    })
+  }
   render() {
     // let language = this.state.changeLanguage;
 
     // Lấy đường dẫn ảnh từ file message
     const { language, userInfo } = this.props;
+    const { specialtyList } = this.state;
     console.log('userInfo from header: ', userInfo);
 
     // chọn cờ dựa trên language1
     const flagSrc = language === languages.VI ? vietnam : united;
+    console.log("Show banner", this.state);
 
     return (
       <>
-        <div className="home-header-container">
-          <div className="home-header-content">
-            <div className="left-content">
-              {/* <i className="fa-solid fa-bars"></i> */}
-              <img src={logoSrc} alt="logo" onClick={() => this.returnHome()} />
-              {/* <div className='header-logo'></div> */}
-            </div>
 
-            <div className="center-content">
-              <div className="child-content">
-                <div onClick={() => this.returnHome()}>
-                  <b>
-                    <FormattedMessage id="home-header.all" />{" "}
-                  </b>
+        <header>
+          <div className="container">
+            <div className="home-header-content d-flex align-items-center justify-content-center">
+              <div className="col-lg-2">
+                <div className="left-content">
+                  <a href="/home" onClick={(e) => { e.preventDefault(); this.returnHome(); }}>
+                    <img src={logoSrc} alt="logo" />
+                  </a>
                 </div>
               </div>
-              <div className="child-content">
-                <div onClick={this.handleListSpecialty}>
-                  <b>
-                    <FormattedMessage id="home-header.specialty" />{" "}
-                  </b>
-                </div>
-              </div>
-              <div className="child-content">
-                <div onClick={this.handleListClinic}>
-                  <b>
-                    <FormattedMessage id="home-header.facility" />
-                  </b>
-                </div>
-              </div>
-              <div className="child-content">
-                <div onClick={this.handleListDoctor}>
-                  <b>
-                    <FormattedMessage id="home-header.doctor" />
-                  </b>
-                </div>
-              </div>
-            </div>
+              <div className="col-lg-6">
+                <ul className="list-content gap-5">
+                  <li className="child-content">
+                    <a href="" onClick={() => this.returnHome()}>
+                      <FormattedMessage id="home-header.all" />{" "}
+                    </a>
+                  </li>
+                  <li className="child-content">
+                    <a href="" onClick={this.handleListSpecialty}>
+                      <FormattedMessage id="home-header.specialty" />
+                      <i className="fa-solid fa-sort-down"></i>
+                    </a>
+                    {
+                      specialtyList && specialtyList.length > 0 && (
+                        <div className="specialty-warp">
+                          <ul className="list-specialty">
+                            {
+                              specialtyList.map((item, index) => {
+                                return (
+                                  < li className="item-specialty" key={index}>
+                                    <a href="" onClick={() => this.handleViewDetailSpecialty(item)}>{item.name}</a>
+                                  </li>
+                                );
+                              })
+                            }
+                          </ul>
+                        </div>
+                      )
+                    }
+                  </li>
 
-            {/* content right */}
-            <div className="right-content">
-              <div className="support">
-                <span>
-                  <i className="fa-solid fa-circle-question"></i>
-                  <FormattedMessage id="home-header.support" />
-                </span>
+                  <li className="child-content">
+                    <a href="" onClick={this.handleListClinic}>
+                      <FormattedMessage id="home-header.facility" />
+                    </a>
+                  </li>
+                  <li className="child-content">
+                    <a href="" onClick={this.handleListDoctor}>
+                      <FormattedMessage id="home-header.doctor" />
+                    </a>
+                  </li>
+                </ul>
               </div>
-              {flagSrc ? (
-                language === languages.VI ? (
-                  <div
-                    className="language-vi"
-                    onClick={() => this.change(languages.EN)}
-                  >
-                    <img src={flagSrc} alt="vietnam" width="30" />{" "}
-                    <FormattedMessage id="home-header.language" />
+
+              {/* content right */}
+              <div className="col-lg-4">
+                <div className="right-content">
+                  <div className="support">
+                    <span>
+                      <i className="fa-solid fa-circle-question"></i>
+                      <FormattedMessage id="home-header.support" />
+                    </span>
                   </div>
-                ) : (
-                  <div
-                    className="language-en"
-                    onClick={() => this.change(languages.VI)}
-                  >
-                    <img src={flagSrc} alt="united" width="30" />{" "}
-                    <FormattedMessage id="home-header.language" />
-                  </div>
-                )
-              ) : null}
+                  {flagSrc ? (
+                    language === languages.VI ? (
+                      <div
+                        className="language-vi"
+                        onClick={() => this.change(languages.EN)}
+                      >
+                        <img src={flagSrc} alt="vietnam" width="30" />{" "}
+                        <FormattedMessage id="home-header.language" />
+                      </div>
+                    ) : (
+                      <div
+                        className="language-en"
+                        onClick={() => this.change(languages.VI)}
+                      >
+                        <img src={flagSrc} alt="united" width="30" />{" "}
+                        <FormattedMessage id="home-header.language" />
+                      </div>
+                    )
+                  ) : null}
 
-              {/* NÚT LỊCH HẸN — chỉ hiện khi đã đăng nhập */}
-              {this.props.isLoggedIn && (
-                <div
-                  className="menu-appointment"
-                  onClick={() => this.props.history.push("/appointments")}
-                >
-                  <i className="fas fa-clock"></i>
-                  <span>
-                    <FormattedMessage id="home-header.appointment" />
-                  </span>
-                </div>
-              )}
+                  {/* USER AVATAR — chỉ hiện khi đã đăng nhập */}
+                  {this.props.isLoggedIn && userInfo ? (
+                    <div
+                      className="header-user"
+                      onClick={() => this.handleDropdown()}
+                      ref={this.dropdownRef}
+                    >
+                      <span>{userInfo.firstName} {userInfo.lastName}</span>
+                      <img
+                        src={userInfo?.image
+                          ? `data:image/jpeg;base64,${userInfo.image}` : user_default}
+                        alt="avatar"
+                        className="header-avatar"
+                      />
+                      {
+                        this.state.isDropdown ?
+                          <i className="fas fa-chevron-up ChevronDown"></i> :
+                          <i className="fas fa-chevron-down ChevronDown"></i>
+                      }
 
-              {/* NÚT LOGIN — chỉ hiện khi chưa đăng nhập */}
-              {!this.props.isLoggedIn && (
-                <div
-                  className="menu-login"
-                  onClick={() => this.props.history.push("/login")}
-                >
-                  <i className="fas fa-sign-in-alt"></i>
-                  <span>
-                    {language === languages.VI ? "Đăng nhập" : "Login"}
-                  </span>
+                      <div className={`dropdown-menu ${this.state.isDropdown ? 'show' : ''}`}>
+                        <div className="dropdown-item" onClick={() => this.props.history.push("/patient-profile")}>
+                          <i className="fas fa-user fa-sm fa-fw"></i>
+                          <span>
+                            Chỉnh sửa thông tin cá nhân
+                          </span>
+                        </div>
+                        <div className="dropdown-item" onClick={() => this.props.history.push("/appointments")}>
+                          <i className="fas fa-clock"></i>
+                          <span>
+                            <FormattedMessage id="home-header.appointment" />
+                          </span>
+                        </div>
+                        <div className="dropdown-item" onClick={this.handleLogout}>
+                          <i className="fas fa-sign-out-alt fa-sm fa-fw"></i>
+                          <FormattedMessage id="home-header.logout" />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className="menu-login"
+                      onClick={() => this.props.history.push("/login")}
+                    >
+                      <i className="fas fa-sign-in-alt"></i>
+                      <span>
+                        {language === languages.VI ? "Đăng nhập" : "Login"}
+                      </span>
+                    </div>
+                  )}
                 </div>
-              )}
-
-              {/* USER AVATAR — chỉ hiện khi đã đăng nhập */}
-              {this.props.isLoggedIn && userInfo && (
-                <div
-                  className="header-user"
-                  onClick={() => this.props.history.push("/patient-profile")}
-                >
-                  <img
-                    src={userInfo?.image
-                      ? `data:image/jpeg;base64,${userInfo.image}` : user_default}
-                    alt="avatar"
-                    className="header-avatar"
-                  />
-                  <span>{userInfo.lastName}</span>
-                </div>
-              )}
+              </div>
             </div>
           </div>
-        </div>
+          <div className="campus-warp">
+            <Swiper
+              modules={[Autoplay]}
+              slidesPerView={'auto'}
+              spaceBetween={20}
+              loop={true}
+              speed={10000}
+              autoplay={{
+                delay: 0,
+                disableOnInteraction: false,
+              }}
+              className="section-campus"
+            >
+              <SwiperSlide style={{ width: 'auto' }}>
+                <div className="campus-item">🎉 Đặt Giúp Việc Cá Nhân hướng dẫn, hỗ trợ bạn đi khám từ lúc vào viện đến khi kết thúc khám. Gọi ngay 1900 2267!</div>
+              </SwiperSlide>
+              <SwiperSlide style={{ width: 'auto' }}>
+                <div className="campus-item">🎉 Đặt Giúp Việc Cá Nhân hướng dẫn, hỗ trợ bạn đi khám từ lúc vào viện đến khi kết thúc khám. Gọi ngay 1900 2267!</div>
+              </SwiperSlide>
+              <SwiperSlide style={{ width: 'auto' }}>
+                <div className="campus-item">🎉 Đặt Giúp Việc Cá Nhân hướng dẫn, hỗ trợ bạn đi khám từ lúc vào viện đến khi kết thúc khám. Gọi ngay 1900 2267!</div>
+              </SwiperSlide>
+              <SwiperSlide style={{ width: 'auto' }}>
+                <div className="campus-item">🎉 Đặt Giúp Việc Cá Nhân hướng dẫn, hỗ trợ bạn đi khám từ lúc vào viện đến khi kết thúc khám. Gọi ngay 1900 2267!</div>
+              </SwiperSlide>
+            </Swiper>
+          </div>
+        </header>
+
+        {/* Breadcrumb — hiển thị khi không phải trang chủ */}
+        {this.props.showBanner !== true && (
+          <Breadcrumb variant="patient" />
+        )}
 
         {/* content down */}
-        {this.props.showBanner === true && (
-          <div className="home-header-banner ">
-            <div className="content-up pt-5">
-              <div className="title1">
-                <FormattedMessage id="banner.title1" />
+        {
+          this.props.showBanner === true && (
+            <div className="home-header-banner ">
+              <div className="content-up pt-5">
+                <div className="title1">
+                  <FormattedMessage id="banner.title1" />
+                </div>
+                <div className="search">
+                  <i className="fa-solid fa-magnifying-glass"></i>
+                  {/* liên kết input với state và xử lý onChange */}
+                  <input
+                    type="text"
+                    placeholder="Tìm bác sĩ ..."
+                    value={this.state.searchQuery}
+                    onChange={this.handleSearchChange}
+                  />
+
+                  {/* gợi ý kết quả */}
+                  {this.state.searchQuery && this.state.filteredDoctors && (
+                    <div className="search-suggestions">
+                      <ul>
+                        {(this.state.filteredDoctors || [])
+                          .slice(0, 7)
+                          .map((doc) => {
+                            const name = `${doc.firstName || ""} ${doc.lastName || ""
+                              }`.trim();
+                            const id =
+                              doc.id || doc.userId || doc.doctorId || doc.DoctorId;
+                            return (
+                              <li
+                                key={id || name}
+                                onClick={() => this.handleSelectDoctor(doc)}
+                              >
+                                <span className="suggest-name">{name || "Bác sĩ"}</span>
+                                {doc.positionData && doc.positionData.valueVi && (
+                                  <span className="suggest-position"> - {doc.positionData.valueVi}</span>
+                                )}
+                              </li>
+                            );
+                          })}
+                        {this.state.filteredDoctors.length === 0 && (
+                          <li className="no-result">Không tìm thấy kết quả</li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="search ">
-                <i className="fa-solid fa-magnifying-glass"></i>
-                {/* liên kết input với state và xử lý onChange */}
-                <input
-                  type="text"
-                  placeholder="Tìm bác sĩ ..."
-                  value={this.state.searchQuery}
-                  onChange={this.handleSearchChange}
-                />
 
-                {/* gợi ý kết quả */}
-                {this.state.searchQuery && this.state.filteredDoctors && (
-                  <div className="search-suggestions">
-                    <ul>
-                      {(this.state.filteredDoctors || [])
-                        .slice(0, 7)
-                        .map((doc) => {
-                          const name = `${doc.firstName || ""} ${doc.lastName || ""
-                            }`.trim();
-                          const id =
-                            doc.id || doc.userId || doc.doctorId || doc.DoctorId;
-                          return (
-                            <li
-                              key={id || name}
-                              onClick={() => this.handleSelectDoctor(doc)}
-                            >
-                              <span className="suggest-name">{name || "Bác sĩ"}</span>
-                              {doc.positionData && doc.positionData.valueVi && (
-                                <span className="suggest-position"> - {doc.positionData.valueVi}</span>
-                              )}
-                            </li>
-                          );
-                        })}
-                      {this.state.filteredDoctors.length === 0 && (
-                        <li className="no-result">Không tìm thấy kết quả</li>
-                      )}
-                    </ul>
+              <div className="content-down">
+                <div className="options">
+                  {/* Chuyên khoa */}
+                  <div className="option-child" onClick={this.handleListSpecialty}>
+                    <div className="icon-child">
+                      <img src={iconChuyenKhoa} alt="icon khám chuyên khoa" />
+                    </div>
+                    <div className="text-child">
+                      <FormattedMessage id="banner.child1" />
+                    </div>
                   </div>
-                )}
-              </div>
-            </div>
+                  {/* Chuyên khoa */}
+                  <div className="option-child" onClick={this.handleDestist}>
+                    <div className="icon-child">
+                      <img src={iconNhaKhoa} alt="icon khám nha khoa" />
+                    </div>
+                    <div className="text-child">
+                      <FormattedMessage id="banner.child2" />
+                    </div>
+                  </div>
+                  {/* Chuyên khoa */}
+                  <div className="option-child" onClick={this.handleRemote}>
+                    <div className="icon-child">
+                      <img src={iconTuXa} alt="icon khám từ xa" />
+                    </div>
+                    <div className="text-child">
+                      <FormattedMessage id="banner.child4" />
+                    </div>
+                  </div>
 
-            <div className="content-down">
-              <div className="options">
-                {/* Chuyên khoa */}
-                <div className="option-child" onClick={this.handleListSpecialty}>
-                  <div className="icon-child">
-                    <img src={iconChuyenKhoa} alt="icon khám chuyên khoa" />
-                  </div>
-                  <div className="text-child">
-                    <FormattedMessage id="banner.child1" />
-                  </div>
-                </div>
-                {/* Chuyên khoa */}
-                <div className="option-child" onClick={this.handleDestist}>
-                  <div className="icon-child">
-                    <img src={iconNhaKhoa} alt="icon khám nha khoa" />
-                  </div>
-                  <div className="text-child">
-                    <FormattedMessage id="banner.child2" />
-                  </div>
-                </div>
-                {/* Chuyên khoa */}
-                <div className="option-child" onClick={this.handleRemote}>
-                  <div className="icon-child">
-                    <img src={iconTuXa} alt="icon khám từ xa" />
-                  </div>
-                  <div className="text-child">
-                    <FormattedMessage id="banner.child4" />
-                  </div>
-                </div>
-
-                {/* Chuyên khoa */}
-                {/* <div className="option-child">
+                  {/* Chuyên khoa */}
+                  {/* <div className="option-child">
                   <div className="icon-child">
                     <img src={iconCTongquat} alt="icon khám tổng quát" />
                   </div>
@@ -337,8 +451,8 @@ class HomeHeader extends Component {
                     <FormattedMessage id="banner.child3" />
                   </div>
                 </div> */}
-                {/* Chuyên khoa */}
-                {/* <div className="option-child">
+                  {/* Chuyên khoa */}
+                  {/* <div className="option-child">
                   <div className="icon-child">
                     <img
                       src={iconSuckhoeTinhthan}
@@ -349,8 +463,8 @@ class HomeHeader extends Component {
                     <FormattedMessage id="banner.child5" />
                   </div>
                 </div> */}
-                {/* Chuyên khoa */}
-                {/* <div className="option-child">
+                  {/* Chuyên khoa */}
+                  {/* <div className="option-child">
                   <div className="icon-child">
                     <img src={iconXetNghiep} alt="icon xét ngiệm" />
                   </div>
@@ -358,33 +472,37 @@ class HomeHeader extends Component {
                     <FormattedMessage id="banner.child6" />
                   </div>
                 </div> */}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )
+        }
+
       </>
     );
   }
 }
 
 const mapStateToProps = (state) => {
+  // Kiểm tra token còn hạn mới thiết lập isLoggedIn = true
+  // Giúp Header tự động ẩn avatar và hiển nút Login khi token hết hạn
+  const tokenValid = isTokenValid(state.patient.token);
   return {
-    isLoggedIn: state.patient.isLoggedIn,
+    isLoggedIn: state.patient.isLoggedIn && tokenValid,
     language: state.app.language,
     ListDoctor: state.admin.doctor,
-    userInfo: state.patient.patientInfo
-
-
+    userInfo: tokenValid ? state.patient.patientInfo : null,
+    specialtys: state.admin.specialty,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-
     changeLangguageAppRedux: (languages) =>
       dispatch(changeLangguageApp(languages)),
     fetchTopDoctor: () => dispatch(action.fetchTopDoctor()),
-
+    getAllSpecialty: () => dispatch(action.GetAllSpecialty()),
+    userLogout: () => dispatch({ type: "PATIENT_LOGOUT" }),
   };
 };
 

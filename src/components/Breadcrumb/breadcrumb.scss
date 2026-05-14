@@ -1,0 +1,92 @@
+// ===================================================
+// Breadcrumb — dùng chung cho Patient, Admin, Doctor
+// ===================================================
+
+$bc-sep-color: #b0b7c3;
+$bc-link-color: #0f9c89;
+$bc-active-color: #3a3b45;
+$bc-font-size: 15px;
+$bc-gap: 8px;
+
+// ===== BASE =====
+.breadcrumb-nav {
+    padding: 10px 0;
+    margin: 0;
+
+    .breadcrumb-list {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: $bc-gap;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .breadcrumb-item {
+        display: flex;
+        align-items: center;
+        gap: $bc-gap;
+        font-size: $bc-font-size;
+        font-weight: 500;
+
+        a {
+            color: $bc-link-color;
+            text-decoration: none;
+            transition: color 0.2s, opacity 0.2s;
+
+            &:hover {
+                opacity: 0.75;
+            }
+        }
+
+        span {
+            color: $bc-active-color;
+            font-weight: 600;
+        }
+
+        .breadcrumb-sep {
+            font-size: 10px;
+            color: $bc-sep-color;
+        }
+    }
+}
+
+// ===== PATIENT VARIANT =====
+// Hiển thị nền nhạt bên dưới HomeHeader
+.breadcrumb-patient {
+    background-color: #f4fffe;
+    padding: 10px 0;
+
+    .breadcrumb-item {
+        a {
+            color: #0f9c89;
+        }
+    }
+}
+
+// ===== ADMIN / DOCTOR VARIANT =====
+// Nằm ngay dưới header sticky, nền trắng nhẹ
+.breadcrumb-admin,
+.breadcrumb-doctor {
+    padding: 10px 0;
+
+    .breadcrumb-list {
+        padding: 0 24px;
+    }
+
+    .breadcrumb-item {
+        a {
+            color:
+                rgb(100, 116, 139);
+
+            &:hover {
+                color: #0f9c89;
+            }
+        }
+
+        span {
+            color: #5a5c69;
+        }
+    }
+}
