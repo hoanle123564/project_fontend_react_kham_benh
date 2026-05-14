@@ -56,57 +56,85 @@ class DashBoard extends Component {
 
         return (
             <div className="dashboard-container">
-                <h1 className="dashboard-title">{language === 'vi' ? 'Thống kê hệ thống' : 'System Statistics'}</h1>
-                <div className="top-stats">
-                    <div className="stat-box blue-box">
-                        <div className="stat-number">{patientCount}</div>
-                        <div className="stat-label">{language === 'vi' ? 'Bệnh nhân' : 'Patients'}</div>
-                        <div className="stat-manage">{language === 'vi' ? 'Quản lý' : 'Manage'}</div>
+                <div className="container">
+                    <h1 className="dashboard-title">{language === 'vi' ? 'Thống kê hệ thống' : 'System Statistics'}</h1>
+                    <div className="top-stats">
+                        <div className="row g-4">
+                            <div className="col-3">
+                                <div className="stat-box blue-line">
+                                    <div className="content-box">
+                                        <div className="stat-label">{language === 'vi' ? 'Bệnh nhân' : 'Patients'}</div>
+                                        <div className="stat-number">{patientCount}</div>
+                                    </div>
+                                    <div className="icon-box">
+                                        <i className="fas fa-users"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="col-3">
+                                <div className="stat-box green-line">
+                                    <div className="content-box">
+                                        <div className="stat-label">{language === 'vi' ? 'Bác sĩ' : 'Doctors'}</div>
+                                        <div className="stat-number">{doctorList?.length || 0}</div>
+                                    </div>
+                                    <div className="icon-box">
+                                        <i className="fas fa-user-md"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="col-3">
+                                <div className="stat-box orange-line">
+                                    <div className="content-box">
+                                        <div className="stat-label">{language === 'vi' ? 'Cơ sở y tế' : 'Clinics'}</div>
+                                        <div className="stat-number">{clinics?.length || 0}</div>
+                                    </div>
+                                    <div className="icon-box">
+                                        <i className="fas fa-hospital"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="col-3">
+                                <div className="stat-box red-line">
+                                    <div className="content-box">
+                                        <div className="stat-label">{language === 'vi' ? 'Chuyên khoa' : 'Specialties'}</div>
+                                        <div className="stat-number">{specialty?.length || 0}</div>
+                                    </div>
+                                    <div className="icon-box">
+                                        <i className="fas fa-briefcase-medical"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="stat-box green-box">
-                        <div className="stat-number">{doctorList?.length || 0}</div>
-                        <div className="stat-label">{language === 'vi' ? 'Bác sĩ' : 'Doctors'}</div>
-                        <div className="stat-manage">{language === 'vi' ? 'Quản lý' : 'Manage'}</div>
+                    {/* BIỂU ĐỒ TRÒN  */}
+                    <div className="chart-container">
+                        <h2 style={{ marginBottom: "20px" }}>
+                            {language === 'vi' ? 'Biểu đồ trạng thái lịch khám' : 'Appointment Status Chart'}
+                        </h2>
+
+                        <ResponsiveContainer width="100%" height={300}>
+                            <PieChart>
+                                <Pie
+                                    data={pieData}
+                                    cx="50%"
+                                    cy="50%"
+                                    outerRadius={110}
+                                    dataKey="value"
+                                    label={({ name, value }) => `${name}: ${value}`}
+                                >
+                                    {pieData.map((entry, index) => (
+                                        <Cell key={index} fill={COLORS[index]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                                <Legend verticalAlign="bottom" height={36} />
+                            </PieChart>
+                        </ResponsiveContainer>
                     </div>
-
-                    <div className="stat-box orange-box">
-                        <div className="stat-number">{clinics?.length || 0}</div>
-                        <div className="stat-label">{language === 'vi' ? 'Cơ sở y tế' : 'Clinics'}</div>
-                        <div className="stat-manage">{language === 'vi' ? 'Quản lý' : 'Manage'}</div>
-                    </div>
-
-                    <div className="stat-box red-box">
-                        <div className="stat-number">{specialty?.length || 0}</div>
-                        <div className="stat-label">{language === 'vi' ? 'Chuyên khoa' : 'Specialties'}</div>
-                        <div className="stat-manage">{language === 'vi' ? 'Quản lý' : 'Manage'}</div>
-                    </div>
-                </div>
-
-                {/* BIỂU ĐỒ TRÒN  */}
-                <div className="chart-container">
-                    <h2 style={{ marginBottom: "20px" }}>
-                        {language === 'vi' ? 'Biểu đồ trạng thái lịch khám' : 'Appointment Status Chart'}
-                    </h2>
-
-                    <ResponsiveContainer width="100%" height={350}>
-                        <PieChart>
-                            <Pie
-                                data={pieData}
-                                cx="50%"
-                                cy="50%"
-                                outerRadius={110}
-                                dataKey="value"
-                                label={({ name, value }) => `${name}: ${value}`}
-                            >
-                                {pieData.map((entry, index) => (
-                                    <Cell key={index} fill={COLORS[index]} />
-                                ))}
-                            </Pie>
-                            <Tooltip />
-                            <Legend verticalAlign="bottom" height={36} />
-                        </PieChart>
-                    </ResponsiveContainer>
                 </div>
             </div>
         );
