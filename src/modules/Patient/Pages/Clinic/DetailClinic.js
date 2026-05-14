@@ -8,6 +8,7 @@ import DoctorSchdule from "../Doctor/DoctorSchdule";
 import DoctorExtendInfo from "../Doctor/DoctorExtendInfo";
 import { getDetailClinicById } from "../../../../services/userService";
 import { withRouter } from "react-router-dom/cjs/react-router-dom.min";
+import BackToTop from "../../../../components/BackToTop/BackToTop";
 class DetailClinic extends Component {
     constructor(props) {
         super(props);
@@ -128,7 +129,8 @@ class DetailClinic extends Component {
         return (
             <>
                 <HomeHeader showBanner={false} />
-                <div className="speciality-detail-container">
+                <BackToTop />
+                <div className="clinic-detail-container">
                     <div className="description-specialty">
                         {
                             DetailClinic && DetailClinic[0] && DetailClinic[0].descriptionHTML &&

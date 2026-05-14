@@ -8,6 +8,7 @@ import DoctorSchdule from "../../Pages/Doctor/DoctorSchdule";
 import DoctorExtendInfo from "../../Pages/Doctor/DoctorExtendInfo";
 import { getDetailSpecialtyById } from "../../../../services/userService";
 import { withRouter } from "react-router-dom/cjs/react-router-dom.min";
+import BackToTop from "../../../../components/BackToTop/BackToTop";
 class DetailSpeciality extends Component {
     constructor(props) {
         super(props);
@@ -128,68 +129,80 @@ class DetailSpeciality extends Component {
         return (
             <>
                 <HomeHeader showBanner={false} />
+                <BackToTop />
                 <div className="speciality-detail-container">
-                    <div className="description-specialty">
-                        {
-                            dateDetailSpecialty && dateDetailSpecialty[0] && dateDetailSpecialty[0].descriptionHTML &&
-                            <div
-                                dangerouslySetInnerHTML={{
-                                    __html: dateDetailSpecialty[0].descriptionHTML,
-                                }}
-                            ></div>
-                        }
-                        <div className="filter-specialty">
-                            <span>Chọn tỉnh thành:</span>
-                            <select onChange={(event) => this.handleOnchange(event)}>
-                                {this.state.ListProvince &&
-                                    this.state.ListProvince.length > 0 &&
-                                    this.state.ListProvince.map((item, index) => (
-                                        <option key={index} value={item.value}>
-                                            {item.label}
-                                        </option>
-                                    ))}
-                            </select>
+                    <div className="container">
+                        <div className="description-specialty">
+                            {
+                                dateDetailSpecialty &&
+                                dateDetailSpecialty[0] &&
+                                dateDetailSpecialty[0].descriptionHTML &&
+                                (
+                                    <>
+                                        <img src={`data:image/jpeg;base64,${dateDetailSpecialty[0].image}`} alt="" className="backgorund-image" />
+                                        <div
+                                            dangerouslySetInnerHTML={{
+                                                __html: dateDetailSpecialty[0].descriptionHTML,
+                                            }}
+                                        ></div>
+                                    </>
+                                )
+                            }
+                            <div className="filter-specialty">
+                                <span>Chọn tỉnh thành:</span>
+                                <select onChange={(event) => this.handleOnchange(event)}>
+                                    {this.state.ListProvince &&
+                                        this.state.ListProvince.length > 0 &&
+                                        this.state.ListProvince.map((item, index) => (
+                                            <option key={index} value={item.value}>
+                                                {item.label}
+                                            </option>
+                                        ))}
+                                </select>
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="detail-specialty-body">
-                        {ListDoctor &&
-                            ListDoctor.length > 0 &&
-                            ListDoctor.map((item, index) => (
-                                <div className="each-doctor" key={index}>
-                                    <div className="dt-content-left">
-                                        <div className="doctor-image">
-                                            <img
-                                                src={
-                                                    item.image
-                                                        ? `data:image/jpeg;base64,${item.image}`
-                                                        : "/default-doctor.png"
-                                                }
-                                                alt="avatar"
-                                            />
+                        <div className="detail-specialty-body">
+                            {ListDoctor &&
+                                ListDoctor.length > 0 &&
+                                ListDoctor.map((item, index) => (
+                                    <div className="each-doctor" key={index}>
+                                        <div className="dt-content-left">
+                                            <div className="doctor-image">
+                                                <img
+                                                    src={
+                                                        item.image
+                                                            ? `data:image/jpeg;base64,${item.image}`
+                                                            : "/default-doctor.png"
+                                                    }
+                                                    alt="avatar"
+                                                />
+                                            </div>
+                                            <div className="doctor-info">
+                                                <strong>
+                                                    <a href="" onClick={() => this.handleViewDetailDoctor(item)}>
+                                                        {item.positionVi}, {item.firstName} {item.lastName}
+                                                    </a>
+                                                </strong>
+                                                <div className="doctor-description">
+                                                    {item.description ||
+                                                        "Bác sĩ có nhiều năm kinh nghiệm khám và điều trị."}
+                                                </div>
+
+                                                <div className="see-more" onClick={() => this.handleViewDetailDoctor(item)}>
+                                                    Xem thêm
+
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="doctor-info">
-                                            <strong>
-                                                {item.positionVi}, {item.firstName} {item.lastName}
-                                            </strong>
-                                            <div className="doctor-description">
-                                                {item.description ||
-                                                    "Bác sĩ có nhiều năm kinh nghiệm khám và điều trị."}
-                                            </div>
 
-                                            <div className="see-more" onClick={() => this.handleViewDetailDoctor(item)}>
-                                                Xem thêm
-
-                                            </div>
+                                        <div className="dt-content-right">
+                                            <DoctorSchdule doctorId={item.id} doctorProfile={item} />
+                                            <DoctorExtendInfo doctorId={item.id} />
                                         </div>
                                     </div>
-
-                                    <div className="dt-content-right">
-                                        <DoctorSchdule doctorId={item.id} doctorProfile={item} />
-                                        <DoctorExtendInfo doctorId={item.id} />
-                                    </div>
-                                </div>
-                            ))}
+                                ))}
+                        </div>
                     </div>
                 </div>
                 <HomeFooter />

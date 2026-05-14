@@ -56,6 +56,11 @@ const getDetailDoctor = (doctorId) => {
   return axios.get(`/api/detail-doctor?id=${doctorId}`);
 };
 
+// Lấy danh sách bác sĩ liên quan (cùng chuyên khoa)
+const getRelatedDoctorsService = (doctorId) => {
+  return axios.get(`/api/get-related-doctors?id=${doctorId}`);
+};
+
 // Lưu lịch trình bác sĩ
 const postScheduleDoctor = (data) => {
   return axios.post("/api/create-schedule-doctor", data);
@@ -171,6 +176,7 @@ export {
   getAllDoctor,
   postDetailDoctor,
   getDetailDoctor,
+  getRelatedDoctorsService,
   postScheduleDoctor,
   getScheduleDoctor,
   postPatientBooking,

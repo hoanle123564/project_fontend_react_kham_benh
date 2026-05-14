@@ -1,19 +1,17 @@
 .doctor-detail-container {
-    padding-top: 80px;
+    padding-top: 50px;
 
     .intro-doctor {
         display: flex;
         height: 150px;
-        margin: 0 40px;
 
         .content-left-doctor {
             width: 20%;
 
             img {
-                width: 120px;
-                height: 120px;
+                width: 130px;
+                height: 130px;
                 border-radius: 50%;
-                margin: 10px 20px;
             }
         }
 
@@ -38,7 +36,6 @@
 
     .schedule-doctor {
         display: flex;
-        margin: 0 50px;
         min-height: 200px;
 
         .content-left-schedule {
@@ -52,17 +49,17 @@
 
     .detail-info-doctor {
         border-top: 1px solid #ccc;
-        padding: 10px 100px;
+        padding-top: 20px;
         background-color: #f9f9f9;
     }
 
     .faq-section {
         background-color: #00796b;
         color: #fff;
-        padding: 20px 0;
+        padding: 15px 0;
         font-size: 16px;
+        margin-top: 20px;
         font-weight: 500;
-        margin-top: 30px;
 
         .content-ques {
             margin-left: 15px;
@@ -86,4 +83,82 @@
 
     }
 
+    .related-doctor-section {
+        padding: 30px 0;
+
+        .title-section-related {
+            font-size: 24px;
+            font-weight: 700;
+            color: #005963;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .related-doctor-body {
+            .doctor-item {
+                display: flex;
+                flex-direction: column;
+                background: #fff;
+                cursor: pointer;
+                box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+                border-radius: 5px;
+                overflow: hidden;
+                padding: 10px;
+
+                .img-wrapper {
+                    width: 100%;
+                    height: 100%;
+                    overflow: hidden;
+
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        border-radius: 10px;
+                        object-fit: contain;
+                        transition: transform 0.4s ease;
+
+                        &:hover {
+                            transform: scale(1.1);
+                            border-radius: 10px;
+                        }
+                    }
+                }
+
+                .doctor-info {
+                    padding: 10px 20px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    background-color: #fff;
+
+                    .title-img1 {
+                        font-size: 18px;
+                        font-weight: 700;
+                        color: #005963;
+                        margin-bottom: 5px;
+                    }
+
+                    .title-img2 {
+                        font-size: 14px;
+                        color: #005963;
+                        font-weight: 600;
+                        margin-bottom: 15px;
+                    }
+
+                    .location {
+                        font-size: 13px;
+                        color: #888;
+                        display: flex;
+                        align-items: center;
+
+                        i {
+                            color: #72e8d2;
+                            margin-right: 5px;
+                            font-size: 14px;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

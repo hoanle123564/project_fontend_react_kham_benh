@@ -1,7 +1,6 @@
 .speciality-detail-container {
-    max-width: 1200px;
     margin: 0 auto;
-    padding: 80px 20px 80px 20px;
+    padding: 40px 0;
     background: #f6f7fb;
 
     // ===== MÔ TẢ CHUYÊN KHOA =====
@@ -14,6 +13,21 @@
         line-height: 1.7;
         font-size: 16px;
         color: #444;
+        position: relative;
+        overflow: hidden;
+
+        .backgorund-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.2;
+            z-index: 1;
+            // giúp ảnh không nhận sự kiện từ chuột
+            pointer-events: none;
+        }
 
         h2,
         h3,
@@ -100,6 +114,12 @@
                         color: #007b92;
                         margin-bottom: 6px;
                         display: block;
+
+                        a {
+                            text-decoration: none;
+                            color: #007b92;
+
+                        }
                     }
 
                     .doctor-description {
