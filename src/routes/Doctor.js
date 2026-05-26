@@ -6,7 +6,7 @@ import Header from "../components/Layout/Header";
 import ManagePatient from "../modules/Doctor/ManagePatient";
 import ManageSchedulePrivate from "../modules/Doctor/ManageSchedulePrivate";
 import ListAppointment from "../modules/Doctor/ListAppointment";
-import { doctorIsAuthenticated } from "../hoc/authentication";
+
 class Doctor extends Component {
   state = {
     isSidebarCollapsed: false
@@ -27,15 +27,9 @@ class Doctor extends Component {
           <Header toggleSidebar={this.toggleSidebar} />
           <div className="system-list">
             <Switch>
-              <Route path="/doctor/manage-patient"
-                component={doctorIsAuthenticated(ManagePatient)}
-              />
-              <Route path="/doctor/manage-schedule-private"
-                component={doctorIsAuthenticated(ManageSchedulePrivate)}
-              />
-              <Route path="/doctor/list-appointment"
-                component={doctorIsAuthenticated(ListAppointment)}
-              />
+              <Route path="/doctor/manage-patient" component={ManagePatient} />
+              <Route path="/doctor/manage-schedule-private" component={ManageSchedulePrivate} />
+              <Route path="/doctor/list-appointment" component={ListAppointment} />
             </Switch>
           </div>
         </div>
@@ -46,13 +40,8 @@ class Doctor extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    systemMenuPath: state.app.systemMenuPath,
     isLoggedIn: state.doctor.isLoggedIn,
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {};
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Doctor);
+export default connect(mapStateToProps)(Doctor);
