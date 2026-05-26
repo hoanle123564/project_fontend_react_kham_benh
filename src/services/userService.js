@@ -165,6 +165,11 @@ const postSendRemedy = (data) => {
 const getAllBooking = () => {
   return axios.get("/api/get-all-list-booking");
 };
+
+const getAdminDashboardStatistics = (revenueType = "month", topDoctorType = "month") => {
+  return axios.get(`/api/admin/dashboard-statistics?revenueType=${revenueType}&topDoctorType=${topDoctorType}`);
+};
+
 export {
   handleLoginAPI,
   getAllUser,
@@ -197,5 +202,6 @@ export {
   postCancelBookingAppointment,
   DeleteScheduleDoctor,
   getAppointmentDoctor,
-  getAllBooking
+  getAllBooking,
+  getAdminDashboardStatistics
 };
