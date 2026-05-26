@@ -1,116 +1,218 @@
-.register-background {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #22c1c3 0%, #fdbb2d 100%);
-    font-family: 'Poppins', sans-serif;
+.register-page {
+    --register-primary: #22c1c3;
+    --register-primary-dark: #15989b;
+    --register-primary-soft: rgba(34, 193, 195, 0.14);
+    --register-surface: #ffffff;
+    --register-border: rgba(34, 193, 195, 0.12);
+    --register-text: #1f2937;
+    --register-muted: #6b7280;
+    --register-danger: #dc3545;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at top left, rgba(34, 193, 195, 0.25), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(21, 152, 155, 0.18), transparent 28%),
+        linear-gradient(145deg, #effdfd 0%, #dff7f7 42%, #f6ffff 100%);
+    color: var(--register-text);
 
-    .register-container {
-        width: 650px; // tăng để phù hợp 2 cột
-        background-color: #fff;
+    .register-shell {
+        border-radius: 28px;
+        background-color: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.75);
+        box-shadow: 0 28px 90px rgba(17, 57, 58, 0.16);
+        animation: fadeIn 0.6s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .register-form-card {
+        max-width: 860px;
+        padding: 40px 30px;
+        border-radius: 10px;
+        background: var(--register-surface);
+        box-shadow: 0 18px 45px rgba(31, 41, 55, 0.08);
+        background-color: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.75);
+        animation: fadeIn 0.6s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .brand-logo {
+        width: auto;
+        max-width: 144px;
+        max-height: 64px;
+        object-fit: contain;
+    }
+
+    .register-title {
+        margin-top: 11px;
+        margin-bottom: 10px;
+        font-size: clamp(20px, 3vw, 30px);
+        font-weight: 700;
+        color: var(--register-text);
+    }
+
+    .register-subtitle {
+        max-width: 540px;
+        margin: 0 auto;
+        color: var(--register-muted);
+        line-height: 1.7;
+        font-size: 16px;
+    }
+
+    .form-label {
+        margin-bottom: 9px;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .register-input-field {
+        min-height: 35px;
+        border-radius: 10px;
+        border-color: var(--register-border);
+        padding: 10px 16px;
+        color: var(--register-text);
+        box-shadow: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .register-input-field:focus {
+        border-color: rgba(34, 193, 195, 0.48);
+        box-shadow: 0 0 0 4px rgba(34, 193, 195, 0.16);
+    }
+
+    .auth-password-group {
         border-radius: 16px;
-        padding: 40px 35px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
 
-        .text-register {
-            font-size: 26px;
-            font-weight: 700;
-            color: #333;
+    .auth-password-group .register-input-field {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .auth-toggle-password {
+        min-width: 54px;
+        border-color: var(--register-border);
+        border-left: 0;
+        border-top-right-radius: 16px;
+        border-bottom-right-radius: 16px;
+        background-color: #fff;
+        color: #64748b;
+        transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .auth-toggle-password:hover,
+    .auth-toggle-password:focus,
+    .auth-toggle-password:active {
+        background-color: var(--register-primary-soft);
+        color: var(--register-primary-dark);
+        box-shadow: none;
+    }
+
+    .input-error {
+        border-color: rgba(220, 53, 69, 0.55) !important;
+    }
+
+    .auth-password-group .input-error+.auth-toggle-password {
+        border-color: rgba(220, 53, 69, 0.55);
+    }
+
+    .error-text {
+        margin-top: 7px;
+        color: var(--register-danger);
+        font-size: 14px;
+    }
+
+    .error-message {
+        margin-top: 12px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        border: 1px solid rgba(220, 53, 69, 0.18);
+        background-color: rgba(220, 53, 69, 0.08);
+        color: #b42318;
+        font-size: 15px;
+    }
+
+    .btn-register {
+        min-height: 40px;
+        max-width: 100%;
+        border: 0;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 10px 100px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--register-primary) 0%, var(--register-primary-dark) 100%);
+        color: #fff;
+        font-weight: 700;
+        box-shadow: 0 16px 30px rgba(34, 193, 195, 0.24);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+
+    .btn-register:hover,
+    .btn-register:focus {
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 20px 32px rgba(34, 193, 195, 0.3);
+    }
+
+    .btn-register:disabled {
+        opacity: 0.78;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .register-footer {
+        color: var(--register-muted);
+        font-size: 15px;
+    }
+
+    .register-link {
+        color: var(--register-primary-dark);
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .register-link:hover,
+    .register-link:focus {
+        color: var(--register-primary);
+        text-decoration: underline;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .register-page {
+        .register-form-card {
+            max-width: 100%;
+            padding: 32px 24px;
+        }
+    }
+}
+
+@media (max-width: 575.98px) {
+    .register-page {
+        .register-form-card {
+            padding: 24px 18px;
+            border-radius: 22px;
         }
 
-        .register-input {
-            label {
-                font-weight: 500;
-                margin-bottom: 6px;
-                display: block;
-                color: #444;
-            }
-
-            input,
-            select {
-                width: 100%;
-                padding: 10px 14px;
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                font-size: 14px;
-
-                &:focus {
-                    border-color: #22c1c3;
-                    box-shadow: 0 0 5px rgba(34, 193, 195, 0.4);
-                }
-            }
-
-            .preview-img {
-                width: 70px;
-                height: 70px;
-                border-radius: 8px;
-                object-fit: cover;
-                border: 1px solid #ccc;
-            }
-
-            .input-error {
-                border-color: red !important;
-                box-shadow: 0 0 4px rgba(255, 0, 0, 0.4);
-            }
-
-            .error-text {
-                color: red;
-                font-size: 12px;
-                margin-top: 4px;
-            }
-
-            /* Nút upload giống modal */
-            .upload-btn-wrapper {
-                display: inline-block;
-
-                .btn-upload {
-                    padding: 5px 15px;
-                    border-radius: 8px;
-                    border: 1px solid #0d6efd;
-                    color: #0d6efd;
-                    cursor: pointer;
-                    font-weight: 500;
-                    transition: 0.2s;
-
-                    &:hover {
-                        background-color: #0d6efd;
-                        color: white;
-                    }
-
-                    i {
-                        margin-left: 6px;
-                    }
-                }
-            }
-
-            /* Preview ảnh */
-            .preview-img {
-                margin-left: 20px;
-                width: 130px;
-                height: 130px;
-                object-fit: cover;
-                border-radius: 8px;
-                border: 1px solid #ccc;
-            }
-
+        .brand-logo {
+            max-width: 120px;
         }
 
-        .btn-register {
-            width: 100%;
-            height: 40px;
-            border: none;
-            border-radius: 20px;
-            margin-top: 10px;
-            font-weight: 600;
-            color: #fff;
-            cursor: pointer;
-            background: linear-gradient(90deg, #22c1c3 0%, #fdbb2d 100%);
-
-            &:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 10px rgba(34, 193, 195, 0.4);
-            }
+        .register-title {
+            font-size: 29px;
         }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
