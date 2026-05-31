@@ -1,0 +1,132 @@
+.manage-post-category-container {
+    .header-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 1rem;
+
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+    }
+
+    .table {
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: #fff;
+
+        thead th {
+            background-color: #007bff !important;
+            color: white;
+            font-weight: 600;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+            transition: background-color 0.2s ease;
+        }
+
+        td,
+        th {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .drag-column {
+            width: 72px;
+        }
+
+        .drag-handle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            cursor: grab;
+            color: #64748b;
+            background: #f8fafc;
+            border: 1px solid #dbe4ef;
+
+            &:active {
+                cursor: grabbing;
+            }
+
+            &:hover {
+                color: #0f766e;
+                background: #eefaf7;
+            }
+        }
+
+        .btn {
+            border-radius: 8px;
+            transition: all 0.2s ease;
+
+            &:hover {
+                transform: scale(1.05);
+            }
+        }
+
+        .form-check-input {
+            cursor: pointer;
+        }
+    }
+
+    .pagination {
+        .page-item.active .page-link {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .page-link {
+            color: #007bff;
+            cursor: pointer;
+        }
+
+        .page-link:hover {
+            background-color: #e9f3ff;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .header-actions {
+            flex-direction: column;
+            align-items: stretch;
+
+            .action-buttons {
+                justify-content: flex-start;
+            }
+        }
+    }
+}
+
+.post-category-modal {
+    .modal-content {
+        border-radius: 12px;
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .input-error {
+        border-color: red !important;
+        box-shadow: 0 0 3px rgba(255, 0, 0, 0.35);
+    }
+
+    .error-text {
+        color: red;
+        font-size: 13px;
+        margin-top: 4px;
+        margin-left: 2px;
+    }
+}

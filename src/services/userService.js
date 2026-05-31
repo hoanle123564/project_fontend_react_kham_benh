@@ -156,6 +156,82 @@ const DeleteClinic = (ClinicId) => {
   });
 };
 
+//==========================================
+// post category
+const postSavePostCategory = (data) => {
+  return axios.post("/api/create-post-category", data);
+};
+
+const getAllPostCategory = () => {
+  return axios.get("/api/get-post-category");
+};
+
+const getDetailPostCategoryById = (id) => {
+  return axios.get(`/api/get-detail-post-category-by-id?id=${id}`);
+};
+
+const EditPostCategoryId = (data) => {
+  return axios.put("/api/edit-post-category", data);
+};
+
+const updatePostCategoryOrder = (items) => {
+  return axios.put("/api/update-post-category-order", { items });
+};
+
+const changeStatusPostCategory = (data) => {
+  return axios.put("/api/change-status-post-category", data);
+};
+
+const DeletePostCategory = (PostCategoryId) => {
+  return axios.delete("/api/delete-post-category", {
+    data: {
+      id: PostCategoryId,
+    },
+  });
+};
+
+//==========================================
+// post
+const postSavePost = (data) => {
+  return axios.post("/api/create-post", data);
+};
+
+const getAllPost = (
+  page = 1,
+  limit = 10,
+  keyword = "",
+  categoryId = "",
+  isActive = ""
+) => {
+  return axios.get(
+    `/api/get-post?page=${page}&limit=${limit}&keyword=${keyword}&categoryId=${categoryId}&isActive=${isActive}`
+  );
+};
+
+const getDetailPostById = (id) => {
+  return axios.get(`/api/get-detail-post-by-id?id=${id}`);
+};
+
+const EditPostId = (data) => {
+  return axios.put("/api/edit-post", data);
+};
+
+const ChangeStatusPost = (data) => {
+  return axios.put("/api/change-status-post", data);
+};
+
+const updatePostOrder = (items) => {
+  return axios.put("/api/update-post-order", { items });
+};
+
+const DeletePost = (PostId) => {
+  return axios.delete("/api/delete-post", {
+    data: {
+      id: PostId,
+    },
+  });
+};
+
 // send remedy
 const postSendRemedy = (data) => {
   return axios.post("/api/send-remedy", data);
@@ -192,6 +268,20 @@ export {
   postSaveClinic,
   getAllClinic,
   getDetailClinicById,
+  postSavePostCategory,
+  getAllPostCategory,
+  getDetailPostCategoryById,
+  EditPostCategoryId,
+  updatePostCategoryOrder,
+  changeStatusPostCategory,
+  DeletePostCategory,
+  postSavePost,
+  getAllPost,
+  getDetailPostById,
+  EditPostId,
+  ChangeStatusPost,
+  updatePostOrder,
+  DeletePost,
   getAllPatientForDoctor,
   postSendRemedy,
   DeleteClinic,

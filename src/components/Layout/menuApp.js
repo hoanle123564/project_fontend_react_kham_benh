@@ -15,19 +15,35 @@ export const adminMenu = [
     name: "menu.admin.manage-user",
     menus: [
       {
+        name: "menu.admin.crud-redux",
+        icon: "fa-solid fa-user-group",
+        link: "/system/user-manage",
+      },
+    ],
+  },
+  {
+    name: "menu.admin.doctor",
+    menus: [
+      {
         name: "menu.admin.manage-doctor",
         icon: "fas fa-users",
         link: "/system/manage-doctor",
       },
       {
-        name: "menu.admin.crud-redux",
-        icon: "fa-solid fa-user-group",
-        link: "/system/user-manage",
-      },
-      {
         name: "menu.doctor.manage-schedule",
         icon: "fas fa-users",
         link: "/system/manage-schedule",
+      },
+    ],
+  }
+  ,
+  {
+    name: "menu.admin.manage-doctor",
+    menus: [
+      {
+        name: "menu.admin.manage-admin",
+        icon: "fas fa-users",
+        link: "/system/manage-admin",
       },
     ],
   },
@@ -41,6 +57,11 @@ export const adminMenu = [
         icon: "fas fa-hospital",
         link: "/system/manage-clinic",
       },
+      {
+        name: "menu.admin.add-clinic",
+        icon: "fas fa-hospital",
+        link: "/system/add-clinic",
+      },
     ],
   },
 
@@ -53,9 +74,28 @@ export const adminMenu = [
         icon: "fas fa-stethoscope",
         link: "/system/manage-specialty",
       },
+      {
+        name: "menu.admin.add-specialty",
+        icon: "fas fa-stethoscope",
+        link: "/system/add-specialty",
+      },
     ],
   },
-
+  {
+    name: "menu.admin.post",
+    menus: [
+      {
+        name: "menu.admin.manage-post",
+        icon: "fas fa-newspaper",
+        link: "/system/manage-post",
+      },
+      {
+        name: "menu.admin.manage-post-category",
+        icon: "fas fa-folder-open",
+        link: "/system/manage-post-category",
+      },
+    ],
+  },
 ];
 export const doctorMenu = [
   // quản lý kế hoạch khám bệnh
@@ -83,5 +123,20 @@ export const doctorMenu = [
         link: "/doctor/list-appointment",
       },
     ],
+  },
+  {
+    name: "menu.doctor.consult",
+    menus: [
+      {
+        name: "menu.doctor.message",
+        icon: "fas fa-user-cog",
+        link: "/doctor/message",
+      },
+      {
+        name: "menu.doctor.video-call",
+        icon: "fas fa-user-cog",
+        link: "/doctor/video-call",
+      },
+    ]
   }
 ];

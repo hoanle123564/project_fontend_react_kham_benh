@@ -14,6 +14,10 @@ import EditClinic from "../modules/Admin/Clinic/EditClinic";
 import AddSpecialty from "../modules/Admin/Specialty/AddSpecialty";
 import EditSpecialty from "../modules/Admin/Specialty/EditSpecialty";
 import DashBoard from "../modules/Admin/DashBoard";
+import ManagePostCategory from "../modules/Admin/PostCategory/ManagePostCategory";
+import ManagePost from "../modules/Admin/Post/ManagePost";
+import AddPost from "../modules/Admin/Post/AddPost";
+import EditPost from "../modules/Admin/Post/EditPost";
 
 class System extends Component {
   state = {
@@ -49,6 +53,10 @@ class System extends Component {
               <Route path="/system/manage-specialty" component={ManageSpecialty} />
               <Route path="/system/add-specialty" component={AddSpecialty} />
               <Route path="/system/edit-specialty/:id" component={EditSpecialty} />
+              <Route path="/system/manage-post" component={ManagePost} />
+              <Route path="/system/add-post" component={AddPost} />
+              <Route path="/system/edit-post/:id" component={EditPost} />
+              <Route path="/system/manage-post-category" component={ManagePostCategory} />
               <Redirect to={systemMenuPath} />
             </Switch>
           </div>
