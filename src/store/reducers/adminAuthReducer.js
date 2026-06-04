@@ -19,6 +19,12 @@ export default function adminAuthReducer(state = initialState, action) {
         case actionTypes.ADMIN_LOGOUT:
             return initialState;
 
+        case actionTypes.UPDATE_ADMIN_INFO:
+            return {
+                ...state,
+                adminInfo: action.data
+            };
+
         default:
             return state;
     }

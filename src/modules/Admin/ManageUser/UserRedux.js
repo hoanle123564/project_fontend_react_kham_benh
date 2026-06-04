@@ -189,7 +189,7 @@ class UserRedux extends Component {
 
     return (
       <div className="user-redux-container text-center mt-4">
-        <Button color="primary" onClick={this.toggleModal}>
+        <Button color="primary" onClick={this.toggleModal} className="manage-user__add-button">
           <i className="fa-solid fa-user-plus me-2"></i>
           <FormattedMessage id="user-manage.add" />
         </Button>

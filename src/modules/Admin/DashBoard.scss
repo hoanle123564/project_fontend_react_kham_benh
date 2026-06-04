@@ -105,12 +105,12 @@
     box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.12);
 }
 
-.revenue-content {
-    display: grid;
-    grid-template-columns: 260px minmax(0, 1fr);
-    gap: 24px;
-    align-items: center;
-}
+// .revenue-content {
+//     display: grid;
+//     grid-template-columns: 260px minmax(0, 1fr);
+//     gap: 24px;
+//     align-items: center;
+// }
 
 .revenue-summary {
     border: 1px solid #e5e7eb;
@@ -142,9 +142,9 @@
     color: #64748b;
 }
 
-.revenue-chart {
-    min-width: 0;
-}
+// .revenue-chart {
+//     min-width: 0;
+// }
 
 .dashboard-grid {
     display: grid;
@@ -159,6 +159,7 @@
 }
 
 @media (max-width: 991px) {
+
     .revenue-content,
     .dashboard-grid {
         grid-template-columns: 1fr;

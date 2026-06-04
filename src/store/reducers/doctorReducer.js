@@ -18,6 +18,12 @@ export default function doctorReducer(state = initialState, action) {
         case actionTypes.DOCTOR_LOGOUT:
             return initialState;
 
+        case actionTypes.UPDATE_DOCTOR_INFO:
+            return {
+                ...state,
+                doctorInfo: action.data
+            };
+
         default:
             return state;
     }

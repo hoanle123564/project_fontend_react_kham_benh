@@ -18,12 +18,12 @@ class VerifyEmailBooking extends Component {
         if (this.props.location && this.props.location.search) {
             const urlParams = new URLSearchParams(this.props.location.search);
             const token = urlParams.get("token");
-            const doctorId = urlParams.get("doctorId");
+            const scheduleId = urlParams.get("scheduleId");
             console.log("check token", token);
-            console.log("check doctorId", doctorId);
+            console.log("check scheduleId", scheduleId);
             let res = await VerifyPatientBooking({
                 token: token,
-                doctorId: doctorId,
+                scheduleId: scheduleId,
             })
             this.setState({
                 ResponseVerify: res,

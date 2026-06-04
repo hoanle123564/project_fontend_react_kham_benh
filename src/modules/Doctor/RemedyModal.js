@@ -59,8 +59,7 @@ class RemedyModal extends Component {
             {
                 email: email,
                 image: imageSpecialty,
-                doctorId: dataModal.doctorId,
-                patientId: dataModal.patientId,
+                bookingId: dataModal.id,
                 time: dataModal.timeTypeVi,
                 date: dataModal.date,
                 firstNamePatient: dataModal.firstName,

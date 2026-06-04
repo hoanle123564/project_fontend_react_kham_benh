@@ -8,13 +8,17 @@ import 'react-markdown-editor-lite/lib/index.css';
 import { FormattedMessage } from 'react-intl';
 import * as action from "../../../store/actions";
 import './ManageSpecialty.scss';
+
 class ManageSpecialty extends Component {
     constructor(props) {
         super(props)
         this.state = {
             ListSpecialty: [],
+            specialtySearchQuery: '',
             isOpenPreview: false,
-            previewImg: ''
+            previewImg: '',
+            currentPage: 1,
+            specialtiesPerPage: 10,
         }
     }
 
@@ -22,12 +26,60 @@ class ManageSpecialty extends Component {
         this.props.getAllSpecialty();
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevState) {
         if (prevProps.specialtys !== this.props.specialtys) {
+            const nextSpecialties = this.props.specialtys || [];
             this.setState({
-                ListSpecialty: this.props.specialtys
-            })
+                ListSpecialty: nextSpecialties,
+                currentPage: this.getClampedSpecialtyPage(nextSpecialties)
+            });
+            return;
         }
+
+        if (prevState.specialtySearchQuery !== this.state.specialtySearchQuery) {
+            const nextCurrentPage = this.getClampedSpecialtyPage();
+            if (nextCurrentPage !== this.state.currentPage) {
+                this.setState({ currentPage: nextCurrentPage });
+            }
+        }
+    }
+
+    handlePageChange = (pageNumber) => {
+        this.setState({ currentPage: pageNumber });
+    }
+
+    handleSpecialtySearchChange = (e) => {
+        this.setState({
+            specialtySearchQuery: e.target.value.trim().toLowerCase(),
+            currentPage: 1
+        });
+    }
+
+    getFilteredSpecialties = (specialties = this.state.ListSpecialty) => {
+        const query = (this.state.specialtySearchQuery || '').trim().toLowerCase();
+        if (!query) return specialties;
+
+        return specialties.filter((specialty) =>
+            (specialty.name || '').toLowerCase().includes(query)
+        );
+    }
+
+    getPaginatedSpecialties = () => {
+        const { currentPage, specialtiesPerPage } = this.state;
+        const filteredSpecialties = this.getFilteredSpecialties();
+        const indexOfLastSpecialty = currentPage * specialtiesPerPage;
+        const indexOfFirstSpecialty = indexOfLastSpecialty - specialtiesPerPage;
+
+        return filteredSpecialties.slice(indexOfFirstSpecialty, indexOfLastSpecialty);
+    }
+
+    getClampedSpecialtyPage = (specialties = this.state.ListSpecialty) => {
+        const { currentPage, specialtiesPerPage } = this.state;
+        const filteredSpecialties = this.getFilteredSpecialties(specialties);
+        const totalPages = Math.ceil(filteredSpecialties.length / specialtiesPerPage);
+
+        if (currentPage < 1) return 1;
+        return currentPage > totalPages ? (totalPages > 0 ? totalPages : 1) : currentPage;
     }
 
     handleEdit = (item) => {
@@ -58,78 +110,125 @@ class ManageSpecialty extends Component {
     }
 
     render() {
-        const { ListSpecialty, isOpenPreview, previewImg } = this.state;
+        const { isOpenPreview, previewImg, currentPage, specialtiesPerPage } = this.state;
+        const filteredSpecialties = this.getFilteredSpecialties();
+        const currentSpecialties = this.getPaginatedSpecialties();
+        const totalPages = Math.ceil(filteredSpecialties.length / specialtiesPerPage);
 
         return (
-            <div className="manage-specialty-container  mt-4">
-                <div className="container">
-                    <h3 className="title-page mb-3">
-                        <FormattedMessage id="manage-specialty.title" defaultMessage="Manage Specialties" />
-                    </h3>
+            <div className="manage-specialty-container">
+                <div className="manage-specialty__inner">
+                    <div className="manage-specialty__header">
+                        <h3 className="manage-specialty__title">
+                            <FormattedMessage id="manage-specialty.title" defaultMessage="Manage Specialties" />
+                        </h3>
 
-                    <Button color="primary" onClick={this.handleAdd} className="mb-3">
-                        <i className="fa-solid fa-user-plus me-2"></i>
-                        <FormattedMessage id="manage-specialty.add" />
-                    </Button>
-
-                    <div className="table-responsive shadow-sm">
-                        <table className="table table-hover align-middle table-bordered">
-                            <thead className="table-primary">
-                                <tr>
-                                    <th><FormattedMessage id="manage-specialty.id" defaultMessage="ID" /></th>
-                                    <th><FormattedMessage id="manage-specialty.name" defaultMessage="Name" /></th>
-                                    <th><FormattedMessage id="manage-specialty.image" defaultMessage="Image" /></th>
-                                    <th><FormattedMessage id="manage-specialty.action" defaultMessage="Action" /></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {ListSpecialty && ListSpecialty.length > 0 ? (
-                                    ListSpecialty.map((c, index) => (
-                                        <tr key={c.id}>
-                                            <td>{index + 1}</td>
-                                            <td>{c.name}</td>
-                                            <td>
-                                                {c.image ? (
-                                                    <img
-                                                        src={c.image.startsWith('data:') ? c.image : `data:image/jpeg;base64,${c.image}`}
-                                                        alt={c.name}
-                                                        style={{ width: 60, height: 60, objectFit: 'cover', borderRadius: 6, cursor: 'pointer' }}
-                                                        onClick={() => this.openPreview(c.image.startsWith('data:') ? c.image : `data:image/jpeg;base64,${c.image}`)}
-                                                    />
-                                                ) : (
-                                                    <span className="text-muted">
-                                                        <FormattedMessage id="manage-specialty.no-image" defaultMessage="No image" />
-                                                    </span>
-                                                )}
-                                            </td>
-                                            <td>
-                                                <div className="d-flex justify-content-center gap-2">
-                                                    <button className="btn btn-md btn-warning" onClick={() => this.handleEdit(c)}>
-                                                        <i className="fas fa-edit"></i>
-                                                    </button>
-                                                    <button className="btn btn-md btn-danger" onClick={() => this.handleDelete(c.id)}>
-                                                        <i className="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="4" className="text-center py-4 text-muted">
-                                            <FormattedMessage id="manage-specialty.no-specialties" defaultMessage="No specialties found." />
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                        <Button color="primary" onClick={this.handleAdd} className="manage-specialty__add-button">
+                            <i className="fa-solid fa-user-plus"></i>
+                            <FormattedMessage id="manage-specialty.add" />
+                        </Button>
                     </div>
 
+                    <div className="manage-specialty__toolbar">
+                        <FormattedMessage id="manage-specialty.search" defaultMessage="Search specialty by name...">
+                            {(msg) => (
+                                <div className="manage-specialty__search">
+                                    <i className="fa-solid fa-magnifying-glass"></i>
+                                    <input
+                                        type="text"
+                                        placeholder={msg}
+                                        onChange={this.handleSpecialtySearchChange}
+                                    />
+                                </div>
+                            )}
+                        </FormattedMessage>
+
+                        <div className="manage-specialty__total">
+                            <FormattedMessage
+                                id="manage-specialty.total"
+                                defaultMessage="Total: {count} specialties"
+                                values={{ count: filteredSpecialties.length }}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="manage-specialty__table-card">
+                        <div className="manage-specialty__table-scroll">
+                            <table className="manage-specialty__table">
+                                <thead>
+                                    <tr>
+                                        <th><FormattedMessage id="manage-specialty.id" defaultMessage="ID" /></th>
+                                        <th><FormattedMessage id="manage-specialty.name" defaultMessage="Name" /></th>
+                                        <th><FormattedMessage id="manage-specialty.image" defaultMessage="Image" /></th>
+                                        <th><FormattedMessage id="manage-specialty.action" defaultMessage="Action" /></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {currentSpecialties && currentSpecialties.length > 0 ? (
+                                        currentSpecialties.map((c, index) => (
+                                            <tr key={c.id}>
+                                                <td>{index + 1}</td>
+                                                <td className="manage-specialty__name">{c.name}</td>
+                                                <td>
+                                                    {c.image ? (
+                                                        <img
+                                                            className="manage-specialty__thumbnail"
+                                                            src={c.image.startsWith('data:') ? c.image : `data:image/jpeg;base64,${c.image}`}
+                                                            alt={c.name}
+                                                            onClick={() => this.openPreview(c.image.startsWith('data:') ? c.image : `data:image/jpeg;base64,${c.image}`)}
+                                                        />
+                                                    ) : (
+                                                        <span className="manage-specialty__muted">
+                                                            <FormattedMessage id="manage-specialty.no-image" defaultMessage="No image" />
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    <div className="manage-specialty__actions">
+                                                        <button className="manage-specialty__action-button manage-specialty__action-button--edit" onClick={() => this.handleEdit(c)}>
+                                                            <i className="fas fa-edit"></i>
+                                                        </button>
+                                                        <button className="manage-specialty__action-button manage-specialty__action-button--delete" onClick={() => this.handleDelete(c.id)}>
+                                                            <i className="fa-solid fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="4" className="manage-specialty__empty">
+                                                <FormattedMessage id="manage-specialty.no-specialties" defaultMessage="No specialties found." />
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {totalPages > 1 && (
+                        <nav className="manage-specialty__pagination">
+                            <ul>
+                                {Array.from({ length: totalPages }, (_, i) => (
+                                    <li
+                                        key={i}
+                                        className={currentPage === i + 1 ? 'active' : ''}
+                                    >
+                                        <button
+                                            onClick={() => this.handlePageChange(i + 1)}
+                                        >
+                                            {i + 1}
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
+                    )}
+
                     {isOpenPreview && (
-                        <div className="preview-backdrop" onClick={this.closePreview} style={{
-                            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000
-                        }}>
-                            <img src={previewImg} alt="preview" style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: 8 }} />
+                        <div className="manage-specialty__preview-backdrop" onClick={this.closePreview}>
+                            <img src={previewImg} alt="preview" />
                         </div>
                     )}
                 </div>

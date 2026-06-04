@@ -110,6 +110,21 @@ export const saveUser = (dataUser) => {
   };
 };
 
+export const registerPublicUser = (dataUser) => {
+  return async () => {
+    try {
+      const res = await CreateUser(dataUser);
+      return res;
+    } catch (error) {
+      console.log("registerPublicUser error: ", error);
+      return {
+        errCode: -1,
+        errMessage: "Error from server",
+      };
+    }
+  };
+};
+
 // GET ALL USERS
 export const fetchAllUser = () => {
   return async (dispatch, getState) => {
@@ -357,8 +372,9 @@ export const SavePatientBooking = (data) => {
         toast.success("Save patient booking success");
         return res;
       } else {
-        toast.error("You already booked this doctor for the same time slot today!");
+        toast.error(res?.errMessage || "Save patient booking failed");
         dispatch(SavePatientBookingFail());
+        return res;
       }
     } catch (error) {
       toast.error("Save patient booking failed");

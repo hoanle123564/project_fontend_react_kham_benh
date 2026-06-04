@@ -1,5 +1,14 @@
 import axios from "../axios";
 
+const buildImageSrc = (image) => {
+  if (!image) {
+    return "";
+  }
+
+  return String(image).startsWith("data:image")
+    ? image
+    : `data:image/jpeg;base64,${image}`;
+};
 
 // Đăng nhập
 const handleLoginAPI = (email, password) => {
@@ -30,6 +39,9 @@ const DeleteUser = (UserId) => {
 // Cập nhật thông tin người dùng
 const EditUser = (data) => {
   return axios.put("/api/edit-user", data);
+};
+const changePassword = (data) => {
+  return axios.put("/api/change-password", data);
 };
 
 // Lấy tất cả thuộc tính
@@ -170,6 +182,14 @@ const getDetailPostCategoryById = (id) => {
   return axios.get(`/api/get-detail-post-category-by-id?id=${id}`);
 };
 
+const getPublicPostCategories = () => {
+  return axios.get("/api/public/post-categories");
+};
+
+const getPublicPostCategoryDetail = (categorySlug) => {
+  return axios.get(`/api/public/post-category-detail?categorySlug=${encodeURIComponent(categorySlug)}`);
+};
+
 const EditPostCategoryId = (data) => {
   return axios.put("/api/edit-post-category", data);
 };
@@ -212,6 +232,24 @@ const getDetailPostById = (id) => {
   return axios.get(`/api/get-detail-post-by-id?id=${id}`);
 };
 
+const getPublicPostsByCategory = (categorySlug, page = 1, limit = 10) => {
+  return axios.get(
+    `/api/public/posts-by-category?categorySlug=${encodeURIComponent(categorySlug)}&page=${page}&limit=${limit}`
+  );
+};
+
+const getPublicPostDetail = (categorySlug, postSlug) => {
+  return axios.get(
+    `/api/public/post-detail?categorySlug=${encodeURIComponent(categorySlug)}&postSlug=${encodeURIComponent(postSlug)}`
+  );
+};
+
+const getPublicRelatedPosts = (categorySlug, postSlug, limit = 7) => {
+  return axios.get(
+    `/api/public/related-posts?categorySlug=${encodeURIComponent(categorySlug)}&postSlug=${encodeURIComponent(postSlug)}&limit=${limit}`
+  );
+};
+
 const EditPostId = (data) => {
   return axios.put("/api/edit-post", data);
 };
@@ -252,6 +290,7 @@ export {
   CreateUser,
   DeleteUser,
   EditUser,
+  changePassword,
   getLookUp,
   getDoctor,
   getAllDoctor,
@@ -271,6 +310,8 @@ export {
   postSavePostCategory,
   getAllPostCategory,
   getDetailPostCategoryById,
+  getPublicPostCategories,
+  getPublicPostCategoryDetail,
   EditPostCategoryId,
   updatePostCategoryOrder,
   changeStatusPostCategory,
@@ -278,6 +319,9 @@ export {
   postSavePost,
   getAllPost,
   getDetailPostById,
+  getPublicPostsByCategory,
+  getPublicPostDetail,
+  getPublicRelatedPosts,
   EditPostId,
   ChangeStatusPost,
   updatePostOrder,
@@ -293,5 +337,6 @@ export {
   DeleteScheduleDoctor,
   getAppointmentDoctor,
   getAllBooking,
-  getAdminDashboardStatistics
+  getAdminDashboardStatistics,
+  buildImageSrc
 };

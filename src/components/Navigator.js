@@ -75,7 +75,7 @@ class Navigator extends Component {
                     <li key={gi} className="nav-group">
                         {/* Group label */}
                         <div className="nav-group-label">
-                            {group.icon && <i className={`${group.icon} nav-group-icon`} />}
+                            {group.icon && <svg className={`${group.icon} nav-group-icon`} />}
                             <span className="nav-group-title">
                                 <FormattedMessage id={group.name} />
                             </span>

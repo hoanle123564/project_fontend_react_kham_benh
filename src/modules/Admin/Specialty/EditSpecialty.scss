@@ -1,0 +1,29 @@
+.manage-specialty-container {
+    .manage-specialty-editor {
+        margin: 20px 0;
+
+        .quill {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #d9d9d9;
+        }
+
+        .ql-toolbar.ql-snow {
+            border: none;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f8fafc;
+        }
+
+        .ql-container.ql-snow {
+            border: none;
+            min-height: 420px;
+            font-size: 15px;
+        }
+
+        .ql-editor {
+            min-height: 420px;
+            line-height: 1.7;
+        }
+    }
+}

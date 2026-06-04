@@ -33,11 +33,15 @@ const ROUTE_MAP = {
     '/system/add-specialty': { vi: 'Thêm chuyên khoa', en: 'Add Specialty' },
     '/system/manage-clinic': { vi: 'Quản lý cơ sở y tế', en: 'Manage Clinics' },
     '/system/add-clinic': { vi: 'Thêm cơ sở y tế', en: 'Add Clinic' },
+    '/system/manage-post': { vi: 'Quản lý bài viết', en: 'Manage Posts' },
+    '/system/add-post': { vi: 'Thêm bài viết', en: 'Add Post' },
+    '/system/manage-post-category': { vi: 'Quản lý danh mục bài viết', en: 'Manage Post Categories' },
     '/system/manage-schedule': { vi: 'Quản lý lịch làm việc', en: 'Manage Schedule' },
 
     // Dynamic admin
     '/system/edit-clinic': { vi: 'Chỉnh sửa cơ sở y tế', en: 'Edit Clinic' },
     '/system/edit-specialty': { vi: 'Chỉnh sửa chuyên khoa', en: 'Edit Specialty' },
+    '/system/edit-post': { vi: 'Chỉnh sửa bài viết', en: 'Edit Post' },
 
     // === DOCTOR (/doctor) ===
     '/doctor': { vi: 'Dashboard', en: 'Dashboard' },

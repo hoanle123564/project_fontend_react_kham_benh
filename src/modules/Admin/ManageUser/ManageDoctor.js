@@ -3,15 +3,35 @@ import { connect } from "react-redux";
 import * as action from "../../../store/actions";
 import "./ManageDoctor.scss";
 
-import MarkdownIt from "markdown-it";
-import MdEditor from "react-markdown-editor-lite";
-// import style manually
-import "react-markdown-editor-lite/lib/index.css";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import Select from "react-select";
 import { FormattedMessage } from "react-intl";
 
-// Initialize a markdown parser
-const mdParser = new MarkdownIt(/* Markdown-it options */);
+const editorModules = {
+  toolbar: [
+    [{ header: [1, 2, 3, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["blockquote", "code-block"],
+    ["link", "image"],
+    ["clean"],
+  ],
+};
+
+const editorFormats = [
+  "header",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "list",
+  "bullet",
+  "blockquote",
+  "code-block",
+  "link",
+  "image",
+];
 
 class ManageDoctor extends Component {
   constructor(props) {
@@ -33,14 +53,14 @@ class ManageDoctor extends Component {
       ListPayment: [],
       ListSpecialty: [],
       ListClinic: [],
+      description: "",
     };
   }
 
-  // Edit Markdown
-  handleEditorChange = ({ html, text }) => {
+  handleEditorChange = (value) => {
     this.setState({
-      contentMarkdown: text,
-      contentHTML: html,
+      contentHTML: value,
+      contentMarkdown: value,
     });
   };
 
@@ -96,7 +116,7 @@ class ManageDoctor extends Component {
         console.log('res', res);
         this.setState({
           contentHTML: res.contentHTML,
-          contentMarkdown: res.contentMarkdown,
+          contentMarkdown: res.contentMarkdown || res.contentHTML,
           description: res.description,
           selectPrice: findPrice || "",
           selectPayment: findItem || "",
@@ -374,11 +394,20 @@ class ManageDoctor extends Component {
 
           {/* --- Markdown Editor --- */}
           <div className="manage-doctor-editor">
-            <MdEditor
-              style={{ height: "500px" }}
-              renderHTML={(text) => mdParser.render(text)}
-              value={this.state.contentMarkdown}
+            <label className="editor-label">
+              {language === "vi" ? "Thông tin chi tiết bác sĩ" : "Doctor detailed information"}
+            </label>
+            <ReactQuill
+              theme="snow"
+              value={this.state.contentHTML}
               onChange={this.handleEditorChange}
+              modules={editorModules}
+              formats={editorFormats}
+              placeholder={
+                language === "vi"
+                  ? "Nhập thông tin chi tiết của bác sĩ..."
+                  : "Enter doctor detailed information..."
+              }
             />
           </div>
 

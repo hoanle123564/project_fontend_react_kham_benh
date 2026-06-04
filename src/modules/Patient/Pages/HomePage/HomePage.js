@@ -8,6 +8,7 @@ import AboutUs from "../../Section/AboutUs";
 import HomeFooter from "../../Layout/HomeFooter";
 import Clinic from "../../Section/Clinic";
 import Commercial from "../../Section/Commercial";
+import PostSection from "../../Section/PostSection";
 import BackToTop from "../../../../components/BackToTop/BackToTop";
 import "./HomePage.scss";
 import "slick-carousel/slick/slick.css";
@@ -36,6 +37,7 @@ class HomePage extends Component {
         <Speciality settings={settings3} />
         <RemoteExam settings={settings3} />
         <Commercial />
+        <PostSection />
         <Clinic settings={settings3} />
         <Doctor settings={settings4} />
         <AboutUs />

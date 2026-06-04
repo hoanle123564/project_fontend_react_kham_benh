@@ -18,6 +18,7 @@ import ManagePostCategory from "../modules/Admin/PostCategory/ManagePostCategory
 import ManagePost from "../modules/Admin/Post/ManagePost";
 import AddPost from "../modules/Admin/Post/AddPost";
 import EditPost from "../modules/Admin/Post/EditPost";
+import EditProfile from "../modules/Admin/ManageUser/EditProfile";
 
 class System extends Component {
   state = {
@@ -57,6 +58,7 @@ class System extends Component {
               <Route path="/system/add-post" component={AddPost} />
               <Route path="/system/edit-post/:id" component={EditPost} />
               <Route path="/system/manage-post-category" component={ManagePostCategory} />
+              <Route path="/system/edit-profile" component={EditProfile} />
               <Redirect to={systemMenuPath} />
             </Switch>
           </div>

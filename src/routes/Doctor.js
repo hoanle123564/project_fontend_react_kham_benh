@@ -6,6 +6,7 @@ import Header from "../components/Layout/Header";
 import ManagePatient from "../modules/Doctor/ManagePatient";
 import ManageSchedulePrivate from "../modules/Doctor/ManageSchedulePrivate";
 import ListAppointment from "../modules/Doctor/ListAppointment";
+import EditProfile from "../modules/Admin/ManageUser/EditProfile";
 
 class Doctor extends Component {
   state = {
@@ -30,6 +31,7 @@ class Doctor extends Component {
               <Route path="/doctor/manage-patient" component={ManagePatient} />
               <Route path="/doctor/manage-schedule-private" component={ManageSchedulePrivate} />
               <Route path="/doctor/list-appointment" component={ListAppointment} />
+              <Route path="/doctor/edit-profile" component={EditProfile} />
             </Switch>
           </div>
         </div>

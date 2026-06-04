@@ -1,0 +1,278 @@
+.post-category-page {
+    background: #f4f8fb;
+
+    .post-category-hero {
+        background:
+            radial-gradient(circle at top left, rgba(255, 255, 255, 0.18) 0, rgba(255, 255, 255, 0.18) 24%, transparent 25%),
+            linear-gradient(135deg, #22c1c3, #1c7da1);
+        padding: 44px 0;
+        color: #fff;
+
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 800;
+            line-height: 1.15;
+        }
+    }
+
+    .post-category-content {
+        padding: 40px 0 60px;
+    }
+
+    .post-list-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .post-list {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+    }
+
+    .post-list-item {
+        display: flex;
+        gap: 22px;
+        padding: 22px;
+        border-radius: 18px;
+        background: #fff;
+        border: 1px solid rgba(34, 193, 195, 0.12);
+        box-shadow: 0 18px 36px rgba(18, 48, 64, 0.08);
+    }
+
+    .post-item-image {
+        width: 230px;
+        height: 170px;
+        border: none;
+        border-radius: 16px;
+        padding: 0;
+        overflow: hidden;
+        background: #edf7f8;
+        flex-shrink: 0;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        &.is-fallback {
+            background: linear-gradient(135deg, #22c1c3, #1c7da1);
+        }
+    }
+
+    .post-image-fallback {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-start;
+        padding: 16px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        background:
+            radial-gradient(circle at top left, rgba(255, 255, 255, 0.18) 0, rgba(255, 255, 255, 0.18) 24%, transparent 25%),
+            linear-gradient(135deg, #22c1c3, #1c7da1);
+    }
+
+    .post-item-content {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .post-item-date {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #68818c;
+        font-size: 14px;
+    }
+
+    .post-item-title {
+        border: none;
+        padding: 0;
+        text-align: left;
+        background: transparent;
+        color: #177d9b;
+        font-size: 20px;
+        line-height: 1.35;
+        font-weight: 700;
+
+        &:hover {
+            color: #22c1c3;
+        }
+    }
+
+    .post-item-description {
+        margin: 0;
+        color: #68818c;
+        font-size: 15px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .post-empty-state {
+        background: #fff;
+        border-radius: 18px;
+        padding: 32px;
+        text-align: center;
+        color: #68818c;
+        border: 1px solid rgba(34, 193, 195, 0.12);
+        box-shadow: 0 16px 34px rgba(18, 48, 64, 0.06);
+    }
+
+    .post-sidebar {
+        .sidebar-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 14px 35px rgba(34, 193, 195, 0.08);
+            border: 1px solid rgba(34, 193, 195, 0.14);
+            position: sticky;
+            top: 110px;
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #123040;
+            margin-bottom: 20px;
+        }
+
+        .sidebar-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .sidebar-item {
+            width: 100%;
+            border: 1px solid #e4eef0;
+            background: #fff;
+            border-radius: 14px;
+            padding: 14px 16px;
+            text-align: left;
+            transition: all 0.2s ease;
+            color: #123040;
+            font-size: 16px;
+            font-weight: 700;
+
+            &:hover {
+                border-color: #22c1c3;
+                box-shadow: 0 10px 24px rgba(34, 193, 195, 0.12);
+                transform: translateY(-1px);
+            }
+
+            &.active {
+                border-color: #22c1c3;
+                background: rgba(34, 193, 195, 0.08);
+                color: #177d9b;
+            }
+        }
+    }
+
+    .post-pagination {
+        list-style: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        padding: 0;
+        margin: 8px 0 0;
+
+        .pagination-page,
+        .pagination-break {
+            display: flex;
+        }
+
+        .pagination-link {
+            min-width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: 1px solid rgba(34, 193, 195, 0.24);
+            background: #fff;
+            color: #22c1c3;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            padding: 0 12px;
+            transition: all 0.2s ease;
+
+            &:hover {
+                background: rgba(34, 193, 195, 0.1);
+            }
+        }
+
+        .active .pagination-link {
+            background: #22c1c3;
+            color: #fff;
+            border-color: #22c1c3;
+            box-shadow: 0 10px 20px rgba(34, 193, 195, 0.18);
+        }
+
+        .disabled .pagination-link {
+            opacity: 0.45;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    }
+}
+
+@media (max-width: 991.98px) {
+    .post-category-page {
+        .post-item-title {
+            font-size: 20px;
+        }
+
+        .post-sidebar {
+            margin-top: 24px;
+
+            .sidebar-card {
+                position: static;
+            }
+        }
+    }
+}
+
+@media (max-width: 767.98px) {
+    .post-category-page {
+        .post-category-hero {
+            padding: 36px 0;
+
+            h1 {
+                font-size: 20px;
+            }
+        }
+
+        .post-list-item {
+            flex-direction: column;
+        }
+
+        .post-item-image {
+            width: 100%;
+            height: 220px;
+        }
+
+        .post-item-title {
+            font-size: 20px;
+        }
+
+        .post-item-description {
+            font-size: 14px;
+        }
+
+        .post-pagination {
+            flex-wrap: wrap;
+        }
+    }
+}

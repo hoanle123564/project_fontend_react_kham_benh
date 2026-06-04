@@ -6,7 +6,7 @@ import { history } from "./redux";
 // toastify
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import "bootstrap-icons/font/bootstrap-icons.css";
 import {
   doctorIsAuthenticated,
   adminIsAuthenticated,
@@ -30,6 +30,8 @@ import ListClinic from "./modules/Patient/Pages/Clinic/ListClinic";
 import ListSpecialty from "./modules/Patient/Pages/Speciality/ListSpecialty";
 import NotFound from "./modules/NotFound";
 import Remote from "./modules/Patient/Pages/Speciality/Remote";
+import PostCategoryPage from "./modules/Patient/Pages/Post/PostCategoryPage";
+import PostDetailPage from "./modules/Patient/Pages/Post/PostDetailPage";
 
 class App extends Component {
 
@@ -79,6 +81,8 @@ class App extends Component {
 
               <Route path={path.SYSTEM} component={adminIsAuthenticated(System)} />
               <Route path={path.DOCTOR} component={doctorIsAuthenticated(Doctor)} />
+              <Route exact path="/:categorySlug/:postSlug" component={PostDetailPage} />
+              <Route exact path="/:categorySlug" component={PostCategoryPage} />
 
               <Route component={NotFound} />
             </Switch>

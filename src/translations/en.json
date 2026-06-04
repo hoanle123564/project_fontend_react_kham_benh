@@ -148,6 +148,16 @@
     "save-clinic": "Save clinic",
     "add": "Add new clinic"
   },
+  "clinic-manage": {
+    "id": "ID",
+    "name": "Name",
+    "image": "Image",
+    "action": "Action",
+    "no-image": "No image",
+    "no-clinics": "No clinics found.",
+    "search": "Search clinic by name...",
+    "total": "Total: {count} clinics"
+  },
   "manage-specialty": {
     "title": "Specialty management",
     "name-specialty": "Specialty name",
@@ -155,7 +165,15 @@
     "image-specialty": "Specialty image",
     "description-html": "Description in HTML",
     "description-markdown": "Description in Markdown",
-    "save-info": "Save information"
+    "save-info": "Save information",
+    "id": "ID",
+    "name": "Name",
+    "image": "Image",
+    "action": "Action",
+    "no-image": "No image",
+    "no-specialties": "No specialties found.",
+    "search": "Search specialty by name...",
+    "total": "Total: {count} specialties"
   },
   "manage-post-category": {
     "title": "Post category management",

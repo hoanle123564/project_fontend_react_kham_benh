@@ -149,13 +149,31 @@
     "description-markdown": "Mô tả bằng Markdown",
     "save-info": "Lưu thông tin"
   },
+  "clinic-manage": {
+    "id": "ID",
+    "name": "Tên",
+    "image": "Hình ảnh",
+    "action": "Hành động",
+    "no-image": "Chưa có ảnh",
+    "no-clinics": "Không tìm thấy cơ sở y tế.",
+    "search": "Tìm cơ sở y tế theo tên...",
+    "total": "Tổng: {count} cơ sở y tế"
+  },
   "manage-specialty": {
     "title": "Quản lý chuyên khoa",
     "name-specialty": "Tên chuyên khoa",
     "add": "Thêm chuyên khoa mới",
     "image-specialty": "Ảnh chuyên khoa",
     "description-specialty": "Mô tả chuyên khoa",
-    "save-specialty": "Lưu chuyên khoa"
+    "save-specialty": "Lưu chuyên khoa",
+    "id": "ID",
+    "name": "Tên",
+    "image": "Hình ảnh",
+    "action": "Hành động",
+    "no-image": "Chưa có ảnh",
+    "no-specialties": "Không tìm thấy chuyên khoa.",
+    "search": "Tìm chuyên khoa theo tên...",
+    "total": "Tổng: {count} chuyên khoa"
   },
   "manage-post-category": {
     "title": "Quản lý danh mục bài viết",

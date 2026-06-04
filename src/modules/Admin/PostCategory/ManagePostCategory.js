@@ -436,9 +436,6 @@ class ManagePostCategory extends Component {
                         <table className="table table-hover align-middle table-bordered">
                             <thead className="table-primary">
                                 <tr>
-                                    <th className="drag-column">
-                                        <FormattedMessage id="manage-post-category.drag" defaultMessage="Drag" />
-                                    </th>
                                     <th><FormattedMessage id="manage-post-category.display-order" defaultMessage="Display order" /></th>
                                     <th><FormattedMessage id="manage-post-category.name" defaultMessage="Category name" /></th>
                                     <th><FormattedMessage id="manage-post-category.slug" defaultMessage="Slug" /></th>
@@ -453,18 +450,10 @@ class ManagePostCategory extends Component {
                                             key={category.id}
                                             onDragOver={this.handleDragOver}
                                             onDrop={this.handleDrop(index)}
+                                            onDragStart={this.handleDragStart(index)}
+                                            onDragEnd={this.handleDragEnd}
+                                            draggable
                                         >
-                                            <td className="drag-column">
-                                                <span
-                                                    className="drag-handle"
-                                                    draggable
-                                                    onDragStart={this.handleDragStart(index)}
-                                                    onDragEnd={this.handleDragEnd}
-                                                    title={this.getText("manage-post-category.drag", "Drag")}
-                                                >
-                                                    <i className="fa-solid fa-grip-vertical"></i>
-                                                </span>
-                                            </td>
                                             <td>{category.displayOrder}</td>
                                             <td>{category.name}</td>
                                             <td>{category.slug}</td>

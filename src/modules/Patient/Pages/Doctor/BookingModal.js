@@ -100,8 +100,8 @@ class BookingModal extends Component {
 
         let submitData = {
             doctorId: this.state.profile.id,
+            scheduleId: this.props.ScheduleTime?.id,
             date: this.state.day,
-            timeType: this.props.ScheduleTime?.timeType,
             timeString: this.getFormattedDateTime(),
             reason: this.state.reason,
         };

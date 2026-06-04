@@ -1,0 +1,54 @@
+.post-hero-header {
+    position: relative;
+    min-height: 176px;
+    display: flex;
+    align-items: center;
+    color: #fff;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    &.is-fallback {
+        background: #22c1c3;
+    }
+
+    .post-hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(9, 26, 35, 0.24);
+    }
+
+    &.is-fallback .post-hero-overlay {
+        background:
+            radial-gradient(circle at top left, rgba(255, 255, 255, 0.16) 0, rgba(255, 255, 255, 0.16) 22%, transparent 23%),
+            radial-gradient(circle at top right, rgba(255, 255, 255, 0.14) 0, rgba(255, 255, 255, 0.14) 18%, transparent 19%);
+    }
+
+    .post-hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    h1 {
+        text-transform: uppercase;
+        max-width: 900px;
+        font-size: 28px;
+        line-height: 1.35;
+        font-weight: 800;
+    }
+
+    .post-hero-date {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .post-hero-header {
+        min-height: 150px;
+        padding: 28px 0;
+    }
+}

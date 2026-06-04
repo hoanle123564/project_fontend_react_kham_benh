@@ -2,15 +2,36 @@ import React, { Component } from 'react';
 // import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 
-import MarkdownIt from "markdown-it";
-import MdEditor from "react-markdown-editor-lite";
-import 'react-markdown-editor-lite/lib/index.css';
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import { FormattedMessage } from 'react-intl';
 import './AddClinic.scss';
 import * as action from "../../../store/actions";
 
-// Initialize a markdown parser
-const mdParser = new MarkdownIt(/* Markdown-it options */);
+const editorModules = {
+  toolbar: [
+    [{ header: [1, 2, 3, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["blockquote", "code-block"],
+    ["link", "image"],
+    ["clean"],
+  ],
+};
+
+const editorFormats = [
+  "header",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "list",
+  "bullet",
+  "blockquote",
+  "code-block",
+  "link",
+  "image",
+];
 class AddClinic extends Component {
 
     constructor(props) {
@@ -50,11 +71,11 @@ class AddClinic extends Component {
         }
 
     }
-    // Edit Markdown
-    handleEditorChange = ({ html, text }) => {
+    // Edit HTML
+    handleEditorChange = (value) => {
         this.setState({
-            descriptionMarkdown: text,
-            descriptionHTML: html,
+            descriptionMarkdown: value,
+            descriptionHTML: value,
         });
     };
 
@@ -176,13 +197,17 @@ class AddClinic extends Component {
                             />
                         </div>
                     </div>
-                    {/* --- Markdown Editor --- */}
-                    <MdEditor
-                        style={{ height: '500px' }}
-                        renderHTML={(text) => mdParser.render(text)}
-                        value={this.state.descriptionMarkdown}
-                        onChange={this.handleEditorChange}
-                    />
+                    {/* --- React Quill Editor --- */}
+                    <div className="manage-specialty-editor mb-4">
+                        <ReactQuill
+                            theme="snow"
+                            value={this.state.descriptionHTML}
+                            onChange={this.handleEditorChange}
+                            modules={editorModules}
+                            formats={editorFormats}
+                            placeholder="Nhập mô tả phòng khám..."
+                        />
+                    </div>
                     <button
                         className="save-specialty"
                         onClick={this.handleSaveContent}

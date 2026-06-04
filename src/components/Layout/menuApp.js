@@ -5,7 +5,7 @@ export const adminMenu = [
     menus: [
       {
         name: "menu.admin.dashboard",
-        icon: "fa-solid fa-chart-line",
+        icon: "bi bi-bar-chart-line",
         link: "/system/dashboard",
       },
     ],
@@ -16,82 +16,71 @@ export const adminMenu = [
     menus: [
       {
         name: "menu.admin.crud-redux",
-        icon: "fa-solid fa-user-group",
+        icon: "bi bi-people-fill",
         link: "/system/user-manage",
       },
     ],
   },
+  // bác sĩ
   {
     name: "menu.admin.doctor",
     menus: [
       {
         name: "menu.admin.manage-doctor",
-        icon: "fas fa-users",
+        icon: "bi bi-person-badge",
         link: "/system/manage-doctor",
       },
       {
         name: "menu.doctor.manage-schedule",
-        icon: "fas fa-users",
+        icon: "bi bi-calendar3",
         link: "/system/manage-schedule",
       },
     ],
-  }
-  ,
-  {
-    name: "menu.admin.manage-doctor",
-    menus: [
-      {
-        name: "menu.admin.manage-admin",
-        icon: "fas fa-users",
-        link: "/system/manage-admin",
-      },
-    ],
   },
-
   // phòng khám
   {
     name: "menu.admin.clinic",
     menus: [
       {
         name: "menu.admin.manage-clinic",
-        icon: "fas fa-hospital",
+        icon: "bi bi-hospital",
         link: "/system/manage-clinic",
       },
       {
         name: "menu.admin.add-clinic",
-        icon: "fas fa-hospital",
+        icon: "bi bi-hospital-fill",
         link: "/system/add-clinic",
       },
     ],
   },
-
   // chuyên khoa
   {
     name: "menu.admin.specialty",
     menus: [
       {
         name: "menu.admin.manage-specialty",
-        icon: "fas fa-stethoscope",
+        icon: "bi bi-heart-pulse",
         link: "/system/manage-specialty",
       },
       {
         name: "menu.admin.add-specialty",
-        icon: "fas fa-stethoscope",
+        icon: "bi bi-heart-pulse-fill",
         link: "/system/add-specialty",
       },
     ],
   },
+  // bài viết
   {
     name: "menu.admin.post",
     menus: [
       {
         name: "menu.admin.manage-post",
-        icon: "fas fa-newspaper",
+        icon: "bi bi-newspaper",
         link: "/system/manage-post",
       },
       {
         name: "menu.admin.manage-post-category",
-        icon: "fas fa-folder-open",
+        icon: "bi bi-folder2-open",
         link: "/system/manage-post-category",
       },
     ],
@@ -104,37 +93,39 @@ export const doctorMenu = [
     menus: [
       {
         name: "menu.doctor.manage-schedule",
-        icon: "fas fa-notes-medical",
+        icon: "bi bi-calendar-check",
         link: "/doctor/manage-schedule-private",
       },
       {
         name: "menu.doctor.manage-patient",
-        icon: "fas fa-notes-medical",
+        icon: "bi bi-person-lines-fill",
         link: "/doctor/manage-patient",
       },
     ],
   },
+  // lịch sử khám bệnh
   {
     name: "menu.doctor.history-appointment",
     menus: [
       {
         name: "menu.doctor.history-appointment",
-        icon: "fas fa-history",
+        icon: "bi bi-clock-history",
         link: "/doctor/list-appointment",
       },
     ],
   },
+  // tư vấn
   {
     name: "menu.doctor.consult",
     menus: [
       {
         name: "menu.doctor.message",
-        icon: "fas fa-user-cog",
+        icon: "bi bi-chat-left-text",
         link: "/doctor/message",
       },
       {
         name: "menu.doctor.video-call",
-        icon: "fas fa-user-cog",
+        icon: "bi bi-camera-video",
         link: "/doctor/video-call",
       },
     ]

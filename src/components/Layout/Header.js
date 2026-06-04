@@ -53,6 +53,12 @@ class Header extends Component {
 
     goToProfile = () => {
         this.setState({ isDropdownOpen: false });
+        const path = window.location.pathname;
+        if (path.includes("/system")) {
+            this.props.history.push('/system/edit-profile');
+        } else if (path.includes("/doctor")) {
+            this.props.history.push('/doctor/edit-profile');
+        }
     }
 
     render() {
