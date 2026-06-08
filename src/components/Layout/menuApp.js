@@ -26,6 +26,11 @@ export const adminMenu = [
     name: "menu.admin.doctor",
     menus: [
       {
+        name: "menu.admin.doctor-table",
+        icon: "bi bi-table",
+        link: "/system/doctor-table",
+      },
+      {
         name: "menu.admin.manage-doctor",
         icon: "bi bi-person-badge",
         link: "/system/manage-doctor",

@@ -25,6 +25,7 @@ const ROUTE_MAP = {
     '/detail-clinic': { vi: 'Chi tiết cơ sở y tế', en: 'Clinic Detail' },
 
     // === ADMIN (/system) ===
+    '/system/doctor-table': { vi: 'Danh sách bác sĩ', en: 'Doctors List' },
     '/system': { vi: 'Dashboard', en: 'Dashboard' },
     '/system/dashboard': { vi: 'Dashboard', en: 'Dashboard' },
     '/system/user-manage': { vi: 'Quản lý người dùng', en: 'Manage Users' },
