@@ -406,16 +406,16 @@ class ManagePostCategory extends Component {
         const { categories, isOpenModal, modalMode, formData, errors, isOrderChanged } = this.state;
 
         return (
-            <div className="manage-post-category-container mt-4">
-                <div className="container">
-                    <div className="header-actions">
-                        <h3 className="title-page mb-0">
+            <div className="manage-post-category-container">
+                <div className="manage-post-category__inner">
+                    <div className="manage-post-category__header">
+                        <h3 className="manage-post-category__title">
                             <FormattedMessage id="manage-post-category.title" defaultMessage="Manage Post Categories" />
                         </h3>
 
-                        <div className="action-buttons">
-                            <Button color="primary" onClick={this.openCreateModal}>
-                                <i className="fa-solid fa-folder-plus me-2"></i>
+                        <div className="manage-post-category__header-actions">
+                            <Button color="primary" onClick={this.openCreateModal} className="manage-post-category__add-button">
+                                <i className="fa-solid fa-folder-plus"></i>
                                 <FormattedMessage id="manage-post-category.create" defaultMessage="Create new" />
                             </Button>
 
@@ -432,9 +432,10 @@ class ManagePostCategory extends Component {
                         </div>
                     </div>
 
-                    <div className="table-responsive shadow-sm">
-                        <table className="table table-hover align-middle table-bordered">
-                            <thead className="table-primary">
+                    <div className="manage-post-category__table-card">
+                        <div className="manage-post-category__table-scroll">
+                        <table className="manage-post-category__table">
+                            <thead>
                                 <tr>
                                     <th><FormattedMessage id="manage-post-category.display-order" defaultMessage="Display order" /></th>
                                     <th><FormattedMessage id="manage-post-category.name" defaultMessage="Category name" /></th>
@@ -453,23 +454,24 @@ class ManagePostCategory extends Component {
                                             onDragStart={this.handleDragStart(index)}
                                             onDragEnd={this.handleDragEnd}
                                             draggable
+                                            className="draggable-row"
                                         >
-                                            <td>{category.displayOrder}</td>
-                                            <td>{category.name}</td>
-                                            <td>{category.slug}</td>
+                                            <td className="manage-post-category__order">{category.displayOrder}</td>
+                                            <td className="manage-post-category__name">{category.name}</td>
+                                            <td className="manage-post-category__slug" title={category.slug}>{category.slug}</td>
                                             <td>{this.renderStatusSwitch(category)}</td>
                                             <td>
-                                                <div className="d-flex justify-content-center gap-2">
+                                                <div className="manage-post-category__actions">
                                                     <button
                                                         type="button"
-                                                        className="btn btn-md btn-warning"
+                                                        className="manage-post-category__action-button manage-post-category__action-button--edit"
                                                         onClick={() => this.openEditModal(category)}
                                                     >
                                                         <i className="fas fa-edit"></i>
                                                     </button>
                                                     <button
                                                         type="button"
-                                                        className="btn btn-md btn-danger"
+                                                        className="manage-post-category__action-button manage-post-category__action-button--delete"
                                                         onClick={() => this.handleDelete(category.id)}
                                                     >
                                                         <i className="fa-solid fa-trash"></i>
@@ -480,13 +482,14 @@ class ManagePostCategory extends Component {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="6" className="text-center py-4 text-muted">
+                                        <td colSpan="5" className="manage-post-category__empty">
                                             <FormattedMessage id="manage-post-category.no-data" defaultMessage="No post categories found." />
                                         </td>
                                     </tr>
                                 )}
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </div>
 

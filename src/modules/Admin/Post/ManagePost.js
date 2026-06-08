@@ -320,14 +320,14 @@ class ManagePost extends Component {
         const isActive = Number(post.isActive) === 1;
         return (
             <>
-            <div className="form-check form-switch d-inline-flex justify-content-center prevent-row-drag">
-                <input
-                    className="form-check-input"
-                    type="checkbox"
-                    checked={isActive}
-                    onChange={() => this.handleToggleStatus(post)}
-                />
-            </div>
+                <div className="form-check form-switch d-inline-flex justify-content-center prevent-row-drag">
+                    <input
+                        className="form-check-input"
+                        type="checkbox"
+                        checked={isActive}
+                        onChange={() => this.handleToggleStatus(post)}
+                    />
+                </div>
             </>
         );
     };
@@ -348,16 +348,16 @@ class ManagePost extends Component {
         const canDragDrop = this.canEnableDragDrop();
 
         return (
-            <div className="manage-post-container mt-4">
-                <div className="container">
-                    <div className="header-actions">
-                        <h3 className="title-page mb-0">
+            <div className="manage-post-container">
+                <div className="manage-post__inner">
+                    <div className="manage-post__header">
+                        <h3 className="manage-post__title">
                             <FormattedMessage id="manage-post.title" defaultMessage="Post management" />
                         </h3>
 
-                        <div className="header-button-group">
-                            <Button color="primary" onClick={this.handleCreatePost}>
-                                <i className="fa-solid fa-file-circle-plus me-2"></i>
+                        <div className="manage-post__header-actions">
+                            <Button color="primary" onClick={this.handleCreatePost} className="manage-post__add-button">
+                                <i className="fa-solid fa-file-circle-plus"></i>
                                 <FormattedMessage id="manage-post.create" defaultMessage="Add post" />
                             </Button>
 
@@ -380,7 +380,7 @@ class ManagePost extends Component {
                         </div>
                     </div>
 
-                    <div className="filter-box shadow-sm">
+                    <div className="filter-box manage-post__toolbar-card">
                         <div className="row g-3 align-items-end">
                             <div className="col-md-4">
                                 <label className="form-label">
@@ -441,116 +441,105 @@ class ManagePost extends Component {
                                     <Button color="primary" onClick={this.handleSearch}>
                                         <FormattedMessage id="manage-post.search" defaultMessage="Search" />
                                     </Button>
-                                    <Button color="secondary" onClick={this.handleReset}>
+                                    <Button color="secondary" outline onClick={this.handleReset}>
                                         <FormattedMessage id="manage-post.reset" defaultMessage="Reset" />
                                     </Button>
                                 </div>
                             </div>
                         </div>
 
-                        {canDragDrop && posts.length > 1 && (
-                            <div className="drag-note">
-                                <i className="fa-solid fa-up-down-left-right me-2"></i>
-                                Kéo trực tiếp trên từng dòng để sắp xếp lại bài viết.
-                            </div>
-                        )}
-
-                        {!canDragDrop && (
-                            <div className="drag-note drag-note--muted">
-                                Tắt tìm kiếm và bộ lọc để sắp xếp thứ tự bài viết bằng kéo thả.
-                            </div>
-                        )}
                     </div>
 
-                    <div className="table-responsive shadow-sm">
-                        <table className="table table-hover align-middle table-bordered">
-                            <thead className="table-primary">
-                                <tr>
-                                    <th><FormattedMessage id="manage-post.id" defaultMessage="ID" /></th>
-                                    <th><FormattedMessage id="manage-post.display-order" defaultMessage="Display order" /></th>
-                                    <th><FormattedMessage id="manage-post.name" defaultMessage="Post title" /></th>
-                                    <th><FormattedMessage id="manage-post.image" defaultMessage="Thumbnail" /></th>
-                                    <th><FormattedMessage id="manage-post.updated-at" defaultMessage="Updated at" /></th>
-                                    <th><FormattedMessage id="manage-post.status" defaultMessage="Visible" /></th>
-                                    <th><FormattedMessage id="manage-post.action" defaultMessage="Action" /></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {posts && posts.length > 0 ? (
-                                    posts.map((post, index) => {
-                                        const imageSrc = this.getImageSrc(post.image);
-
-                                        return (
-                                            <tr
-                                                key={post.id}
-                                                draggable={canDragDrop}
-                                                onDragStart={this.handleDragStart(index)}
-                                                onDragOver={this.handleDragOver}
-                                                onDrop={this.handleDrop(index)}
-                                                onDragEnd={this.handleDragEnd}
-                                                className={canDragDrop ? "draggable-row" : ""}
-                                            >
-                                                <td>{post.id}</td>
-                                                <td>{post.displayOrder}</td>
-                                                <td className="post-title-cell" title={post.title}>
-                                                    <span className="post-title-text">{post.title}</span>
-                                                </td>
-                                                <td>
-                                                    {imageSrc ? (
-                                                        <img
-                                                            src={imageSrc}
-                                                            alt={post.title}
-                                                            className="post-thumbnail prevent-row-drag"
-                                                            onClick={() => this.openPreview(imageSrc)}
-                                                        />
-                                                    ) : (
-                                                        <span className="text-muted">No image</span>
-                                                    )}
-                                                </td>
-                                                <td>{this.formatDate(post.updatedAt)}</td>
-                                                <td>{this.renderStatusSwitch(post)}</td>
-                                                <td className="prevent-row-drag post-action-cell">
-                                                    <div className="d-flex justify-content-center gap-2">
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-md btn-warning"
-                                                            onClick={() => this.handleEditPost(post)}
-                                                        >
-                                                            <i className="fas fa-edit"></i>
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-md btn-danger"
-                                                            onClick={() => this.handleDeletePost(post.id)}
-                                                        >
-                                                            <i className="fa-solid fa-trash"></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })
-                                ) : (
+                    <div className="manage-post__table-card mt-4">
+                        <div className="table-responsive">
+                            <table className="manage-post__table">
+                                <thead>
                                     <tr>
-                                        <td colSpan="7" className="text-center py-4 text-muted">
-                                            <FormattedMessage id="manage-post.no-data" defaultMessage="No posts found." />
-                                        </td>
+                                        <th><FormattedMessage id="manage-post.id" defaultMessage="ID" /></th>
+                                        <th><FormattedMessage id="manage-post.display-order" defaultMessage="Display order" /></th>
+                                        <th><FormattedMessage id="manage-post.name" defaultMessage="Post title" /></th>
+                                        <th><FormattedMessage id="manage-post.image" defaultMessage="Thumbnail" /></th>
+                                        <th><FormattedMessage id="manage-post.updated-at" defaultMessage="Updated at" /></th>
+                                        <th><FormattedMessage id="manage-post.status" defaultMessage="Visible" /></th>
+                                        <th><FormattedMessage id="manage-post.action" defaultMessage="Action" /></th>
                                     </tr>
-                                )}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {posts && posts.length > 0 ? (
+                                        posts.map((post, index) => {
+                                            const imageSrc = this.getImageSrc(post.image);
+
+                                            return (
+                                                <tr
+                                                    key={post.id}
+                                                    draggable={canDragDrop}
+                                                    onDragStart={this.handleDragStart(index)}
+                                                    onDragOver={this.handleDragOver}
+                                                    onDrop={this.handleDrop(index)}
+                                                    onDragEnd={this.handleDragEnd}
+                                                    className={canDragDrop ? "draggable-row" : ""}
+                                                >
+                                                    <td>{post.id}</td>
+                                                    <td className="manage-post__order">{post.displayOrder}</td>
+                                                    <td className="post-title-cell manage-post__name" title={post.title}>
+                                                        <span className="post-title-text">{post.title}</span>
+                                                    </td>
+                                                    <td>
+                                                        {imageSrc ? (
+                                                            <img
+                                                                src={imageSrc}
+                                                                alt={post.title}
+                                                                className="post-thumbnail manage-post__thumbnail prevent-row-drag"
+                                                                onClick={() => this.openPreview(imageSrc)}
+                                                            />
+                                                        ) : (
+                                                            <span className="manage-post__muted">No image</span>
+                                                        )}
+                                                    </td>
+                                                    <td>{this.formatDate(post.updatedAt)}</td>
+                                                    <td>{this.renderStatusSwitch(post)}</td>
+                                                    <td className="prevent-row-drag post-action-cell">
+                                                        <div className="manage-post__actions">
+                                                            <button
+                                                                type="button"
+                                                                className="manage-post__action-button manage-post__action-button--edit"
+                                                                onClick={() => this.handleEditPost(post)}
+                                                            >
+                                                                <i className="fas fa-edit"></i>
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                className="manage-post__action-button manage-post__action-button--delete"
+                                                                onClick={() => this.handleDeletePost(post.id)}
+                                                            >
+                                                                <i className="fa-solid fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="7" className="manage-post__empty">
+                                                <FormattedMessage id="manage-post.no-data" defaultMessage="No posts found." />
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     {totalPages > 1 && (
-                        <nav className="mt-3">
-                            <ul className="pagination justify-content-center mb-0">
+                        <nav className="manage-post__pagination">
+                            <ul>
                                 {Array.from({ length: totalPages }, (_, index) => (
                                     <li
                                         key={index}
-                                        className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+                                        className={currentPage === index + 1 ? "active" : ""}
                                     >
                                         <button
-                                            className="page-link"
                                             onClick={() => this.handlePageChange(index + 1)}
                                         >
                                             {index + 1}
@@ -562,7 +551,7 @@ class ManagePost extends Component {
                     )}
 
                     {isOpenPreview && (
-                        <div className="preview-backdrop" onClick={this.closePreview}>
+                        <div className="manage-post__preview-backdrop" onClick={this.closePreview}>
                             <img src={previewImg} alt="preview" />
                         </div>
                     )}
