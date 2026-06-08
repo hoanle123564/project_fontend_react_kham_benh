@@ -24,6 +24,16 @@ import * as action from "../../../store/actions";
 import Breadcrumb from "../../../components/Breadcrumb/breadcrumb";
 import { buildImageSrc, getPublicPostCategories } from "../../../services/userService";
 
+const getActiveSortedSpecialties = (specialties = []) =>
+  [...specialties]
+    .filter((item) => Number(item.isActive) === 1)
+    .sort((a, b) => (Number(a.displayOrder) || 0) - (Number(b.displayOrder) || 0) || a.id - b.id);
+
+const getActiveSortedDoctors = (doctors = []) =>
+  [...doctors]
+    .filter((item) => Number(item.isActive) === 1)
+    .sort((a, b) => (Number(a.displayOrder) || 0) - (Number(b.displayOrder) || 0) || a.id - b.id);
+
 const isTokenValid = (token) => {
   if (!token) return false;
 
@@ -62,15 +72,16 @@ class HomeHeader extends Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.ListDoctor !== this.props.ListDoctor) {
+      const doctorList = getActiveSortedDoctors(this.props.ListDoctor || []);
       this.setState({
-        doctorList: this.props.ListDoctor || [],
-        filteredDoctors: this.props.ListDoctor || [],
+        doctorList,
+        filteredDoctors: doctorList,
       });
     }
 
     if (prevProps.specialtys !== this.props.specialtys) {
       this.setState({
-        specialtyList: this.props.specialtys || [],
+        specialtyList: getActiveSortedSpecialties(this.props.specialtys || []),
       });
     }
   }
@@ -143,9 +154,9 @@ class HomeHeader extends Component {
   handleSelectDoctor = (doctor) => {
     if (!doctor) return;
 
-    const doctorId = doctor.id || doctor.userId || doctor.doctorId || doctor.DoctorId;
-    if (this.props.history && doctorId) {
-      this.props.history.push(`/detail-doctor/${doctorId}`);
+    const targetSlug = doctor.slug || doctor.id || doctor.userId || doctor.doctorId || doctor.DoctorId;
+    if (this.props.history && targetSlug) {
+      this.props.history.push(`/detail-doctor/${targetSlug}`);
     }
 
     this.setState({
@@ -155,8 +166,8 @@ class HomeHeader extends Component {
   };
 
   handleViewDetailSpecialty = (item) => {
-    if (this.props.history && item?.id) {
-      this.props.history.push(`/detail-specialty/${item.id}`);
+    if (this.props.history && item?.slug) {
+      this.props.history.push(`/detail-specialty/${item.slug}`);
     }
   };
 
@@ -186,7 +197,10 @@ class HomeHeader extends Component {
 
   handleDestist = () => {
     if (this.props.history) {
-      this.props.history.push("/detail-specialty/16");
+      const dentistSpecialty = this.state.specialtyList.find((item) => Number(item.id) === 16);
+      this.props.history.push(
+        dentistSpecialty?.slug ? `/detail-specialty/${dentistSpecialty.slug}` : "/list-specialty"
+      );
     }
   };
 
@@ -256,7 +270,7 @@ class HomeHeader extends Component {
                           {specialtyList.map((item) => (
                             <li className="item-specialty" key={item.id}>
                               <a
-                                href={`/detail-specialty/${item.id}`}
+                                href={`/detail-specialty/${item.slug}`}
                                 onClick={(event) =>
                                   this.preventDefaultAndRun(event, () => this.handleViewDetailSpecialty(item))
                                 }
@@ -465,11 +479,11 @@ class HomeHeader extends Component {
                     <ul>
                       {(filteredDoctors || []).slice(0, 7).map((doctor) => {
                         const doctorName = `${doctor.firstName || ""} ${doctor.lastName || ""}`.trim();
-                        const doctorId =
-                          doctor.id || doctor.userId || doctor.doctorId || doctor.DoctorId;
+                        const doctorKey =
+                          doctor.slug || doctor.id || doctor.userId || doctor.doctorId || doctor.DoctorId;
 
                         return (
-                          <li key={doctorId || doctorName} onClick={() => this.handleSelectDoctor(doctor)}>
+                          <li key={doctorKey || doctorName} onClick={() => this.handleSelectDoctor(doctor)}>
                             <span className="suggest-name">{doctorName || "Bác sĩ"}</span>
                             {doctor.positionData?.valueVi && (
                               <span className="suggest-position"> - {doctor.positionData.valueVi}</span>

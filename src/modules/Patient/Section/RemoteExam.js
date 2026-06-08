@@ -13,8 +13,26 @@ import TamThan from '../../../assets/remote/tam-than-tu-xa-1.png'
 import TieuHoa from '../../../assets/remote/tieu-hoa-tu--xa.png'
 import TimMach from '../../../assets/remote/tim-mach-tu--xa.png'
 import { withRouter } from "react-router";
+import * as action from "../../../store/actions";
 
 class RemoteExam extends Component {
+    componentDidMount() {
+        this.props.getAllSpecialty();
+    }
+
+    getSpecialtyPathById = (specialtyId) => {
+        const specialty = (this.props.specialtys || []).find(
+            (item) => Number(item.id) === Number(specialtyId) && Number(item.isActive) === 1
+        );
+
+        return specialty?.slug ? `/detail-specialty/${specialty.slug}` : "/list-specialty";
+    };
+
+    handleRemoteSpecialty = (specialtyId) => {
+        if (this.props.history) {
+            this.props.history.push(this.getSpecialtyPathById(specialtyId));
+        }
+    };
 
     handleListRemote = () => {
         if (this.props.history) {
@@ -22,29 +40,22 @@ class RemoteExam extends Component {
         }
     };
     handleCoXuong = () => {
-        if (this.props.history) {
-            this.props.history.push(`/detail-specialty/10`);
-        }
+        this.handleRemoteSpecialty(10);
     };
     handleTamLy = () => {
-        if (this.props.history) {
-            this.props.history.push(`/detail-specialty/19`);
-        }
+        this.handleRemoteSpecialty(19);
     };
     handleTamThan = () => {
-        if (this.props.history) {
-            this.props.history.push(`/detail-specialty/18`);
-        }
+        this.handleRemoteSpecialty(18);
     }
     handleTieuHoa = () => {
-        if (this.props.history) {
-            this.props.history.push(`/detail-specialty/12`);
-        }
+        this.handleRemoteSpecialty(12);
     }
     handleTimMach = () => {
-        if (this.props.history) {
-            this.props.history.push(`/detail-specialty/13`);
-        }
+        this.handleRemoteSpecialty(13);
+    }
+    handleDaLieu = () => {
+        this.handleRemoteSpecialty(11);
     }
     render() {
         return (
@@ -126,12 +137,14 @@ class RemoteExam extends Component {
 const mapStateToProps = state => {
     return {
         isLoggedIn: state.patient.isLoggedIn,
-        language: state.app.language
+        language: state.app.language,
+        specialtys: state.admin.specialty
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
+        getAllSpecialty: () => dispatch(action.GetAllSpecialty()),
     };
 };
 

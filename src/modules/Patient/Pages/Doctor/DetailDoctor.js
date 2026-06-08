@@ -37,29 +37,38 @@ class DetailDoctor extends Component {
     if (
       this.props.match &&
       this.props.match.params &&
-      this.props.match.params.id
+      this.props.match.params.slug
     ) {
-      let id = this.props.match.params.id;
-      this.props.GetDetailDoctor(id);
-      this.fetchRelatedDoctors(id);
+      let slug = this.props.match.params.slug;
+      this.props.GetDetailDoctor(slug).then((doctor) => {
+        if (doctor?.id) {
+          this.fetchRelatedDoctors(doctor.id);
+        }
+      });
       // data:image/jpeg;base64,${item.image}`
     }
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.match && prevProps.match.params && this.props.match && this.props.match.params) {
-      let prevId = prevProps.match.params.id;
-      let currentId = this.props.match.params.id;
-      if (prevId !== currentId) {
-        this.props.GetDetailDoctor(currentId);
-        this.fetchRelatedDoctors(currentId);
+      let prevSlug = prevProps.match.params.slug;
+      let currentSlug = this.props.match.params.slug;
+      if (prevSlug !== currentSlug) {
+        this.props.GetDetailDoctor(currentSlug).then((doctor) => {
+          if (doctor?.id) {
+            this.fetchRelatedDoctors(doctor.id);
+          }
+        });
         window.scrollTo(0, 0);
       }
     }
   }
 
   handleViewDetailDoctor = (doctor) => {
-    this.props.history.push(`/detail-doctor/${doctor.id}`);
+    const targetSlug = doctor?.slug || doctor?.id;
+    if (targetSlug) {
+      this.props.history.push(`/detail-doctor/${targetSlug}`);
+    }
   }
 
   render() {

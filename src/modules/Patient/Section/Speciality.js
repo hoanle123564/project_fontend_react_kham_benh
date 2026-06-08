@@ -10,6 +10,11 @@ import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 
+const getActiveSortedSpecialties = (specialties = []) =>
+    [...specialties]
+        .filter((item) => Number(item.isActive) === 1)
+        .sort((a, b) => (Number(a.displayOrder) || 0) - (Number(b.displayOrder) || 0) || a.id - b.id);
+
 class Speciality extends Component {
     constructor(props) {
         super(props);
@@ -19,7 +24,9 @@ class Speciality extends Component {
     }
 
     handleViewDetailSpecialty = (clinic) => {
-        this.props.history.push(`/detail-specialty/${clinic.id}`);
+        if (clinic?.slug) {
+            this.props.history.push(`/detail-specialty/${clinic.slug}`);
+        }
     }
 
     componentDidMount() {
@@ -29,7 +36,7 @@ class Speciality extends Component {
     componentDidUpdate(prevProps) {
         if (prevProps.specialtys !== this.props.specialtys) {
             this.setState({
-                ListSpecialty: this.props.specialtys
+                ListSpecialty: getActiveSortedSpecialties(this.props.specialtys || [])
             })
         }
     }

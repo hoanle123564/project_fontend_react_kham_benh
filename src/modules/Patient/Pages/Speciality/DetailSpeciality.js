@@ -6,9 +6,21 @@ import "./DetailSpeciality.scss";
 import * as action from "../../../../store/actions";
 import DoctorSchdule from "../../Pages/Doctor/DoctorSchdule";
 import DoctorExtendInfo from "../../Pages/Doctor/DoctorExtendInfo";
-import { getDetailSpecialtyById } from "../../../../services/userService";
+import { getDetailSpecialtyBySlug } from "../../../../services/userService";
 import { withRouter } from "react-router-dom/cjs/react-router-dom.min";
 import BackToTop from "../../../../components/BackToTop/BackToTop";
+
+const getActiveSortedDoctors = (doctors = []) =>
+    [...doctors]
+        .filter((doctor) => Number(doctor.isActive) === 1)
+        .sort((a, b) => {
+            const orderA = Number(a.displayOrder) || 0;
+            const orderB = Number(b.displayOrder) || 0;
+
+            if (orderA !== orderB) return orderA - orderB;
+            return Number(a.id) - Number(b.id);
+        });
+
 class DetailSpeciality extends Component {
     constructor(props) {
         super(props);
@@ -25,10 +37,10 @@ class DetailSpeciality extends Component {
         if (
             this.props.match &&
             this.props.match.params &&
-            this.props.match.params.id
+            this.props.match.params.slug
         ) {
-            let id = this.props.match.params.id;
-            let res = await getDetailSpecialtyById(id, "ALL");
+            let slug = this.props.match.params.slug;
+            let res = await getDetailSpecialtyBySlug(slug, "ALL");
 
             if (res && res.errCode === 0) {
                 let data = res.data;
@@ -74,8 +86,8 @@ class DetailSpeciality extends Component {
 
             if (ListDoctorId.length > 0 && ListDoctor.length > 0) {
 
-                const filterDoctors = ListDoctor.filter((doc) =>
-                    ListDoctorId.includes(doc.id)
+                const filterDoctors = getActiveSortedDoctors(
+                    ListDoctor.filter((doc) => ListDoctorId.includes(doc.id))
                 );
 
                 if (filterDoctors !== this.state.ListDoctor) {
@@ -91,11 +103,11 @@ class DetailSpeciality extends Component {
         if (
             this.props.match &&
             this.props.match.params &&
-            this.props.match.params.id
+            this.props.match.params.slug
         ) {
-            let id = this.props.match.params.id;
+            let slug = this.props.match.params.slug;
             let location = event.target.value;
-            let res = await getDetailSpecialtyById(id, location);
+            let res = await getDetailSpecialtyBySlug(slug, location);
 
             if (res && res.errCode === 0) {
                 let data = res.data;
@@ -118,7 +130,10 @@ class DetailSpeciality extends Component {
     }
 
     handleViewDetailDoctor = (doctor) => {
-        this.props.history.push(`/detail-doctor/${doctor.id}`);
+        const targetSlug = doctor?.slug || doctor?.id;
+        if (targetSlug) {
+            this.props.history.push(`/detail-doctor/${targetSlug}`);
+        }
     }
 
 
@@ -180,9 +195,13 @@ class DetailSpeciality extends Component {
                                             </div>
                                             <div className="doctor-info">
                                                 <strong>
-                                                    <a href="" onClick={() => this.handleViewDetailDoctor(item)}>
+                                                    <button
+                                                        type="button"
+                                                        className="doctor-detail-link"
+                                                        onClick={() => this.handleViewDetailDoctor(item)}
+                                                    >
                                                         {item.positionVi}, {item.firstName} {item.lastName}
-                                                    </a>
+                                                    </button>
                                                 </strong>
                                                 <div className="doctor-description">
                                                     {item.description ||

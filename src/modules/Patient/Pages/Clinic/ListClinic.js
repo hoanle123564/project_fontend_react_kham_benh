@@ -12,6 +12,19 @@ import { Grid, Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/grid';
 import 'swiper/css/pagination';
+
+const getActiveSortedClinics = (clinics = []) => {
+    return [...clinics]
+        .filter((clinic) => Number(clinic.isActive) === 1)
+        .sort((a, b) => {
+            const orderA = Number(a.displayOrder) || 0;
+            const orderB = Number(b.displayOrder) || 0;
+
+            if (orderA !== orderB) return orderA - orderB;
+            return Number(a.id) - Number(b.id);
+        });
+};
+
 class ListClinic extends Component {
     constructor(props) {
         super(props);
@@ -27,14 +40,15 @@ class ListClinic extends Component {
     componentDidUpdate(prevProps) {
         if (prevProps.clinics !== this.props.clinics) {
             this.setState({
-                clinicList: this.props.clinics,
+                clinicList: getActiveSortedClinics(this.props.clinics),
             });
         }
     }
 
     handleViewDetail = (clinic) => {
         if (this.props.history) {
-            this.props.history.push(`/detail-clinic/${clinic.id}`);
+            const targetSlug = clinic.slug || clinic.id;
+            this.props.history.push(`/detail-clinic/${targetSlug}`);
         }
     };
 

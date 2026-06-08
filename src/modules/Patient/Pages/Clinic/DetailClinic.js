@@ -1,14 +1,26 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import HomeHeader from "../../Layout/HomeHeader";
 import HomeFooter from "../../Layout/HomeFooter";
 import "./DetailClinic.scss";
 import * as action from "../../../../store/actions";
 import DoctorSchdule from "../Doctor/DoctorSchdule";
 import DoctorExtendInfo from "../Doctor/DoctorExtendInfo";
-import { getDetailClinicById } from "../../../../services/userService";
-import { withRouter } from "react-router-dom/cjs/react-router-dom.min";
+import { getDetailClinicBySlug } from "../../../../services/userService";
 import BackToTop from "../../../../components/BackToTop/BackToTop";
+
+const getActiveSortedDoctors = (doctors = []) =>
+    [...doctors]
+        .filter((doctor) => Number(doctor.isActive) === 1)
+        .sort((a, b) => {
+            const orderA = Number(a.displayOrder) || 0;
+            const orderB = Number(b.displayOrder) || 0;
+
+            if (orderA !== orderB) return orderA - orderB;
+            return Number(a.id) - Number(b.id);
+        });
+
 class DetailClinic extends Component {
     constructor(props) {
         super(props);
@@ -22,60 +34,20 @@ class DetailClinic extends Component {
 
     async componentDidMount() {
         this.props.fetchTopDoctor();
-        if (
-            this.props.match &&
-            this.props.match.params &&
-            this.props.match.params.id
-        ) {
-            let id = this.props.match.params.id;
-            let res = await getDetailClinicById(id, "ALL");
-
-            if (res && res.errCode === 0) {
-                let data = res.data;
-                let arrDoctorId = data[0].doctorClinic;
-                let arrDoctor = [];
-                let arrProvince = [];
-
-                if (arrDoctorId && arrDoctorId.length > 0) {
-                    arrDoctorId.forEach((item) => {
-                        arrDoctor.push(item.doctorId);
-                        arrProvince.push(item.province);
-
-                    });
-                }
-
-                console.log("arrDoctorId", arrDoctor);
-                console.log("arrProvince", arrProvince);
-
-                let ListProvinceFormatted = [{ label: 'Toàn quốc', value: 'ALL' }];
-                if (arrProvince && arrProvince.length > 0) {
-                    arrProvince.map(item => (
-                        ListProvinceFormatted.push({
-                            label: item,
-                            value: item,
-                        })
-                    ));
-                }
-                this.setState({
-                    DetailClinic: res.data,
-                    ListDoctorId: arrDoctor,
-                    ListProvince: ListProvinceFormatted,
-                });
-            }
-        }
+        await this.fetchClinicDetail("ALL");
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.ListDoctor !== this.props.ListDoctor ||
-            prevState.ListDoctorId !== this.state.ListDoctorId) {
-
+        if (
+            prevProps.ListDoctor !== this.props.ListDoctor ||
+            prevState.ListDoctorId !== this.state.ListDoctorId
+        ) {
             const { ListDoctorId } = this.state;
             const { ListDoctor } = this.props;
 
             if (ListDoctorId.length > 0 && ListDoctor.length > 0) {
-
-                const filterDoctors = ListDoctor.filter((doc) =>
-                    ListDoctorId.includes(doc.id)
+                const filterDoctors = getActiveSortedDoctors(
+                    ListDoctor.filter((doc) => ListDoctorId.includes(doc.id))
                 );
 
                 if (filterDoctors !== this.state.ListDoctor) {
@@ -87,59 +59,67 @@ class DetailClinic extends Component {
         }
     }
 
-    handleOnchange = async (event) => {
-        if (
-            this.props.match &&
-            this.props.match.params &&
-            this.props.match.params.id
-        ) {
-            let id = this.props.match.params.id;
-            let location = event.target.value;
-            let res = await getDetailClinicById(id, location);
+    fetchClinicDetail = async (location) => {
+        const slug = this.props.match?.params?.slug;
+        if (!slug) return;
 
-            if (res && res.errCode === 0) {
-                let data = res.data;
-                let arrDoctorId = data[0].doctorClinic;
-                let arrDoctor = [];
+        const res = await getDetailClinicBySlug(slug, location);
+        if (res && res.errCode === 0) {
+            const data = res.data || [];
+            const doctorClinic = data[0]?.doctorClinic || [];
+            const arrDoctor = [];
+            const arrProvince = [];
 
-                if (arrDoctorId && arrDoctorId.length > 0) {
-                    arrDoctorId.forEach((item) => {
-                        arrDoctor.push(item.doctorId);
-                    });
-                }
+            doctorClinic.forEach((item) => {
+                arrDoctor.push(item.doctorId);
+                if (item.province) arrProvince.push(item.province);
+            });
 
-                this.setState({
-                    DetailClinic: res.data,
-                    ListDoctorId: arrDoctor,
+            const ListProvinceFormatted = [{ label: "Toàn quốc", value: "ALL" }];
+            arrProvince.forEach((item) => {
+                ListProvinceFormatted.push({
+                    label: item,
+                    value: item,
                 });
-            }
+            });
 
+            this.setState({
+                DetailClinic: data,
+                ListDoctorId: arrDoctor,
+                ListProvince: ListProvinceFormatted,
+            });
         }
-    }
+    };
+
+    handleOnchange = async (event) => {
+        await this.fetchClinicDetail(event.target.value);
+    };
 
     handleViewDetailDoctor = (doctor) => {
-        this.props.history.push(`/detail-doctor/${doctor.id}`);
-    }
-
+        const targetSlug = doctor?.slug || doctor?.id;
+        if (targetSlug) {
+            this.props.history.push(`/detail-doctor/${targetSlug}`);
+        }
+    };
 
     render() {
         const { ListDoctor, DetailClinic } = this.state;
-        console.log("list doctor", ListDoctor);
-        console.log("detail specialty", this.state.DetailClinic);
+
         return (
             <>
                 <HomeHeader showBanner={false} />
                 <BackToTop />
                 <div className="clinic-detail-container">
                     <div className="description-specialty">
-                        {
-                            DetailClinic && DetailClinic[0] && DetailClinic[0].descriptionHTML &&
-                            <div
-                                dangerouslySetInnerHTML={{
-                                    __html: DetailClinic[0].descriptionHTML,
-                                }}
-                            ></div>
-                        }
+                        {DetailClinic &&
+                            DetailClinic[0] &&
+                            DetailClinic[0].descriptionHTML && (
+                                <div
+                                    dangerouslySetInnerHTML={{
+                                        __html: DetailClinic[0].descriptionHTML,
+                                    }}
+                                ></div>
+                            )}
                         {/* <div className="filter-specialty">
                             <span>Chọn tỉnh thành:</span>
                             <select onChange={(event) => this.handleOnchange(event)}>
@@ -179,9 +159,11 @@ class DetailClinic extends Component {
                                                     "Bác sĩ có nhiều năm kinh nghiệm khám và điều trị."}
                                             </div>
 
-                                            <div className="see-more" onClick={() => this.handleViewDetailDoctor(item)}>
+                                            <div
+                                                className="see-more"
+                                                onClick={() => this.handleViewDetailDoctor(item)}
+                                            >
                                                 Xem thêm
-
                                             </div>
                                         </div>
                                     </div>
@@ -207,7 +189,6 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     fetchTopDoctor: () => dispatch(action.fetchTopDoctor()),
-
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(DetailClinic));

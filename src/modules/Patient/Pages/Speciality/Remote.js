@@ -5,6 +5,7 @@ import HomeHeader from "../../Layout/HomeHeader";
 import HomeFooter from "../../Layout/HomeFooter";
 import "./Remote.scss";
 import { withRouter } from "react-router";
+import * as action from "../../../../store/actions";
 
 import DaLieu from '../../../../assets/remote/da-lieu-tu--xa.png';
 import CoXuongKhop from '../../../../assets/remote/cxk-tu--xa.png';
@@ -14,6 +15,17 @@ import TieuHoa from '../../../../assets/remote/tieu-hoa-tu--xa.png';
 import TimMach from '../../../../assets/remote/tim-mach-tu--xa.png';
 
 class Remote extends Component {
+    componentDidMount() {
+        this.props.getAllSpecialty();
+    }
+
+    getSpecialtyPathById = (specialtyId) => {
+        const specialty = (this.props.specialtys || []).find(
+            (item) => Number(item.id) === Number(specialtyId) && Number(item.isActive) === 1
+        );
+
+        return specialty?.slug ? `/detail-specialty/${specialty.slug}` : "/list-specialty";
+    };
 
     handleViewDetail = (path) => {
         if (this.props.history && path) {
@@ -24,11 +36,11 @@ class Remote extends Component {
     render() {
 
         const staticRemoteList = [
-            { img: CoXuongKhop, title: "Bác sĩ Cơ-Xương-Khớp từ xa", link: "/detail-specialty/10" },
-            { img: TamLy, title: "Tư vấn, trị liệu Tâm lý từ xa", link: "/detail-specialty/19" },
-            { img: TamThan, title: "Sức khỏe tâm thần từ xa", link: "/detail-specialty/18" },
-            { img: TieuHoa, title: "Bác sĩ Tiêu hóa từ xa", link: "/detail-specialty/12" },
-            { img: TimMach, title: "Bác sĩ Tim mạch từ xa", link: "/detail-specialty/13" },
+            { img: CoXuongKhop, title: "Bác sĩ Cơ-Xương-Khớp từ xa", link: this.getSpecialtyPathById(10) },
+            { img: TamLy, title: "Tư vấn, trị liệu Tâm lý từ xa", link: this.getSpecialtyPathById(19) },
+            { img: TamThan, title: "Sức khỏe tâm thần từ xa", link: this.getSpecialtyPathById(18) },
+            { img: TieuHoa, title: "Bác sĩ Tiêu hóa từ xa", link: this.getSpecialtyPathById(12) },
+            { img: TimMach, title: "Bác sĩ Tim mạch từ xa", link: this.getSpecialtyPathById(13) },
             { img: DaLieu, title: "Bác sĩ Da liễu từ xa", link: "/remote/da-lieu" },
         ];
 
@@ -61,4 +73,12 @@ class Remote extends Component {
     }
 }
 
-export default withRouter(connect(null, null)(Remote));
+const mapStateToProps = (state) => ({
+    specialtys: state.admin.specialty,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    getAllSpecialty: () => dispatch(action.GetAllSpecialty()),
+});
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Remote));

@@ -12,6 +12,12 @@ import BackToTop from "../../../../components/BackToTop/BackToTop";
 import 'swiper/css';
 import 'swiper/css/grid';
 import 'swiper/css/pagination';
+
+const getActiveSortedSpecialties = (specialties = []) =>
+    [...specialties]
+        .filter((item) => Number(item.isActive) === 1)
+        .sort((a, b) => (Number(a.displayOrder) || 0) - (Number(b.displayOrder) || 0) || a.id - b.id);
+
 class ListSpecialty extends Component {
     constructor(props) {
         super(props);
@@ -27,14 +33,14 @@ class ListSpecialty extends Component {
     componentDidUpdate(prevProps) {
         if (prevProps.specialtys !== this.props.specialtys) {
             this.setState({
-                specialtyList: this.props.specialtys,
+                specialtyList: getActiveSortedSpecialties(this.props.specialtys || []),
             });
         }
     }
 
     handleViewDetail = (item) => {
-        if (this.props.history) {
-            this.props.history.push(`/detail-specialty/${item.id}`);
+        if (this.props.history && item?.slug) {
+            this.props.history.push(`/detail-specialty/${item.slug}`);
         }
     };
 

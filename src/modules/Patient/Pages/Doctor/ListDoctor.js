@@ -12,6 +12,28 @@ import "./ListDoctor.scss";
 const ITEMS_PER_PAGE = 10;
 const ALL_SPECIALTIES = "ALL";
 
+const getActiveSortedDoctors = (doctors = []) =>
+    [...doctors]
+        .filter((doctor) => Number(doctor.isActive) === 1)
+        .sort((a, b) => {
+            const orderA = Number(a.displayOrder) || 0;
+            const orderB = Number(b.displayOrder) || 0;
+
+            if (orderA !== orderB) return orderA - orderB;
+            return Number(a.id) - Number(b.id);
+        });
+
+const getActiveSortedSpecialties = (specialties = []) =>
+    [...specialties]
+        .filter((specialty) => Number(specialty.isActive) === 1)
+        .sort((a, b) => {
+            const orderA = Number(a.displayOrder) || 0;
+            const orderB = Number(b.displayOrder) || 0;
+
+            if (orderA !== orderB) return orderA - orderB;
+            return Number(a.id) - Number(b.id);
+        });
+
 class ListDoctor extends Component {
     constructor(props) {
         super(props);
@@ -59,11 +81,11 @@ class ListDoctor extends Component {
 
             const doctorList =
                 doctorRes && doctorRes.errCode === 0 && Array.isArray(doctorRes.data)
-                    ? doctorRes.data
+                    ? getActiveSortedDoctors(doctorRes.data)
                     : [];
             const specialtyList =
                 specialtyRes && specialtyRes.errCode === 0 && Array.isArray(specialtyRes.data)
-                    ? specialtyRes.data
+                    ? getActiveSortedSpecialties(specialtyRes.data)
                     : [];
 
             this.setState({
@@ -118,9 +140,10 @@ class ListDoctor extends Component {
         );
     };
 
-    handleViewDetailDoctor = (doctorId) => {
-        if (this.props.history && doctorId) {
-            this.props.history.push(`/detail-doctor/${doctorId}`);
+    handleViewDetailDoctor = (doctor) => {
+        const targetSlug = doctor?.slug || doctor?.id;
+        if (this.props.history && targetSlug) {
+            this.props.history.push(`/detail-doctor/${targetSlug}`);
         }
     };
 
@@ -172,7 +195,7 @@ class ListDoctor extends Component {
                     <button
                         type="button"
                         className="doctor-name"
-                        onClick={() => this.handleViewDetailDoctor(doctor.id)}
+                        onClick={() => this.handleViewDetailDoctor(doctor)}
                     >
                         {doctorName || "Bác sĩ chưa cập nhật tên"}
                     </button>
@@ -190,7 +213,7 @@ class ListDoctor extends Component {
                         <button
                             type="button"
                             className="booking-button"
-                            onClick={() => this.handleViewDetailDoctor(doctor.id)}
+                            onClick={() => this.handleViewDetailDoctor(doctor)}
                         >
                             Đặt lịch khám
                         </button>

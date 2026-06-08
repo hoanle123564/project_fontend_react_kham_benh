@@ -115,9 +115,15 @@
                         margin-bottom: 6px;
                         display: block;
 
-                        a {
+                        a,
+                        .doctor-detail-link {
+                            padding: 0;
+                            border: 0;
+                            background: transparent;
                             text-decoration: none;
                             color: #007b92;
+                            font: inherit;
+                            cursor: pointer;
 
                         }
                     }

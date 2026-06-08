@@ -11,6 +11,18 @@ import "./Doctor.scss";
 import { withRouter } from "react-router";
 import { FormattedMessage } from "react-intl";
 import bg_doctor from '../../../assets/bg_section_doctor.jpg'
+
+const getActiveSortedDoctors = (doctors = []) =>
+  [...doctors]
+    .filter((doctor) => Number(doctor.isActive) === 1)
+    .sort((a, b) => {
+      const orderA = Number(a.displayOrder) || 0;
+      const orderB = Number(b.displayOrder) || 0;
+
+      if (orderA !== orderB) return orderA - orderB;
+      return Number(a.id) - Number(b.id);
+    });
+
 class Doctor extends Component {
   constructor(props) {
     super(props);
@@ -24,12 +36,15 @@ class Doctor extends Component {
   componentDidUpdate = (prevProps) => {
     if (prevProps.ListDoctor !== this.props.ListDoctor) {
       this.setState({
-        DoctorArr: this.props.ListDoctor,
+        DoctorArr: getActiveSortedDoctors(this.props.ListDoctor || []),
       });
     }
   };
   handleViewDetailDoctor = (doctor) => {
-    this.props.history.push(`/detail-doctor/${doctor.id}`);
+    const targetSlug = doctor?.slug || doctor?.id;
+    if (targetSlug) {
+      this.props.history.push(`/detail-doctor/${targetSlug}`);
+    }
   }
   hendleListDoctor = () => {
     this.props.history.push(`/list-doctor`);
@@ -77,7 +92,7 @@ class Doctor extends Component {
                           <div className="doctor-item" onClick={() => this.handleViewDetailDoctor(item)}>
                             <div className="img-wrapper">
                               <img
-                                src={`data:image/jpeg;base64,${item.image}`}
+                                src={item.image ? `data:image/jpeg;base64,${item.image}` : "/default-doctor.png"}
                                 alt="image_doctor"
                                 loading="lazy"
                               />

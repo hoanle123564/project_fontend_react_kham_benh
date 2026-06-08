@@ -12,6 +12,18 @@ import * as action from "../../../store/actions";
 import { withRouter } from "react-router";
 import { FormattedMessage } from 'react-intl';
 
+const getActiveSortedClinics = (clinics = []) => {
+    return [...clinics]
+        .filter((clinic) => Number(clinic.isActive) === 1)
+        .sort((a, b) => {
+            const orderA = Number(a.displayOrder) || 0;
+            const orderB = Number(b.displayOrder) || 0;
+
+            if (orderA !== orderB) return orderA - orderB;
+            return Number(a.id) - Number(b.id);
+        });
+};
+
 class Clinic extends Component {
     constructor(props) {
         super(props);
@@ -20,7 +32,8 @@ class Clinic extends Component {
         }
     }
     handleViewDetailClinic = (clinic) => {
-        this.props.history.push(`/detail-clinic/${clinic.id}`);
+        const targetSlug = clinic.slug || clinic.id;
+        this.props.history.push(`/detail-clinic/${targetSlug}`);
     }
 
     returnChoRay = () => {
@@ -34,7 +47,7 @@ class Clinic extends Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.clinics !== this.props.clinics) {
             this.setState({
-                ListSpecialty: this.props.clinics
+                ListSpecialty: getActiveSortedClinics(this.props.clinics)
             })
         }
     }
