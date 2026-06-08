@@ -1,221 +1,256 @@
-import React, { Component } from 'react';
-// import { FormattedMessage } from 'react-intl';
-import { connect } from 'react-redux';
-
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import React, { Component } from "react";
+import { connect } from "react-redux";
 import { FormattedMessage } from 'react-intl';
-import './AddSpecialty.scss';
-import * as action from "../../../store/actions";
 
-const editorModules = {
-  toolbar: [
-    [{ header: [1, 2, 3, false] }],
-    ["bold", "italic", "underline", "strike"],
-    [{ list: "ordered" }, { list: "bullet" }],
-    ["blockquote", "code-block"],
-    ["link", "image"],
-    ["clean"],
-  ],
+import { toast } from "react-toastify";
+import * as action from "../../../store/actions";
+import { getAllSpecialty } from "../../../services/userService";
+import SpecialtyForm from "./SpecialtyForm";
+
+const buildSlug = (value) =>
+    String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[đĐ]/g, "d")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, " ")
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+const hasVisibleEditorContent = (value) => {
+    if (!value || typeof value !== "string") return false;
+
+    const plainText = value
+        .replace(/<[^>]*>/g, " ")
+        .replace(/&nbsp;/g, " ")
+        .trim();
+
+    return plainText.length > 0;
 };
 
-const editorFormats = [
-  "header",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "list",
-  "bullet",
-  "blockquote",
-  "code-block",
-  "link",
-  "image",
-];
 class AddSpecialty extends Component {
-
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
-            previewImg: '',
-            name: '',
-            descriptionHTML: '',
-            descriptionMarkdown: '',
-            imageSpecialty: '',
-        }
+            formData: {
+                name: "",
+                slug: "",
+                descriptionHTML: "",
+                descriptionMarkdown: "",
+                image: "",
+                isActive: "1",
+                displayOrder: "",
+            },
+            previewImg: "",
+            slugTouched: false,
+            errors: {},
+            isSubmitting: false,
+        };
     }
 
     componentDidMount() {
-
+        this.loadNextDisplayOrder();
     }
-    handleSaveContent = async () => {
-        console.log('check state', this.state);
-        let res = await this.props.SaveSpecialty({
-            name: this.state.name,
-            image: this.state.imageSpecialty,
-            descriptionHTML: this.state.descriptionHTML,
-            descriptionMarkdown: this.state.descriptionMarkdown,
-        })
-        console.log('check res', res);
-        if (res && res.errCode === 0) {
-            this.setState({
-                previewImg: '',
-                name: '',
-                descriptionHTML: '',
-                descriptionMarkdown: '',
-                imageSpecialty: '',
-            })
+
+    loadNextDisplayOrder = async () => {
+        try {
+            const res = await getAllSpecialty();
+            const specialties = Array.isArray(res?.data) ? res.data : [];
+            const nextDisplayOrder = specialties.reduce((maxValue, item) => {
+                const currentValue = Number(item.displayOrder) || 0;
+                return currentValue > maxValue ? currentValue : maxValue;
+            }, 0) + 1;
+
+            this.setState((prevState) => ({
+                formData: {
+                    ...prevState.formData,
+                    displayOrder: nextDisplayOrder,
+                },
+            }));
+        } catch (error) {
+            console.log("loadNextDisplayOrder specialty error", error);
+            this.setState((prevState) => ({
+                formData: {
+                    ...prevState.formData,
+                    displayOrder: 1,
+                },
+            }));
         }
+    };
 
-    }
-    // Edit HTML
-    handleEditorChange = (value) => {
-        this.setState({
-            descriptionMarkdown: value,
-            descriptionHTML: value,
+    handleInputChange = (event, field) => {
+        const value = event.target.value;
+
+        this.setState((prevState) => {
+            const nextFormData = {
+                ...prevState.formData,
+                [field]: value,
+            };
+            let nextSlugTouched = prevState.slugTouched;
+
+            if (field === "name" && !prevState.slugTouched) {
+                nextFormData.slug = buildSlug(value);
+            }
+
+            if (field === "slug") {
+                nextFormData.slug = buildSlug(value);
+                nextSlugTouched = true;
+            }
+
+            return {
+                formData: nextFormData,
+                slugTouched: nextSlugTouched,
+                errors: {
+                    ...prevState.errors,
+                    [field]: "",
+                },
+            };
         });
     };
 
-    handleOnChangeImage = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const objectUrl = URL.createObjectURL(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
+    handleEditorChange = (value) => {
+        this.setState((prevState) => ({
+            formData: {
+                ...prevState.formData,
+                descriptionHTML: value,
+                descriptionMarkdown: value,
+            },
+            errors: {
+                ...prevState.errors,
+                descriptionHTML: "",
+            },
+        }));
+    };
+
+    handleImageChange = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const result = reader.result || "";
+            this.setState((prevState) => ({
+                previewImg: result,
+                formData: {
+                    ...prevState.formData,
+                    image: String(result).split(",")[1] || "",
+                },
+                errors: {
+                    ...prevState.errors,
+                    image: "",
+                },
+            }));
+        };
+        reader.readAsDataURL(file);
+    };
+
+    handleRemoveImage = () => {
+        this.setState((prevState) => ({
+            previewImg: "",
+            formData: {
+                ...prevState.formData,
+                image: "",
+            },
+        }));
+    };
+
+    validateForm = () => {
+        const { formData } = this.state;
+        const errors = {};
+
+        if (!String(formData.name || "").trim()) {
+            errors.name = "Specialty name is required.";
+        }
+
+        if (!String(formData.slug || "").trim()) {
+            errors.slug = "Slug is required.";
+        }
+
+        if (!formData.image) {
+            errors.image = "Specialty image is required.";
+        }
+
+        if (!hasVisibleEditorContent(formData.descriptionHTML)) {
+            errors.descriptionHTML = "Specialty description is required.";
+        }
+
+        this.setState({ errors });
+        return Object.keys(errors).length === 0;
+    };
+
+    handleSaveContent = async () => {
+        if (!this.validateForm() || this.state.isSubmitting) {
+            return;
+        }
+
+        this.setState({ isSubmitting: true });
+
+        try {
+            const { formData } = this.state;
+            const res = await this.props.SaveSpecialty({
+                name: formData.name.trim(),
+                slug: formData.slug.trim(),
+                image: formData.image,
+                descriptionHTML: formData.descriptionHTML,
+                descriptionMarkdown: formData.descriptionMarkdown,
+                isActive: Number(formData.isActive),
+                displayOrder: Number(formData.displayOrder) || 1,
+            });
+
+            if (res && res.errCode === 0) {
                 this.setState({
-                    previewImg: objectUrl,
-                    imageSpecialty: reader.result.split(",")[1],
+                    formData: {
+                        name: "",
+                        slug: "",
+                        descriptionHTML: "",
+                        descriptionMarkdown: "",
+                        image: "",
+                        isActive: "1",
+                        displayOrder: "",
+                    },
+                    previewImg: "",
+                    slugTouched: false,
+                    errors: {},
                 });
-            };
-            reader.readAsDataURL(file);
+                await this.loadNextDisplayOrder();
+            } else {
+                toast.error(res?.errMessage || "Save specialty failed.");
+            }
+        } catch (error) {
+            console.log("SaveSpecialty error", error);
+            toast.error("Save specialty failed.");
+        } finally {
+            this.setState({ isSubmitting: false });
         }
     };
 
-    handleOnchange = (event, id) => {
-        const copyState = { ...this.state }
-        copyState[id] = event.target.value;
-        this.setState({
-            ...copyState
-        })
-    }
-
-
+    handleBack = () => {
+        this.props.history.push("/system/manage-specialty");
+    };
 
     render() {
         return (
-            <div className="manage-specialty-container">
-                <div className="container">
-
-                    <h3 className="title-page">
-                        <FormattedMessage id="manage-specialty.title" />
-                    </h3>
-
-                    {/* --- Form input hàng đầu --- */}
-                    <div className="row align-items-center mb-4">
-                        {/* === Tên chuyên khoa === */}
-                        <div className="col-md-6">
-                            <label className="form-label">
-                                <FormattedMessage id="manage-specialty.name-specialty" />
-
-                            </label>
-                            <input
-                                className="form-control"
-                                type="text"
-                                placeholder="Nhập tên chuyên khoa..."
-                                onChange={(event) => this.handleOnchange(event, 'name')}
-                                value={this.state.name || ''}
-                            />
-                        </div>
-
-                        {/* === Ảnh chuyên khoa === */}
-                        <div className="col-md-6">
-                            <label className="form-label">
-                                <FormattedMessage id="manage-specialty.image-specialty" />
-                            </label>
-                            <div className="d-flex align-items-center">
-                                {/* Nút chọn ảnh */}
-                                <div className="upload-btn-wrapper me-3">
-                                    <input
-                                        type="file"
-                                        id="specialtyImg"
-                                        accept="image/*"
-                                        hidden
-                                        onChange={(e) => this.handleOnChangeImage(e)}
-                                    />
-                                    <label htmlFor="specialtyImg" className="btn btn-outline-primary">
-                                        <FormattedMessage id="user-manage.choose-image" defaultMessage="Chọn ảnh" />
-                                        <i className="fa-solid fa-upload ms-2"></i>
-                                    </label>
-                                </div>
-
-                                {/* Nút xóa ảnh */}
-                                {this.state.previewImg && (
-                                    <button
-                                        type="button"
-                                        className="btn btn-outline-danger me-3"
-                                        onClick={() => this.setState({ previewImg: '', imageSpecialty: '' })}
-                                    >
-                                        <FormattedMessage id="user-manage.remove-image" defaultMessage="Xóa ảnh" />
-                                        <i className="fa-solid fa-xmark ms-2"></i>
-                                    </button>
-                                )}
-
-                                {/* Khu vực xem trước ảnh */}
-                                <div
-                                    className="preview-image-container"
-                                    onClick={() =>
-                                        this.state.previewImg && this.setState({ isOpen: true })
-                                    }
-                                >
-                                    {this.state.previewImg ? (
-                                        <img
-                                            src={this.state.previewImg}
-                                            alt="preview"
-                                            className="preview-image"
-                                        />
-                                    ) : (
-                                        <span className="text-muted">Chưa có ảnh</span>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* --- React Quill Editor --- */}
-                    <div className="manage-specialty-editor mb-4">
-                        <ReactQuill
-                            theme="snow"
-                            value={this.state.descriptionHTML}
-                            onChange={this.handleEditorChange}
-                            modules={editorModules}
-                            formats={editorFormats}
-                            placeholder="Nhập mô tả chuyên khoa..."
-                        />
-                    </div>
-                    <button
-                        className="save-specialty"
-                        onClick={this.handleSaveContent}
-                    >
-                        <FormattedMessage id="admin.manage-doctor.save-info" />
-                    </button>
-                </div>
-            </div>
+            <SpecialtyForm
+                mode="ADD"
+                formData={this.state.formData}
+                previewImg={this.state.previewImg}
+                errors={this.state.errors}
+                isSubmitting={this.state.isSubmitting}
+                onInputChange={this.handleInputChange}
+                onEditorChange={this.handleEditorChange}
+                onImageChange={this.handleImageChange}
+                onRemoveImage={this.handleRemoveImage}
+                onSubmit={this.handleSaveContent}
+                onBack={this.handleBack}
+            />
         );
     }
-
-
 }
 
-const mapStateToProps = state => {
-    return {
-    };
-};
+const mapDispatchToProps = (dispatch) => ({
+    SaveSpecialty: (data) => dispatch(action.SaveSpecialty(data)),
+});
 
-const mapDispatchToProps = dispatch => {
-    return {
-        SaveSpecialty: (data) => dispatch(action.SaveSpecialty(data)),
-
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(AddSpecialty);
+export default connect(null, mapDispatchToProps)(AddSpecialty);
