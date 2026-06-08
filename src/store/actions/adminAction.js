@@ -291,18 +291,22 @@ export const SaveDetailDoctor = (data) => {
     try {
       let res = await postDetailDoctor(data); // Gọi dịch vụ lấy tất cả bác sĩ
       if (res && res.errCode === 0) {
-        toast.success("Save detail doctor success");
+        toast.success("Lưu thông tin bác sĩ thành công!");
         dispatch({
           type: actionTypes.SAVE_DETAIL_DOCTOR,
         });
+        dispatch(fetchAllDoctor());
+        return res;
 
       } else {
-        toast.error("Save detail doctor failed");
+        toast.error(res?.errMessage || "Lưu thông tin bác sĩ thất bại.");
         dispatch(fetchAllDoctorFail());
         dispatch(fetchAllDoctor());
+        return res;
 
       }
     } catch (error) {
+      toast.error("Lưu thông tin bác sĩ thất bại.");
       dispatch(fetchAllDoctorFail());
       dispatch(fetchAllDoctor());
       console.log("SaveDetailDoctor error: ", error);
@@ -417,7 +421,7 @@ export const SaveSpecialtyFail = () => ({
 
 
 // GET ALL SPECIALTY
-export const GetAllSpecialty = () => {
+export const GetAllSpecialty = (options = {}) => {
   return async (dispatch, getState) => {
     try {
       let res = await getAllSpecialty(); // Gọi dịch vụ lấy tất cả chuyên khoa

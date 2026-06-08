@@ -64,8 +64,18 @@ const postDetailDoctor = (data) => {
 };
 
 // Lấy thông tin chi tiết bác sĩ
-const getDetailDoctor = (doctorId) => {
-  return axios.get(`/api/detail-doctor?id=${doctorId}`);
+const getDetailDoctor = (doctorIdOrSlug) => {
+  const value = String(doctorIdOrSlug || "").trim();
+  const queryKey = /^\d+$/.test(value) ? "id" : "slug";
+  return axios.get(`/api/detail-doctor?${queryKey}=${encodeURIComponent(value)}`);
+};
+
+const changeStatusDoctorInfo = (data) => {
+  return axios.put("/api/change-status-doctor-info", data);
+};
+
+const updateDoctorInfoOrder = (items) => {
+  return axios.put("/api/update-doctor-info-order", { items });
 };
 
 // Lấy danh sách bác sĩ liên quan (cùng chuyên khoa)
@@ -122,17 +132,33 @@ const postCancelBookingAppointment = (data) => {
 const postSaveSpecialty = (data) => {
   return axios.post("/api/create-specialty", data);
 };
-const getAllSpecialty = () => {
-  return axios.get("/api/get-specialty");
+const getAllSpecialty = (options = {}) => {
+  const publicOnly = options?.publicOnly ? 1 : "";
+  return axios.get(`/api/get-specialty?publicOnly=${publicOnly}`);
 };
 
 const getDetailSpecialtyById = (id, location) => {
   return axios.get(`/api/get-detail-specialty-by-id?id=${id}&location=${location}`);
 }
 
+const getDetailSpecialtyBySlug = (slug, location) => {
+  return axios.get(
+    `/api/get-detail-specialty-by-id?slug=${encodeURIComponent(slug)}&location=${location}`
+  );
+};
+
 const EditSpecialtyId = (data) => {
   return axios.put("/api/edit-specialty", data);
 };
+
+const ChangeStatusSpecialty = (data) => {
+  return axios.put("/api/change-status-specialty", data);
+};
+
+const updateSpecialtyOrder = (items) => {
+  return axios.put("/api/update-specialty-order", { items });
+};
+
 const DeleteSpecialty = (SpecialtyId) => {
   return axios.delete("/api/delete-specialty", {
     data: {
@@ -152,13 +178,28 @@ const EditClinicId = (data) => {
   return axios.put("/api/edit-clinic", data);
 };
 
-const getAllClinic = () => {
-  return axios.get("/api/get-clinic");
+const getAllClinic = (options = {}) => {
+  const publicOnly = options?.publicOnly ? 1 : "";
+  return axios.get(`/api/get-clinic?publicOnly=${publicOnly}`);
 };
 
 const getDetailClinicById = (id, location) => {
   return axios.get(`/api/get-detail-clinic-by-id?id=${id}&location=${location}`);
 }
+
+const getDetailClinicBySlug = (slug, location) => {
+  return axios.get(
+    `/api/get-detail-clinic-by-id?slug=${encodeURIComponent(slug)}&location=${location}`
+  );
+};
+
+const ChangeStatusClinic = (data) => {
+  return axios.put("/api/change-status-clinic", data);
+};
+
+const updateClinicOrder = (items) => {
+  return axios.put("/api/update-clinic-order", { items });
+};
 
 const DeleteClinic = (ClinicId) => {
   return axios.delete("/api/delete-clinic", {
@@ -296,6 +337,8 @@ export {
   getAllDoctor,
   postDetailDoctor,
   getDetailDoctor,
+  changeStatusDoctorInfo,
+  updateDoctorInfoOrder,
   getRelatedDoctorsService,
   postScheduleDoctor,
   getScheduleDoctor,
@@ -304,9 +347,15 @@ export {
   postSaveSpecialty,
   getAllSpecialty,
   getDetailSpecialtyById,
+  getDetailSpecialtyBySlug,
+  ChangeStatusSpecialty,
+  updateSpecialtyOrder,
   postSaveClinic,
   getAllClinic,
   getDetailClinicById,
+  getDetailClinicBySlug,
+  ChangeStatusClinic,
+  updateClinicOrder,
   postSavePostCategory,
   getAllPostCategory,
   getDetailPostCategoryById,

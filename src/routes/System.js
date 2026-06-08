@@ -5,6 +5,7 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import TableManageUser from "../modules/Admin/ManageUser/TableManageUser";
 import SlideBar from "../components/Layout/SlideBar";
 import Header from "../components/Layout/Header";
+import DoctorTable from "../modules/Admin/ManageUser/DoctorTable";
 import ManageDoctor from "../modules/Admin/ManageUser/ManageDoctor";
 import ManageSpecialty from "../modules/Admin/Specialty/ManageSpecialty";
 import ManageClinic from "../modules/Admin/Clinic/ManageClinic";
@@ -46,6 +47,7 @@ class System extends Component {
             <Switch>
               <Route path="/system/dashboard" component={DashBoard} />
               <Route path="/system/user-manage" component={TableManageUser} />
+              <Route path="/system/doctor-table" component={DoctorTable} />
               <Route path="/system/manage-doctor" component={ManageDoctor} />
               <Route path="/system/manage-clinic" component={ManageClinic} />
               <Route path="/system/add-clinic" component={AddClinic} />
