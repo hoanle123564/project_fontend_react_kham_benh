@@ -1,271 +1,270 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { toast } from "react-toastify";
+import { EditClinicId, getDetailClinicById } from "../../../services/userService";
+import ClinicForm from "./ClinicForm";
 
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import { FormattedMessage } from 'react-intl';
-import './EditClinic.scss';
-import { EditClinicId } from '../../../services/userService';
-import { toast } from 'react-toastify';
+const buildSlug = (value) =>
+    String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[đĐ]/g, "d")
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, " ")
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-+|-+$/g, "");
 
-const editorModules = {
-  toolbar: [
-    [{ header: [1, 2, 3, false] }],
-    ["bold", "italic", "underline", "strike"],
-    [{ list: "ordered" }, { list: "bullet" }],
-    ["blockquote", "code-block"],
-    ["link", "image"],
-    ["clean"],
-  ],
+const buildImageSrc = (image) => {
+    if (!image) return "";
+    return String(image).startsWith("data:") ? image : `data:image/jpeg;base64,${image}`;
 };
 
-const editorFormats = [
-  "header",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "list",
-  "bullet",
-  "blockquote",
-  "code-block",
-  "link",
-  "image",
-];
+const getImagePayload = (image) => {
+    if (!image) return "";
+    if (String(image).startsWith("data:")) {
+        const parts = String(image).split(",");
+        return parts.length > 1 ? parts[1] : "";
+    }
+    return image;
+};
+
+const hasVisibleEditorContent = (value) => {
+    if (!value || typeof value !== "string") return false;
+
+    const plainText = value
+        .replace(/<[^>]*>/g, " ")
+        .replace(/&nbsp;/g, " ")
+        .trim();
+
+    return plainText.length > 0;
+};
 
 class EditClinic extends Component {
-
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             clinicId: null,
-            previewImg: '',
-            name: '',
-            address: '',
-            descriptionHTML: '',
-            descriptionMarkdown: '',
-            imageClinic: '',
-        }
+            formData: {
+                name: "",
+                slug: "",
+                address: "",
+                descriptionHTML: "",
+                descriptionMarkdown: "",
+                image: "",
+                isActive: "1",
+                displayOrder: "",
+            },
+            previewImg: "",
+            slugTouched: false,
+            errors: {},
+            isSubmitting: false,
+        };
     }
 
     componentDidMount() {
-        // Nếu route truyền clinicData => điền tự động
-        const clinicData = this.props.location?.state?.clinicData;
-        if (clinicData) {
-            const image = clinicData.image || '';
-            let previewImg = '';
-            let imageClinic = '';
+        this.loadClinic();
+    }
 
-            if (image) {
-                // nếu là data URL giữ nguyên preview, lấy phần base64 cho imageClinic
-                if (typeof image === 'string' && image.startsWith('data:')) {
-                    previewImg = image;
-                    const parts = image.split(',');
-                    imageClinic = parts.length > 1 ? parts[1] : '';
-                } else {
-                    // nếu backend chỉ trả base64 (no data prefix)
-                    previewImg = `data:image/jpeg;base64,${image}`;
-                    imageClinic = image;
+    loadClinic = async () => {
+        const routeId = this.props.match?.params?.id;
+        const stateItem = this.props.location?.state?.clinicData;
+        let clinicData = stateItem || null;
+
+        if (!clinicData && routeId) {
+            try {
+                const res = await getDetailClinicById(routeId, "ALL");
+                if (res && res.errCode === 0) {
+                    clinicData = Array.isArray(res.data) ? res.data[0] : res.data;
                 }
+            } catch (error) {
+                console.log("loadClinic detail error", error);
             }
-
-            this.setState({
-                clinicId: clinicData.id || null,
-                previewImg,
-                imageClinic,
-                name: clinicData.name || '',
-                address: clinicData.address || '',
-                descriptionHTML: clinicData.descriptionHTML || '',
-                descriptionMarkdown: clinicData.descriptionMarkdown || '',
-            });
         }
-    }
 
-    handleSaveContent = async () => {
-        const payload = {
-            id: this.state.clinicId,
-            name: this.state.name,
-            image: this.state.imageClinic,
-            address: this.state.address,
-            descriptionHTML: this.state.descriptionHTML,
-            descriptionMarkdown: this.state.descriptionMarkdown,
-        };
-
-        try {
-            const res = await EditClinicId(payload);
-            if (res && res.errCode === 0) {
-                toast.success('Clinic updated successfully!');
-                // redirect trở về danh sách clinic
-                this.props.history.push('/system/manage-clinic');
-            } else {
-                toast.error(res?.message || 'Failed to update clinic.');
-            }
-        } catch (error) {
-            console.error('EditClinicId error', error);
-            toast.error('An error occurred while saving.');
+        if (!clinicData) {
+            toast.error("Không tìm thấy phòng khám.");
+            this.handleBack();
+            return;
         }
-    }
-    // Edit HTML
-    handleEditorChange = (value) => {
+
         this.setState({
-            descriptionMarkdown: value,
-            descriptionHTML: value,
+            clinicId: clinicData.id || routeId,
+            previewImg: buildImageSrc(clinicData.image),
+            formData: {
+                name: clinicData.name || "",
+                slug: clinicData.slug || buildSlug(clinicData.name),
+                address: clinicData.address || "",
+                descriptionHTML: clinicData.descriptionHTML || "",
+                descriptionMarkdown: clinicData.descriptionMarkdown || clinicData.descriptionHTML || "",
+                image: getImagePayload(clinicData.image),
+                isActive: String(clinicData.isActive ?? 1),
+                displayOrder: clinicData.displayOrder ?? 1,
+            },
+            slugTouched: false,
         });
     };
 
-    handleOnChangeImage = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const objectUrl = URL.createObjectURL(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                this.setState({
-                    previewImg: objectUrl,
-                    imageClinic: reader.result.split(",")[1],
-                });
+    handleInputChange = (event, field) => {
+        const value = event.target.value;
+
+        this.setState((prevState) => {
+            const nextFormData = {
+                ...prevState.formData,
+                [field]: value,
             };
-            reader.readAsDataURL(file);
+            let nextSlugTouched = prevState.slugTouched;
+
+            if (field === "name" && !prevState.slugTouched) {
+                nextFormData.slug = buildSlug(value);
+            }
+
+            if (field === "slug") {
+                nextFormData.slug = buildSlug(value);
+                nextSlugTouched = true;
+            }
+
+            return {
+                formData: nextFormData,
+                slugTouched: nextSlugTouched,
+                errors: {
+                    ...prevState.errors,
+                    [field]: "",
+                },
+            };
+        });
+    };
+
+    handleEditorChange = (value) => {
+        this.setState((prevState) => ({
+            formData: {
+                ...prevState.formData,
+                descriptionHTML: value,
+                descriptionMarkdown: value,
+            },
+            errors: {
+                ...prevState.errors,
+                descriptionHTML: "",
+            },
+        }));
+    };
+
+    handleImageChange = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const result = reader.result || "";
+            this.setState((prevState) => ({
+                previewImg: result,
+                formData: {
+                    ...prevState.formData,
+                    image: String(result).split(",")[1] || "",
+                },
+                errors: {
+                    ...prevState.errors,
+                    image: "",
+                },
+            }));
+        };
+        reader.readAsDataURL(file);
+    };
+
+    handleRemoveImage = () => {
+        this.setState((prevState) => ({
+            previewImg: "",
+            formData: {
+                ...prevState.formData,
+                image: "",
+            },
+        }));
+    };
+
+    validateForm = () => {
+        const { formData } = this.state;
+        const errors = {};
+
+        if (!String(formData.name || "").trim()) {
+            errors.name = "Vui lòng nhập tên phòng khám.";
+        }
+
+        if (!String(formData.slug || "").trim()) {
+            errors.slug = "Vui lòng nhập slug.";
+        }
+
+        if (!String(formData.address || "").trim()) {
+            errors.address = "Vui lòng nhập địa chỉ phòng khám.";
+        }
+
+        if (!formData.image) {
+            errors.image = "Vui lòng chọn ảnh phòng khám.";
+        }
+
+        if (!hasVisibleEditorContent(formData.descriptionHTML)) {
+            errors.descriptionHTML = "Vui lòng nhập mô tả phòng khám.";
+        }
+
+        this.setState({ errors });
+        return Object.keys(errors).length === 0;
+    };
+
+    handleSaveContent = async () => {
+        if (!this.validateForm() || this.state.isSubmitting) {
+            return;
+        }
+
+        this.setState({ isSubmitting: true });
+
+        try {
+            const { formData, clinicId } = this.state;
+            const res = await EditClinicId({
+                id: clinicId,
+                name: formData.name.trim(),
+                slug: formData.slug.trim(),
+                address: formData.address.trim(),
+                image: formData.image,
+                descriptionHTML: formData.descriptionHTML,
+                descriptionMarkdown: formData.descriptionMarkdown,
+                isActive: Number(formData.isActive),
+                displayOrder: Number(formData.displayOrder) || 1,
+            });
+
+            if (res && res.errCode === 0) {
+                toast.success("Cập nhật phòng khám thành công!");
+                this.handleBack();
+            } else {
+                toast.error(res?.errMessage || "Cập nhật phòng khám thất bại.");
+            }
+        } catch (error) {
+            console.error("EditClinicId error", error);
+            toast.error("Có lỗi xảy ra khi lưu phòng khám.");
+        } finally {
+            this.setState({ isSubmitting: false });
         }
     };
 
-    handleOnchange = (event, id) => {
-        const copyState = { ...this.state }
-        copyState[id] = event.target.value;
-        this.setState({
-            ...copyState
-        })
-    }
-
-
+    handleBack = () => {
+        this.props.history.push("/system/manage-clinic");
+    };
 
     render() {
         return (
-            <div className="manage-specialty-container ">
-                <div className="container">
-                    <h3 className="title-page">
-                        <FormattedMessage id="manage-clinic.title" />
-                    </h3>
-
-                    {/* --- Form input hàng đầu --- */}
-                    <div className="row align-items-center mb-4">
-                        {/* === Tên phòng khám === */}
-                        <div className="col-lg-6">
-                            <label className="form-label">
-                                <FormattedMessage id="manage-clinic.name-clinic" />
-                            </label>
-                            <input
-                                className="form-control"
-                                type="text"
-                                placeholder="Nhập tên phòng khám..."
-                                onChange={(event) => this.handleOnchange(event, 'name')}
-                                value={this.state.name || ''}
-                            />
-                        </div>
-
-                        {/* === Ảnh phòng khám === */}
-                        <div className="col-lg-6">
-                            <h6 className="form-label">
-                                <FormattedMessage id="manage-clinic.image-clinic" />
-                            </h6>
-                            <div className="d-flex align-items-center">
-                                {/* Nút chọn ảnh */}
-                                <div className="upload-btn-wrapper me-3">
-                                    <input
-                                        type="file"
-                                        id="specialtyImg"
-                                        accept="image/*"
-                                        hidden
-                                        onChange={(e) => this.handleOnChangeImage(e)}
-                                    />
-                                    <label htmlFor="specialtyImg" className="btn btn-outline-primary">
-                                        <FormattedMessage id="user-manage.choose-image" defaultMessage="Chọn ảnh" />
-                                        <i className="fa-solid fa-upload ms-2"></i>
-                                    </label>
-                                </div>
-
-                                {/* Nút xóa ảnh */}
-                                {this.state.previewImg && (
-                                    <button
-                                        type="button"
-                                        className="btn btn-outline-danger me-3"
-                                        onClick={() => this.setState({ previewImg: '', imageClinic: '' })}
-                                    >
-                                        <FormattedMessage id="user-manage.remove-image" defaultMessage="Xóa ảnh" />
-                                        <i className="fa-solid fa-xmark ms-2"></i>
-                                    </button>
-                                )}
-
-                                {/* Khu vực xem trước ảnh */}
-                                <div
-                                    className="preview-image-container"
-                                    onClick={() =>
-                                        this.state.previewImg && this.setState({ isOpen: true })
-                                    }
-                                >
-                                    {this.state.previewImg ? (
-                                        <img
-                                            src={this.state.previewImg}
-                                            alt="preview"
-                                            className="preview-image"
-                                        />
-                                    ) : (
-                                        <span className="text-muted">
-                                            <FormattedMessage id="user-manage.no-image" defaultMessage="Chưa có ảnh" />
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="row align-items-center mb-4">
-                        {/* Địa chỉ phòng khám */}
-                        <div className="col-md-6">
-                            <label className="form-label">
-                                <FormattedMessage id="manage-clinic.address-clinic" />
-                            </label>
-                            <input
-                                className="form-control"
-                                type="text"
-                                placeholder="Nhập địa chỉ phòng khám..."
-                                onChange={(event) => this.handleOnchange(event, 'address')}
-                                value={this.state.address || ''}
-                            />
-                        </div>
-                    </div>
-                    {/* --- React Quill Editor --- */}
-                    <div className="manage-specialty-editor mb-4">
-                        <ReactQuill
-                            theme="snow"
-                            value={this.state.descriptionHTML}
-                            onChange={this.handleEditorChange}
-                            modules={editorModules}
-                            formats={editorFormats}
-                            placeholder="Nhập mô tả phòng khám..."
-                        />
-                    </div>
-                    <button
-                        className="save-specialty"
-                        onClick={this.handleSaveContent}
-                    >
-                        <FormattedMessage id="admin.manage-doctor.save-info" />
-                    </button>
-                </div>
-            </div>
+            <ClinicForm
+                mode="EDIT"
+                formData={this.state.formData}
+                previewImg={this.state.previewImg}
+                errors={this.state.errors}
+                isSubmitting={this.state.isSubmitting}
+                onInputChange={this.handleInputChange}
+                onEditorChange={this.handleEditorChange}
+                onImageChange={this.handleImageChange}
+                onRemoveImage={this.handleRemoveImage}
+                onSubmit={this.handleSaveContent}
+                onBack={this.handleBack}
+            />
         );
     }
-
-
 }
 
-const mapStateToProps = state => {
-    return {
-    };
-};
-
-const mapDispatchToProps = dispatch => {
-    return {
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(EditClinic);
+export default EditClinic;

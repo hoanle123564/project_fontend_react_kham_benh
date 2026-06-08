@@ -1,253 +1,536 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-
-import 'react-markdown-editor-lite/lib/index.css';
-import { FormattedMessage } from 'react-intl';
-import './ManageClinic.scss';
-import * as action from "../../../store/actions";
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { FormattedMessage } from "react-intl";
 import { withRouter } from "react-router";
-import { Button } from 'reactstrap';
-import { DeleteClinic } from '../../../services/userService';
-import { toast } from 'react-toastify';
+import { Button } from "reactstrap";
+import { toast } from "react-toastify";
+import * as actions from "../../../store/actions";
+import {
+  ChangeStatusClinic,
+  DeleteClinic,
+  updateClinicOrder,
+} from "../../../services/userService";
+import "./ManageClinic.scss";
+
+const cloneClinics = (clinics = []) =>
+  clinics.map((clinic) => ({
+    ...clinic,
+    displayOrder: Number(clinic.displayOrder) || 0,
+    isActive: Number(clinic.isActive) === 1 ? 1 : 0,
+  }));
+
+const sortClinics = (clinics = []) =>
+  cloneClinics(clinics).sort((a, b) => {
+    const orderA = Number(a.displayOrder) || 0;
+    const orderB = Number(b.displayOrder) || 0;
+
+    if (orderA !== orderB) return orderA - orderB;
+    return Number(a.id) - Number(b.id);
+  });
 
 class ManageClinic extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            ListClinic: [],
-            clinicSearchQuery: '',
-            isOpenPreview: false,
-            previewImg: '',
-            currentPage: 1,
-            clinicsPerPage: 10,
-        }
+  constructor(props) {
+    super(props);
+    this.state = {
+      ListClinic: [],
+      originalClinics: [],
+      clinicSearchQuery: "",
+      isActive: "",
+      isOpenPreview: false,
+      previewImg: "",
+      currentPage: 1,
+      clinicsPerPage: 10,
+      isOrderChanged: false,
+      draggedIndex: null,
+    };
+  }
+
+  componentDidMount() {
+    this.props.getAllClinic();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.clinics !== this.props.clinics) {
+      const sortedClinics = sortClinics(this.props.clinics);
+      this.setState({
+        ListClinic: sortedClinics,
+        originalClinics: cloneClinics(sortedClinics),
+        isOrderChanged: false,
+        draggedIndex: null,
+      });
+    }
+  }
+
+  getImageSrc = (image) => {
+    if (!image) return "";
+
+    if (typeof image === "string" && image.startsWith("data:image")) {
+      return image;
     }
 
-    componentDidMount() {
+    return `data:image/jpeg;base64,${image}`;
+  };
+
+  getFilteredClinics = () => {
+    const { ListClinic, clinicSearchQuery, isActive } = this.state;
+    const searchValue = clinicSearchQuery.trim().toLowerCase();
+
+    return ListClinic.filter((clinic) => {
+      const name = (clinic.name || "").toLowerCase();
+      const slug = (clinic.slug || "").toLowerCase();
+      const matchesSearch =
+        !searchValue ||
+        name.includes(searchValue) ||
+        slug.includes(searchValue);
+      const matchesStatus =
+        isActive === "" || Number(clinic.isActive) === Number(isActive);
+
+      return matchesSearch && matchesStatus;
+    });
+  };
+
+  getPaginatedClinics = () => {
+    const { currentPage, clinicsPerPage } = this.state;
+    const filteredClinics = this.getFilteredClinics();
+    const indexOfLastClinic = currentPage * clinicsPerPage;
+    const indexOfFirstClinic = indexOfLastClinic - clinicsPerPage;
+
+    return filteredClinics.slice(indexOfFirstClinic, indexOfLastClinic);
+  };
+
+  getTotalPages = () => {
+    const total = Math.ceil(this.getFilteredClinics().length / this.state.clinicsPerPage);
+    return total || 1;
+  };
+
+  canEnableDragDrop = () =>
+    !this.state.clinicSearchQuery.trim() && this.state.isActive === "";
+
+  confirmDiscardOrderChanges = () => {
+    if (!this.state.isOrderChanged) return true;
+
+    return window.confirm(
+      "Bạn có thay đổi thứ tự chưa lưu. Tiếp tục sẽ bỏ các thay đổi này, bạn có muốn tiếp tục không?"
+    );
+  };
+
+  resetOrderChanges = (extraState = {}) => {
+    const originalClinics = cloneClinics(this.state.originalClinics);
+    this.setState({
+      ListClinic: originalClinics,
+      isOrderChanged: false,
+      draggedIndex: null,
+      ...extraState,
+    });
+  };
+
+  handleSearchChange = (event) => {
+    const value = event.target.value;
+    if (!this.confirmDiscardOrderChanges()) return;
+
+    this.resetOrderChanges({
+      clinicSearchQuery: value,
+      currentPage: 1,
+    });
+  };
+
+  handleStatusChange = (event) => {
+    const value = event.target.value;
+    if (!this.confirmDiscardOrderChanges()) return;
+
+    this.resetOrderChanges({
+      isActive: value,
+      currentPage: 1,
+    });
+  };
+
+  handleResetFilter = () => {
+    if (!this.confirmDiscardOrderChanges()) return;
+
+    this.resetOrderChanges({
+      clinicSearchQuery: "",
+      isActive: "",
+      currentPage: 1,
+    });
+  };
+
+  handlePageChange = (page) => {
+    if (page < 1 || page > this.getTotalPages()) return;
+    if (!this.confirmDiscardOrderChanges()) return;
+
+    this.resetOrderChanges({ currentPage: page });
+  };
+
+  handleEdit = (clinic) => {
+    if (this.props.history) {
+      this.props.history.push(`/system/edit-clinic/${clinic.id}`, {
+        clinicData: clinic,
+      });
+    }
+  };
+
+  handleDelete = async (clinic) => {
+    if (!window.confirm("Bạn có chắc muốn xóa phòng khám này không?")) return;
+
+    try {
+      const res = await DeleteClinic(clinic.id);
+      if (res?.errCode === 0) {
+        toast.success("Xóa phòng khám thành công!");
         this.props.getAllClinic();
+        return;
+      }
+
+      toast.error(res?.errMessage || "Xóa phòng khám thất bại.");
+    } catch (error) {
+      toast.error("Xóa phòng khám thất bại.");
+    }
+  };
+
+  handleToggleStatus = async (clinic) => {
+    const nextStatus = Number(clinic.isActive) === 1 ? 0 : 1;
+    const currentClinics = cloneClinics(this.state.ListClinic);
+
+    this.setState((prevState) => ({
+      ListClinic: prevState.ListClinic.map((item) =>
+        item.id === clinic.id ? { ...item, isActive: nextStatus } : item
+      ),
+    }));
+
+    try {
+      const res = await ChangeStatusClinic({
+        id: clinic.id,
+        isActive: nextStatus,
+      });
+
+      if (res?.errCode === 0) {
+        toast.success("Cập nhật trạng thái phòng khám thành công!");
+        this.props.getAllClinic();
+        return;
+      }
+
+      toast.error(res?.errMessage || "Cập nhật trạng thái phòng khám thất bại.");
+      this.setState({ ListClinic: currentClinics });
+    } catch (error) {
+      toast.error("Cập nhật trạng thái phòng khám thất bại.");
+      this.setState({ ListClinic: currentClinics });
+    }
+  };
+
+  handleDragStart = (index) => {
+    if (!this.canEnableDragDrop()) return;
+    this.setState({ draggedIndex: index });
+  };
+
+  handleDragOver = (event) => {
+    if (!this.canEnableDragDrop()) return;
+    event.preventDefault();
+  };
+
+  handleDrop = (dropIndex) => {
+    if (!this.canEnableDragDrop()) return;
+
+    const { draggedIndex, ListClinic } = this.state;
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      this.setState({ draggedIndex: null });
+      return;
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (prevProps.clinics !== this.props.clinics) {
-            const nextClinics = this.props.clinics || [];
-            this.setState({
-                ListClinic: nextClinics,
-                currentPage: this.getClampedClinicPage(nextClinics)
-            });
-            return;
-        }
+    const updatedClinics = cloneClinics(ListClinic);
+    const [draggedClinic] = updatedClinics.splice(draggedIndex, 1);
+    updatedClinics.splice(dropIndex, 0, draggedClinic);
+    const reorderedClinics = updatedClinics.map((clinic, index) => ({
+      ...clinic,
+      displayOrder: index + 1,
+    }));
 
-        if (prevState.clinicSearchQuery !== this.state.clinicSearchQuery) {
-            const nextCurrentPage = this.getClampedClinicPage();
-            if (nextCurrentPage !== this.state.currentPage) {
-                this.setState({ currentPage: nextCurrentPage });
-            }
-        }
+    this.setState({
+      ListClinic: reorderedClinics,
+      isOrderChanged: true,
+      draggedIndex: null,
+      currentPage: 1,
+    });
+  };
+
+  handleSaveOrder = async () => {
+    if (!this.state.isOrderChanged) return;
+    if (!window.confirm("Bạn có chắc muốn lưu thứ tự hiện tại không?")) return;
+
+    try {
+      const items = this.state.ListClinic.map((clinic) => ({
+        id: clinic.id,
+        displayOrder: clinic.displayOrder,
+      }));
+      const res = await updateClinicOrder(items);
+
+      if (res?.errCode === 0) {
+        toast.success("Cập nhật STT phòng khám thành công.");
+        this.props.getAllClinic();
+        return;
+      }
+
+      toast.error(res?.errMessage || "Cập nhật STT phòng khám thất bại.");
+    } catch (error) {
+      toast.error("Cập nhật STT phòng khám thất bại.");
     }
+  };
 
-    handlePageChange = (pageNumber) => {
-        this.setState({ currentPage: pageNumber });
-    }
+  handleCancelOrderChanges = () => {
+    this.resetOrderChanges();
+  };
 
-    handleClinicSearchChange = (e) => {
-        this.setState({
-            clinicSearchQuery: e.target.value.trim().toLowerCase(),
-            currentPage: 1
-        });
-    }
+  openPreview = (image) => {
+    const previewImg = this.getImageSrc(image);
+    if (!previewImg) return;
 
-    getFilteredClinics = (clinics = this.state.ListClinic) => {
-        const query = (this.state.clinicSearchQuery || '').trim().toLowerCase();
-        if (!query) return clinics;
+    this.setState({
+      isOpenPreview: true,
+      previewImg,
+    });
+  };
 
-        return clinics.filter((clinic) =>
-            (clinic.name || '').toLowerCase().includes(query)
-        );
-    }
+  closePreview = () => {
+    this.setState({
+      isOpenPreview: false,
+      previewImg: "",
+    });
+  };
 
-    getPaginatedClinics = () => {
-        const { currentPage, clinicsPerPage } = this.state;
-        const filteredClinics = this.getFilteredClinics();
-        const indexOfLastClinic = currentPage * clinicsPerPage;
-        const indexOfFirstClinic = indexOfLastClinic - clinicsPerPage;
+  renderPagination = () => {
+    const totalPages = this.getTotalPages();
+    const { currentPage } = this.state;
 
-        return filteredClinics.slice(indexOfFirstClinic, indexOfLastClinic);
-    }
+    if (totalPages <= 1) return null;
 
-    getClampedClinicPage = (clinics = this.state.ListClinic) => {
-        const { currentPage, clinicsPerPage } = this.state;
-        const filteredClinics = this.getFilteredClinics(clinics);
-        const totalPages = Math.ceil(filteredClinics.length / clinicsPerPage);
+    return (
+      <div className="manage-clinic__pagination">
+        <button
+          type="button"
+          onClick={() => this.handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Trước
+        </button>
+        {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+          <button
+            key={page}
+            type="button"
+            className={page === currentPage ? "active" : ""}
+            onClick={() => this.handlePageChange(page)}
+          >
+            {page}
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={() => this.handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Sau
+        </button>
+      </div>
+    );
+  };
 
-        if (currentPage < 1) return 1;
-        return currentPage > totalPages ? (totalPages > 0 ? totalPages : 1) : currentPage;
-    }
+  render() {
+    const {
+      clinicSearchQuery,
+      isActive,
+      isOpenPreview,
+      previewImg,
+      isOrderChanged,
+    } = this.state;
+    const filteredClinics = this.getFilteredClinics();
+    const paginatedClinics = this.getPaginatedClinics();
+    const canDragDrop = this.canEnableDragDrop();
 
-    handleEdit = (clinic) => {
-        this.props.history.push(`/system/edit-clinic/${clinic.id}`, { clinicData: clinic });
-    }
+    return (
+      <div className="manage-clinic-container">
+        <div className="manage-clinic__header">
+          <h2>
+            <FormattedMessage id="manage-clinic.title" defaultMessage="Manage Clinics" />
+          </h2>
+          <div className="manage-clinic__header-actions">
+            {canDragDrop && isOrderChanged && (
+              <>
+                <Button color="primary" onClick={this.handleSaveOrder}>
+                  Lưu thứ tự
+                </Button>
+                <Button color="secondary" onClick={this.handleCancelOrderChanges}>
+                  Hủy thay đổi
+                </Button>
+              </>
+            )}
+            <Button
+              color="primary"
+              className="btn-add"
+              onClick={() => this.props.history.push("/system/add-clinic")}
+            >
+              <i className="fas fa-plus"></i>
+              <span>
+                <FormattedMessage
+                  id="manage-clinic.add"
+                  defaultMessage="Add Clinic"
+                />
+              </span>
+            </Button>
+          </div>
+        </div>
 
-    handleDelete = async (id) => {
-        await DeleteClinic(id).then((res) => {
-            if (res && res.errCode === 0) {
-                toast.success('Clinic deleted successfully!');
-                this.props.getAllClinic();
-            } else {
-                toast.error('Failed to delete clinic.');
-            }
-        });
-    }
+        <div className="manage-clinic__toolbar">
+          <div className="manage-clinic__search">
+            <i className="fas fa-search"></i>
+            <input
+              type="text"
+              value={clinicSearchQuery}
+              onChange={this.handleSearchChange}
+              placeholder="Tìm kiếm theo tên hoặc slug"
+            />
+          </div>
+          <select
+            className="manage-clinic__status-filter"
+            value={isActive}
+            onChange={this.handleStatusChange}
+          >
+            <option value="">Tất cả trạng thái</option>
+            <option value="1">Đang hiện</option>
+            <option value="0">Đang ẩn</option>
+          </select>
+          <Button color="secondary" outline onClick={this.handleResetFilter}>
+            Đặt lại
+          </Button>
+          <div className="manage-clinic__total">
+            {filteredClinics.length} phòng khám
+          </div>
+        </div>
 
-    openPreview = (img) => {
-        this.setState({ isOpenPreview: true, previewImg: img });
-    }
+        <div className="manage-clinic__table-wrapper mt-4">
+          <table className="manage-clinic__table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>STT</th>
+                <th>Tên phòng khám</th>
+                <th>Slug</th>
+                <th>Địa chỉ</th>
+                <th>Ảnh</th>
+                <th>Hiển thị</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedClinics.length > 0 ? (
+                paginatedClinics.map((clinic) => {
+                  const globalIndex = this.state.ListClinic.findIndex(
+                    (item) => item.id === clinic.id
+                  );
+                  const imageSrc = this.getImageSrc(clinic.image);
 
-    closePreview = () => {
-        this.setState({ isOpenPreview: false, previewImg: '' });
-    }
-
-    handleAddClinic = () => {
-        this.props.history.push(`/system/add-clinic`);
-    }
-
-    render() {
-        const { isOpenPreview, previewImg, currentPage, clinicsPerPage } = this.state;
-        const filteredClinics = this.getFilteredClinics();
-        const currentClinics = this.getPaginatedClinics();
-        const totalPages = Math.ceil(filteredClinics.length / clinicsPerPage);
-
-        return (
-            <div className="manage-clinic-container">
-                <div className="manage-clinic__inner">
-                    <div className="manage-clinic__header">
-                        <h3 className="manage-clinic__title">
-                            <FormattedMessage id="manage-clinic.title" defaultMessage="Manage Clinics" />
-                        </h3>
-
-                        <Button color="primary" onClick={this.handleAddClinic} className="manage-clinic__add-button">
-                            <i className="fa-solid fa-user-plus"></i>
-                            <FormattedMessage id="manage-clinic.add" />
-                        </Button>
-                    </div>
-
-                    <div className="manage-clinic__toolbar">
-                        <FormattedMessage id="clinic-manage.search" defaultMessage="Search clinic by name...">
-                            {(msg) => (
-                                <div className="manage-clinic__search">
-                                    <i className="fa-solid fa-magnifying-glass"></i>
-                                    <input
-                                        type="text"
-                                        placeholder={msg}
-                                        onChange={this.handleClinicSearchChange}
-                                    />
-                                </div>
-                            )}
-                        </FormattedMessage>
-
-                        <div className="manage-clinic__total">
-                            <FormattedMessage
-                                id="clinic-manage.total"
-                                defaultMessage="Total: {count} clinics"
-                                values={{ count: filteredClinics.length }}
-                            />
+                  return (
+                    <tr
+                      key={clinic.id}
+                      draggable={canDragDrop}
+                      onDragStart={() => this.handleDragStart(globalIndex)}
+                      onDragOver={this.handleDragOver}
+                      onDrop={() => this.handleDrop(globalIndex)}
+                      className={canDragDrop ? "manage-clinic__row--draggable" : ""}
+                    >
+                      <td>{clinic.id}</td>
+                      <td className="manage-clinic__order">
+                        {clinic.displayOrder || globalIndex + 1}
+                      </td>
+                      <td className="manage-clinic__name">{clinic.name}</td>
+                      <td className="manage-clinic__slug">{clinic.slug || "-"}</td>
+                      <td className="manage-clinic__address">
+                        {clinic.address || "-"}
+                      </td>
+                      <td>
+                        {imageSrc ? (
+                          <button
+                            type="button"
+                            className="manage-clinic__image prevent-row-drag"
+                            onClick={() => this.openPreview(clinic.image)}
+                          >
+                            <img src={imageSrc} alt={clinic.name || "clinic"} />
+                          </button>
+                        ) : (
+                          <span className="manage-clinic__empty-image">Chưa có ảnh</span>
+                        )}
+                      </td>
+                      <td>
+                        <div className="form-check form-switch prevent-row-drag">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            role="switch"
+                            checked={Number(clinic.isActive) === 1}
+                            onChange={() => this.handleToggleStatus(clinic)}
+                          />
                         </div>
-                    </div>
-
-                    <div className="manage-clinic__table-card">
-                        <div className="manage-clinic__table-scroll">
-                            <table className="manage-clinic__table">
-                                <thead>
-                                    <tr>
-                                        <th><FormattedMessage id="clinic-manage.id" defaultMessage="ID" /></th>
-                                        <th><FormattedMessage id="clinic-manage.name" defaultMessage="Name" /></th>
-                                        <th><FormattedMessage id="clinic-manage.image" defaultMessage="Image" /></th>
-                                        <th><FormattedMessage id="clinic-manage.action" defaultMessage="Action" /></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {currentClinics && currentClinics.length > 0 ? (
-                                        currentClinics.map((c, index) => (
-                                            <tr key={c.id}>
-                                                <td>{index + 1}</td>
-                                                <td className="manage-clinic__name">{c.name}</td>
-                                                <td>
-                                                    {c.image ? (
-                                                        <img
-                                                            className="manage-clinic__thumbnail"
-                                                            src={c.image.startsWith('data:') ? c.image : `data:image/jpeg;base64,${c.image}`}
-                                                            alt={c.name}
-                                                            onClick={() => this.openPreview(c.image.startsWith('data:') ? c.image : `data:image/jpeg;base64,${c.image}`)}
-                                                        />
-                                                    ) : (
-                                                        <span className="manage-clinic__muted">
-                                                            <FormattedMessage id="clinic-manage.no-image" defaultMessage="No image" />
-                                                        </span>
-                                                    )}
-                                                </td>
-                                                <td>
-                                                    <div className="manage-clinic__actions">
-                                                        <button className="manage-clinic__action-button manage-clinic__action-button--edit" onClick={() => this.handleEdit(c)}>
-                                                            <i className="fas fa-edit"></i>
-                                                        </button>
-                                                        <button className="manage-clinic__action-button manage-clinic__action-button--delete" onClick={() => this.handleDelete(c.id)}>
-                                                            <i className="fa-solid fa-trash"></i>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="4" className="manage-clinic__empty">
-                                                <FormattedMessage id="clinic-manage.no-clinics" defaultMessage="No clinics found." />
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                      </td>
+                      <td>
+                        <div className="manage-clinic__actions prevent-row-drag">
+                          <button
+                            type="button"
+                            className="btn-action btn-edit"
+                            onClick={() => this.handleEdit(clinic)}
+                            title="Sửa phòng khám"
+                          >
+                            <i className="fas fa-pencil-alt"></i>
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-action btn-delete"
+                            onClick={() => this.handleDelete(clinic)}
+                            title="Xóa phòng khám"
+                          >
+                            <i className="fas fa-trash"></i>
+                          </button>
                         </div>
-                    </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="8" className="manage-clinic__empty">
+                    Không có phòng khám phù hợp.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
-                    {totalPages > 1 && (
-                        <nav className="manage-clinic__pagination">
-                            <ul>
-                                {Array.from({ length: totalPages }, (_, i) => (
-                                    <li
-                                        key={i}
-                                        className={currentPage === i + 1 ? 'active' : ''}
-                                    >
-                                        <button
-                                            onClick={() => this.handlePageChange(i + 1)}
-                                        >
-                                            {i + 1}
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
-                        </nav>
-                    )}
+        {this.renderPagination()}
 
-                    {isOpenPreview && (
-                        <div className="manage-clinic__preview-backdrop" onClick={this.closePreview}>
-                            <img src={previewImg} alt="preview" />
-                        </div>
-                    )}
-                </div>
+        {isOpenPreview && (
+          <div className="manage-clinic__preview" onClick={this.closePreview}>
+            <div
+              className="manage-clinic__preview-inner"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="manage-clinic__preview-close"
+                onClick={this.closePreview}
+              >
+                &times;
+              </button>
+              <img src={previewImg} alt="clinic preview" />
             </div>
-        );
-    }
+          </div>
+        )}
+      </div>
+    );
+  }
 }
 
-const mapStateToProps = state => {
-    return {
-        clinics: state.admin.AllClinic
-    };
-};
+const mapStateToProps = (state) => ({
+  clinics: state.admin.AllClinic,
+});
 
-const mapDispatchToProps = dispatch => {
-    return {
-        getAllClinic: () => dispatch(action.GetAllClinic()),
-    };
-};
+const mapDispatchToProps = (dispatch) => ({
+  getAllClinic: () => dispatch(actions.GetAllClinic()),
+});
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ManageClinic));
