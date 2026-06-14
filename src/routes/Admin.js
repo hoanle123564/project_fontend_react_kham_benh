@@ -17,6 +17,10 @@ class Admin extends Component {
             linkToRedirect = "/system/user-manage";
         }
 
+        if (isLoggedIn && userInfo.roleId === "R4") {
+            linkToRedirect = "/system/manage-clinic";
+        }
+
         // Nếu là doctor → vào trang doctor
         if (isLoggedIn && userInfo.roleId === "R2") {
             linkToRedirect = "/doctor/manage-schedule-private";

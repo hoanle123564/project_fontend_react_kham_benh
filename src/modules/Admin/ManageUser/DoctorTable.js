@@ -49,12 +49,17 @@ class DoctorTable extends Component {
 
   componentDidMount() {
     this.props.fetchAllDoctor();
+    this.props.GetAllClinic();
     this.props.GetAllSpecialty();
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.ListDoctor !== this.props.ListDoctor) {
-      const sortedDoctors = sortDoctors(this.props.ListDoctor);
+    if (
+      prevProps.ListDoctor !== this.props.ListDoctor ||
+      prevProps.ListClinic !== this.props.ListClinic ||
+      prevProps.adminInfo !== this.props.adminInfo
+    ) {
+      const sortedDoctors = sortDoctors(this.getVisibleDoctors());
       this.setState({
         ListDoctor: sortedDoctors,
         originalDoctors: cloneDoctors(sortedDoctors),
@@ -97,8 +102,33 @@ class DoctorTable extends Component {
     return total || 1;
   };
 
+  isClinicManager = () => this.props.adminInfo?.roleId === "R4";
+
+  getManagedClinicIds = () => {
+    if (!this.isClinicManager()) {
+      return null;
+    }
+
+    return (this.props.ListClinic || [])
+      .filter((clinic) => Number(clinic.managerUserId) === Number(this.props.adminInfo?.id))
+      .map((clinic) => Number(clinic.id));
+  };
+
+  getVisibleDoctors = () => {
+    const managedClinicIds = this.getManagedClinicIds();
+    if (!managedClinicIds) {
+      return this.props.ListDoctor || [];
+    }
+
+    return (this.props.ListDoctor || []).filter((doctor) =>
+      managedClinicIds.includes(Number(doctor.clinicId))
+    );
+  };
+
   canEnableDragDrop = () =>
-    !this.state.doctorSearchQuery.trim() && !this.state.specialtyFilter;
+    !this.isClinicManager() &&
+    !this.state.doctorSearchQuery.trim() &&
+    !this.state.specialtyFilter;
 
 
   confirmDiscardOrderChanges = () => {
@@ -313,6 +343,7 @@ class DoctorTable extends Component {
     const filteredDoctors = this.getFilteredDoctors();
     const paginatedDoctors = this.getPaginatedDoctors();
     const canDragDrop = this.canEnableDragDrop();
+    const isClinicManager = this.isClinicManager();
 
     return (
       <div className="doctor-table-container">
@@ -438,6 +469,7 @@ class DoctorTable extends Component {
                               className="form-check-input"
                               type="checkbox"
                               role="switch"
+                              disabled={isClinicManager}
                               checked={Number(doctor.isActive) === 1}
                               onChange={() => this.handleToggleStatus(doctor)}
                             />
@@ -481,10 +513,13 @@ class DoctorTable extends Component {
 const mapStateToProps = (state) => ({
   ListDoctor: state.admin.AllDoctor,
   ListSpecialty: state.admin.specialty,
+  ListClinic: state.admin.AllClinic,
+  adminInfo: state.adminAuth.adminInfo,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   fetchAllDoctor: () => dispatch(actions.fetchAllDoctor()),
+  GetAllClinic: () => dispatch(actions.GetAllClinic()),
   GetAllSpecialty: () => dispatch(actions.GetAllSpecialty()),
 });
 

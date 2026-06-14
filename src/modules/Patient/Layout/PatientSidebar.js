@@ -1,27 +1,13 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
+import { FormattedMessage } from "react-intl";
 import { withRouter, NavLink } from "react-router-dom";
+import { patientMenu } from "../../../components/Layout/menuApp";
 import "./PatientSidebar.scss";
 
 class PatientSidebar extends Component {
     render() {
-        const { language } = this.props;
-        const isVI = language === "vi";
-
-        const navItems = [
-            {
-                icon: "fas fa-user-circle",
-                labelVI: "Hồ sơ cá nhân",
-                labelEN: "My Profile",
-                path: "/patient-profile",
-            },
-            {
-                icon: "fas fa-calendar-alt",
-                labelVI: "Lịch hẹn của tôi",
-                labelEN: "My Appointments",
-                path: "/appointments",
-            },
-        ];
+        const menuGroup = patientMenu[0] || {};
+        const navItems = menuGroup.menus || [];
 
         return (
             <aside className="patient-sidebar">
@@ -29,12 +15,14 @@ class PatientSidebar extends Component {
                     {navItems.map((item, index) => (
                         <li className="patient-sidebar-item" key={index}>
                             <NavLink
-                                to={item.path}
+                                to={item.link}
                                 exact
                                 activeClassName="active"
                             >
                                 <i className={item.icon}></i>
-                                <span>{isVI ? item.labelVI : item.labelEN}</span>
+                                <span>
+                                    <FormattedMessage id={item.name} />
+                                </span>
                             </NavLink>
                         </li>
                     ))}
@@ -44,8 +32,4 @@ class PatientSidebar extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    language: state.app.language,
-});
-
-export default withRouter(connect(mapStateToProps)(PatientSidebar));
+export default withRouter(PatientSidebar);

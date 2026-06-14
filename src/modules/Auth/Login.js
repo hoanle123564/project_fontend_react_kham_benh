@@ -89,6 +89,12 @@ class Login extends Component {
                 return;
             }
 
+            if (data.user.roleId === "R4") {
+                this.props.adminLoginSuccess(authPayload);
+                this.props.navigate("/system/manage-clinic");
+                return;
+            }
+
             if (data.user.roleId === "R2") {
                 this.props.doctorLoginSuccess(authPayload);
                 this.props.navigate("/doctor/manage-schedule-private");

@@ -50,8 +50,11 @@ class ManageClinic extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.clinics !== this.props.clinics) {
-      const sortedClinics = sortClinics(this.props.clinics);
+    if (
+      prevProps.clinics !== this.props.clinics ||
+      prevProps.adminInfo !== this.props.adminInfo
+    ) {
+      const sortedClinics = sortClinics(this.getVisibleClinics(this.props.clinics));
       this.setState({
         ListClinic: sortedClinics,
         originalClinics: cloneClinics(sortedClinics),
@@ -69,6 +72,18 @@ class ManageClinic extends Component {
     }
 
     return `data:image/jpeg;base64,${image}`;
+  };
+
+  isClinicManager = () => this.props.adminInfo?.roleId === "R4";
+
+  getVisibleClinics = (clinics = []) => {
+    if (!this.isClinicManager()) {
+      return clinics || [];
+    }
+
+    return (clinics || []).filter(
+      (clinic) => Number(clinic.managerUserId) === Number(this.props.adminInfo?.id)
+    );
   };
 
   getFilteredClinics = () => {
@@ -104,7 +119,9 @@ class ManageClinic extends Component {
   };
 
   canEnableDragDrop = () =>
-    !this.state.clinicSearchQuery.trim() && this.state.isActive === "";
+    !this.isClinicManager() &&
+    !this.state.clinicSearchQuery.trim() &&
+    this.state.isActive === "";
 
   confirmDiscardOrderChanges = () => {
     if (!this.state.isOrderChanged) return true;
@@ -342,6 +359,7 @@ class ManageClinic extends Component {
     const filteredClinics = this.getFilteredClinics();
     const paginatedClinics = this.getPaginatedClinics();
     const canDragDrop = this.canEnableDragDrop();
+    const isClinicManager = this.isClinicManager();
 
     return (
       <div className="manage-clinic-container">
@@ -360,19 +378,21 @@ class ManageClinic extends Component {
                 </Button>
               </>
             )}
-            <Button
-              color="primary"
-              className="btn-add"
-              onClick={() => this.props.history.push("/system/add-clinic")}
-            >
-              <i className="fas fa-plus"></i>
-              <span>
-                <FormattedMessage
-                  id="manage-clinic.add"
-                  defaultMessage="Add Clinic"
-                />
-              </span>
-            </Button>
+            {!isClinicManager && (
+              <Button
+                color="primary"
+                className="btn-add"
+                onClick={() => this.props.history.push("/system/add-clinic")}
+              >
+                <i className="fas fa-plus"></i>
+                <span>
+                  <FormattedMessage
+                    id="manage-clinic.add"
+                    defaultMessage="Add Clinic"
+                  />
+                </span>
+              </Button>
+            )}
           </div>
         </div>
 
@@ -462,6 +482,7 @@ class ManageClinic extends Component {
                             className="form-check-input"
                             type="checkbox"
                             role="switch"
+                            disabled={isClinicManager}
                             checked={Number(clinic.isActive) === 1}
                             onChange={() => this.handleToggleStatus(clinic)}
                           />
@@ -477,6 +498,7 @@ class ManageClinic extends Component {
                           >
                             <i className="fas fa-pencil-alt"></i>
                           </button>
+                          {!isClinicManager && (
                           <button
                             type="button"
                             className="btn-action btn-delete"
@@ -485,6 +507,7 @@ class ManageClinic extends Component {
                           >
                             <i className="fas fa-trash"></i>
                           </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -527,6 +550,7 @@ class ManageClinic extends Component {
 
 const mapStateToProps = (state) => ({
   clinics: state.admin.AllClinic,
+  adminInfo: state.adminAuth.adminInfo,
 });
 
 const mapDispatchToProps = (dispatch) => ({

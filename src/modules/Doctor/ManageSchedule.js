@@ -128,13 +128,26 @@ class ManageSchedule extends Component {
 
   componentDidMount() {
     this.props.fetchAllDoctor();
+    this.props.GetAllClinic();
     this.props.fetchAllHour();
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.ListDoctor !== this.props.ListDoctor) {
-      const ListDoctor = this.buildDataSelect(this.props.ListDoctor);
-      this.setState({ ListDoctor });
+    if (
+      prevProps.ListDoctor !== this.props.ListDoctor ||
+      prevProps.ListClinic !== this.props.ListClinic ||
+      prevProps.userInfo !== this.props.userInfo
+    ) {
+      const ListDoctor = this.buildDataSelect(this.getVisibleDoctors());
+      const selectedDoctor = ListDoctor.find(
+        (doctor) => doctor.value === this.state.selectDoctor?.value
+      );
+
+      this.setState({
+        ListDoctor,
+        selectDoctor: selectedDoctor || "",
+        registeredSchedule: selectedDoctor ? this.state.registeredSchedule : [],
+      });
     }
 
     if (prevProps.AllScheduleTime !== this.props.AllScheduleTime) {
@@ -142,6 +155,29 @@ class ManageSchedule extends Component {
       this.setState({ AllTime: sorted });
     }
   }
+
+  isClinicManager = () => this.props.userInfo?.roleId === "R4";
+
+  getManagedClinicIds = () => {
+    if (!this.isClinicManager()) {
+      return null;
+    }
+
+    return (this.props.ListClinic || [])
+      .filter((clinic) => Number(clinic.managerUserId) === Number(this.props.userInfo?.id))
+      .map((clinic) => Number(clinic.id));
+  };
+
+  getVisibleDoctors = () => {
+    const managedClinicIds = this.getManagedClinicIds();
+    if (!managedClinicIds) {
+      return this.props.ListDoctor || [];
+    }
+
+    return (this.props.ListDoctor || []).filter((doctor) =>
+      managedClinicIds.includes(Number(doctor.clinicId))
+    );
+  };
 
   render() {
     const {
@@ -263,10 +299,12 @@ const mapStateToProps = (state) => ({
   userInfo: state.adminAuth.adminInfo,
   AllScheduleTime: state.admin.AllTime,
   ListDoctor: state.admin.AllDoctor,
+  ListClinic: state.admin.AllClinic,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   fetchAllDoctor: () => dispatch(action.fetchAllDoctor()),
+  GetAllClinic: () => dispatch(action.GetAllClinic()),
   fetchAllHour: () => dispatch(action.fetchAllHour()),
 });
 

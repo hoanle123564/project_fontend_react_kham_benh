@@ -1,12 +1,12 @@
 import actionTypes from "./actionTypes";
-import { handleLogin } from "../../services/userService";
+import { handleLoginAPI } from "../../services/userService";
 
 export const adminLogin = (email, password) => {
     return async (dispatch) => {
         try {
-            const res = await handleLogin({ email, password });
+            const res = await handleLoginAPI(email, password);
 
-            if (res && res.errCode === 0 && res.user.roleId === "R1") {
+            if (res && res.errCode === 0 && ["R1", "R4"].includes(res.user.roleId)) {
                 dispatch({
                     type: actionTypes.ADMIN_LOGIN_SUCCESS,
                     data: res

@@ -29,15 +29,18 @@ const ROUTE_MAP = {
     '/system': { vi: 'Dashboard', en: 'Dashboard' },
     '/system/dashboard': { vi: 'Dashboard', en: 'Dashboard' },
     '/system/user-manage': { vi: 'Quản lý người dùng', en: 'Manage Users' },
+    '/system/medical-record': { vi: 'Hồ sơ bệnh án', en: 'Medical Records' },
     '/system/manage-doctor': { vi: 'Quản lý bác sĩ', en: 'Manage Doctors' },
     '/system/manage-specialty': { vi: 'Quản lý chuyên khoa', en: 'Manage Specialties' },
     '/system/add-specialty': { vi: 'Thêm chuyên khoa', en: 'Add Specialty' },
     '/system/manage-clinic': { vi: 'Quản lý cơ sở y tế', en: 'Manage Clinics' },
+    '/system/manage-clinic-department': { vi: 'Quản lý khoa', en: 'Manage Departments' },
     '/system/add-clinic': { vi: 'Thêm cơ sở y tế', en: 'Add Clinic' },
     '/system/manage-post': { vi: 'Quản lý bài viết', en: 'Manage Posts' },
     '/system/add-post': { vi: 'Thêm bài viết', en: 'Add Post' },
     '/system/manage-post-category': { vi: 'Quản lý danh mục bài viết', en: 'Manage Post Categories' },
     '/system/manage-schedule': { vi: 'Quản lý lịch làm việc', en: 'Manage Schedule' },
+    '/system/list-appointment': { vi: 'Lịch đặt khám', en: 'Appointments' },
 
     // Dynamic admin
     '/system/edit-clinic': { vi: 'Chỉnh sửa cơ sở y tế', en: 'Edit Clinic' },
@@ -47,7 +50,8 @@ const ROUTE_MAP = {
     // === DOCTOR (/doctor) ===
     '/doctor': { vi: 'Dashboard', en: 'Dashboard' },
     '/doctor/manage-schedule-private': { vi: 'Lịch làm việc của tôi', en: 'My Schedule' },
-    '/doctor/manage-patient': { vi: 'Danh sách bệnh nhân', en: 'Patient List' },
+    '/doctor/manage-patient': { vi: 'Quản lý bệnh nhân', en: 'Manage Patients' },
+    '/doctor/appointment': { vi: 'Danh sách bệnh nhân', en: 'Patient List' },
     '/doctor/list-appointment': { vi: 'Tất cả lịch hẹn', en: 'All Appointments' },
 };
 

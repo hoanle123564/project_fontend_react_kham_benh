@@ -19,6 +19,11 @@ export const adminMenu = [
         icon: "bi bi-people-fill",
         link: "/system/user-manage",
       },
+      {
+        name: "menu.admin.medical-record",
+        icon: "bi bi-journal-medical",
+        link: "/system/medical-record",
+      },
     ],
   },
   // bác sĩ
@@ -50,6 +55,11 @@ export const adminMenu = [
         name: "menu.admin.manage-clinic",
         icon: "bi bi-hospital",
         link: "/system/manage-clinic",
+      },
+      {
+        name: "menu.admin.manage-clinic-department",
+        icon: "bi bi-diagram-3",
+        link: "/system/manage-clinic-department",
       },
       {
         name: "menu.admin.add-clinic",
@@ -102,9 +112,9 @@ export const doctorMenu = [
         link: "/doctor/manage-schedule-private",
       },
       {
-        name: "menu.doctor.manage-patient",
+        name: "menu.doctor.appointment",
         icon: "bi bi-person-lines-fill",
-        link: "/doctor/manage-patient",
+        link: "/doctor/appointment",
       },
     ],
   },
@@ -116,6 +126,22 @@ export const doctorMenu = [
         name: "menu.doctor.history-appointment",
         icon: "bi bi-clock-history",
         link: "/doctor/list-appointment",
+      },
+    ],
+  },
+  // hồ sơ
+  {
+    name: "menu.doctor.profile",
+    menus: [
+      {
+        name: "menu.doctor.medical-record",
+        icon: "bi bi-journal-medical",
+        link: "/doctor/medical-record",
+      },
+      {
+        name: "menu.doctor.manage-patient",
+        icon: "bi bi-person-badge",
+        link: "/doctor/manage-patient",
       },
     ],
   },
@@ -135,4 +161,65 @@ export const doctorMenu = [
       },
     ]
   }
+];
+
+export const clinicManagerMenu = [
+  {
+    name: "menu.clinic-manager.clinic",
+    menus: [
+      {
+        name: "menu.clinic-manager.my-clinic",
+        icon: "bi bi-hospital",
+        link: "/system/manage-clinic",
+      },
+      {
+        name: "menu.clinic-manager.departments",
+        icon: "bi bi-diagram-3",
+        link: "/system/manage-clinic-department",
+      },
+    ],
+  },
+  {
+    name: "menu.clinic-manager.doctor",
+    menus: [
+      {
+        name: "menu.clinic-manager.doctors",
+        icon: "bi bi-people",
+        link: "/system/doctor-table",
+      },
+      {
+        name: "menu.clinic-manager.manage-doctor",
+        icon: "bi bi-person-badge",
+        link: "/system/manage-doctor",
+      },
+      {
+        name: "menu.clinic-manager.schedule",
+        icon: "bi bi-calendar3",
+        link: "/system/manage-schedule",
+      },
+      {
+        name: "menu.clinic-manager.appointments",
+        icon: "bi bi-person-lines-fill",
+        link: "/system/list-appointment",
+      },
+    ],
+  },
+];
+
+export const patientMenu = [
+  {
+    name: "menu.patient.account",
+    menus: [
+      {
+        name: "menu.patient.account",
+        icon: "fas fa-user-circle",
+        link: "/patient-profile",
+      },
+      {
+        name: "menu.patient.appointments",
+        icon: "fas fa-calendar-alt",
+        link: "/appointments",
+      },
+    ],
+  },
 ];

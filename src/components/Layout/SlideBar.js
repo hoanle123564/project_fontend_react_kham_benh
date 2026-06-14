@@ -1,18 +1,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { adminMenu, doctorMenu } from "./menuApp";
+import { adminMenu, clinicManagerMenu, doctorMenu } from "./menuApp";
 import Navigator from "../Navigator";
 import "./SlideBar.scss";
 
-import vietnam from "../../assets/flag/vietnam.png";
-import united from "../../assets/flag/united_kingdom.png";
 import LifeCare from "../../assets/logo3.png";
 import LifeCare_Collapse from "../../assets/Medical_Health_Logo.svg";
 
 import { jwtDecode } from "jwt-decode";
-import { languages } from "../../utils/constant";
-import { FormattedMessage } from "react-intl";
 
 class SlideBar extends Component {
   state = {
@@ -60,6 +56,7 @@ class SlideBar extends Component {
 
     let menu = [];
     if (roleId === "R1") menu = adminMenu;
+    if (roleId === "R4") menu = clinicManagerMenu;
     if (roleId === "R2") menu = doctorMenu;
 
     this.setState({ menuApp: menu });
@@ -78,21 +75,6 @@ class SlideBar extends Component {
   };
 
   render() {
-    const { language, adminInfo, doctorInfo } = this.props;
-
-    const flagSrc = language === languages.VI ? vietnam : united;
-    const path = window.location.pathname;
-
-    let displayName = "";
-
-    if (path.includes("/system") && adminInfo) {
-      displayName = `${adminInfo.firstName} ${adminInfo.lastName}`;
-    }
-
-    if (path.includes("/doctor") && doctorInfo) {
-      displayName = `${doctorInfo.firstName} ${doctorInfo.lastName}`;
-    }
-
     return (
       <div className={`sidebar-container ${this.props.isCollapsed ? 'collapsed' : ''}`}>
         <div className="container">
@@ -136,13 +118,8 @@ class SlideBar extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  language: state.app.language,
-
   adminToken: state.adminAuth.token,
   doctorToken: state.doctor.token,
-
-  adminInfo: state.adminAuth.adminInfo,
-  doctorInfo: state.doctor.doctorInfo,
 });
 
 const mapDispatchToProps = (dispatch) => ({

@@ -9,7 +9,9 @@ import DoctorTable from "../modules/Admin/ManageUser/DoctorTable";
 import ManageDoctor from "../modules/Admin/ManageUser/ManageDoctor";
 import ManageSpecialty from "../modules/Admin/Specialty/ManageSpecialty";
 import ManageClinic from "../modules/Admin/Clinic/ManageClinic";
+import ManageClinicDepartment from "../modules/Admin/ClinicDepartment/ManageClinicDepartment";
 import ManageSchedule from "../modules/Doctor/ManageSchedule";
+import ListAppointment from "../modules/Doctor/ListAppointment";
 import AddClinic from "../modules/Admin/Clinic/AddClinic";
 import EditClinic from "../modules/Admin/Clinic/EditClinic";
 import AddSpecialty from "../modules/Admin/Specialty/AddSpecialty";
@@ -50,9 +52,11 @@ class System extends Component {
               <Route path="/system/doctor-table" component={DoctorTable} />
               <Route path="/system/manage-doctor" component={ManageDoctor} />
               <Route path="/system/manage-clinic" component={ManageClinic} />
+              <Route path="/system/manage-clinic-department" component={ManageClinicDepartment} />
               <Route path="/system/add-clinic" component={AddClinic} />
               <Route path="/system/edit-clinic/:id" component={EditClinic} />
               <Route path="/system/manage-schedule" component={ManageSchedule} />
+              <Route path="/system/list-appointment" component={ListAppointment} />
               <Route path="/system/manage-specialty" component={ManageSpecialty} />
               <Route path="/system/add-specialty" component={AddSpecialty} />
               <Route path="/system/edit-specialty/:id" component={EditSpecialty} />
