@@ -1,0 +1,264 @@
+.manage-clinic-department-container {
+    --department-bg: #f4f8fb;
+    --department-card: #ffffff;
+    --department-border: #d9e6ee;
+    --department-text: #123047;
+    --department-muted: #6c8190;
+    --department-navy: #0b3d5d;
+    --department-teal: #0f8f8c;
+    --department-teal-soft: #e6f6f4;
+    --department-warning: #b7791f;
+    --department-shadow: 0 18px 40px rgba(13, 52, 78, 0.09);
+
+    min-height: 100%;
+    padding: 28px 24px 96px;
+    background: var(--department-bg);
+    color: var(--department-text);
+
+    .manage-clinic-department__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 20px;
+
+        h2 {
+            margin: 0;
+            color: var(--department-navy);
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        p {
+            margin: 6px 0 0;
+            color: var(--department-muted);
+            font-size: 14px;
+        }
+    }
+
+    .manage-clinic-department__add {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        min-height: 42px;
+        padding: 0 16px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--department-teal) !important;
+        color: #ffffff !important;
+        font-weight: 700;
+        box-shadow: 0 10px 22px rgba(15, 143, 140, 0.2);
+    }
+
+    .manage-clinic-department__toolbar {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .manage-clinic-department__filter {
+        min-width: 280px;
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--department-navy);
+            font-weight: 700;
+        }
+    }
+
+    .manage-clinic-department__select {
+        width: 100%;
+        min-height: 44px;
+        padding: 0 12px;
+        border: 1px solid var(--department-border);
+        border-radius: 8px;
+        background: var(--department-card);
+        color: var(--department-text);
+        outline: 0;
+
+        &:focus {
+            border-color: var(--department-teal);
+            box-shadow: 0 0 0 3px rgba(15, 143, 140, 0.14);
+        }
+    }
+
+    .manage-clinic-department__summary {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 44px;
+        padding: 0 14px;
+        border-radius: 8px;
+        background: var(--department-teal-soft);
+        color: var(--department-navy);
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .manage-clinic-department__table-card {
+        overflow: hidden;
+        background: var(--department-card);
+        border: 1px solid var(--department-border);
+        border-radius: 8px;
+        box-shadow: var(--department-shadow);
+    }
+
+    .manage-clinic-department__table-scroll {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .manage-clinic-department__table {
+        width: 100%;
+        min-width: 980px;
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+
+        th,
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--department-border);
+            text-align: center;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        th {
+            background: var(--department-navy);
+            color: #ffffff;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        tbody tr:hover {
+            background: #f7fbfd;
+        }
+    }
+
+    .manage-clinic-department__name,
+    .manage-clinic-department__description {
+        text-align: left;
+    }
+
+    .manage-clinic-department__name {
+        color: #244b62;
+        font-weight: 700;
+    }
+
+    .manage-clinic-department__description {
+        max-width: 280px;
+        color: var(--department-muted);
+    }
+
+    .manage-clinic-department__actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .manage-clinic-department__action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.18s ease;
+
+        &:hover {
+            transform: translateY(-1px);
+        }
+    }
+
+    .manage-clinic-department__action--edit {
+        background: #fff7e7;
+        border-color: #f2d49d;
+        color: var(--department-warning);
+    }
+
+    .manage-clinic-department__empty {
+        padding: 34px 16px;
+        color: var(--department-muted);
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        padding: 20px 14px 72px;
+
+        .manage-clinic-department__header,
+        .manage-clinic-department__toolbar {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .manage-clinic-department__header h2 {
+            font-size: 24px;
+        }
+
+        .manage-clinic-department__add,
+        .manage-clinic-department__filter,
+        .manage-clinic-department__summary {
+            width: 100%;
+        }
+    }
+}
+
+.clinic-department-modal {
+    .modal-content {
+        border: 1px solid #d9e6ee;
+        border-radius: 8px;
+        box-shadow: 0 18px 40px rgba(13, 52, 78, 0.16);
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #d9e6ee;
+        color: #0b3d5d;
+        font-weight: 700;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #d9e6ee;
+    }
+
+    .form-label {
+        font-weight: 700;
+        color: #123047;
+    }
+
+    .form-control {
+        min-height: 42px;
+        border-color: #d9e6ee;
+        border-radius: 8px;
+
+        &:focus {
+            border-color: #0f8f8c;
+            box-shadow: 0 0 0 3px rgba(15, 143, 140, 0.14);
+        }
+    }
+
+    textarea.form-control {
+        min-height: 110px;
+        resize: vertical;
+    }
+
+    .input-error {
+        border-color: #cf3f4a !important;
+        box-shadow: 0 0 0 3px rgba(207, 63, 74, 0.12);
+    }
+
+    .error-text {
+        margin-top: 4px;
+        margin-left: 2px;
+        color: #cf3f4a;
+        font-size: 13px;
+    }
+}
