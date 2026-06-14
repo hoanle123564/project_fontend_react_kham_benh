@@ -2,46 +2,29 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { toast } from "react-toastify";
 import * as action from "../../../store/actions";
-import { getAllClinic } from "../../../services/userService";
+import { getAllClinic, getAllUser, getLookUp } from "../../../services/userService";
+import { readFileAsDataUrl } from "../../../utils/imageUtils";
 import ClinicForm from "./ClinicForm";
-
-const buildSlug = (value) =>
-    String(value || "")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[đĐ]/g, "d")
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, " ")
-        .trim()
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^-+|-+$/g, "");
-
-const hasVisibleEditorContent = (value) => {
-    if (!value || typeof value !== "string") return false;
-
-    const plainText = value
-        .replace(/<[^>]*>/g, " ")
-        .replace(/&nbsp;/g, " ")
-        .trim();
-
-    return plainText.length > 0;
-};
+import {
+    buildClinicPayload,
+    buildLookupOptions,
+    buildManagerOptions,
+    getDefaultClinicFormData,
+    getNextDisplayOrder,
+    updateClinicFormField,
+    validateClinicForm,
+} from "./clinicFormUtils";
 
 class AddClinic extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            formData: {
-                name: "",
-                slug: "",
-                address: "",
-                descriptionHTML: "",
-                descriptionMarkdown: "",
-                image: "",
-                isActive: "1",
-                displayOrder: "",
-            },
+            formData: getDefaultClinicFormData(),
+            clinicTypeOptions: [],
+            managerOptions: [],
+            provinceOptions: [],
+            districtOptions: [],
+            wardOptions: [],
             previewImg: "",
             slugTouched: false,
             errors: {},
@@ -51,16 +34,20 @@ class AddClinic extends Component {
 
     componentDidMount() {
         this.loadNextDisplayOrder();
+        this.loadFormOptions();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.language !== this.props.language) {
+            this.loadFormOptions();
+        }
     }
 
     loadNextDisplayOrder = async () => {
         try {
             const res = await getAllClinic();
             const clinics = Array.isArray(res?.data) ? res.data : [];
-            const nextDisplayOrder = clinics.reduce((maxValue, item) => {
-                const currentValue = Number(item.displayOrder) || 0;
-                return currentValue > maxValue ? currentValue : maxValue;
-            }, 0) + 1;
+            const nextDisplayOrder = getNextDisplayOrder(clinics);
 
             this.setState((prevState) => ({
                 formData: {
@@ -79,34 +66,77 @@ class AddClinic extends Component {
         }
     };
 
+    loadFormOptions = async () => {
+        try {
+            const [clinicTypeRes, provinceRes, userRes] = await Promise.all([
+                getLookUp("CLINIC_TYPE"),
+                getLookUp("PROVINCE"),
+                getAllUser("ALL"),
+            ]);
+
+            this.setState({
+                clinicTypeOptions: buildLookupOptions(clinicTypeRes?.data || [], this.props.language),
+                provinceOptions: buildLookupOptions(provinceRes?.data || [], this.props.language),
+                managerOptions: buildManagerOptions(userRes?.users || []),
+            });
+        } catch (error) {
+            console.log("load clinic form options error", error);
+        }
+    };
+
+    loadDistrictOptions = async (provinceCode) => {
+        if (!provinceCode) {
+            this.setState({ districtOptions: [], wardOptions: [] });
+            return;
+        }
+
+        const res = await getLookUp("DISTRICT", provinceCode);
+        this.setState({
+            districtOptions: buildLookupOptions(res?.data || [], this.props.language),
+            wardOptions: [],
+        });
+    };
+
+    loadWardOptions = async (districtCode) => {
+        if (!districtCode) {
+            this.setState({ wardOptions: [] });
+            return;
+        }
+
+        const res = await getLookUp("WARD", districtCode);
+        this.setState({
+            wardOptions: buildLookupOptions(res?.data || [], this.props.language),
+        });
+    };
+
     handleInputChange = (event, field) => {
         const value = event.target.value;
 
         this.setState((prevState) => {
-            const nextFormData = {
-                ...prevState.formData,
-                [field]: value,
-            };
-            let nextSlugTouched = prevState.slugTouched;
-
-            if (field === "name" && !prevState.slugTouched) {
-                nextFormData.slug = buildSlug(value);
-            }
-
-            if (field === "slug") {
-                nextFormData.slug = buildSlug(value);
-                nextSlugTouched = true;
-            }
+            const nextState = updateClinicFormField(
+                prevState.formData,
+                field,
+                value,
+                prevState.slugTouched
+            );
 
             return {
-                formData: nextFormData,
-                slugTouched: nextSlugTouched,
+                formData: nextState.formData,
+                slugTouched: nextState.slugTouched,
                 errors: {
                     ...prevState.errors,
                     [field]: "",
                 },
             };
         });
+
+        if (field === "provinceCode") {
+            this.loadDistrictOptions(value);
+        }
+
+        if (field === "districtCode") {
+            this.loadWardOptions(value);
+        }
     };
 
     handleEditorChange = (value) => {
@@ -123,13 +153,12 @@ class AddClinic extends Component {
         }));
     };
 
-    handleImageChange = (event) => {
+    handleImageChange = async (event) => {
         const file = event.target.files[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const result = reader.result || "";
+        try {
+            const result = await readFileAsDataUrl(file);
             this.setState((prevState) => ({
                 previewImg: result,
                 formData: {
@@ -141,8 +170,9 @@ class AddClinic extends Component {
                     image: "",
                 },
             }));
-        };
-        reader.readAsDataURL(file);
+        } catch (error) {
+            console.log("handle clinic image error", error);
+        }
     };
 
     handleRemoveImage = () => {
@@ -156,29 +186,7 @@ class AddClinic extends Component {
     };
 
     validateForm = () => {
-        const { formData } = this.state;
-        const errors = {};
-
-        if (!String(formData.name || "").trim()) {
-            errors.name = "Vui lòng nhập tên phòng khám.";
-        }
-
-        if (!String(formData.slug || "").trim()) {
-            errors.slug = "Vui lòng nhập slug.";
-        }
-
-        if (!String(formData.address || "").trim()) {
-            errors.address = "Vui lòng nhập địa chỉ phòng khám.";
-        }
-
-        if (!formData.image) {
-            errors.image = "Vui lòng chọn ảnh phòng khám.";
-        }
-
-        if (!hasVisibleEditorContent(formData.descriptionHTML)) {
-            errors.descriptionHTML = "Vui lòng nhập mô tả phòng khám.";
-        }
-
+        const errors = validateClinicForm(this.state.formData);
         this.setState({ errors });
         return Object.keys(errors).length === 0;
     };
@@ -191,41 +199,22 @@ class AddClinic extends Component {
         this.setState({ isSubmitting: true });
 
         try {
-            const { formData } = this.state;
-            const res = await this.props.SaveClinic({
-                name: formData.name.trim(),
-                slug: formData.slug.trim(),
-                address: formData.address.trim(),
-                image: formData.image,
-                descriptionHTML: formData.descriptionHTML,
-                descriptionMarkdown: formData.descriptionMarkdown,
-                isActive: Number(formData.isActive),
-                displayOrder: Number(formData.displayOrder) || 1,
-            });
+            const res = await this.props.SaveClinic(buildClinicPayload(this.state.formData));
 
             if (res && res.errCode === 0) {
                 this.setState({
-                    formData: {
-                        name: "",
-                        slug: "",
-                        address: "",
-                        descriptionHTML: "",
-                        descriptionMarkdown: "",
-                        image: "",
-                        isActive: "1",
-                        displayOrder: "",
-                    },
+                    formData: getDefaultClinicFormData(),
                     previewImg: "",
                     slugTouched: false,
                     errors: {},
                 });
                 await this.loadNextDisplayOrder();
             } else {
-                toast.error(res?.errMessage || "Lưu phòng khám thất bại.");
+                toast.error(res?.errMessage || "L\u01b0u ph\u00f2ng kh\u00e1m th\u1ea5t b\u1ea1i.");
             }
         } catch (error) {
             console.log("SaveClinic error", error);
-            toast.error("Lưu phòng khám thất bại.");
+            toast.error("L\u01b0u ph\u00f2ng kh\u00e1m th\u1ea5t b\u1ea1i.");
         } finally {
             this.setState({ isSubmitting: false });
         }
@@ -243,6 +232,12 @@ class AddClinic extends Component {
                 previewImg={this.state.previewImg}
                 errors={this.state.errors}
                 isSubmitting={this.state.isSubmitting}
+                language={this.props.language}
+                clinicTypeOptions={this.state.clinicTypeOptions}
+                managerOptions={this.state.managerOptions}
+                provinceOptions={this.state.provinceOptions}
+                districtOptions={this.state.districtOptions}
+                wardOptions={this.state.wardOptions}
                 onInputChange={this.handleInputChange}
                 onEditorChange={this.handleEditorChange}
                 onImageChange={this.handleImageChange}
@@ -258,4 +253,8 @@ const mapDispatchToProps = (dispatch) => ({
     SaveClinic: (data) => dispatch(action.SaveClinic(data)),
 });
 
-export default connect(null, mapDispatchToProps)(AddClinic);
+const mapStateToProps = (state) => ({
+    language: state.app.language,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddClinic);

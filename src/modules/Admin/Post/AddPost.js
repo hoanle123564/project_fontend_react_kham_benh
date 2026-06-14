@@ -5,36 +5,24 @@ import {
     getAllPostCategory,
     postSavePost,
 } from "../../../services/userService";
+import { readFileAsDataUrl } from "../../../utils/imageUtils";
 import PostForm from "./PostForm";
-
-const buildSlug = (value) =>
-    String(value || "")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[đĐ]/g, "d")
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, " ")
-        .trim()
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^-+|-+$/g, "");
+import {
+    buildPostPayload,
+    getDefaultPostFormData,
+    getNextDisplayOrder,
+    sortPostCategories,
+    togglePostCategory,
+    updatePostFormField,
+    validatePostForm,
+} from "./postFormUtils";
 
 class AddPost extends Component {
     constructor(props) {
         super(props);
         this.state = {
             categories: [],
-            formData: {
-                title: "",
-                slug: "",
-                image: "",
-                bannerImage: "",
-                isActive: "1",
-                displayOrder: "",
-                shortDescription: "",
-                contentHTML: "",
-                categoryIds: [],
-            },
+            formData: getDefaultPostFormData(),
             previewImg: "",
             previewBannerImg: "",
             slugTouched: false,
@@ -51,10 +39,7 @@ class AddPost extends Component {
     loadCategories = async () => {
         try {
             const res = await getAllPostCategory();
-            const categories = Array.isArray(res?.data) ? [...res.data] : [];
-            categories.sort((a, b) => Number(a.displayOrder) - Number(b.displayOrder) || a.id - b.id);
-
-            this.setState({ categories });
+            this.setState({ categories: sortPostCategories(res?.data || []) });
         } catch (error) {
             console.log("loadCategories error", error);
             toast.error("Failed to load post categories.");
@@ -65,10 +50,7 @@ class AddPost extends Component {
         try {
             const res = await getAllPost(1, 100000, "", "", "");
             const posts = Array.isArray(res?.data?.posts) ? res.data.posts : [];
-            const nextDisplayOrder = posts.reduce((maxValue, item) => {
-                const currentValue = Number(item.displayOrder) || 0;
-                return currentValue > maxValue ? currentValue : maxValue;
-            }, 0) + 1;
+            const nextDisplayOrder = getNextDisplayOrder(posts);
 
             this.setState((prevState) => ({
                 formData: {
@@ -91,24 +73,16 @@ class AddPost extends Component {
         const value = event.target.value;
 
         this.setState((prevState) => {
-            const nextFormData = {
-                ...prevState.formData,
-                [field]: value,
-            };
-
-            let nextSlugTouched = prevState.slugTouched;
-            if (field === "title" && !prevState.slugTouched) {
-                nextFormData.slug = buildSlug(value);
-            }
-
-            if (field === "slug") {
-                nextFormData.slug = buildSlug(value);
-                nextSlugTouched = true;
-            }
+            const nextState = updatePostFormField(
+                prevState.formData,
+                field,
+                value,
+                prevState.slugTouched
+            );
 
             return {
-                formData: nextFormData,
-                slugTouched: nextSlugTouched,
+                formData: nextState.formData,
+                slugTouched: nextState.slugTouched,
                 errors: {
                     ...prevState.errors,
                     [field]: "",
@@ -130,15 +104,14 @@ class AddPost extends Component {
         }));
     };
 
-    handleImageChange = (event, field, previewField) => {
+    handleImageChange = async (event, field, previewField) => {
         const file = event.target.files[0];
         if (!file) {
             return;
         }
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const result = reader.result || "";
+        try {
+            const result = await readFileAsDataUrl(file);
             const base64Value = String(result).split(",")[1] || "";
 
             this.setState((prevState) => ({
@@ -148,8 +121,9 @@ class AddPost extends Component {
                 },
                 [previewField]: result,
             }));
-        };
-        reader.readAsDataURL(file);
+        } catch (error) {
+            console.log("handle post image error", error);
+        }
     };
 
     handleRemoveImage = (field, previewField) => {
@@ -163,45 +137,20 @@ class AddPost extends Component {
     };
 
     handleToggleCategory = (categoryId) => {
-        this.setState((prevState) => {
-            const existed = prevState.formData.categoryIds.includes(categoryId);
-            const categoryIds = existed
-                ? prevState.formData.categoryIds.filter((item) => item !== categoryId)
-                : [...prevState.formData.categoryIds, categoryId];
-
-            return {
-                formData: {
-                    ...prevState.formData,
-                    categoryIds,
-                },
-                errors: {
-                    ...prevState.errors,
-                    categoryIds: "",
-                },
-            };
-        });
+        this.setState((prevState) => ({
+            formData: {
+                ...prevState.formData,
+                categoryIds: togglePostCategory(prevState.formData.categoryIds, categoryId),
+            },
+            errors: {
+                ...prevState.errors,
+                categoryIds: "",
+            },
+        }));
     };
 
     validateForm = () => {
-        const { formData } = this.state;
-        const errors = {};
-
-        if (!formData.title.trim()) {
-            errors.title = "Post title is required.";
-        }
-
-        if (!formData.slug.trim()) {
-            errors.slug = "Slug is required.";
-        }
-
-        if (!formData.contentHTML || !formData.contentHTML.replace(/<[^>]+>/g, "").trim()) {
-            errors.contentHTML = "Post content is required.";
-        }
-
-        if (!Array.isArray(formData.categoryIds) || formData.categoryIds.length === 0) {
-            errors.categoryIds = "Please select at least one category.";
-        }
-
+        const errors = validatePostForm(this.state.formData);
         this.setState({ errors });
         return Object.keys(errors).length === 0;
     };
@@ -214,19 +163,7 @@ class AddPost extends Component {
         this.setState({ isSubmitting: true });
 
         try {
-            const { formData } = this.state;
-            const res = await postSavePost({
-                title: formData.title.trim(),
-                slug: formData.slug.trim(),
-                image: formData.image,
-                bannerImage: formData.bannerImage,
-                isActive: Number(formData.isActive),
-                displayOrder: Number(formData.displayOrder),
-                shortDescription: formData.shortDescription.trim(),
-                contentHTML: formData.contentHTML,
-                contentMarkdown: "",
-                categoryIds: formData.categoryIds,
-            });
+            const res = await postSavePost(buildPostPayload(this.state.formData));
 
             if (res && res.errCode === 0) {
                 toast.success("Create post successfully!");

@@ -1,14 +1,5 @@
 import axios from "../axios";
-
-const buildImageSrc = (image) => {
-  if (!image) {
-    return "";
-  }
-
-  return String(image).startsWith("data:image")
-    ? image
-    : `data:image/jpeg;base64,${image}`;
-};
+import { buildImageSrc } from "../utils/imageUtils";
 
 // Đăng nhập
 const handleLoginAPI = (email, password) => {
@@ -45,8 +36,13 @@ const changePassword = (data) => {
 };
 
 // Lấy tất cả thuộc tính
-const getLookUp = (type) => {
-  return axios.get(`/api/lookup?type=${type}`);
+const getLookUp = (type, parentKeyMap) => {
+  const parentQuery =
+    parentKeyMap !== undefined && parentKeyMap !== null && String(parentKeyMap).trim() !== ""
+      ? `&parentKeyMap=${encodeURIComponent(parentKeyMap)}`
+      : "";
+
+  return axios.get(`/api/lookup?type=${encodeURIComponent(type)}${parentQuery}`);
 };
 
 //==========================================
@@ -207,6 +203,22 @@ const DeleteClinic = (ClinicId) => {
       id: ClinicId,
     },
   });
+};
+
+const getClinicDepartment = (clinicId) => {
+  return axios.get(`/api/get-clinic-department?clinicId=${clinicId}`);
+};
+
+const postSaveClinicDepartment = (data) => {
+  return axios.post("/api/create-clinic-department", data);
+};
+
+const EditClinicDepartmentId = (data) => {
+  return axios.put("/api/edit-clinic-department", data);
+};
+
+const ChangeStatusClinicDepartment = (data) => {
+  return axios.put("/api/change-status-clinic-department", data);
 };
 
 //==========================================
@@ -379,6 +391,10 @@ export {
   postSendRemedy,
   DeleteClinic,
   EditClinicId,
+  getClinicDepartment,
+  postSaveClinicDepartment,
+  EditClinicDepartmentId,
+  ChangeStatusClinicDepartment,
   EditSpecialtyId,
   DeleteSpecialty,
   getListAppoinmentForPatient,

@@ -8,32 +8,8 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import Select from "react-select";
 import { toast } from "react-toastify";
-import { buildImageSrc } from "../../../services/userService";
-
-const editorModules = {
-  toolbar: [
-    [{ header: [1, 2, 3, false] }],
-    ["bold", "italic", "underline", "strike"],
-    [{ list: "ordered" }, { list: "bullet" }],
-    ["blockquote", "code-block"],
-    ["link", "image"],
-    ["clean"],
-  ],
-};
-
-const editorFormats = [
-  "header",
-  "bold",
-  "italic",
-  "underline",
-  "strike",
-  "list",
-  "bullet",
-  "blockquote",
-  "code-block",
-  "link",
-  "image",
-];
+import { buildImageSrc, readFileAsDataUrl } from "../../../utils/imageUtils";
+import { editorFormats, editorModules, hasVisibleEditorContent } from "../../../utils/richTextUtils";
 
 const generateSlug = (value = "") => {
   return value
@@ -49,17 +25,6 @@ const generateSlug = (value = "") => {
     .replace(/-+/g, "-");
 };
 
-const hasVisibleEditorContent = (value) => {
-  if (!value) return false;
-
-  const plainText = value
-    .replace(/<[^>]*>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .trim();
-
-  return plainText.length > 0;
-};
-
 class ManageDoctor extends Component {
   constructor(props) {
     super(props);
@@ -70,11 +35,10 @@ class ManageDoctor extends Component {
       selectDoctor: "",
       selectPrice: "",
       selectPayment: "",
-      selectprovince: "",
       selectClinic: "",
       selectSpecialty: "",
+      selectedClinicProvince: "",
 
-      ListProvinces: [],
       ListDoctor: [],
       ListPrice: [],
       ListPayment: [],
@@ -98,8 +62,12 @@ class ManageDoctor extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.ListDoctor !== this.props.ListDoctor) {
-      const List = this.buildDataSelect(this.props.ListDoctor, "USERS");
+    if (
+      prevProps.ListDoctor !== this.props.ListDoctor ||
+      prevProps.ListClinic !== this.props.ListClinic ||
+      prevProps.adminInfo !== this.props.adminInfo
+    ) {
+      const List = this.buildDataSelect(this.getVisibleDoctors(), "USERS");
       this.setState({ ListDoctor: List }, this.selectDoctorFromRoute);
     }
 
@@ -107,7 +75,6 @@ class ManageDoctor extends Component {
       prevProps.AllRequire !== this.props.AllRequire ||
       prevProps.ListSpecialty !== this.props.ListSpecialty ||
       prevProps.ListClinic !== this.props.ListClinic ||
-      prevProps.ListVietNamProvinces !== this.props.ListVietNamProvinces ||
       prevProps.language !== this.props.language;
 
     if (shouldRebuildOptions) {
@@ -136,17 +103,43 @@ class ManageDoctor extends Component {
     }
   };
 
+  getManagedClinicIds = () => {
+    if (this.props.adminInfo?.roleId !== "R4") {
+      return null;
+    }
+
+    return (this.props.ListClinic || [])
+      .filter((clinic) => Number(clinic.managerUserId) === Number(this.props.adminInfo.id))
+      .map((clinic) => Number(clinic.id));
+  };
+
+  getVisibleDoctors = () => {
+    const managedClinicIds = this.getManagedClinicIds();
+    if (!managedClinicIds) {
+      return this.props.ListDoctor || [];
+    }
+
+    return (this.props.ListDoctor || []).filter((doctor) =>
+      managedClinicIds.includes(Number(doctor.clinicId))
+    );
+  };
+
+  getVisibleClinics = () => {
+    const managedClinicIds = this.getManagedClinicIds();
+    if (!managedClinicIds) {
+      return this.props.ListClinic || [];
+    }
+
+    return (this.props.ListClinic || []).filter((clinic) =>
+      managedClinicIds.includes(Number(clinic.id))
+    );
+  };
+
   rebuildOptions = () => {
     const ListPri = this.buildDataSelect(this.props.AllRequire?.ResPri, "PRICE");
     const ListPay = this.buildDataSelect(this.props.AllRequire?.ResPay, "PAYMENT");
     const ListSpec = this.buildDataSelect(this.props.ListSpecialty, "SPECIALTY");
-    const ListClin = this.buildDataSelect(this.props.ListClinic, "CLINIC");
-    const ListProvinceFormatted = (this.props.ListVietNamProvinces || []).map(
-      (item) => ({
-        label: item,
-        value: item,
-      })
-    );
+    const ListClin = this.buildDataSelect(this.getVisibleClinics(), "CLINIC");
 
     const selectedPrice = ListPri.find(
       (item) => item.value === this.state.selectPrice?.value
@@ -160,22 +153,17 @@ class ManageDoctor extends Component {
     const selectedClinic = ListClin.find(
       (item) => item.value === this.state.selectClinic?.value
     );
-    const selectedProvince = ListProvinceFormatted.find(
-      (item) => item.value === this.state.selectprovince?.value
-    );
-
     this.setState(
       {
         ListPrice: ListPri,
         ListPayment: ListPay,
-        ListProvinces: ListProvinceFormatted,
         ListSpecialty: ListSpec,
         ListClinic: ListClin,
         selectPrice: selectedPrice || this.state.selectPrice,
         selectPayment: selectedPayment || this.state.selectPayment,
         selectSpecialty: selectedSpecialty || this.state.selectSpecialty,
         selectClinic: selectedClinic || this.state.selectClinic,
-        selectprovince: selectedProvince || this.state.selectprovince,
+        selectedClinicProvince: selectedClinic?.province || this.state.selectedClinicProvince,
       },
       () => {
         if (this.state.selectDoctor?.value) {
@@ -224,8 +212,11 @@ class ManageDoctor extends Component {
         result.push({
           label: item.name,
           value: item.id,
+          province: item.province || item.provinceCode || "",
+          managerUserId: item.managerUserId,
         });
       }
+
     });
 
     return result;
@@ -250,30 +241,36 @@ class ManageDoctor extends Component {
   handleChangeSelect = async (option, meta) => {
     if (!meta?.name) return;
 
+    if (meta.name === "selectClinic") {
+      this.setState({
+        selectClinic: option,
+        selectedClinicProvince: option?.province || "",
+      });
+      return;
+    }
+
     this.setState({ [meta.name]: option });
 
     if (meta.name !== "selectDoctor" || !option?.value) return;
 
     const res = await this.props.GetDetailDoctor(option.value);
-    const { ListPayment, ListPrice, ListSpecialty, ListProvinces, ListClinic } =
+    const { ListPayment, ListPrice, ListSpecialty, ListClinic } =
       this.state;
     const findPayment = ListPayment.find((item) => item.value === res?.paymentId);
     const findPrice = ListPrice.find((item) => item.value === res?.priceId);
     const findSpecialty = ListSpecialty.find(
       (item) => item.value === res?.specialtyId
     );
-    const findProvince = ListProvinces.find((item) => item.label === res?.province);
     const findClinic = ListClinic.find((item) => item.value === res?.clinicId);
-
     this.setState({
       contentHTML: res?.contentHTML || "",
       contentMarkdown: res?.contentMarkdown || res?.contentHTML || "",
       description: res?.description || "",
       selectPrice: findPrice || "",
       selectPayment: findPayment || "",
-      selectprovince: findProvince || "",
       selectSpecialty: findSpecialty || "",
       selectClinic: findClinic || "",
+      selectedClinicProvince: res?.province || findClinic?.province || "",
       slug: res?.slug || generateSlug(option.label),
       isActive: Number(res?.isActive) === 0 ? 0 : 1,
       displayOrder: Number(res?.displayOrder) || this.getNextDisplayOrder(),
@@ -294,21 +291,21 @@ class ManageDoctor extends Component {
     });
   };
 
-  handleImageChange = (event) => {
+  handleImageChange = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const result = reader.result;
+    try {
+      const result = await readFileAsDataUrl(file);
       const base64Image = String(result).split(",")[1] || "";
 
       this.setState({
         image: base64Image,
         previewImg: result,
       });
-    };
-    reader.readAsDataURL(file);
+    } catch (error) {
+      console.log("handle doctor image error", error);
+    }
   };
 
   handleRemoveImage = () => {
@@ -349,7 +346,7 @@ class ManageDoctor extends Component {
       return false;
     }
 
-    if (!this.state.selectprovince?.value) {
+    if (false) {
       toast.error("Vui lòng chọn tỉnh thành.");
       return false;
     }
@@ -382,7 +379,6 @@ class ManageDoctor extends Component {
       doctorId: this.state.selectDoctor.value,
       priceId: this.state.selectPrice.value,
       paymentId: this.state.selectPayment.value,
-      province: this.state.selectprovince.label,
       specialtyId: this.state.selectSpecialty.value,
       clinicId: this.state.selectClinic.value,
       slug: this.state.slug,
@@ -405,13 +401,12 @@ class ManageDoctor extends Component {
       selectDoctor,
       selectPrice,
       selectPayment,
-      selectprovince,
       selectClinic,
       selectSpecialty,
+      selectedClinicProvince,
       description,
       slug,
       isActive,
-      displayOrder,
       previewImg,
     } = this.state;
 
@@ -527,11 +522,10 @@ class ManageDoctor extends Component {
 
                 <div className="form-group">
                   <label>Tỉnh thành</label>
-                  <Select
-                    value={selectprovince}
-                    onChange={this.handleChangeSelect}
-                    name="selectprovince"
-                    options={this.state.ListProvinces}
+                  <input
+                    className="form-control"
+                    readOnly
+                    value={selectedClinicProvince || ""}
                     placeholder={
                       language === "vi"
                         ? "Chọn tỉnh thành ..."
@@ -541,7 +535,7 @@ class ManageDoctor extends Component {
                 </div>
               </div>
 
-              <div className="manage-doctor__grid manage-doctor__grid--two">
+              <div className="manage-doctor__grid manage-doctor__grid--three">
                 <div className="form-group">
                   <label>Chuyên khoa</label>
                   <Select
@@ -571,6 +565,7 @@ class ManageDoctor extends Component {
                     }
                   />
                 </div>
+
               </div>
             </div>
 
@@ -646,9 +641,9 @@ const mapStateToProps = (state) => {
     ListDoctor: state.admin.AllDoctor,
     DetailDoctor: state.admin.DetailDoctor,
     AllRequire: state.admin.AllRequire,
-    ListVietNamProvinces: state.admin.vietnamProvinces,
     ListSpecialty: state.admin.specialty,
     ListClinic: state.admin.AllClinic,
+    adminInfo: state.adminAuth.adminInfo,
   };
 };
 

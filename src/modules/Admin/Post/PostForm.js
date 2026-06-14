@@ -2,33 +2,9 @@ import React from "react";
 import { Button } from "reactstrap";
 import { FormattedMessage } from "react-intl";
 import ReactQuill from "react-quill";
+import { editorFormats, editorModules } from "../../../utils/richTextUtils";
 import "react-quill/dist/quill.snow.css";
 import "./PostForm.scss";
-
-const editorModules = {
-    toolbar: [
-        [{ header: [1, 2, 3, false] }],
-        ["bold", "italic", "underline", "strike"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        ["blockquote", "code-block"],
-        ["link", "image"],
-        ["clean"],
-    ],
-};
-
-const editorFormats = [
-    "header",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "list",
-    "bullet",
-    "blockquote",
-    "code-block",
-    "link",
-    "image",
-];
 
 const PostForm = ({
     mode,

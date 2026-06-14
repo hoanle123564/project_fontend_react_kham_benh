@@ -1,60 +1,30 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import { toast } from "react-toastify";
-import { EditClinicId, getDetailClinicById } from "../../../services/userService";
+import { EditClinicId, getAllUser, getDetailClinicById, getLookUp } from "../../../services/userService";
+import { buildImageSrc, readFileAsDataUrl } from "../../../utils/imageUtils";
 import ClinicForm from "./ClinicForm";
-
-const buildSlug = (value) =>
-    String(value || "")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[đĐ]/g, "d")
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, " ")
-        .trim()
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^-+|-+$/g, "");
-
-const buildImageSrc = (image) => {
-    if (!image) return "";
-    return String(image).startsWith("data:") ? image : `data:image/jpeg;base64,${image}`;
-};
-
-const getImagePayload = (image) => {
-    if (!image) return "";
-    if (String(image).startsWith("data:")) {
-        const parts = String(image).split(",");
-        return parts.length > 1 ? parts[1] : "";
-    }
-    return image;
-};
-
-const hasVisibleEditorContent = (value) => {
-    if (!value || typeof value !== "string") return false;
-
-    const plainText = value
-        .replace(/<[^>]*>/g, " ")
-        .replace(/&nbsp;/g, " ")
-        .trim();
-
-    return plainText.length > 0;
-};
+import {
+    buildClinicPayload,
+    buildLookupOptions,
+    buildManagerOptions,
+    getDefaultClinicFormData,
+    mapClinicToFormData,
+    updateClinicFormField,
+    validateClinicForm,
+} from "./clinicFormUtils";
 
 class EditClinic extends Component {
     constructor(props) {
         super(props);
         this.state = {
             clinicId: null,
-            formData: {
-                name: "",
-                slug: "",
-                address: "",
-                descriptionHTML: "",
-                descriptionMarkdown: "",
-                image: "",
-                isActive: "1",
-                displayOrder: "",
-            },
+            formData: getDefaultClinicFormData(),
+            clinicTypeOptions: [],
+            managerOptions: [],
+            provinceOptions: [],
+            districtOptions: [],
+            wardOptions: [],
             previewImg: "",
             slugTouched: false,
             errors: {},
@@ -65,6 +35,59 @@ class EditClinic extends Component {
     componentDidMount() {
         this.loadClinic();
     }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.language !== this.props.language) {
+            this.loadFormOptions(this.state.formData.provinceCode, this.state.formData.districtCode);
+        }
+    }
+
+    loadFormOptions = async (provinceCode = "", districtCode = "") => {
+        try {
+            const [clinicTypeRes, provinceRes, userRes, districtRes, wardRes] = await Promise.all([
+                getLookUp("CLINIC_TYPE"),
+                getLookUp("PROVINCE"),
+                getAllUser("ALL"),
+                provinceCode ? getLookUp("DISTRICT", provinceCode) : Promise.resolve({ data: [] }),
+                districtCode ? getLookUp("WARD", districtCode) : Promise.resolve({ data: [] }),
+            ]);
+
+            this.setState({
+                clinicTypeOptions: buildLookupOptions(clinicTypeRes?.data || [], this.props.language),
+                provinceOptions: buildLookupOptions(provinceRes?.data || [], this.props.language),
+                managerOptions: buildManagerOptions(userRes?.users || []),
+                districtOptions: buildLookupOptions(districtRes?.data || [], this.props.language),
+                wardOptions: buildLookupOptions(wardRes?.data || [], this.props.language),
+            });
+        } catch (error) {
+            console.log("load clinic edit form options error", error);
+        }
+    };
+
+    loadDistrictOptions = async (provinceCode) => {
+        if (!provinceCode) {
+            this.setState({ districtOptions: [], wardOptions: [] });
+            return;
+        }
+
+        const res = await getLookUp("DISTRICT", provinceCode);
+        this.setState({
+            districtOptions: buildLookupOptions(res?.data || [], this.props.language),
+            wardOptions: [],
+        });
+    };
+
+    loadWardOptions = async (districtCode) => {
+        if (!districtCode) {
+            this.setState({ wardOptions: [] });
+            return;
+        }
+
+        const res = await getLookUp("WARD", districtCode);
+        this.setState({
+            wardOptions: buildLookupOptions(res?.data || [], this.props.language),
+        });
+    };
 
     loadClinic = async () => {
         const routeId = this.props.match?.params?.id;
@@ -83,7 +106,7 @@ class EditClinic extends Component {
         }
 
         if (!clinicData) {
-            toast.error("Không tìm thấy phòng khám.");
+            toast.error("Kh\u00f4ng t\u00ecm th\u1ea5y ph\u00f2ng kh\u00e1m.");
             this.handleBack();
             return;
         }
@@ -91,17 +114,10 @@ class EditClinic extends Component {
         this.setState({
             clinicId: clinicData.id || routeId,
             previewImg: buildImageSrc(clinicData.image),
-            formData: {
-                name: clinicData.name || "",
-                slug: clinicData.slug || buildSlug(clinicData.name),
-                address: clinicData.address || "",
-                descriptionHTML: clinicData.descriptionHTML || "",
-                descriptionMarkdown: clinicData.descriptionMarkdown || clinicData.descriptionHTML || "",
-                image: getImagePayload(clinicData.image),
-                isActive: String(clinicData.isActive ?? 1),
-                displayOrder: clinicData.displayOrder ?? 1,
-            },
+            formData: mapClinicToFormData(clinicData),
             slugTouched: false,
+        }, () => {
+            this.loadFormOptions(clinicData.provinceCode || "", clinicData.districtCode || "");
         });
     };
 
@@ -109,30 +125,30 @@ class EditClinic extends Component {
         const value = event.target.value;
 
         this.setState((prevState) => {
-            const nextFormData = {
-                ...prevState.formData,
-                [field]: value,
-            };
-            let nextSlugTouched = prevState.slugTouched;
-
-            if (field === "name" && !prevState.slugTouched) {
-                nextFormData.slug = buildSlug(value);
-            }
-
-            if (field === "slug") {
-                nextFormData.slug = buildSlug(value);
-                nextSlugTouched = true;
-            }
+            const nextState = updateClinicFormField(
+                prevState.formData,
+                field,
+                value,
+                prevState.slugTouched
+            );
 
             return {
-                formData: nextFormData,
-                slugTouched: nextSlugTouched,
+                formData: nextState.formData,
+                slugTouched: nextState.slugTouched,
                 errors: {
                     ...prevState.errors,
                     [field]: "",
                 },
             };
         });
+
+        if (field === "provinceCode") {
+            this.loadDistrictOptions(value);
+        }
+
+        if (field === "districtCode") {
+            this.loadWardOptions(value);
+        }
     };
 
     handleEditorChange = (value) => {
@@ -149,13 +165,12 @@ class EditClinic extends Component {
         }));
     };
 
-    handleImageChange = (event) => {
+    handleImageChange = async (event) => {
         const file = event.target.files[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const result = reader.result || "";
+        try {
+            const result = await readFileAsDataUrl(file);
             this.setState((prevState) => ({
                 previewImg: result,
                 formData: {
@@ -167,8 +182,9 @@ class EditClinic extends Component {
                     image: "",
                 },
             }));
-        };
-        reader.readAsDataURL(file);
+        } catch (error) {
+            console.log("handle clinic image error", error);
+        }
     };
 
     handleRemoveImage = () => {
@@ -182,29 +198,7 @@ class EditClinic extends Component {
     };
 
     validateForm = () => {
-        const { formData } = this.state;
-        const errors = {};
-
-        if (!String(formData.name || "").trim()) {
-            errors.name = "Vui lòng nhập tên phòng khám.";
-        }
-
-        if (!String(formData.slug || "").trim()) {
-            errors.slug = "Vui lòng nhập slug.";
-        }
-
-        if (!String(formData.address || "").trim()) {
-            errors.address = "Vui lòng nhập địa chỉ phòng khám.";
-        }
-
-        if (!formData.image) {
-            errors.image = "Vui lòng chọn ảnh phòng khám.";
-        }
-
-        if (!hasVisibleEditorContent(formData.descriptionHTML)) {
-            errors.descriptionHTML = "Vui lòng nhập mô tả phòng khám.";
-        }
-
+        const errors = validateClinicForm(this.state.formData);
         this.setState({ errors });
         return Object.keys(errors).length === 0;
     };
@@ -217,28 +211,17 @@ class EditClinic extends Component {
         this.setState({ isSubmitting: true });
 
         try {
-            const { formData, clinicId } = this.state;
-            const res = await EditClinicId({
-                id: clinicId,
-                name: formData.name.trim(),
-                slug: formData.slug.trim(),
-                address: formData.address.trim(),
-                image: formData.image,
-                descriptionHTML: formData.descriptionHTML,
-                descriptionMarkdown: formData.descriptionMarkdown,
-                isActive: Number(formData.isActive),
-                displayOrder: Number(formData.displayOrder) || 1,
-            });
+            const res = await EditClinicId(buildClinicPayload(this.state.formData, this.state.clinicId));
 
             if (res && res.errCode === 0) {
-                toast.success("Cập nhật phòng khám thành công!");
+                toast.success("C\u1eadp nh\u1eadt ph\u00f2ng kh\u00e1m th\u00e0nh c\u00f4ng!");
                 this.handleBack();
             } else {
-                toast.error(res?.errMessage || "Cập nhật phòng khám thất bại.");
+                toast.error(res?.errMessage || "C\u1eadp nh\u1eadt ph\u00f2ng kh\u00e1m th\u1ea5t b\u1ea1i.");
             }
         } catch (error) {
             console.error("EditClinicId error", error);
-            toast.error("Có lỗi xảy ra khi lưu phòng khám.");
+            toast.error("C\u00f3 l\u1ed7i x\u1ea3y ra khi l\u01b0u ph\u00f2ng kh\u00e1m.");
         } finally {
             this.setState({ isSubmitting: false });
         }
@@ -256,6 +239,12 @@ class EditClinic extends Component {
                 previewImg={this.state.previewImg}
                 errors={this.state.errors}
                 isSubmitting={this.state.isSubmitting}
+                language={this.props.language}
+                clinicTypeOptions={this.state.clinicTypeOptions}
+                managerOptions={this.state.managerOptions}
+                provinceOptions={this.state.provinceOptions}
+                districtOptions={this.state.districtOptions}
+                wardOptions={this.state.wardOptions}
                 onInputChange={this.handleInputChange}
                 onEditorChange={this.handleEditorChange}
                 onImageChange={this.handleImageChange}
@@ -267,4 +256,8 @@ class EditClinic extends Component {
     }
 }
 
-export default EditClinic;
+const mapStateToProps = (state) => ({
+    language: state.app.language,
+});
+
+export default connect(mapStateToProps)(EditClinic);

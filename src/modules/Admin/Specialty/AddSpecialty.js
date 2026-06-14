@@ -1,48 +1,23 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { FormattedMessage } from 'react-intl';
-
 import { toast } from "react-toastify";
 import * as action from "../../../store/actions";
 import { getAllSpecialty } from "../../../services/userService";
+import { readFileAsDataUrl } from "../../../utils/imageUtils";
 import SpecialtyForm from "./SpecialtyForm";
-
-const buildSlug = (value) =>
-    String(value || "")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[đĐ]/g, "d")
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, " ")
-        .trim()
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^-+|-+$/g, "");
-
-const hasVisibleEditorContent = (value) => {
-    if (!value || typeof value !== "string") return false;
-
-    const plainText = value
-        .replace(/<[^>]*>/g, " ")
-        .replace(/&nbsp;/g, " ")
-        .trim();
-
-    return plainText.length > 0;
-};
+import {
+    buildSpecialtyPayload,
+    getDefaultSpecialtyFormData,
+    getNextDisplayOrder,
+    updateSpecialtyFormField,
+    validateSpecialtyForm,
+} from "./specialtyFormUtils";
 
 class AddSpecialty extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            formData: {
-                name: "",
-                slug: "",
-                descriptionHTML: "",
-                descriptionMarkdown: "",
-                image: "",
-                isActive: "1",
-                displayOrder: "",
-            },
+            formData: getDefaultSpecialtyFormData(),
             previewImg: "",
             slugTouched: false,
             errors: {},
@@ -58,10 +33,7 @@ class AddSpecialty extends Component {
         try {
             const res = await getAllSpecialty();
             const specialties = Array.isArray(res?.data) ? res.data : [];
-            const nextDisplayOrder = specialties.reduce((maxValue, item) => {
-                const currentValue = Number(item.displayOrder) || 0;
-                return currentValue > maxValue ? currentValue : maxValue;
-            }, 0) + 1;
+            const nextDisplayOrder = getNextDisplayOrder(specialties);
 
             this.setState((prevState) => ({
                 formData: {
@@ -84,24 +56,16 @@ class AddSpecialty extends Component {
         const value = event.target.value;
 
         this.setState((prevState) => {
-            const nextFormData = {
-                ...prevState.formData,
-                [field]: value,
-            };
-            let nextSlugTouched = prevState.slugTouched;
-
-            if (field === "name" && !prevState.slugTouched) {
-                nextFormData.slug = buildSlug(value);
-            }
-
-            if (field === "slug") {
-                nextFormData.slug = buildSlug(value);
-                nextSlugTouched = true;
-            }
+            const nextState = updateSpecialtyFormField(
+                prevState.formData,
+                field,
+                value,
+                prevState.slugTouched
+            );
 
             return {
-                formData: nextFormData,
-                slugTouched: nextSlugTouched,
+                formData: nextState.formData,
+                slugTouched: nextState.slugTouched,
                 errors: {
                     ...prevState.errors,
                     [field]: "",
@@ -124,13 +88,12 @@ class AddSpecialty extends Component {
         }));
     };
 
-    handleImageChange = (event) => {
+    handleImageChange = async (event) => {
         const file = event.target.files[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const result = reader.result || "";
+        try {
+            const result = await readFileAsDataUrl(file);
             this.setState((prevState) => ({
                 previewImg: result,
                 formData: {
@@ -142,8 +105,9 @@ class AddSpecialty extends Component {
                     image: "",
                 },
             }));
-        };
-        reader.readAsDataURL(file);
+        } catch (error) {
+            console.log("handle specialty image error", error);
+        }
     };
 
     handleRemoveImage = () => {
@@ -157,25 +121,7 @@ class AddSpecialty extends Component {
     };
 
     validateForm = () => {
-        const { formData } = this.state;
-        const errors = {};
-
-        if (!String(formData.name || "").trim()) {
-            errors.name = "Specialty name is required.";
-        }
-
-        if (!String(formData.slug || "").trim()) {
-            errors.slug = "Slug is required.";
-        }
-
-        if (!formData.image) {
-            errors.image = "Specialty image is required.";
-        }
-
-        if (!hasVisibleEditorContent(formData.descriptionHTML)) {
-            errors.descriptionHTML = "Specialty description is required.";
-        }
-
+        const errors = validateSpecialtyForm(this.state.formData);
         this.setState({ errors });
         return Object.keys(errors).length === 0;
     };
@@ -188,28 +134,11 @@ class AddSpecialty extends Component {
         this.setState({ isSubmitting: true });
 
         try {
-            const { formData } = this.state;
-            const res = await this.props.SaveSpecialty({
-                name: formData.name.trim(),
-                slug: formData.slug.trim(),
-                image: formData.image,
-                descriptionHTML: formData.descriptionHTML,
-                descriptionMarkdown: formData.descriptionMarkdown,
-                isActive: Number(formData.isActive),
-                displayOrder: Number(formData.displayOrder) || 1,
-            });
+            const res = await this.props.SaveSpecialty(buildSpecialtyPayload(this.state.formData));
 
             if (res && res.errCode === 0) {
                 this.setState({
-                    formData: {
-                        name: "",
-                        slug: "",
-                        descriptionHTML: "",
-                        descriptionMarkdown: "",
-                        image: "",
-                        isActive: "1",
-                        displayOrder: "",
-                    },
+                    formData: getDefaultSpecialtyFormData(),
                     previewImg: "",
                     slugTouched: false,
                     errors: {},

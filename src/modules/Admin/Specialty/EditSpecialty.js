@@ -1,59 +1,22 @@
 import React, { Component } from "react";
 import { toast } from "react-toastify";
 import { EditSpecialtyId, getDetailSpecialtyById } from "../../../services/userService";
+import { buildImageSrc, readFileAsDataUrl } from "../../../utils/imageUtils";
 import SpecialtyForm from "./SpecialtyForm";
-
-const buildSlug = (value) =>
-    String(value || "")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[đĐ]/g, "d")
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, " ")
-        .trim()
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^-+|-+$/g, "");
-
-const buildImageSrc = (image) => {
-    if (!image) return "";
-    return String(image).startsWith("data:") ? image : `data:image/jpeg;base64,${image}`;
-};
-
-const getImagePayload = (image) => {
-    if (!image) return "";
-    if (String(image).startsWith("data:")) {
-        const parts = String(image).split(",");
-        return parts.length > 1 ? parts[1] : "";
-    }
-    return image;
-};
-
-const hasVisibleEditorContent = (value) => {
-    if (!value || typeof value !== "string") return false;
-
-    const plainText = value
-        .replace(/<[^>]*>/g, " ")
-        .replace(/&nbsp;/g, " ")
-        .trim();
-
-    return plainText.length > 0;
-};
+import {
+    buildSpecialtyPayload,
+    getDefaultSpecialtyFormData,
+    mapSpecialtyToFormData,
+    updateSpecialtyFormField,
+    validateSpecialtyForm,
+} from "./specialtyFormUtils";
 
 class EditSpecialty extends Component {
     constructor(props) {
         super(props);
         this.state = {
             specialtyId: null,
-            formData: {
-                name: "",
-                slug: "",
-                descriptionHTML: "",
-                descriptionMarkdown: "",
-                image: "",
-                isActive: "1",
-                displayOrder: "",
-            },
+            formData: getDefaultSpecialtyFormData(),
             previewImg: "",
             slugTouched: false,
             errors: {},
@@ -90,15 +53,7 @@ class EditSpecialty extends Component {
         this.setState({
             specialtyId: item.id || routeId,
             previewImg: buildImageSrc(item.image),
-            formData: {
-                name: item.name || "",
-                slug: item.slug || buildSlug(item.name),
-                descriptionHTML: item.descriptionHTML || "",
-                descriptionMarkdown: item.descriptionMarkdown || item.descriptionHTML || "",
-                image: getImagePayload(item.image),
-                isActive: String(item.isActive ?? 1),
-                displayOrder: item.displayOrder ?? 1,
-            },
+            formData: mapSpecialtyToFormData(item),
             slugTouched: false,
         });
     };
@@ -107,24 +62,16 @@ class EditSpecialty extends Component {
         const value = event.target.value;
 
         this.setState((prevState) => {
-            const nextFormData = {
-                ...prevState.formData,
-                [field]: value,
-            };
-            let nextSlugTouched = prevState.slugTouched;
-
-            if (field === "name" && !prevState.slugTouched) {
-                nextFormData.slug = buildSlug(value);
-            }
-
-            if (field === "slug") {
-                nextFormData.slug = buildSlug(value);
-                nextSlugTouched = true;
-            }
+            const nextState = updateSpecialtyFormField(
+                prevState.formData,
+                field,
+                value,
+                prevState.slugTouched
+            );
 
             return {
-                formData: nextFormData,
-                slugTouched: nextSlugTouched,
+                formData: nextState.formData,
+                slugTouched: nextState.slugTouched,
                 errors: {
                     ...prevState.errors,
                     [field]: "",
@@ -147,13 +94,12 @@ class EditSpecialty extends Component {
         }));
     };
 
-    handleImageChange = (event) => {
+    handleImageChange = async (event) => {
         const file = event.target.files[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const result = reader.result || "";
+        try {
+            const result = await readFileAsDataUrl(file);
             this.setState((prevState) => ({
                 previewImg: result,
                 formData: {
@@ -165,8 +111,9 @@ class EditSpecialty extends Component {
                     image: "",
                 },
             }));
-        };
-        reader.readAsDataURL(file);
+        } catch (error) {
+            console.log("handle specialty image error", error);
+        }
     };
 
     handleRemoveImage = () => {
@@ -180,25 +127,7 @@ class EditSpecialty extends Component {
     };
 
     validateForm = () => {
-        const { formData } = this.state;
-        const errors = {};
-
-        if (!String(formData.name || "").trim()) {
-            errors.name = "Specialty name is required.";
-        }
-
-        if (!String(formData.slug || "").trim()) {
-            errors.slug = "Slug is required.";
-        }
-
-        if (!formData.image) {
-            errors.image = "Specialty image is required.";
-        }
-
-        if (!hasVisibleEditorContent(formData.descriptionHTML)) {
-            errors.descriptionHTML = "Specialty description is required.";
-        }
-
+        const errors = validateSpecialtyForm(this.state.formData);
         this.setState({ errors });
         return Object.keys(errors).length === 0;
     };
@@ -211,17 +140,9 @@ class EditSpecialty extends Component {
         this.setState({ isSubmitting: true });
 
         try {
-            const { formData, specialtyId } = this.state;
-            const res = await EditSpecialtyId({
-                id: specialtyId,
-                name: formData.name.trim(),
-                slug: formData.slug.trim(),
-                image: formData.image,
-                descriptionHTML: formData.descriptionHTML,
-                descriptionMarkdown: formData.descriptionMarkdown,
-                isActive: Number(formData.isActive),
-                displayOrder: Number(formData.displayOrder) || 1,
-            });
+            const res = await EditSpecialtyId(
+                buildSpecialtyPayload(this.state.formData, this.state.specialtyId)
+            );
 
             if (res && res.errCode === 0) {
                 toast.success("Specialty updated successfully!");
