@@ -63,14 +63,15 @@ class SlideBar extends Component {
   };
 
   handleLogout = () => {
-    if (this.props.adminToken) {
+    const path = window.location.pathname;
+
+    if (path.includes("/system") && this.props.adminToken) {
       this.props.adminLogout();
-      localStorage.removeItem("adminToken");
+      return;
     }
 
-    if (this.props.doctorToken) {
+    if (path.includes("/doctor") && this.props.doctorToken) {
       this.props.doctorLogout();
-      localStorage.removeItem("doctorToken");
     }
   };
 

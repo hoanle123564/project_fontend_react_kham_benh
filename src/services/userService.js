@@ -1,7 +1,29 @@
-import axios from "../axios";
+import axios, { adminAxios, doctorAxios, patientAxios } from "../axios";
 import { buildImageSrc } from "../utils/imageUtils";
 
 // Đăng nhập
+const getCurrentAuthAxios = () => {
+  if (typeof window === "undefined") {
+    return axios;
+  }
+
+  const pathname = window.location?.pathname || "";
+
+  if (pathname.startsWith("/system")) {
+    return adminAxios;
+  }
+
+  if (pathname.startsWith("/doctor")) {
+    return doctorAxios;
+  }
+
+  if (pathname.startsWith("/patient") || pathname.startsWith("/appointments")) {
+    return patientAxios;
+  }
+
+  return axios;
+};
+
 const handleLoginAPI = (email, password) => {
   return axios.post("/api/login", { email, password });
 };
@@ -20,7 +42,7 @@ const CreateUser = (data) => {
 // Xóa người dùng
 const DeleteUser = (UserId) => {
   // return axios.delete('/api/delete-user', { id });
-  return axios.delete("/api/delete-user", {
+  return adminAxios.delete("/api/delete-user", {
     data: {
       id: UserId,
     },
@@ -29,10 +51,10 @@ const DeleteUser = (UserId) => {
 
 // Cập nhật thông tin người dùng
 const EditUser = (data) => {
-  return axios.put("/api/edit-user", data);
+  return getCurrentAuthAxios().put("/api/edit-user", data);
 };
 const changePassword = (data) => {
-  return axios.put("/api/change-password", data);
+  return getCurrentAuthAxios().put("/api/change-password", data);
 };
 
 // Lấy tất cả thuộc tính
@@ -56,7 +78,7 @@ const getAllDoctor = () => {
 };
 // Lưu thông tin chi tiết bác sĩ
 const postDetailDoctor = (data) => {
-  return axios.post("/api/save-doctor", data);
+  return adminAxios.post("/api/save-doctor", data);
 };
 
 // Lấy thông tin chi tiết bác sĩ
@@ -67,11 +89,11 @@ const getDetailDoctor = (doctorIdOrSlug) => {
 };
 
 const changeStatusDoctorInfo = (data) => {
-  return axios.put("/api/change-status-doctor-info", data);
+  return adminAxios.put("/api/change-status-doctor-info", data);
 };
 
 const updateDoctorInfoOrder = (items) => {
-  return axios.put("/api/update-doctor-info-order", { items });
+  return adminAxios.put("/api/update-doctor-info-order", { items });
 };
 
 // Lấy danh sách bác sĩ liên quan (cùng chuyên khoa)
@@ -81,7 +103,7 @@ const getRelatedDoctorsService = (doctorId) => {
 
 // Lưu lịch trình bác sĩ
 const postScheduleDoctor = (data) => {
-  return axios.post("/api/create-schedule-doctor", data);
+  return getCurrentAuthAxios().post("/api/create-schedule-doctor", data);
 };
 
 // Lấy lịch trình bác sĩ
@@ -91,23 +113,91 @@ const getScheduleDoctor = (doctorId, date) => {
 
 // Lấy danh sách bệnh nhân theo ngày khám của bác sĩ
 const getAllPatientForDoctor = (doctorId, date) => {
-  return axios.get(`/api/get-list-patient-for-doctor?id=${doctorId}&date=${date}`);
+  return doctorAxios.get(`/api/get-list-patient-for-doctor?id=${doctorId}&date=${date}`);
+};
+
+const buildDoctorPatientQuery = (params = {}) => {
+  const query = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && String(value).trim() !== "") {
+      query.append(key, value);
+    }
+  });
+
+  return query.toString();
+};
+
+const getDoctorPatients = (params = {}) => {
+  const query = buildDoctorPatientQuery(params);
+  return doctorAxios.get(`/api/doctor/patients${query ? `?${query}` : ""}`);
+};
+
+const getDoctorPatientDetail = (patientId) => {
+  return doctorAxios.get(`/api/doctor/patient-detail?patientId=${encodeURIComponent(patientId)}`);
+};
+
+const getDoctorPatientHistory = (patientId) => {
+  return doctorAxios.get(`/api/doctor/patient-history?patientId=${encodeURIComponent(patientId)}`);
+};
+
+const getDoctorQueue = (params = {}) => {
+  const query = buildDoctorPatientQuery(params);
+  return doctorAxios.get(`/api/doctor/queue${query ? `?${query}` : ""}`);
+};
+
+const startDoctorExaminationVisit = (bookingId) => {
+  return doctorAxios.post("/api/doctor/examination-visit", { bookingId });
+};
+
+const getDoctorExaminationVisitDetail = (examinationVisitId) => {
+  return doctorAxios.get(
+    `/api/doctor/examination-visit-detail?examinationVisitId=${encodeURIComponent(
+      examinationVisitId
+    )}`
+  );
+};
+
+const ensureDoctorMedicalRecord = (examinationVisitId) => {
+  return doctorAxios.post("/api/doctor/medical-record", { examinationVisitId });
+};
+
+const getMedicalRecordDetail = (medicalRecordId) => {
+  return doctorAxios.get(
+    `/api/medical-record/detail?medicalRecordId=${encodeURIComponent(medicalRecordId)}`
+  );
+};
+
+const saveMedicalRecordDraft = (data) => {
+  return doctorAxios.post("/api/medical-record/draft", data);
+};
+
+const saveMedicalRecordPrescription = (data) => {
+  return doctorAxios.put("/api/medical-record/prescription", data);
+};
+
+const saveMedicalRecordParaclinicalResults = (data) => {
+  return doctorAxios.put("/api/medical-record/paraclinical-results", data);
+};
+
+const completeMedicalRecordVisit = (data) => {
+  return doctorAxios.post("/api/medical-record/complete-visit", data);
 };
 
 const DeleteScheduleDoctor = (ScheduleId) => {
-  return axios.delete("/api/delete-schedule-doctor", {
+  return getCurrentAuthAxios().delete("/api/delete-schedule-doctor", {
     data: {
       id: ScheduleId,
     },
   });
 };
 const getAppointmentDoctor = (doctorId) => {
-  return axios.get(`/api/get-list-booking-appointment-doctor?id=${doctorId}`);
+  return doctorAxios.get(`/api/get-list-booking-appointment-doctor?id=${doctorId}`);
 };
 //==========================================
 // Lưu thông tin đặt lịch khám bệnh
 const postPatientBooking = (data) => {
-  return axios.post("/api/patient-book-appointment", data);
+  return patientAxios.post("/api/patient-book-appointment", data);
 };
 
 // Xác nhận đặt lịch khám bệnh
@@ -115,12 +205,20 @@ const VerifyPatientBooking = (data) => {
   return axios.post("/api/verify-book-appointment", data);
 };
 
-const getListAppoinmentForPatient = (patientId) => {
-  return axios.get(`/api/get-list-booking-appointment-patient?id=${patientId}`);
+const getListAppoinmentForPatient = () => {
+  return patientAxios.get("/api/get-list-booking-appointment-patient");
 }
 
 const postCancelBookingAppointment = (data) => {
-  return axios.post("/api/cancel-book-appointment", data);
+  return patientAxios.post("/api/cancel-book-appointment", data);
+};
+
+const getPatientProfile = () => {
+  return patientAxios.get("/api/patient/profile");
+};
+
+const updatePatientProfile = (data) => {
+  return patientAxios.put("/api/patient/profile", data);
 };
 
 //==========================================
@@ -325,16 +423,16 @@ const DeletePost = (PostId) => {
 
 // send remedy
 const postSendRemedy = (data) => {
-  return axios.post("/api/send-remedy", data);
+  return doctorAxios.post("/api/send-remedy", data);
 };
 
 // get list booking
 const getAllBooking = () => {
-  return axios.get("/api/get-all-list-booking");
+  return getCurrentAuthAxios().get("/api/get-all-list-booking");
 };
 
 const getAdminDashboardStatistics = (revenueType = "month", topDoctorType = "month") => {
-  return axios.get(`/api/admin/dashboard-statistics?revenueType=${revenueType}&topDoctorType=${topDoctorType}`);
+  return adminAxios.get(`/api/admin/dashboard-statistics?revenueType=${revenueType}&topDoctorType=${topDoctorType}`);
 };
 
 export {
@@ -399,8 +497,22 @@ export {
   DeleteSpecialty,
   getListAppoinmentForPatient,
   postCancelBookingAppointment,
+  getPatientProfile,
+  updatePatientProfile,
   DeleteScheduleDoctor,
   getAppointmentDoctor,
+  getDoctorPatients,
+  getDoctorPatientDetail,
+  getDoctorPatientHistory,
+  getDoctorQueue,
+  startDoctorExaminationVisit,
+  getDoctorExaminationVisitDetail,
+  ensureDoctorMedicalRecord,
+  getMedicalRecordDetail,
+  saveMedicalRecordDraft,
+  saveMedicalRecordPrescription,
+  saveMedicalRecordParaclinicalResults,
+  completeMedicalRecordVisit,
   getAllBooking,
   getAdminDashboardStatistics,
   buildImageSrc
