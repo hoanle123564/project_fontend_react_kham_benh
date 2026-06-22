@@ -24,6 +24,19 @@ const getCurrentAuthAxios = () => {
   return axios;
 };
 
+const getAuthAxiosByRole = (authRole) => {
+  switch (authRole) {
+    case "admin":
+      return adminAxios;
+    case "doctor":
+      return doctorAxios;
+    case "patient":
+      return patientAxios;
+    default:
+      return getCurrentAuthAxios();
+  }
+};
+
 const handleLoginAPI = (email, password) => {
   return axios.post("/api/login", { email, password });
 };
@@ -102,8 +115,8 @@ const getRelatedDoctorsService = (doctorId) => {
 };
 
 // Lưu lịch trình bác sĩ
-const postScheduleDoctor = (data) => {
-  return getCurrentAuthAxios().post("/api/create-schedule-doctor", data);
+const postScheduleDoctor = (data, options = {}) => {
+  return getAuthAxiosByRole(options.authRole).post("/api/create-schedule-doctor", data);
 };
 
 // Lấy lịch trình bác sĩ
@@ -146,6 +159,18 @@ const getDoctorQueue = (params = {}) => {
   return doctorAxios.get(`/api/doctor/queue${query ? `?${query}` : ""}`);
 };
 
+const getDoctorAppointmentDetail = (bookingId) => {
+  return doctorAxios.get(
+    `/api/doctor/appointment-detail?bookingId=${encodeURIComponent(bookingId)}`
+  );
+};
+
+// params có thể có hoặc rỗng
+const getDoctorMedicalRecords = (params = {}) => {
+  const query = buildDoctorPatientQuery(params);
+  return doctorAxios.get(`/api/doctor/medical-records${query ? `?${query}` : ""}`);
+};
+
 const startDoctorExaminationVisit = (bookingId) => {
   return doctorAxios.post("/api/doctor/examination-visit", { bookingId });
 };
@@ -184,8 +209,24 @@ const completeMedicalRecordVisit = (data) => {
   return doctorAxios.post("/api/medical-record/complete-visit", data);
 };
 
-const DeleteScheduleDoctor = (ScheduleId) => {
-  return getCurrentAuthAxios().delete("/api/delete-schedule-doctor", {
+const closeMedicalRecord = (data) => {
+  return doctorAxios.post("/api/medical-record/close", data);
+};
+
+const getVisitPaymentSummary = (examinationVisitId) => {
+  return doctorAxios.get(
+    `/api/doctor/visit-payment-summary?examinationVisitId=${encodeURIComponent(
+      examinationVisitId
+    )}`
+  );
+};
+
+const collectVisitPayment = (data) => {
+  return doctorAxios.post("/api/doctor/collect-visit-payment", data);
+};
+
+const DeleteScheduleDoctor = (ScheduleId, options = {}) => {
+  return getAuthAxiosByRole(options.authRole).delete("/api/delete-schedule-doctor", {
     data: {
       id: ScheduleId,
     },
@@ -505,6 +546,8 @@ export {
   getDoctorPatientDetail,
   getDoctorPatientHistory,
   getDoctorQueue,
+  getDoctorAppointmentDetail,
+  getDoctorMedicalRecords,
   startDoctorExaminationVisit,
   getDoctorExaminationVisitDetail,
   ensureDoctorMedicalRecord,
@@ -513,6 +556,9 @@ export {
   saveMedicalRecordPrescription,
   saveMedicalRecordParaclinicalResults,
   completeMedicalRecordVisit,
+  closeMedicalRecord,
+  getVisitPaymentSummary,
+  collectVisitPayment,
   getAllBooking,
   getAdminDashboardStatistics,
   buildImageSrc

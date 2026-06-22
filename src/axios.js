@@ -20,12 +20,29 @@ const getTokenByRole = (role) => {
   }
 };
 
+const getNormalizedPathname = () => {
+  const pathname = window.location?.pathname || "";
+  const baseName = (process.env.REACT_APP_ROUTER_BASE_NAME || "").trim();
+  const normalizedBaseName = baseName
+    ? `/${baseName.replace(/^\/+|\/+$/g, "")}`
+    : "";
+
+  if (
+    normalizedBaseName &&
+    (pathname === normalizedBaseName || pathname.startsWith(`${normalizedBaseName}/`))
+  ) {
+    return pathname.slice(normalizedBaseName.length) || "/";
+  }
+
+  return pathname || "/";
+};
+
 const getRoleByPath = () => {
   if (typeof window === "undefined") {
     return null;
   }
 
-  const pathname = window.location?.pathname || "";
+  const pathname = getNormalizedPathname();
 
   if (pathname.startsWith("/system")) {
     return "admin";
