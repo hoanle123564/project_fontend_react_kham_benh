@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, injectIntl } from "react-intl";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { connect } from "react-redux";
 import _ from "lodash";
@@ -94,7 +94,9 @@ class UserEdit extends Component {
     }
   };
 
-  // Kiểm tra và gán lỗi song ngữ
+  getText = (id, defaultMessage) =>
+    this.props.intl.formatMessage({ id, defaultMessage });
+
   checkValidateInput = () => {
     const {
       email,
@@ -105,55 +107,30 @@ class UserEdit extends Component {
       gender,
       roleId,
     } = this.state;
-    const { language } = this.props;
     const errors = {};
 
     if (!email || email.trim() === "")
-      errors.email =
-        language === languages.VI
-          ? "Vui lòng nhập Email!"
-          : "Please enter your email!";
+      errors.email = this.getText("user-manage.error-email-required", "Please enter your email!");
 
     if (!firstName || firstName.trim() === "")
-      errors.firstName =
-        language === languages.VI
-          ? "Vui lòng nhập tên!"
-          : "Please enter first name!";
+      errors.firstName = this.getText("user-manage.error-first-name-required", "Please enter first name!");
 
     if (!lastName || lastName.trim() === "")
-      errors.lastName =
-        language === languages.VI
-          ? "Vui lòng nhập họ!"
-          : "Please enter last name!";
+      errors.lastName = this.getText("user-manage.error-last-name-required", "Please enter last name!");
 
     if (!phoneNumber || phoneNumber.trim() === "")
-      errors.phoneNumber =
-        language === languages.VI
-          ? "Vui lòng nhập số điện thoại!"
-          : "Please enter phone number!";
+      errors.phoneNumber = this.getText("user-manage.error-phone-required", "Please enter phone number!");
     else if (!/^[0-9]{9,11}$/.test(phoneNumber))
-      errors.phoneNumber =
-        language === languages.VI
-          ? "Số điện thoại không hợp lệ!"
-          : "Invalid phone number!";
+      errors.phoneNumber = this.getText("user-manage.error-phone-invalid", "Invalid phone number!");
 
     if (!address || address.trim() === "")
-      errors.address =
-        language === languages.VI
-          ? "Vui lòng chọn địa chỉ!"
-          : "Please select an address!";
+      errors.address = this.getText("user-manage.error-address-required", "Please enter your address!");
 
     if (!gender)
-      errors.gender =
-        language === languages.VI
-          ? "Vui lòng chọn giới tính!"
-          : "Please select gender!";
+      errors.gender = this.getText("user-manage.error-gender-required", "Please select gender!");
 
     if (!roleId)
-      errors.roleId =
-        language === languages.VI
-          ? "Vui lòng chọn vai trò!"
-          : "Please select role!";
+      errors.roleId = this.getText("user-manage.error-role-required", "Please select role!");
 
     this.setState({ errors });
     return Object.keys(errors).length === 0;
@@ -187,19 +164,20 @@ class UserEdit extends Component {
       errors,
     } = this.state;
     const { language } = this.props;
+    const chooseLabel = this.getText("user-manage.choose", "Choose...");
 
     return (
       <Modal isOpen={this.props.isOpen} toggle={this.toggle} size="lg" centered>
         <ModalHeader toggle={this.toggle}>
           <i className="fa-solid fa-user-pen me-2"></i>
-          Edit User
+          <FormattedMessage id="user-manage.edit-title" defaultMessage="Edit user" />
         </ModalHeader>
 
         <ModalBody>
           {/* Email + Phone */}
           <div className="row mb-3">
             <div className="col-md-6">
-              <label>Email</label>
+              <label><FormattedMessage id="user-manage.email" /></label>
               <input
                 type="email"
                 className={`form-control ${errors.email ? "input-error" : ""}`}
@@ -291,7 +269,7 @@ class UserEdit extends Component {
                 value={this.state.gender}
                 onChange={(e) => this.handleOnchange(e, "gender")}
               >
-                <option value="">Choose...</option>
+                <option value="">{chooseLabel}</option>
                 {genderArr.map((item, index) => (
                   <option key={index} value={item.keyMap}>
                     {language === languages.VI
@@ -306,22 +284,20 @@ class UserEdit extends Component {
             </div>
 
             <div className="col-md-4">
-              <label>Position</label>
+              <label><FormattedMessage id="user-manage.position" /></label>
               <select
                 className={`form-select ${errors.positionId ? "input-error" : ""}`}
                 value={this.state.positionId}
                 onChange={(e) => this.handleOnchange(e, "positionId")}
                 disabled={this.state.roleId !== "R2"} // ✅ chỉ bật nếu là bác sĩ
               >
-                <option value="">Choose...</option>
+                <option value="">{chooseLabel}</option>
                 {positionArr.map((item, index) => (
                   <option key={index} value={item.keyMap}>
                     {language === languages.VI ? item.value_vi : item.value_en}
                   </option>
                 ))}
               </select>
-
-              {/* Thông báo nhỏ khi bị vô hiệu hóa */}
               {this.state.roleId !== "R2" && (
                 <div className="text-muted small mt-1">
                   <FormattedMessage
@@ -338,13 +314,13 @@ class UserEdit extends Component {
 
 
             <div className="col-md-4">
-              <label>Role</label>
+              <label><FormattedMessage id="user-manage.role" /></label>
               <select
                 className={`form-select ${errors.roleId ? "input-error" : ""}`}
                 value={this.state.roleId}
                 onChange={(e) => this.handleOnchange(e, "roleId")}
               >
-                <option value="">Choose...</option>
+                <option value="">{chooseLabel}</option>
                 {roleArr.map((item, index) => (
                   <option key={index} value={item.keyMap}>
                     {language === languages.VI
@@ -464,4 +440,4 @@ const mapDispatchToProps = (dispatch) => ({
   getEditUser: (User) => dispatch(action.fetchEditUser(User)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserEdit);
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(UserEdit));
