@@ -51,7 +51,8 @@ const ROUTE_MAP = {
     '/doctor': { vi: 'Dashboard', en: 'Dashboard' },
     '/doctor/manage-schedule-private': { vi: 'Lịch làm việc của tôi', en: 'My Schedule' },
     '/doctor/manage-patient': { vi: 'Quản lý bệnh nhân', en: 'Manage Patients' },
-    '/doctor/appointment': { vi: 'Danh sách bệnh nhân', en: 'Patient List' },
+    '/doctor/medical-record': { vi: 'Hồ sơ bệnh án', en: 'Medical Records' },
+    '/doctor/appointment': { vi: 'Lịch hẹn', en: 'Examination Queue' },
     '/doctor/list-appointment': { vi: 'Tất cả lịch hẹn', en: 'All Appointments' },
 };
 

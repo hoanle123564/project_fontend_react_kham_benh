@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 import { Route, Switch } from "react-router-dom";
 import SlideBar from "../components/Layout/SlideBar";
 import Header from "../components/Layout/Header";
+import DoctorMedicalRecords from "../modules/Doctor/MedicalRecords/DoctorMedicalRecords";
+import DoctorQueue from "../modules/Doctor/DoctorQueue/DoctorQueue";
 import ManagePatient from "../modules/Doctor/ManagePatient";
 import ManageSchedulePrivate from "../modules/Doctor/ManageSchedulePrivate";
 import ListAppointment from "../modules/Doctor/ListAppointment";
@@ -28,8 +30,12 @@ class Doctor extends Component {
           <Header toggleSidebar={this.toggleSidebar} />
           <div className="system-list">
             <Switch>
-              <Route path="/doctor/manage-patient" component={ManagePatient} />
-              <Route path="/doctor/appointment" component={ManagePatient} />
+              <Route path="/doctor/medical-record/:bookingId" component={DoctorMedicalRecords} />
+              <Route exact path="/doctor/medical-record" component={DoctorMedicalRecords} />
+              <Route path="/doctor/manage-patient/:patientId" component={ManagePatient} />
+              <Route exact path="/doctor/manage-patient" component={ManagePatient} />
+              <Route path="/doctor/appointment/:bookingId" component={DoctorQueue} />
+              <Route exact path="/doctor/appointment" component={DoctorQueue} />
               <Route path="/doctor/manage-schedule-private" component={ManageSchedulePrivate} />
               <Route path="/doctor/list-appointment" component={ListAppointment} />
               <Route path="/doctor/edit-profile" component={EditProfile} />

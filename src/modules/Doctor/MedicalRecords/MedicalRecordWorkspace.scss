@@ -1,0 +1,318 @@
+.medical-record-workspace {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid #e5eaf1;
+
+    h3 {
+        margin: 0;
+        color: #111827;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: 0;
+    }
+}
+
+.medical-record-workspace__header,
+.medical-record-workspace__section-title,
+.medical-record-workspace__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.medical-record-workspace__header {
+    margin-bottom: 12px;
+
+    small {
+        color: #64748b;
+        white-space: nowrap;
+    }
+}
+
+.medical-record-workspace__notice {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.medical-record-workspace__create,
+.medical-record-workspace__actions button,
+.medical-record-workspace__section-title button,
+.medical-record-workspace__secondary,
+.medical-record-workspace__remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 36px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+
+    &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+}
+
+.medical-record-workspace__create,
+.medical-record-workspace__actions button {
+    padding: 0 12px;
+    border: 1px solid #0f766e;
+    background: #0f766e;
+    color: #ffffff;
+}
+
+.medical-record-workspace__create {
+    margin-top: 12px;
+}
+
+.medical-record-workspace__actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-bottom: 14px;
+
+    span {
+        min-height: 28px;
+        padding: 5px 9px;
+        border-radius: 8px;
+        background: #e0f2fe;
+        color: #075985;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    button.complete {
+        border-color: #166534;
+        background: #166534;
+    }
+
+    button.close-record {
+        border-color: #7f1d1d;
+        background: #7f1d1d;
+    }
+}
+
+.medical-record-workspace__section {
+    margin-top: 14px;
+    padding: 14px;
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
+    background: #f8fafc;
+
+    h4 {
+        margin: 0 0 12px;
+        color: #334155;
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 0;
+    }
+}
+
+.medical-record-workspace__section-title {
+    margin-bottom: 12px;
+
+    h4 {
+        margin: 0;
+    }
+
+    button {
+        padding: 0 10px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #334155;
+    }
+}
+
+.medical-record-workspace__grid,
+.medical-record-workspace__item-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.medical-record-workspace__grid.compact {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.medical-record-workspace__grid label,
+.medical-record-workspace__single-field,
+.medical-record-workspace__item-grid label {
+    display: grid;
+    gap: 5px;
+    margin: 0;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 700;
+
+    &.wide {
+        grid-column: 1 / -1;
+    }
+
+    input,
+    textarea {
+        width: 100%;
+        min-width: 0;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #1f2937;
+        font-size: 13px;
+        outline: none;
+
+        &:focus {
+            border-color: #0f766e;
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+        }
+
+        &:disabled {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+    }
+
+    input {
+        height: 36px;
+        padding: 0 9px;
+    }
+
+    textarea {
+        min-height: 74px;
+        padding: 9px;
+        resize: vertical;
+    }
+}
+
+.medical-record-workspace__single-field {
+    margin-bottom: 10px;
+}
+
+.medical-record-workspace__items {
+    display: grid;
+    gap: 10px;
+}
+
+.medical-record-workspace__table-scroll {
+    overflow-x: auto;
+}
+
+.medical-record-workspace__mini-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    &.prescription {
+        min-width: 900px;
+    }
+
+    &.paraclinical {
+        min-width: 680px;
+    }
+
+    th,
+    td {
+        padding: 8px;
+        border: 1px solid #e5eaf1;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    th {
+        background: #eef4f8;
+        color: #334155;
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    input {
+        width: 100%;
+        min-width: 0;
+        height: 34px;
+        padding: 0 8px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #1f2937;
+        font-size: 13px;
+        outline: none;
+
+        &:focus {
+            border-color: #0f766e;
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+        }
+
+        &:disabled,
+        &:read-only {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+    }
+}
+
+.medical-record-workspace__item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: end;
+    padding: 10px;
+    border: 1px solid #e5eaf1;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.medical-record-workspace__item-grid.prescription {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.medical-record-workspace__item-grid.paraclinical {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.medical-record-workspace__remove {
+    width: 76px;
+    padding: 0 8px;
+    border: 1px solid #fecaca;
+    background: #fff1f2;
+    color: #be123c;
+
+    &.icon-only {
+        width: 36px;
+        min-width: 36px;
+        padding: 0;
+    }
+}
+
+.medical-record-workspace__secondary {
+    margin-top: 10px;
+    padding: 0 12px;
+    border: 1px solid #0f766e;
+    background: #ffffff;
+    color: #0f766e;
+}
+
+@media (max-width: 1420px) {
+    .medical-record-workspace__grid.compact,
+    .medical-record-workspace__item-grid.prescription {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .medical-record-workspace__grid,
+    .medical-record-workspace__grid.compact,
+    .medical-record-workspace__item-grid.prescription,
+    .medical-record-workspace__item-grid.paraclinical,
+    .medical-record-workspace__item {
+        grid-template-columns: 1fr;
+    }
+
+    .medical-record-workspace__remove {
+        width: 100%;
+    }
+}
