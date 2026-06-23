@@ -1,0 +1,598 @@
+.table-manage-user,
+.doctor-table-container,
+.manage-clinic-container,
+.manage-clinic-department-container,
+.manage-specialty-container,
+.manage-post-container,
+.manage-post-category-container {
+    --admin-table-bg: #f6f8fb;
+    --admin-table-card: #ffffff;
+    --admin-table-border: #dbe3ef;
+    --admin-table-border-soft: #e5eaf1;
+    --admin-table-control-border: #cbd5e1;
+    --admin-table-heading: #111827;
+    --admin-table-text: #334155;
+    --admin-table-body-text: #1f2937;
+    --admin-table-muted: #64748b;
+    --admin-table-primary: #0f766e;
+    --admin-table-primary-soft: #e8f5f3;
+    --admin-table-primary-hover: #115e59;
+    --admin-table-danger: #be123c;
+    --admin-table-danger-soft: #fff1f2;
+    --admin-table-warning: #c2410c;
+
+    --tm-bg: var(--admin-table-bg);
+    --tm-card: var(--admin-table-card);
+    --tm-border: var(--admin-table-border);
+    --tm-border-strong: var(--admin-table-control-border);
+    --tm-text: var(--admin-table-body-text);
+    --tm-muted: var(--admin-table-muted);
+    --tm-navy: var(--admin-table-heading);
+    --tm-teal: var(--admin-table-primary);
+    --tm-teal-soft: var(--admin-table-primary-soft);
+    --tm-danger: var(--admin-table-danger);
+    --tm-warning: var(--admin-table-warning);
+    --tm-shadow: none;
+
+    --doctor-bg: var(--admin-table-bg);
+    --doctor-card: var(--admin-table-card);
+    --doctor-border: var(--admin-table-border);
+    --doctor-text: var(--admin-table-body-text);
+    --doctor-muted: var(--admin-table-muted);
+    --doctor-navy: var(--admin-table-heading);
+    --doctor-teal: var(--admin-table-primary);
+    --doctor-teal-soft: var(--admin-table-primary-soft);
+    --doctor-warning: var(--admin-table-warning);
+    --doctor-shadow: none;
+
+    --clinic-bg: var(--admin-table-bg);
+    --clinic-card: var(--admin-table-card);
+    --clinic-border: var(--admin-table-border);
+    --clinic-border-strong: var(--admin-table-control-border);
+    --clinic-text: var(--admin-table-body-text);
+    --clinic-muted: var(--admin-table-muted);
+    --clinic-navy: var(--admin-table-heading);
+    --clinic-teal: var(--admin-table-primary);
+    --clinic-teal-soft: var(--admin-table-primary-soft);
+    --clinic-danger: var(--admin-table-danger);
+    --clinic-warning: var(--admin-table-warning);
+    --clinic-shadow: none;
+
+    --department-bg: var(--admin-table-bg);
+    --department-card: var(--admin-table-card);
+    --department-border: var(--admin-table-border);
+    --department-text: var(--admin-table-body-text);
+    --department-muted: var(--admin-table-muted);
+    --department-navy: var(--admin-table-heading);
+    --department-teal: var(--admin-table-primary);
+    --department-teal-soft: var(--admin-table-primary-soft);
+    --department-warning: var(--admin-table-warning);
+    --department-shadow: none;
+
+    --specialty-bg: var(--admin-table-bg);
+    --specialty-card: var(--admin-table-card);
+    --specialty-border: var(--admin-table-border);
+    --specialty-border-strong: var(--admin-table-control-border);
+    --specialty-text: var(--admin-table-body-text);
+    --specialty-muted: var(--admin-table-muted);
+    --specialty-navy: var(--admin-table-heading);
+    --specialty-teal: var(--admin-table-primary);
+    --specialty-teal-soft: var(--admin-table-primary-soft);
+    --specialty-danger: var(--admin-table-danger);
+    --specialty-warning: var(--admin-table-warning);
+    --specialty-shadow: none;
+
+    --post-bg: var(--admin-table-bg);
+    --post-card: var(--admin-table-card);
+    --post-border: var(--admin-table-border);
+    --post-border-strong: var(--admin-table-control-border);
+    --post-text: var(--admin-table-body-text);
+    --post-muted: var(--admin-table-muted);
+    --post-navy: var(--admin-table-heading);
+    --post-teal: var(--admin-table-primary);
+    --post-teal-soft: var(--admin-table-primary-soft);
+    --post-danger: var(--admin-table-danger);
+    --post-warning: var(--admin-table-warning);
+    --post-shadow: none;
+
+    --post-category-bg: var(--admin-table-bg);
+    --post-category-card: var(--admin-table-card);
+    --post-category-border: var(--admin-table-border);
+    --post-category-text: var(--admin-table-body-text);
+    --post-category-muted: var(--admin-table-muted);
+    --post-category-navy: var(--admin-table-heading);
+    --post-category-teal: var(--admin-table-primary);
+    --post-category-teal-soft: var(--admin-table-primary-soft);
+    --post-category-danger: var(--admin-table-danger);
+    --post-category-warning: var(--admin-table-warning);
+    --post-category-shadow: none;
+
+    min-height: calc(100vh - 64px);
+    padding: 24px;
+    background: var(--admin-table-bg);
+    color: var(--admin-table-body-text);
+}
+
+.table-manage-user__title,
+.doctor-table-container .doctor-table__header h2,
+.manage-clinic-container .manage-clinic__header h2,
+.manage-clinic-department-container .manage-clinic-department__header h2,
+.manage-specialty-container .manage-specialty__title,
+.manage-post-container .manage-post__title,
+.manage-post-category-container .manage-post-category__title {
+    color: var(--admin-table-heading);
+    font-size: 24px;
+    letter-spacing: 0;
+}
+
+.doctor-table-container .doctor-table__header p,
+.manage-clinic-department-container .manage-clinic-department__header p {
+    color: var(--admin-table-muted);
+    font-size: 14px;
+}
+
+.table-manage-user__table-card,
+.doctor-table-container .doctor-table__table-wrapper,
+.manage-clinic-container .manage-clinic__table-wrapper,
+.manage-clinic-department-container .manage-clinic-department__table-card,
+.manage-specialty-container .manage-specialty__table-card,
+.manage-post-container .manage-post__table-card,
+.manage-post-category-container .manage-post-category__table-card {
+    overflow: hidden;
+    border: 1px solid var(--admin-table-border);
+    border-radius: 8px;
+    background: var(--admin-table-card);
+    box-shadow: none;
+}
+
+.table-manage-user .table-manage-user__table,
+.doctor-table-container .doctor-table__table,
+.manage-clinic-container .manage-clinic__table,
+.manage-clinic-department-container .manage-clinic-department__table,
+.manage-specialty-container .manage-specialty__table,
+.manage-post-container .manage-post__table,
+.manage-post-category-container .manage-post-category__table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.table-manage-user__table-scroll,
+.doctor-table-container .doctor-table__table-scroll,
+.manage-clinic-container .manage-clinic__table-scroll,
+.manage-clinic-department-container .manage-clinic-department__table-scroll,
+.manage-specialty-container .manage-specialty__table-scroll,
+.manage-post-container .table-responsive,
+.manage-post-category-container .manage-post-category__table-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table-manage-user .table-manage-user__table th,
+.table-manage-user .table-manage-user__table td,
+.doctor-table-container .doctor-table__table th,
+.doctor-table-container .doctor-table__table td,
+.manage-clinic-container .manage-clinic__table th,
+.manage-clinic-container .manage-clinic__table td,
+.manage-clinic-department-container .manage-clinic-department__table th,
+.manage-clinic-department-container .manage-clinic-department__table td,
+.manage-specialty-container .manage-specialty__table th,
+.manage-specialty-container .manage-specialty__table td,
+.manage-post-container .manage-post__table th,
+.manage-post-container .manage-post__table td,
+.manage-post-category-container .manage-post-category__table th,
+.manage-post-category-container .manage-post-category__table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--admin-table-border-soft);
+    color: var(--admin-table-text);
+    font-size: 14px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.table-manage-user .table-manage-user__table th,
+.doctor-table-container .doctor-table__table th,
+.manage-clinic-container .manage-clinic__table th,
+.manage-clinic-department-container .manage-clinic-department__table th,
+.manage-specialty-container .manage-specialty__table th,
+.manage-post-container .manage-post__table th,
+.manage-post-category-container .manage-post-category__table th {
+    background: #eef4f8;
+    color: var(--admin-table-text);
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.table-manage-user .table-manage-user__table tbody tr,
+.doctor-table-container .doctor-table__table tbody tr,
+.manage-clinic-container .manage-clinic__table tbody tr,
+.manage-clinic-department-container .manage-clinic-department__table tbody tr,
+.manage-specialty-container .manage-specialty__table tbody tr,
+.manage-post-container .manage-post__table tbody tr,
+.manage-post-category-container .manage-post-category__table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.table-manage-user .table-manage-user__table tbody tr:hover,
+.doctor-table-container .doctor-table__table tbody tr:hover,
+.manage-clinic-container .manage-clinic__table tbody tr:hover,
+.manage-clinic-department-container .manage-clinic-department__table tbody tr:hover,
+.manage-specialty-container .manage-specialty__table tbody tr:hover,
+.manage-post-container .manage-post__table tbody tr:hover,
+.manage-post-category-container .manage-post-category__table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.table-manage-user .table-manage-user__table tbody tr:last-child td,
+.doctor-table-container .doctor-table__table tbody tr:last-child td,
+.manage-clinic-container .manage-clinic__table tbody tr:last-child td,
+.manage-clinic-department-container .manage-clinic-department__table tbody tr:last-child td,
+.manage-specialty-container .manage-specialty__table tbody tr:last-child td,
+.manage-post-container .manage-post__table tbody tr:last-child td,
+.manage-post-category-container .manage-post-category__table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.table-manage-user__search,
+.doctor-table-container .doctor-table__search,
+.manage-clinic-container .manage-clinic__search,
+.manage-specialty-container .manage-specialty__search {
+    min-height: 40px;
+    border: 1px solid var(--admin-table-control-border);
+    background: var(--admin-table-card);
+    box-shadow: none;
+}
+
+.table-manage-user__search i,
+.doctor-table-container .doctor-table__search i,
+.manage-clinic-container .manage-clinic__search i,
+.manage-specialty-container .manage-specialty__search i {
+    color: var(--admin-table-muted);
+}
+
+.table-manage-user__search:focus-within,
+.doctor-table-container .doctor-table__search:focus-within,
+.manage-clinic-container .manage-clinic__search:focus-within,
+.manage-specialty-container .manage-specialty__search:focus-within {
+    border-color: var(--admin-table-primary);
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.16);
+}
+
+.doctor-table-container .doctor-table__specialty-filter,
+.manage-clinic-container .manage-clinic__status-filter,
+.manage-clinic-department-container .manage-clinic-department__select,
+.manage-specialty-container .manage-specialty__status-filter,
+.manage-post-container .manage-post__toolbar-card .form-control,
+.manage-post-container .manage-post__toolbar-card .form-select {
+    min-height: 40px;
+    border: 1px solid var(--admin-table-control-border);
+    border-radius: 8px;
+    background-color: var(--admin-table-card);
+    color: var(--admin-table-body-text);
+    box-shadow: none;
+}
+
+.doctor-table-container .doctor-table__specialty-filter:focus,
+.manage-clinic-container .manage-clinic__status-filter:focus,
+.manage-clinic-department-container .manage-clinic-department__select:focus,
+.manage-specialty-container .manage-specialty__status-filter:focus,
+.manage-post-container .manage-post__toolbar-card .form-control:focus,
+.manage-post-container .manage-post__toolbar-card .form-select:focus {
+    border-color: var(--admin-table-primary);
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.16);
+}
+
+.table-manage-user__total,
+.doctor-table-container .doctor-table__total,
+.manage-clinic-container .manage-clinic__total,
+.manage-clinic-department-container .manage-clinic-department__summary,
+.manage-specialty-container .manage-specialty__total {
+    min-height: 40px;
+    padding: 10px 14px;
+    border: 1px solid var(--admin-table-border);
+    border-radius: 8px;
+    background: var(--admin-table-card);
+    color: #475569;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.doctor-table-container .doctor-table__manage-button,
+.manage-clinic-container .btn-add,
+.manage-clinic-department-container .manage-clinic-department__add,
+.manage-specialty-container .manage-specialty__add-button,
+.manage-post-container .manage-post__add-button,
+.manage-post-category-container .manage-post-category__add-button,
+.doctor-table-container .doctor-table__header-actions .btn-primary,
+.manage-post-category-container .manage-post-category__header-actions .btn-primary {
+    min-height: 40px;
+    border: 1px solid var(--admin-table-primary) !important;
+    border-radius: 8px;
+    background: var(--admin-table-primary) !important;
+    color: #ffffff !important;
+    box-shadow: none;
+    font-weight: 700;
+}
+
+.doctor-table-container .doctor-table__manage-button:hover,
+.doctor-table-container .doctor-table__manage-button:focus,
+.manage-clinic-container .btn-add:hover,
+.manage-clinic-container .btn-add:focus,
+.manage-clinic-department-container .manage-clinic-department__add:hover,
+.manage-clinic-department-container .manage-clinic-department__add:focus,
+.manage-specialty-container .manage-specialty__add-button:hover,
+.manage-specialty-container .manage-specialty__add-button:focus,
+.manage-post-container .manage-post__add-button:hover,
+.manage-post-container .manage-post__add-button:focus,
+.manage-post-category-container .manage-post-category__add-button:hover,
+.manage-post-category-container .manage-post-category__add-button:focus,
+.doctor-table-container .doctor-table__header-actions .btn-primary:hover,
+.doctor-table-container .doctor-table__header-actions .btn-primary:focus,
+.manage-post-category-container .manage-post-category__header-actions .btn-primary:hover,
+.manage-post-category-container .manage-post-category__header-actions .btn-primary:focus {
+    border-color: var(--admin-table-primary-hover) !important;
+    background: var(--admin-table-primary-hover) !important;
+}
+
+.table-manage-user__sort-button {
+    justify-content: flex-start;
+}
+
+.table-manage-user__address,
+.doctor-table-container .doctor-table__name,
+.doctor-table-container .doctor-table__city,
+.manage-clinic-container .manage-clinic__name,
+.manage-clinic-container .manage-clinic__address,
+.manage-clinic-department-container .manage-clinic-department__name,
+.manage-specialty-container .manage-specialty__name,
+.manage-post-container .post-title-cell,
+.manage-post-category-container .manage-post-category__name {
+    color: var(--admin-table-body-text);
+}
+
+.table-manage-user__muted,
+.doctor-table-container .doctor-table__meta,
+.doctor-table-container .doctor-table__slug,
+.doctor-table-container .doctor-table__status-note,
+.manage-clinic-container .manage-clinic__slug,
+.manage-clinic-container .manage-clinic__empty-image,
+.manage-clinic-department-container .manage-clinic-department__description,
+.manage-specialty-container .manage-specialty__slug,
+.manage-specialty-container .manage-specialty__muted,
+.manage-post-container .manage-post__muted,
+.manage-post-category-container .manage-post-category__slug {
+    color: var(--admin-table-muted);
+}
+
+.table-manage-user__avatar,
+.doctor-table-container .doctor-table__avatar,
+.manage-clinic-container .manage-clinic__image img,
+.manage-specialty-container .manage-specialty__thumbnail,
+.manage-post-container .manage-post__thumbnail {
+    border-color: var(--admin-table-border-soft);
+    box-shadow: none;
+}
+
+.table-manage-user__avatar:hover,
+.manage-clinic-container .manage-clinic__image:hover img,
+.manage-specialty-container .manage-specialty__thumbnail:hover,
+.manage-post-container .manage-post__thumbnail:hover {
+    box-shadow: 0 0 0 2px var(--admin-table-primary);
+}
+
+.table-manage-user__action-button,
+.doctor-table-container .doctor-table__edit-button,
+.manage-clinic-container .btn-action,
+.manage-clinic-department-container .manage-clinic-department__action,
+.manage-specialty-container .manage-specialty__action-button,
+.manage-post-container .manage-post__action-button,
+.manage-post-category-container .manage-post-category__action-button {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--admin-table-control-border);
+    border-radius: 8px;
+    background: var(--admin-table-card);
+    color: var(--admin-table-primary);
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.table-manage-user__action-button:hover,
+.doctor-table-container .doctor-table__edit-button:hover,
+.manage-clinic-container .btn-action:hover,
+.manage-clinic-department-container .manage-clinic-department__action:hover,
+.manage-specialty-container .manage-specialty__action-button:hover,
+.manage-post-container .manage-post__action-button:hover,
+.manage-post-category-container .manage-post-category__action-button:hover {
+    border-color: var(--admin-table-primary);
+    background: #ecfdf5;
+    transform: none;
+}
+
+.table-manage-user__action-button:focus-visible,
+.doctor-table-container .doctor-table__edit-button:focus-visible,
+.manage-clinic-container .btn-action:focus-visible,
+.manage-clinic-department-container .manage-clinic-department__action:focus-visible,
+.manage-specialty-container .manage-specialty__action-button:focus-visible,
+.manage-post-container .manage-post__action-button:focus-visible,
+.manage-post-category-container .manage-post-category__action-button:focus-visible,
+.doctor-table-container .doctor-table__manage-button:focus-visible,
+.manage-clinic-container .btn-add:focus-visible,
+.manage-clinic-department-container .manage-clinic-department__add:focus-visible,
+.manage-specialty-container .manage-specialty__add-button:focus-visible,
+.manage-post-container .manage-post__add-button:focus-visible,
+.manage-post-category-container .manage-post-category__add-button:focus-visible,
+.table-manage-user__pagination button:focus-visible,
+.doctor-table-container .doctor-table__pagination button:focus-visible,
+.manage-clinic-container .manage-clinic__pagination button:focus-visible,
+.manage-specialty-container .manage-specialty__pagination button:focus-visible,
+.manage-post-container .manage-post__pagination button:focus-visible {
+    outline: 3px solid rgba(15, 118, 110, 0.18);
+    outline-offset: 2px;
+}
+
+.table-manage-user__action-button--delete,
+.manage-clinic-container .btn-delete,
+.manage-specialty-container .manage-specialty__action-button--delete,
+.manage-post-container .manage-post__action-button--delete,
+.manage-post-category-container .manage-post-category__action-button--delete {
+    color: var(--admin-table-danger);
+}
+
+.table-manage-user__action-button--delete:hover,
+.manage-clinic-container .btn-delete:hover,
+.manage-specialty-container .manage-specialty__action-button--delete:hover,
+.manage-post-container .manage-post__action-button--delete:hover,
+.manage-post-category-container .manage-post-category__action-button--delete:hover {
+    border-color: #fecaca;
+    background: var(--admin-table-danger-soft);
+}
+
+.doctor-table-container .form-check,
+.manage-clinic-container .form-check {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.table-manage-user__empty,
+.doctor-table-container .doctor-table__empty,
+.manage-clinic-container .manage-clinic__empty,
+.manage-clinic-department-container .manage-clinic-department__empty,
+.manage-specialty-container .manage-specialty__empty,
+.manage-post-container .manage-post__empty,
+.manage-post-category-container .manage-post-category__empty {
+    height: 120px;
+    padding: 34px 16px;
+    color: var(--admin-table-muted);
+    font-weight: 700;
+    text-align: center;
+}
+
+.table-manage-user__footer,
+.doctor-table-container .doctor-table__footer,
+.manage-clinic-container .manage-clinic__footer,
+.manage-specialty-container .manage-specialty__footer,
+.manage-post-container .manage-post__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-top: 1px solid var(--admin-table-border-soft);
+    color: var(--admin-table-muted);
+    font-size: 14px;
+}
+
+.table-manage-user__pagination,
+.doctor-table-container .doctor-table__pagination,
+.manage-clinic-container .manage-clinic__pagination,
+.manage-specialty-container .manage-specialty__pagination,
+.manage-post-container .manage-post__pagination {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    margin: 0;
+}
+
+.table-manage-user__pagination ul,
+.manage-specialty-container .manage-specialty__pagination ul,
+.manage-post-container .manage-post__pagination ul {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.table-manage-user__pagination button,
+.doctor-table-container .doctor-table__pagination button,
+.manage-clinic-container .manage-clinic__pagination button,
+.manage-specialty-container .manage-specialty__pagination button,
+.manage-post-container .manage-post__pagination button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid var(--admin-table-control-border);
+    border-radius: 8px;
+    background: var(--admin-table-card);
+    color: var(--admin-table-text);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.table-manage-user__pagination button:disabled,
+.doctor-table-container .doctor-table__pagination button:disabled,
+.manage-clinic-container .manage-clinic__pagination button:disabled,
+.manage-specialty-container .manage-specialty__pagination button:disabled,
+.manage-post-container .manage-post__pagination button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.table-manage-user__pagination button:hover,
+.table-manage-user__pagination button:focus-visible,
+.doctor-table-container .doctor-table__pagination button:hover:not(:disabled),
+.doctor-table-container .doctor-table__pagination button:focus-visible:not(:disabled),
+.manage-clinic-container .manage-clinic__pagination button:hover:not(:disabled),
+.manage-clinic-container .manage-clinic__pagination button:focus-visible:not(:disabled),
+.manage-specialty-container .manage-specialty__pagination button:hover,
+.manage-specialty-container .manage-specialty__pagination button:focus-visible,
+.manage-post-container .manage-post__pagination button:hover,
+.manage-post-container .manage-post__pagination button:focus-visible {
+    border-color: var(--admin-table-primary);
+    background: var(--admin-table-primary-soft);
+}
+
+.table-manage-user__pagination li.active button,
+.doctor-table-container .doctor-table__pagination button.active,
+.manage-clinic-container .manage-clinic__pagination button.active,
+.manage-specialty-container .manage-specialty__pagination li.active button,
+.manage-post-container .manage-post__pagination li.active button {
+    border-color: var(--admin-table-primary);
+    background: var(--admin-table-primary);
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .table-manage-user,
+    .doctor-table-container,
+    .manage-clinic-container,
+    .manage-clinic-department-container,
+    .manage-specialty-container,
+    .manage-post-container,
+    .manage-post-category-container {
+        padding: 16px;
+    }
+
+    .table-manage-user__footer,
+    .doctor-table-container .doctor-table__footer,
+    .manage-clinic-container .manage-clinic__footer,
+    .manage-specialty-container .manage-specialty__footer,
+    .manage-post-container .manage-post__footer {
+        display: grid;
+        align-items: stretch;
+    }
+
+    .table-manage-user__pagination,
+    .doctor-table-container .doctor-table__pagination,
+    .manage-clinic-container .manage-clinic__pagination,
+    .manage-specialty-container .manage-specialty__pagination,
+    .manage-post-container .manage-post__pagination {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .table-manage-user__pagination ul,
+    .manage-specialty-container .manage-specialty__pagination ul,
+    .manage-post-container .manage-post__pagination ul {
+        justify-content: flex-start;
+    }
+}
