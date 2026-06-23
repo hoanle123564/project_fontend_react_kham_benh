@@ -373,7 +373,7 @@ export const SavePatientBooking = (data) => {
         dispatch({
           type: actionTypes.FETCH_SAVE_PATIENT_BOOKING,
         });
-        toast.success("Save patient booking success");
+        toast.success(res.errMessage || "Save patient booking success");
         return res;
       } else {
         toast.error(res?.errMessage || "Save patient booking failed");
