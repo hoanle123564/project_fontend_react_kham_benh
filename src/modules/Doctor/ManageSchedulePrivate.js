@@ -130,7 +130,7 @@ class ManageSchedulePrivate extends Component {
         const { AllTime, selectedTime, registeredSchedule, currentDate } = this.state;
 
         return (
-            <div className="manage-schedule-container">
+            <div className="manage-schedule-container manage-schedule-container--doctor">
 
                 <div className="m-s-title">
                     <FormattedMessage id="manage-schedule.title" />
