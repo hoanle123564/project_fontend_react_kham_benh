@@ -465,6 +465,7 @@ class ManagePostCategory extends Component {
                                                     <button
                                                         type="button"
                                                         className="manage-post-category__action-button manage-post-category__action-button--edit"
+                                                        aria-label="Edit post category"
                                                         onClick={() => this.openEditModal(category)}
                                                     >
                                                         <i className="fas fa-edit"></i>
@@ -472,6 +473,7 @@ class ManagePostCategory extends Component {
                                                     <button
                                                         type="button"
                                                         className="manage-post-category__action-button manage-post-category__action-button--delete"
+                                                        aria-label="Delete post category"
                                                         onClick={() => this.handleDelete(category.id)}
                                                     >
                                                         <i className="fa-solid fa-trash"></i>

@@ -46,6 +46,7 @@ $bc-gap: 8px;
         }
 
         .breadcrumb-sep {
+            flex: 0 0 auto;
             font-size: 10px;
             color: $bc-sep-color;
         }
@@ -69,16 +70,28 @@ $bc-gap: 8px;
 // Nằm ngay dưới header sticky, nền trắng nhẹ
 .breadcrumb-admin,
 .breadcrumb-doctor {
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
     padding: 10px 0;
 
     .breadcrumb-list {
-        padding: 0 24px;
+        flex-wrap: nowrap;
+        min-width: 0;
+        padding: 0;
     }
 
     .breadcrumb-item {
+        min-width: 0;
+
         a {
+            display: block;
+            max-width: 320px;
+            overflow: hidden;
             color:
                 rgb(100, 116, 139);
+            text-overflow: ellipsis;
+            white-space: nowrap;
 
             &:hover {
                 color: #0f9c89;
@@ -86,7 +99,12 @@ $bc-gap: 8px;
         }
 
         span {
+            display: block;
+            max-width: 360px;
+            overflow: hidden;
             color: #5a5c69;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
     }
 }

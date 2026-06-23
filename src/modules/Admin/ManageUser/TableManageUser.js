@@ -105,6 +105,7 @@ class TableManageUser extends Component {
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
     const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
     const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    const footerTotalPages = Math.max(totalPages, 1);
 
     const columns = [
       { field: "id", id: "user-manage.id", default: "#" },
@@ -224,12 +225,14 @@ class TableManageUser extends Component {
                           <div className="table-manage-user__actions">
                             <button
                               className="table-manage-user__action-button table-manage-user__action-button--edit"
+                              aria-label="Edit user"
                               onClick={() => this.handleEditUser(item)}
                             >
                               <i className="fas fa-edit"></i>
                             </button>
                             <button
                               className="table-manage-user__action-button table-manage-user__action-button--delete"
+                              aria-label="Delete user"
                               onClick={() => this.handleDeleteUser(item.id)}
                             >
                               <i className="fa-solid fa-trash"></i>
@@ -248,26 +251,46 @@ class TableManageUser extends Component {
                 </tbody>
               </table>
             </div>
-          </div>
 
-          {totalPages > 1 && (
-            <nav className="table-manage-user__pagination">
-              <ul>
-                {Array.from({ length: totalPages }, (_, i) => (
-                  <li
-                    key={i}
-                    className={currentPage === i + 1 ? "active" : ""}
-                  >
+            <div className="table-manage-user__footer">
+              <span>Trang {currentPage} trên {footerTotalPages}</span>
+              <nav className="table-manage-user__pagination">
+                <ul>
+                  <li>
                     <button
-                      onClick={() => this.handlePageChange(i + 1)}
+                      type="button"
+                      onClick={() => this.handlePageChange(currentPage - 1)}
+                      disabled={currentPage <= 1}
                     >
-                      {i + 1}
+                      Trước
                     </button>
                   </li>
-                ))}
-              </ul>
-            </nav>
-          )}
+                  {Array.from({ length: footerTotalPages }, (_, i) => (
+                    <li
+                      key={i}
+                      className={currentPage === i + 1 ? "active" : ""}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => this.handlePageChange(i + 1)}
+                      >
+                        {i + 1}
+                      </button>
+                    </li>
+                  ))}
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() => this.handlePageChange(currentPage + 1)}
+                      disabled={currentPage >= footerTotalPages}
+                    >
+                      Sau
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
 
           {isOpen && (
             <Lightbox

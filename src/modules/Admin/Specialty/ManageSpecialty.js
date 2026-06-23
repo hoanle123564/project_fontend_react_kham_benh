@@ -356,6 +356,7 @@ class ManageSpecialty extends Component {
         const filteredSpecialties = this.getFilteredSpecialties();
         const currentSpecialties = this.getPaginatedSpecialties();
         const totalPages = Math.ceil(filteredSpecialties.length / specialtiesPerPage);
+        const footerTotalPages = Math.max(totalPages, 1);
         const canDragDrop = this.canEnableDragDrop();
 
         return (
@@ -481,6 +482,7 @@ class ManageSpecialty extends Component {
                                                             <button
                                                                 type="button"
                                                                 className="manage-specialty__action-button manage-specialty__action-button--edit"
+                                                                aria-label="Edit specialty"
                                                                 onClick={() => this.handleEdit(specialty)}
                                                             >
                                                                 <i className="fas fa-edit"></i>
@@ -488,6 +490,7 @@ class ManageSpecialty extends Component {
                                                             <button
                                                                 type="button"
                                                                 className="manage-specialty__action-button manage-specialty__action-button--delete"
+                                                                aria-label="Delete specialty"
                                                                 onClick={() => this.handleDelete(specialty.id)}
                                                             >
                                                                 <i className="fa-solid fa-trash"></i>
@@ -510,21 +513,40 @@ class ManageSpecialty extends Component {
                                 </tbody>
                             </table>
                         </div>
-                    </div>
 
-                    {totalPages > 1 && (
-                        <nav className="manage-specialty__pagination">
-                            <ul>
-                                {Array.from({ length: totalPages }, (_, i) => (
-                                    <li key={i} className={currentPage === i + 1 ? "active" : ""}>
-                                        <button onClick={() => this.handlePageChange(i + 1)}>
-                                            {i + 1}
+                        <div className="manage-specialty__footer">
+                            <span>Trang {currentPage} trên {footerTotalPages}</span>
+                            <nav className="manage-specialty__pagination">
+                                <ul>
+                                    <li>
+                                        <button
+                                            type="button"
+                                            onClick={() => this.handlePageChange(currentPage - 1)}
+                                            disabled={currentPage <= 1}
+                                        >
+                                            Trước
                                         </button>
                                     </li>
-                                ))}
-                            </ul>
-                        </nav>
-                    )}
+                                    {Array.from({ length: footerTotalPages }, (_, i) => (
+                                        <li key={i} className={currentPage === i + 1 ? "active" : ""}>
+                                            <button type="button" onClick={() => this.handlePageChange(i + 1)}>
+                                                {i + 1}
+                                            </button>
+                                        </li>
+                                    ))}
+                                    <li>
+                                        <button
+                                            type="button"
+                                            onClick={() => this.handlePageChange(currentPage + 1)}
+                                            disabled={currentPage >= footerTotalPages}
+                                        >
+                                            Sau
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
 
                     {isOpenPreview && (
                         <div className="manage-specialty__preview-backdrop" onClick={this.closePreview}>

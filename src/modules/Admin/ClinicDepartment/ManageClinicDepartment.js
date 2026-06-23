@@ -395,6 +395,7 @@ class ManageClinicDepartment extends Component {
                           <button
                             type="button"
                             className="manage-clinic-department__action manage-clinic-department__action--edit"
+                            aria-label="Edit department"
                             onClick={() => this.openEditModal(department)}
                           >
                             <i className="fas fa-edit"></i>

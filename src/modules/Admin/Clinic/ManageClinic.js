@@ -316,8 +316,6 @@ class ManageClinic extends Component {
     const totalPages = this.getTotalPages();
     const { currentPage } = this.state;
 
-    if (totalPages <= 1) return null;
-
     return (
       <div className="manage-clinic__pagination">
         <button
@@ -344,6 +342,18 @@ class ManageClinic extends Component {
         >
           Sau
         </button>
+      </div>
+    );
+  };
+
+  renderFooter = () => {
+    const totalPages = this.getTotalPages();
+    const { currentPage } = this.state;
+
+    return (
+      <div className="manage-clinic__footer">
+        <span>Trang {currentPage} trên {totalPages}</span>
+        {this.renderPagination()}
       </div>
     );
   };
@@ -424,6 +434,7 @@ class ManageClinic extends Component {
         </div>
 
         <div className="manage-clinic__table-wrapper mt-4">
+          <div className="manage-clinic__table-scroll">
           <table className="manage-clinic__table">
             <thead>
               <tr>
@@ -468,6 +479,7 @@ class ManageClinic extends Component {
                           <button
                             type="button"
                             className="manage-clinic__image prevent-row-drag"
+                            aria-label="Preview clinic image"
                             onClick={() => this.openPreview(clinic.image)}
                           >
                             <img src={imageSrc} alt={clinic.name || "clinic"} />
@@ -493,6 +505,7 @@ class ManageClinic extends Component {
                           <button
                             type="button"
                             className="btn-action btn-edit"
+                            aria-label="Edit clinic"
                             onClick={() => this.handleEdit(clinic)}
                             title="Sửa phòng khám"
                           >
@@ -502,6 +515,7 @@ class ManageClinic extends Component {
                           <button
                             type="button"
                             className="btn-action btn-delete"
+                            aria-label="Delete clinic"
                             onClick={() => this.handleDelete(clinic)}
                             title="Xóa phòng khám"
                           >
@@ -522,9 +536,9 @@ class ManageClinic extends Component {
               )}
             </tbody>
           </table>
+          </div>
+          {this.renderFooter()}
         </div>
-
-        {this.renderPagination()}
 
         {isOpenPreview && (
           <div className="manage-clinic__preview" onClick={this.closePreview}>

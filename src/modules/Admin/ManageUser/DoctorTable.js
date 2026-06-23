@@ -300,8 +300,6 @@ class DoctorTable extends Component {
     const totalPages = this.getTotalPages();
     const { currentPage } = this.state;
 
-    if (totalPages <= 1) return null;
-
     return (
       <div className="doctor-table__pagination">
         <button
@@ -328,6 +326,18 @@ class DoctorTable extends Component {
         >
           Sau
         </button>
+      </div>
+    );
+  };
+
+  renderFooter = () => {
+    const totalPages = this.getTotalPages();
+    const { currentPage } = this.state;
+
+    return (
+      <div className="doctor-table__footer">
+        <span>Trang {currentPage} trên {totalPages}</span>
+        {this.renderPagination()}
       </div>
     );
   };
@@ -404,6 +414,7 @@ class DoctorTable extends Component {
         </div>
 
         <div className="doctor-table__table-wrapper mt-4">
+          <div className="doctor-table__table-scroll">
           <table className="doctor-table__table">
             <thead>
               <tr>
@@ -484,6 +495,7 @@ class DoctorTable extends Component {
                         <button
                           type="button"
                           className="doctor-table__edit-button prevent-row-drag"
+                          aria-label="Edit doctor information"
                           onClick={() => this.handleEditDoctor(doctor)}
                           title="Sửa thông tin bác sĩ"
                         >
@@ -502,9 +514,9 @@ class DoctorTable extends Component {
               )}
             </tbody>
           </table>
+          </div>
+          {this.renderFooter()}
         </div>
-
-        {this.renderPagination()}
       </div>
     );
   }

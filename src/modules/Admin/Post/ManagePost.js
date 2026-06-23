@@ -346,6 +346,7 @@ class ManagePost extends Component {
             isOrderChanged,
         } = this.state;
         const canDragDrop = this.canEnableDragDrop();
+        const footerTotalPages = Math.max(totalPages, 1);
 
         return (
             <div className="manage-post-container">
@@ -503,6 +504,7 @@ class ManagePost extends Component {
                                                             <button
                                                                 type="button"
                                                                 className="manage-post__action-button manage-post__action-button--edit"
+                                                                aria-label="Edit post"
                                                                 onClick={() => this.handleEditPost(post)}
                                                             >
                                                                 <i className="fas fa-edit"></i>
@@ -510,6 +512,7 @@ class ManagePost extends Component {
                                                             <button
                                                                 type="button"
                                                                 className="manage-post__action-button manage-post__action-button--delete"
+                                                                aria-label="Delete post"
                                                                 onClick={() => this.handleDeletePost(post.id)}
                                                             >
                                                                 <i className="fa-solid fa-trash"></i>
@@ -529,26 +532,46 @@ class ManagePost extends Component {
                                 </tbody>
                             </table>
                         </div>
-                    </div>
 
-                    {totalPages > 1 && (
-                        <nav className="manage-post__pagination">
-                            <ul>
-                                {Array.from({ length: totalPages }, (_, index) => (
-                                    <li
-                                        key={index}
-                                        className={currentPage === index + 1 ? "active" : ""}
-                                    >
+                        <div className="manage-post__footer">
+                            <span>Trang {currentPage} trên {footerTotalPages}</span>
+                            <nav className="manage-post__pagination">
+                                <ul>
+                                    <li>
                                         <button
-                                            onClick={() => this.handlePageChange(index + 1)}
+                                            type="button"
+                                            onClick={() => this.handlePageChange(currentPage - 1)}
+                                            disabled={currentPage <= 1}
                                         >
-                                            {index + 1}
+                                            Trước
                                         </button>
                                     </li>
-                                ))}
-                            </ul>
-                        </nav>
-                    )}
+                                    {Array.from({ length: footerTotalPages }, (_, index) => (
+                                        <li
+                                            key={index}
+                                            className={currentPage === index + 1 ? "active" : ""}
+                                        >
+                                            <button
+                                                type="button"
+                                                onClick={() => this.handlePageChange(index + 1)}
+                                            >
+                                                {index + 1}
+                                            </button>
+                                        </li>
+                                    ))}
+                                    <li>
+                                        <button
+                                            type="button"
+                                            onClick={() => this.handlePageChange(currentPage + 1)}
+                                            disabled={currentPage >= footerTotalPages}
+                                        >
+                                            Sau
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
 
                     {isOpenPreview && (
                         <div className="manage-post__preview-backdrop" onClick={this.closePreview}>
