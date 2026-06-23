@@ -386,9 +386,7 @@ class HomeHeader extends Component {
                         >
                           <i className="fas fa-user fa-sm fa-fw"></i>
                           <span>
-                            {language === languages.VI
-                              ? "Chỉnh sửa thông tin cá nhân"
-                              : "Edit profile"}
+                            <FormattedMessage id="menu.patient.profile" />
                           </span>
                         </div>
                         <div
