@@ -7,6 +7,8 @@ import "./TableManageUser.scss";
 import Lightbox from "react-image-lightbox";
 import "react-image-lightbox/style.css";
 import { FormattedMessage } from "react-intl";
+import { getLookUp } from "../../../services/userService";
+import { languages } from "../../../utils/constant";
 
 class TableManageUser extends Component {
   constructor(props) {
@@ -22,6 +24,7 @@ class TableManageUser extends Component {
       previewImg: "",
       IsOpenModalEdit: false,
       userEdit: {},
+      locationLabels: {},
     };
   }
 
@@ -32,8 +35,53 @@ class TableManageUser extends Component {
   componentDidUpdate(prevProps) {
     if (prevProps.ListUser !== this.props.ListUser) {
       this.setState({ Users: this.props.ListUser });
+      this.loadLocationLabels(this.props.ListUser || []);
+    }
+
+    if (prevProps.language !== this.props.language) {
+      this.loadLocationLabels(this.state.Users || []);
     }
   }
+
+  loadLocationLabels = async (users) => {
+    const provinceCodes = [...new Set(users.map((user) => user.provinceCode).filter(Boolean))];
+    const districtParents = [...new Set(users.map((user) => user.provinceCode).filter(Boolean))];
+    const wardParents = [...new Set(users.map((user) => user.districtCode).filter(Boolean))];
+
+    const [provinceRes, districtResponses, wardResponses] = await Promise.all([
+      getLookUp("PROVINCE"),
+      Promise.all(districtParents.map((provinceCode) => getLookUp("DISTRICT", provinceCode))),
+      Promise.all(wardParents.map((districtCode) => getLookUp("WARD", districtCode))),
+    ]);
+
+    const labels = {};
+    const collect = (items = []) => {
+      items.forEach((item) => {
+        if (item?.keyMap) {
+          labels[item.keyMap] =
+            this.props.language === languages.VI
+              ? item.value_vi || item.value_en || item.keyMap
+              : item.value_en || item.value_vi || item.keyMap;
+        }
+      });
+    };
+
+    collect((provinceRes?.data || []).filter((item) => provinceCodes.includes(item.keyMap)));
+    districtResponses.forEach((res) => collect(res?.data || []));
+    wardResponses.forEach((res) => collect(res?.data || []));
+
+    this.setState({ locationLabels: labels });
+  };
+
+  formatFullAddress = (user) => {
+    const { locationLabels } = this.state;
+    return [
+      user.address,
+      locationLabels[user.wardCode] || user.wardCode,
+      locationLabels[user.districtCode] || user.districtCode,
+      locationLabels[user.provinceCode] || user.provinceCode,
+    ].filter(Boolean).join(", ");
+  };
 
   handleSearchChange = (e) => {
     this.setState({
@@ -196,11 +244,11 @@ class TableManageUser extends Component {
                         <td>{item.email}</td>
                         <td
                           className="table-manage-user__address"
-                          title={item.address}
+                          title={this.formatFullAddress(item)}
                         >
-                          {item.address?.length > 25
-                            ? item.address.slice(0, 25) + "..."
-                            : item.address || ""}
+                          {this.formatFullAddress(item).length > 35
+                            ? this.formatFullAddress(item).slice(0, 35) + "..."
+                            : this.formatFullAddress(item) || ""}
                         </td>
                         <td>
                           {item.image ? (
@@ -306,6 +354,7 @@ class TableManageUser extends Component {
 
 const mapStateToProps = (state) => ({
   ListUser: state.admin.user,
+  language: state.app.language,
 });
 
 const mapDispatchToProps = (dispatch) => ({

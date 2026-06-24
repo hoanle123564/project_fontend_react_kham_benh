@@ -105,7 +105,8 @@
         }
     }
 
-    &.manage-schedule-container--doctor {
+    &.manage-schedule-container--doctor,
+    &.manage-schedule-container--admin {
         min-height: calc(100vh - 64px);
         padding: 24px;
         background: #f6f8fb;
@@ -170,6 +171,27 @@
                 border-color: #0f766e;
                 box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.16);
             }
+        }
+
+        .schedule-doctor-select__control {
+            min-height: 40px;
+            border-color: #cbd5e1;
+            border-radius: 8px;
+            box-shadow: none;
+
+            &:hover {
+                border-color: #0f766e;
+            }
+        }
+
+        .schedule-doctor-select__control--is-focused {
+            border-color: #0f766e;
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.16);
+        }
+
+        .schedule-doctor-select__single-value {
+            color: #1f2937;
+            font-size: 14px;
         }
 
         .pick-hour-container {
@@ -304,7 +326,8 @@
     }
 
     @media (max-width: 768px) {
-        &.manage-schedule-container--doctor {
+        &.manage-schedule-container--doctor,
+        &.manage-schedule-container--admin {
             padding: 16px;
 
             > .container {

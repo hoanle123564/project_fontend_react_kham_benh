@@ -11,8 +11,9 @@ import "./PatientProfile.scss";
 import userDefault from "../../../../assets/user_default_1.png";
 
 import EditModal from "./EditModal";
-import { getPatientProfile, updatePatientProfile } from "../../../../services/userService";
+import { getLookUp, getPatientProfile, updatePatientProfile } from "../../../../services/userService";
 import { buildImageSrc } from "../../../../utils/imageUtils";
+import { languages } from "../../../../utils/constant";
 
 class PatientProfile extends Component {
     constructor(props) {
@@ -23,6 +24,7 @@ class PatientProfile extends Component {
             isSaving: false,
             errorMessage: "",
             patientProfile: props.patientInfo || null,
+            locationLabels: {},
         };
     }
 
@@ -33,6 +35,10 @@ class PatientProfile extends Component {
     componentDidUpdate(prevProps) {
         if (prevProps.patientInfo !== this.props.patientInfo && !this.state.patientProfile) {
             this.setState({ patientProfile: this.props.patientInfo });
+        }
+
+        if (prevProps.language !== this.props.language && this.state.patientProfile) {
+            this.loadLocationLabels(this.state.patientProfile);
         }
     }
 
@@ -49,6 +55,7 @@ class PatientProfile extends Component {
             const res = await getPatientProfile();
 
             if (res?.errCode === 0) {
+                await this.loadLocationLabels(res.data || {});
                 this.setState({
                     patientProfile: res.data || null,
                     isLoading: false,
@@ -82,6 +89,7 @@ class PatientProfile extends Component {
             const res = await updatePatientProfile(data);
 
             if (res?.errCode === 0) {
+                await this.loadLocationLabels(res.data || {});
                 this.props.patientEditSuccess(res.data);
                 this.setState({
                     patientProfile: res.data || null,
@@ -122,6 +130,37 @@ class PatientProfile extends Component {
         }
 
         return `${value}${suffix}`;
+    };
+
+    loadLocationLabels = async (user = {}) => {
+        const [provinceRes, districtRes, wardRes] = await Promise.all([
+            getLookUp("PROVINCE"),
+            user.provinceCode ? getLookUp("DISTRICT", user.provinceCode) : Promise.resolve({ data: [] }),
+            user.districtCode ? getLookUp("WARD", user.districtCode) : Promise.resolve({ data: [] }),
+        ]);
+
+        const labels = {};
+        const collect = (items = []) => {
+            items.forEach((item) => {
+                if (item?.keyMap) {
+                    labels[item.keyMap] =
+                        this.props.language === languages.VI
+                            ? item.value_vi || item.value_en || item.keyMap
+                            : item.value_en || item.value_vi || item.keyMap;
+                }
+            });
+        };
+
+        collect(provinceRes?.data || []);
+        collect(districtRes?.data || []);
+        collect(wardRes?.data || []);
+
+        this.setState({ locationLabels: labels });
+    };
+
+    displayLocation = (code) => {
+        if (!code) return this.getText("empty");
+        return this.state.locationLabels[code] || code;
     };
 
     renderDetailItem = (icon, label, value) => (
@@ -199,6 +238,9 @@ class PatientProfile extends Component {
                                     {this.renderDetailItem("fas fa-phone-alt", this.getText("phone"), this.displayValue(user.phoneNumber))}
                                     {this.renderDetailItem("fas fa-venus-mars", this.getText("gender"), this.formatGender(user.gender))}
                                     {this.renderDetailItem("fas fa-map-marker-alt", this.getText("address"), this.displayValue(user.address))}
+                                    {this.renderDetailItem("fas fa-city", this.getText("province"), this.displayLocation(user.provinceCode))}
+                                    {this.renderDetailItem("fas fa-location-dot", this.getText("district"), this.displayLocation(user.districtCode))}
+                                    {this.renderDetailItem("fas fa-map-pin", this.getText("ward"), this.displayLocation(user.wardCode))}
 
                                     <h3>{this.getText("health")}</h3>
                                     {this.renderDetailItem("fas fa-id-card", this.getText("medicalCode"), this.displayValue(user.medicalCode))}

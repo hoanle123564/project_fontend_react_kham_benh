@@ -6,6 +6,7 @@ import _ from "lodash";
 
 import { languages } from "../../../utils/constant";
 import * as action from "../../../store/actions";
+import { getLookUp } from "../../../services/userService";
 
 class UserEdit extends Component {
   constructor(props) {
@@ -17,6 +18,9 @@ class UserEdit extends Component {
       lastName: "",
       phoneNumber: "",
       address: "",
+      provinceCode: "",
+      districtCode: "",
+      wardCode: "",
       gender: "",
       positionId: "",
       roleId: "",
@@ -26,17 +30,22 @@ class UserEdit extends Component {
       genderArr: [],
       positionArr: [],
       roleArr: [],
+      provinceOptions: [],
+      districtOptions: [],
+      wardOptions: [],
       errors: {}, // lưu lỗi từng dòng
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const user = this.props.CurrentUser;
-    console.log('CurrentUser', user);
 
     if (user && !_.isEmpty(user)) {
       this.setState({
         ...user,
+        provinceCode: user.provinceCode || "",
+        districtCode: user.districtCode || "",
+        wardCode: user.wardCode || "",
         positionId: user.positionId || "",
         previewImg: user.image ? `data:image/jpeg;base64,${user.image}` : "",
         avatar: user.image || "",
@@ -46,6 +55,7 @@ class UserEdit extends Component {
     this.props.getGender();
     this.props.getPosition();
     this.props.getRole();
+    await this.loadLocationOptions(user?.provinceCode || "", user?.districtCode || "");
   }
 
   componentDidUpdate(prevProps) {
@@ -59,6 +69,43 @@ class UserEdit extends Component {
 
   toggle = () => {
     this.props.toggleUser();
+  };
+
+  loadLocationOptions = async (provinceCode = "", districtCode = "") => {
+    const [provinceRes, districtRes, wardRes] = await Promise.all([
+      getLookUp("PROVINCE"),
+      provinceCode ? getLookUp("DISTRICT", provinceCode) : Promise.resolve({ data: [] }),
+      districtCode ? getLookUp("WARD", districtCode) : Promise.resolve({ data: [] }),
+    ]);
+
+    this.setState({
+      provinceOptions: provinceRes?.errCode === 0 ? provinceRes.data || [] : [],
+      districtOptions: districtRes?.errCode === 0 ? districtRes.data || [] : [],
+      wardOptions: wardRes?.errCode === 0 ? wardRes.data || [] : [],
+    });
+  };
+
+  loadDistrictOptions = async (provinceCode) => {
+    if (!provinceCode) {
+      this.setState({ districtOptions: [], wardOptions: [] });
+      return;
+    }
+
+    const res = await getLookUp("DISTRICT", provinceCode);
+    this.setState({
+      districtOptions: res?.errCode === 0 ? res.data || [] : [],
+      wardOptions: [],
+    });
+  };
+
+  loadWardOptions = async (districtCode) => {
+    if (!districtCode) {
+      this.setState({ wardOptions: [] });
+      return;
+    }
+
+    const res = await getLookUp("WARD", districtCode);
+    this.setState({ wardOptions: res?.errCode === 0 ? res.data || [] : [] });
   };
 
   handleOnchange = (event, field) => {
@@ -75,7 +122,26 @@ class UserEdit extends Component {
         updatedState.positionId = "";
       }
 
+      if (field === "provinceCode") {
+        updatedState.districtCode = "";
+        updatedState.wardCode = "";
+        updatedState.districtOptions = [];
+        updatedState.wardOptions = [];
+      }
+
+      if (field === "districtCode") {
+        updatedState.wardCode = "";
+        updatedState.wardOptions = [];
+      }
+
       return updatedState;
+    }, () => {
+      if (field === "provinceCode") {
+        this.loadDistrictOptions(value);
+      }
+      if (field === "districtCode") {
+        this.loadWardOptions(value);
+      }
     });
   };
 
@@ -104,6 +170,9 @@ class UserEdit extends Component {
       lastName,
       phoneNumber,
       address,
+      provinceCode,
+      districtCode,
+      wardCode,
       gender,
       roleId,
     } = this.state;
@@ -126,6 +195,15 @@ class UserEdit extends Component {
     if (!address || address.trim() === "")
       errors.address = this.getText("user-manage.error-address-required", "Please enter your address!");
 
+    if (!provinceCode)
+      errors.provinceCode = this.getText("user-manage.error-province-required", "Please select province/city!");
+
+    if (!districtCode)
+      errors.districtCode = this.getText("user-manage.error-district-required", "Please select district!");
+
+    if (!wardCode)
+      errors.wardCode = this.getText("user-manage.error-ward-required", "Please select ward!");
+
     if (!gender)
       errors.gender = this.getText("user-manage.error-gender-required", "Please select gender!");
 
@@ -146,6 +224,9 @@ class UserEdit extends Component {
       firstName: this.state.firstName,
       lastName: this.state.lastName,
       address: this.state.address,
+      provinceCode: this.state.provinceCode,
+      districtCode: this.state.districtCode,
+      wardCode: this.state.wardCode,
       gender: this.state.gender,
       positionId: this.state.positionId,
       roleId: this.state.roleId,
@@ -160,6 +241,9 @@ class UserEdit extends Component {
       genderArr,
       positionArr,
       roleArr,
+      provinceOptions,
+      districtOptions,
+      wardOptions,
       // previewImg,
       errors,
     } = this.state;
@@ -167,7 +251,7 @@ class UserEdit extends Component {
     const chooseLabel = this.getText("user-manage.choose", "Choose...");
 
     return (
-      <Modal isOpen={this.props.isOpen} toggle={this.toggle} size="lg" centered>
+      <Modal isOpen={this.props.isOpen} toggle={this.toggle} size="lg" centered className="user-modal">
         <ModalHeader toggle={this.toggle}>
           <i className="fa-solid fa-user-pen me-2"></i>
           <FormattedMessage id="user-manage.edit-title" defaultMessage="Edit user" />
@@ -255,6 +339,73 @@ class UserEdit extends Component {
               {errors.address && (
                 <div className="error-text">{errors.address}</div>
               )}
+            </div>
+          </div>
+
+          <div className="row mb-3">
+            <div className="col-md-4">
+              <label>
+                <FormattedMessage id="user-manage.province" defaultMessage="Province/City" />
+              </label>
+              <select
+                className={`form-select ${errors.provinceCode ? "input-error" : ""}`}
+                value={this.state.provinceCode}
+                onChange={(e) => this.handleOnchange(e, "provinceCode")}
+              >
+                <option value="">
+                  <FormattedMessage id="user-manage.choose-province" defaultMessage="Choose province/city" />
+                </option>
+                {provinceOptions.map((item) => (
+                  <option key={`${item.type}-${item.keyMap}`} value={item.keyMap}>
+                    {language === languages.VI ? item.value_vi : item.value_en}
+                  </option>
+                ))}
+              </select>
+              {errors.provinceCode && <div className="error-text">{errors.provinceCode}</div>}
+            </div>
+
+            <div className="col-md-4">
+              <label>
+                <FormattedMessage id="user-manage.district" defaultMessage="District" />
+              </label>
+              <select
+                className={`form-select ${errors.districtCode ? "input-error" : ""}`}
+                value={this.state.districtCode}
+                onChange={(e) => this.handleOnchange(e, "districtCode")}
+                disabled={!this.state.provinceCode}
+              >
+                <option value="">
+                  <FormattedMessage id="user-manage.choose-district" defaultMessage="Choose district" />
+                </option>
+                {districtOptions.map((item) => (
+                  <option key={`${item.type}-${item.keyMap}`} value={item.keyMap}>
+                    {language === languages.VI ? item.value_vi : item.value_en}
+                  </option>
+                ))}
+              </select>
+              {errors.districtCode && <div className="error-text">{errors.districtCode}</div>}
+            </div>
+
+            <div className="col-md-4">
+              <label>
+                <FormattedMessage id="user-manage.ward" defaultMessage="Ward" />
+              </label>
+              <select
+                className={`form-select ${errors.wardCode ? "input-error" : ""}`}
+                value={this.state.wardCode}
+                onChange={(e) => this.handleOnchange(e, "wardCode")}
+                disabled={!this.state.districtCode}
+              >
+                <option value="">
+                  <FormattedMessage id="user-manage.choose-ward" defaultMessage="Choose ward" />
+                </option>
+                {wardOptions.map((item) => (
+                  <option key={`${item.type}-${item.keyMap}`} value={item.keyMap}>
+                    {language === languages.VI ? item.value_vi : item.value_en}
+                  </option>
+                ))}
+              </select>
+              {errors.wardCode && <div className="error-text">{errors.wardCode}</div>}
             </div>
           </div>
 

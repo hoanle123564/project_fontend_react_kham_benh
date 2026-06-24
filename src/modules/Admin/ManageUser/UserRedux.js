@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { languages } from "../../../utils/constant";
 import * as action from "../../../store/actions";
+import { getLookUp } from "../../../services/userService";
 import "./UserRedux.scss";
 
 class UserRedux extends Component {
@@ -16,6 +17,9 @@ class UserRedux extends Component {
       lastName: "",
       phoneNumber: "",
       address: "",
+      provinceCode: "",
+      districtCode: "",
+      wardCode: "",
       gender: "",
       position: "",
       role: "",
@@ -25,6 +29,9 @@ class UserRedux extends Component {
       genderArr: [],
       positionArr: [],
       roleArr: [],
+      provinceOptions: [],
+      districtOptions: [],
+      wardOptions: [],
       // lưu lỗi từng dòng
       errors: {},
     };
@@ -34,6 +41,7 @@ class UserRedux extends Component {
     this.props.getGender();
     this.props.getPosition();
     this.props.getRole();
+    await this.loadProvinceOptions();
   }
 
   componentDidUpdate(prevProps) {
@@ -54,14 +62,49 @@ class UserRedux extends Component {
         lastName: "",
         phoneNumber: "",
         address: "",
+        provinceCode: "",
+        districtCode: "",
+        wardCode: "",
         gender: "",
         position: "",
         role: "",
         avatar: "",
         previewImg: "",
+        districtOptions: [],
+        wardOptions: [],
         errors: {},
       });
   }
+
+  loadProvinceOptions = async () => {
+    const res = await getLookUp("PROVINCE");
+    if (res?.errCode === 0) {
+      this.setState({ provinceOptions: res.data || [] });
+    }
+  };
+
+  loadDistrictOptions = async (provinceCode) => {
+    if (!provinceCode) {
+      this.setState({ districtOptions: [], wardOptions: [] });
+      return;
+    }
+
+    const res = await getLookUp("DISTRICT", provinceCode);
+    this.setState({
+      districtOptions: res?.errCode === 0 ? res.data || [] : [],
+      wardOptions: [],
+    });
+  };
+
+  loadWardOptions = async (districtCode) => {
+    if (!districtCode) {
+      this.setState({ wardOptions: [] });
+      return;
+    }
+
+    const res = await getLookUp("WARD", districtCode);
+    this.setState({ wardOptions: res?.errCode === 0 ? res.data || [] : [] });
+  };
 
   toggleModal = () => {
     this.setState({ isModalOpen: !this.state.isModalOpen });
@@ -81,7 +124,26 @@ class UserRedux extends Component {
         updatedState.position = "";
       }
 
+      if (field === "provinceCode") {
+        updatedState.districtCode = "";
+        updatedState.wardCode = "";
+        updatedState.districtOptions = [];
+        updatedState.wardOptions = [];
+      }
+
+      if (field === "districtCode") {
+        updatedState.wardCode = "";
+        updatedState.wardOptions = [];
+      }
+
       return updatedState;
+    }, () => {
+      if (field === "provinceCode") {
+        this.loadDistrictOptions(value);
+      }
+      if (field === "districtCode") {
+        this.loadWardOptions(value);
+      }
     });
   };
 
@@ -102,7 +164,17 @@ class UserRedux extends Component {
 
   // Kiểm tra và gán lỗi từng dòng
   checkValidateInput = () => {
-    const { email, password, firstName, lastName, phoneNumber, address } =
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      phoneNumber,
+      address,
+      provinceCode,
+      districtCode,
+      wardCode,
+    } =
       this.state;
     const errors = {};
     const { language } = this.props;
@@ -159,9 +231,19 @@ class UserRedux extends Component {
           ? "Vui lòng chọn địa chỉ!"
           : "Please select an address!";
 
+    if (!provinceCode)
+      errors.provinceCode = this.getText("user-manage.error-province-required", "Please select province/city!");
+    if (!districtCode)
+      errors.districtCode = this.getText("user-manage.error-district-required", "Please select district!");
+    if (!wardCode)
+      errors.wardCode = this.getText("user-manage.error-ward-required", "Please select ward!");
+
     this.setState({ errors });
     return Object.keys(errors).length === 0;
   };
+
+  getText = (id, defaultMessage) =>
+    this.props.intl.formatMessage({ id, defaultMessage });
 
   handleSaveUser = async () => {
     let valid = this.checkValidateInput();
@@ -173,6 +255,9 @@ class UserRedux extends Component {
       firstName: this.state.firstName,
       lastName: this.state.lastName,
       address: this.state.address,
+      provinceCode: this.state.provinceCode,
+      districtCode: this.state.districtCode,
+      wardCode: this.state.wardCode,
       gender: this.state.gender,
       positionId: this.state.position,
       roleId: this.state.role,
@@ -184,7 +269,15 @@ class UserRedux extends Component {
   };
 
   render() {
-    const { genderArr, positionArr, roleArr, errors } = this.state;
+    const {
+      genderArr,
+      positionArr,
+      roleArr,
+      provinceOptions,
+      districtOptions,
+      wardOptions,
+      errors,
+    } = this.state;
     const { language, intl } = this.props;
 
     return (
@@ -296,6 +389,73 @@ class UserRedux extends Component {
                 {errors.address && (
                   <div className="error-text">{errors.address}</div>
                 )}
+              </div>
+            </div>
+
+            <div className="row mb-3">
+              <div className="col-md-4">
+                <label>
+                  <FormattedMessage id="user-manage.province" defaultMessage="Province/City" />
+                </label>
+                <select
+                  className={`form-select ${errors.provinceCode ? "input-error" : ""}`}
+                  value={this.state.provinceCode}
+                  onChange={(e) => this.handleChangeInput(e, "provinceCode")}
+                >
+                  <option value="">
+                    {intl.formatMessage({ id: "user-manage.choose-province" })}
+                  </option>
+                  {provinceOptions.map((item) => (
+                    <option key={`${item.type}-${item.keyMap}`} value={item.keyMap}>
+                      {language === languages.VI ? item.value_vi : item.value_en}
+                    </option>
+                  ))}
+                </select>
+                {errors.provinceCode && <div className="error-text">{errors.provinceCode}</div>}
+              </div>
+
+              <div className="col-md-4">
+                <label>
+                  <FormattedMessage id="user-manage.district" defaultMessage="District" />
+                </label>
+                <select
+                  className={`form-select ${errors.districtCode ? "input-error" : ""}`}
+                  value={this.state.districtCode}
+                  onChange={(e) => this.handleChangeInput(e, "districtCode")}
+                  disabled={!this.state.provinceCode}
+                >
+                  <option value="">
+                    {intl.formatMessage({ id: "user-manage.choose-district" })}
+                  </option>
+                  {districtOptions.map((item) => (
+                    <option key={`${item.type}-${item.keyMap}`} value={item.keyMap}>
+                      {language === languages.VI ? item.value_vi : item.value_en}
+                    </option>
+                  ))}
+                </select>
+                {errors.districtCode && <div className="error-text">{errors.districtCode}</div>}
+              </div>
+
+              <div className="col-md-4">
+                <label>
+                  <FormattedMessage id="user-manage.ward" defaultMessage="Ward" />
+                </label>
+                <select
+                  className={`form-select ${errors.wardCode ? "input-error" : ""}`}
+                  value={this.state.wardCode}
+                  onChange={(e) => this.handleChangeInput(e, "wardCode")}
+                  disabled={!this.state.districtCode}
+                >
+                  <option value="">
+                    {intl.formatMessage({ id: "user-manage.choose-ward" })}
+                  </option>
+                  {wardOptions.map((item) => (
+                    <option key={`${item.type}-${item.keyMap}`} value={item.keyMap}>
+                      {language === languages.VI ? item.value_vi : item.value_en}
+                    </option>
+                  ))}
+                </select>
+                {errors.wardCode && <div className="error-text">{errors.wardCode}</div>}
               </div>
             </div>
 

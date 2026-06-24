@@ -1,32 +1,78 @@
+.patient-profile-modal {
+    .modal-content {
+        border: 1px solid #dbe3ef;
+        border-radius: 8px;
+        box-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
+    }
+
+    .modal-header,
+    .modal-footer {
+        border-color: #e5eaf1;
+        background: #f8fafc;
+    }
+
+    label {
+        margin-bottom: 6px;
+        color: #475569;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .form-control,
+    .form-select {
+        min-height: 40px;
+        border-color: #cbd5e1;
+        border-radius: 8px;
+        color: #1f2937;
+
+        &:focus {
+            border-color: #0f766e;
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.16);
+        }
+    }
+
+    .btn-primary {
+        border-color: #0f766e !important;
+        background: #0f766e !important;
+        font-weight: 700;
+
+        &:hover,
+        &:focus {
+            border-color: #115e59 !important;
+            background: #115e59 !important;
+        }
+    }
+}
+
 .avatar-preview {
     width: 130px;
     height: 130px;
-    border-radius: 12px;
+    border-radius: 8px;
     object-fit: cover;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-    border: 3px solid #e2e2e2;
+    box-shadow: none;
+    border: 1px solid #dbe3ef;
 
 }
 
 .btn-select-image {
     background-color: white;
-    border: 2px solid #2a73ff;
-    color: #2a73ff;
+    border: 1px solid #0f766e;
+    color: #0f766e;
     font-weight: 600;
-    padding: 6px 14px;
+    padding: 7px 14px;
     border-radius: 8px;
     cursor: pointer;
     transition: 0.2s ease;
 }
 
 .btn-select-image:hover {
-    background-color: #e8f0ff;
+    background-color: #e8f5f3;
 }
 
 .btn-remove-image {
     background-color: white;
-    border: 2px solid #e54545;
-    color: #e54545;
+    border: 1px solid #be123c;
+    color: #be123c;
     font-weight: 600;
     padding: 6px 14px;
     border-radius: 8px;
@@ -35,27 +81,18 @@
 }
 
 .btn-remove-image:hover {
-    background-color: #ffe5e5;
-}
-
-.avatar-preview {
-    width: 130px;
-    height: 130px;
-    border-radius: 12px;
-    object-fit: cover;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-    border: 3px solid #e2e2e2;
+    background-color: #fff1f2;
 }
 
 .no-image-box {
     height: 130px;
     width: 100%;
-    border: 2px solid #2a73ff;
-    border-radius: 12px;
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #555;
+    color: #64748b;
     font-weight: 600;
-    background: #f8fbff;
+    background: #f8fafc;
 }

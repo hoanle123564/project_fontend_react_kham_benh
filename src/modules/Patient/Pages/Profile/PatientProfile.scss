@@ -2,8 +2,9 @@
 .profile-card {
     background: white;
     padding: 30px 35px;
-    border-radius: 14px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
+    box-shadow: none;
     animation: fadeInCard 0.35s ease;
 }
 
@@ -25,7 +26,7 @@
     gap: 22px;
     margin-bottom: 20px;
     padding-bottom: 20px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #e5eaf1;
 }
 
 .avatar-box {
@@ -33,9 +34,9 @@
     height: 90px;
     border-radius: 50%;
     overflow: hidden;
-    border: 3px solid #0f9c89;
+    border: 3px solid #0f766e;
     flex-shrink: 0;
-    box-shadow: 0 3px 12px rgba(15, 156, 137, 0.25);
+    box-shadow: 0 0 0 4px #e8f5f3;
 
     img {
         width: 100%;
@@ -48,16 +49,16 @@
     .name {
         font-size: 1.4rem;
         font-weight: 700;
-        color: #222;
+        color: #111827;
         margin: 0 0 4px 0;
     }
 
     .role {
         font-size: 0.9rem;
-        color: #0f9c89;
+        color: #0f766e;
         font-weight: 500;
         margin: 0;
-        background: rgba(15, 156, 137, 0.08);
+        background: #e8f5f3;
         display: inline-block;
         padding: 2px 10px;
         border-radius: 20px;
@@ -71,7 +72,7 @@
         margin: 18px 0 8px;
         font-size: 16px;
         font-weight: 700;
-        color: #22313f;
+        color: #111827;
     }
 }
 
@@ -80,7 +81,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 13px 0;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #e5eaf1;
     font-size: 15px;
 
     &:last-child {
@@ -91,17 +92,17 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        color: #555;
+        color: #475569;
 
         i {
             width: 18px;
-            color: #0f9c89;
+            color: #0f766e;
         }
     }
 
     .right {
         font-weight: 600;
-        color: #222;
+        color: #111827;
         max-width: 55%;
         text-align: right;
         overflow-wrap: anywhere;
@@ -110,8 +111,9 @@
 
 .profile-state {
     background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
+    box-shadow: none;
     color: #55666f;
     font-weight: 600;
     padding: 28px;
@@ -119,8 +121,8 @@
 
     button {
         border: none;
-        border-radius: 6px;
-        background: #0f9c89;
+        border-radius: 8px;
+        background: #0f766e;
         color: #fff;
         cursor: pointer;
         font-weight: 600;
@@ -164,13 +166,12 @@
 }
 
 .edit-btn {
-    background: #0f9c89;
+    background: #0f766e;
     color: white;
-    box-shadow: 0 3px 10px rgba(15, 156, 137, 0.3);
+    box-shadow: none;
 
     &:hover {
-        background: #0b8070;
-        box-shadow: 0 4px 14px rgba(15, 156, 137, 0.4);
+        background: #115e59;
     }
 
     &:disabled {

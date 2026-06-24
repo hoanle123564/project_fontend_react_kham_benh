@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import moment from "moment";
 import user_default from "../../../../assets/user_default_1.png";
+import { getLookUp } from "../../../../services/userService";
+import { languages } from "../../../../utils/constant";
 import "./EditModal.scss";
 
 class EditModal extends Component {
@@ -14,6 +16,10 @@ class EditModal extends Component {
 
     componentDidMount() {
         this.loadUserToState(this.props.currentUser);
+        this.loadLocationOptions(
+            this.props.currentUser?.provinceCode || "",
+            this.props.currentUser?.districtCode || ""
+        );
     }
 
     componentDidUpdate(prevProps) {
@@ -22,6 +28,10 @@ class EditModal extends Component {
             (!prevProps.isOpen && this.props.isOpen)
         ) {
             this.loadUserToState(this.props.currentUser);
+            this.loadLocationOptions(
+                this.props.currentUser?.provinceCode || "",
+                this.props.currentUser?.districtCode || ""
+            );
         }
     }
 
@@ -31,6 +41,9 @@ class EditModal extends Component {
         lastName: "",
         phoneNumber: "",
         address: "",
+        provinceCode: "",
+        districtCode: "",
+        wardCode: "",
         gender: "",
         avatar: "",
         previewImg: user_default,
@@ -40,6 +53,9 @@ class EditModal extends Component {
         bloodType: "",
         occupation: "",
         allergies: "",
+        provinceOptions: [],
+        districtOptions: [],
+        wardOptions: [],
         errors: {},
     });
 
@@ -62,6 +78,9 @@ class EditModal extends Component {
             lastName: user.lastName || "",
             phoneNumber: user.phoneNumber || "",
             address: user.address || "",
+            provinceCode: user.provinceCode || "",
+            districtCode: user.districtCode || "",
+            wardCode: user.wardCode || "",
             gender: user.gender || "",
             avatar: user.image || "",
             previewImg: user.image ? `data:image/jpeg;base64,${user.image}` : user_default,
@@ -75,6 +94,43 @@ class EditModal extends Component {
         });
     };
 
+    loadLocationOptions = async (provinceCode = "", districtCode = "") => {
+        const [provinceRes, districtRes, wardRes] = await Promise.all([
+            getLookUp("PROVINCE"),
+            provinceCode ? getLookUp("DISTRICT", provinceCode) : Promise.resolve({ data: [] }),
+            districtCode ? getLookUp("WARD", districtCode) : Promise.resolve({ data: [] }),
+        ]);
+
+        this.setState({
+            provinceOptions: provinceRes?.errCode === 0 ? provinceRes.data || [] : [],
+            districtOptions: districtRes?.errCode === 0 ? districtRes.data || [] : [],
+            wardOptions: wardRes?.errCode === 0 ? wardRes.data || [] : [],
+        });
+    };
+
+    loadDistrictOptions = async (provinceCode) => {
+        if (!provinceCode) {
+            this.setState({ districtOptions: [], wardOptions: [] });
+            return;
+        }
+
+        const res = await getLookUp("DISTRICT", provinceCode);
+        this.setState({
+            districtOptions: res?.errCode === 0 ? res.data || [] : [],
+            wardOptions: [],
+        });
+    };
+
+    loadWardOptions = async (districtCode) => {
+        if (!districtCode) {
+            this.setState({ wardOptions: [] });
+            return;
+        }
+
+        const res = await getLookUp("WARD", districtCode);
+        this.setState({ wardOptions: res?.errCode === 0 ? res.data || [] : [] });
+    };
+
     toggle = () => {
         if (!this.props.isSaving) {
             this.props.toggle();
@@ -84,10 +140,33 @@ class EditModal extends Component {
     handleChange = (e, field) => {
         const value = e.target.value;
 
-        this.setState((prev) => ({
-            [field]: value,
-            errors: { ...prev.errors, [field]: "" },
-        }));
+        this.setState((prev) => {
+            const nextState = {
+                [field]: value,
+                errors: { ...prev.errors, [field]: "" },
+            };
+
+            if (field === "provinceCode") {
+                nextState.districtCode = "";
+                nextState.wardCode = "";
+                nextState.districtOptions = [];
+                nextState.wardOptions = [];
+            }
+
+            if (field === "districtCode") {
+                nextState.wardCode = "";
+                nextState.wardOptions = [];
+            }
+
+            return nextState;
+        }, () => {
+            if (field === "provinceCode") {
+                this.loadDistrictOptions(value);
+            }
+            if (field === "districtCode") {
+                this.loadWardOptions(value);
+            }
+        });
     };
 
     handleImageChange = (e) => {
@@ -119,6 +198,9 @@ class EditModal extends Component {
             lastName,
             phoneNumber,
             address,
+            provinceCode,
+            districtCode,
+            wardCode,
             gender,
         } = this.state;
         const errors = {};
@@ -133,6 +215,9 @@ class EditModal extends Component {
         }
 
         if (!address.trim()) errors.address = this.getText("requiredAddress");
+        if (!provinceCode) errors.provinceCode = this.getText("requiredProvince");
+        if (!districtCode) errors.districtCode = this.getText("requiredDistrict");
+        if (!wardCode) errors.wardCode = this.getText("requiredWard");
         if (!gender) errors.gender = this.getText("requiredGender");
 
         this.setState({ errors });
@@ -148,6 +233,9 @@ class EditModal extends Component {
             lastName,
             phoneNumber,
             address,
+            provinceCode,
+            districtCode,
+            wardCode,
             gender,
             avatar,
             dateOfBirth,
@@ -164,6 +252,9 @@ class EditModal extends Component {
             lastName,
             phoneNumber,
             address,
+            provinceCode,
+            districtCode,
+            wardCode,
             gender,
             image: avatar,
             dateOfBirth,
@@ -197,12 +288,12 @@ class EditModal extends Component {
     };
 
     render() {
-        const { errors } = this.state;
+        const { errors, provinceOptions, districtOptions, wardOptions } = this.state;
         const isDefaultImage = this.state.previewImg === user_default;
         const isSaving = this.props.isSaving;
 
         return (
-            <Modal isOpen={this.props.isOpen} toggle={this.toggle} size="lg" centered>
+            <Modal isOpen={this.props.isOpen} toggle={this.toggle} size="lg" centered className="patient-profile-modal">
                 <ModalHeader toggle={this.toggle}>
                     <i className="fa-solid fa-user-pen me-2"></i>
                     {this.getText("title")}
@@ -244,6 +335,62 @@ class EditModal extends Component {
                         {this.renderInput("address", this.getText("address"), {
                             className: "col-md-12",
                         })}
+                    </div>
+
+                    <div className="row mb-3">
+                        <div className="col-md-4">
+                            <label>{this.getText("province")}</label>
+                            <select
+                                className={`form-select ${errors.provinceCode ? "input-error" : ""}`}
+                                value={this.state.provinceCode}
+                                disabled={isSaving}
+                                onChange={(e) => this.handleChange(e, "provinceCode")}
+                            >
+                                <option value="">{this.getText("chooseProvince")}</option>
+                                {provinceOptions.map((item) => (
+                                    <option key={`${item.type}-${item.keyMap}`} value={item.keyMap}>
+                                        {this.props.language === languages.VI ? item.value_vi : item.value_en}
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.provinceCode && <div className="error-text">{errors.provinceCode}</div>}
+                        </div>
+
+                        <div className="col-md-4">
+                            <label>{this.getText("district")}</label>
+                            <select
+                                className={`form-select ${errors.districtCode ? "input-error" : ""}`}
+                                value={this.state.districtCode}
+                                disabled={isSaving || !this.state.provinceCode}
+                                onChange={(e) => this.handleChange(e, "districtCode")}
+                            >
+                                <option value="">{this.getText("chooseDistrict")}</option>
+                                {districtOptions.map((item) => (
+                                    <option key={`${item.type}-${item.keyMap}`} value={item.keyMap}>
+                                        {this.props.language === languages.VI ? item.value_vi : item.value_en}
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.districtCode && <div className="error-text">{errors.districtCode}</div>}
+                        </div>
+
+                        <div className="col-md-4">
+                            <label>{this.getText("ward")}</label>
+                            <select
+                                className={`form-select ${errors.wardCode ? "input-error" : ""}`}
+                                value={this.state.wardCode}
+                                disabled={isSaving || !this.state.districtCode}
+                                onChange={(e) => this.handleChange(e, "wardCode")}
+                            >
+                                <option value="">{this.getText("chooseWard")}</option>
+                                {wardOptions.map((item) => (
+                                    <option key={`${item.type}-${item.keyMap}`} value={item.keyMap}>
+                                        {this.props.language === languages.VI ? item.value_vi : item.value_en}
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.wardCode && <div className="error-text">{errors.wardCode}</div>}
+                        </div>
                     </div>
 
                     <div className="row mb-3">

@@ -190,7 +190,7 @@ class ManageSchedule extends Component {
     } = this.state;
 
     return (
-      <div className="manage-schedule-container">
+      <div className="manage-schedule-container manage-schedule-container--admin">
 
         <div className="m-s-title">
           <FormattedMessage id="manage-schedule.title" />
@@ -203,6 +203,7 @@ class ManageSchedule extends Component {
             <div className="col-6 form-group">
               <label><FormattedMessage id="manage-schedule.choose-doctor" /></label>
               <Select
+                classNamePrefix="schedule-doctor-select"
                 value={selectDoctor}
                 onChange={this.handleChangeSelect}
                 options={ListDoctor}
