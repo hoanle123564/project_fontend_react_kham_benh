@@ -7,6 +7,8 @@ import PatientSidebar from "../../Layout/PatientSidebar";
 import * as actions from "../../../../store/actions";
 import "./Appointments.scss";
 import moment from "moment";
+import { buildImageSrc } from "../../../../utils/imageUtils";
+import userDefault from "../../../../assets/user_default.png";
 
 class Appointments extends Component {
     constructor(props) {
@@ -16,6 +18,7 @@ class Appointments extends Component {
             isLoading: false,
             errorMessage: "",
             cancelingId: null,
+            selectedAppointmentId: null,
         };
     }
 
@@ -120,49 +123,236 @@ class Appointments extends Component {
         return <span className="queue-number">{queueNumber}</span>;
     };
 
-    renderTable = () => {
-        const { appointments, cancelingId } = this.state;
-        const { language } = this.props;
+    getAppointmentTypeLabel = (item = {}) => {
+        const fallbackKey = item.appointmentTypeId === "AT2" ? "typeOnline" : "typeInPerson";
+
+        if (this.props.language === "vi") {
+            return item.appointmentTypeVi || this.getText(fallbackKey);
+        }
+
+        return item.appointmentTypeEn || this.getText(fallbackKey);
+    };
+
+    getVideoStatusLabel = (item = {}) => {
+        if (item.appointmentTypeId !== "AT2") {
+            return this.getText("videoNotApplicable");
+        }
+
+        switch (item.videoSessionStatusId) {
+            case "VCS2":
+                return this.getText("videoRoomOpen");
+            case "VCS3":
+                return this.getText("videoEnded");
+            case "VCS4":
+                return this.getText("videoCancelled");
+            default:
+                return this.getText("videoWaiting");
+        }
+    };
+
+    handleSelectAppointment = (item) => {
+        this.setState({ selectedAppointmentId: item.id });
+    };
+
+    handleJoinVideo = (bookingId) => {
+        this.props.history.push(`/video-consultation/${encodeURIComponent(bookingId)}?role=patient`);
+    };
+
+    getSelectedAppointment = () => {
+        const selectedAppointment = this.state.appointments.find(
+            (item) => Number(item.id) === Number(this.state.selectedAppointmentId)
+        );
+
+        return selectedAppointment || this.state.appointments[0] || null;
+    };
+
+    displayValue = (value) => {
+        if (value === undefined || value === null || value === "") {
+            return this.getText("notAvailable");
+        }
+
+        return value;
+    };
+
+    formatDate = (value) => {
+        if (!value) return this.getText("notAvailable");
+        const parsed = moment(value);
+        return parsed.isValid() ? parsed.format("DD/MM/YYYY") : this.getText("notAvailable");
+    };
+
+    formatTime = (item = {}) => this.displayValue(this.props.language === "vi" ? item.timeVi : item.timeEn);
+
+    formatGender = (gender) => {
+        if (gender === "M") return this.getText("male");
+        if (gender === "F") return this.getText("female");
+        if (gender === "O") return this.getText("other");
+        return this.getText("notAvailable");
+    };
+
+    getDoctorName = (item = {}) => this.displayValue([item.doctorFirstName, item.doctorLastName].filter(Boolean).join(" "));
+
+    getPatientName = (item = {}) => this.displayValue([item.patientFirstName, item.patientLastName].filter(Boolean).join(" "));
+
+    getClinicAddress = (item = {}) => this.displayValue(item.clinicAddress || item.clinicName);
+
+    getDoctorImage = (item = {}) => buildImageSrc(item.doctorImage) || userDefault;
+
+    renderDetailRow = (labelKey, value) => (
+        <div className="appointments-info-row">
+            <span>{this.getText(labelKey)}</span>
+            <strong>{this.displayValue(value)}</strong>
+        </div>
+    );
+
+    renderActions = (item) => {
+        const { cancelingId } = this.state;
 
         return (
-            <table className="appointments-table">
-                <thead>
-                    <tr>
-                        <th>{this.getText("date")}</th>
-                        <th>{this.getText("queue")}</th>
-                        <th>{this.getText("time")}</th>
-                        <th>{this.getText("doctor")}</th>
-                        <th>{this.getText("status")}</th>
-                        <th>{this.getText("actions")}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {appointments.map((item) => (
-                        <tr key={item.id}>
-                            <td>{moment(item.date).format("DD/MM/YYYY")}</td>
-                            <td>{this.renderQueueNumber(item.queueNumber)}</td>
-                            <td>{language === "vi" ? item.timeVi : item.timeEn}</td>
-                            <td>
-                                {item.doctorFirstName} {item.doctorLastName}
-                            </td>
-                            <td>{this.renderStatus(item.statusId, item.statusVi, item.statusEn)}</td>
-                            <td>
-                                {(item.statusId === "S1" || item.statusId === "S2") && (
-                                    <button
-                                        className="btn-cancel"
-                                        disabled={cancelingId === item.id}
-                                        onClick={() => this.handleCancel(item.id)}
-                                    >
-                                        {cancelingId === item.id
-                                            ? this.getText("canceling")
-                                            : this.getText("cancel")}
-                                    </button>
-                                )}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <div className="appointments-actions">
+                {item.canJoinVideo && (
+                    <button
+                        type="button"
+                        className="btn-video"
+                        onClick={() => this.handleJoinVideo(item.id)}
+                    >
+                        {this.getText("joinVideo")}
+                    </button>
+                )}
+                {(item.statusId === "S1" || item.statusId === "S2") && (
+                    <button
+                        type="button"
+                        className="btn-cancel"
+                        disabled={cancelingId === item.id}
+                        onClick={() => this.handleCancel(item.id)}
+                    >
+                        {cancelingId === item.id
+                            ? this.getText("canceling")
+                            : this.getText("cancel")}
+                    </button>
+                )}
+            </div>
+        );
+    };
+
+    renderResultSection = (item) => {
+        const hasResult = Boolean(item.preliminaryDiagnosis || item.doctorConclusion);
+
+        return (
+            <section className="appointments-section appointments-section--result">
+                <h3>{this.getText("resultTitle")}</h3>
+                {hasResult ? (
+                    <div className="appointments-result">
+                        {item.preliminaryDiagnosis && this.renderDetailRow("preliminaryDiagnosis", item.preliminaryDiagnosis)}
+                        {item.doctorConclusion && this.renderDetailRow("doctorConclusion", item.doctorConclusion)}
+                    </div>
+                ) : (
+                    <p className="appointments-result-empty">{this.getText("resultWaiting")}</p>
+                )}
+            </section>
+        );
+    };
+
+    renderAppointmentDetail = () => {
+        const item = this.getSelectedAppointment();
+        if (!item) return null;
+
+        return (
+            <div className="appointments-detail-panel">
+                <div className="appointments-detail-header">
+                    <div>
+                        <span>{this.getText("queue")}</span>
+                        <strong>{item.queueNumber || this.getText("noQueue")}</strong>
+                    </div>
+                    {this.renderStatus(item.statusId, item.statusVi, item.statusEn)}
+                </div>
+
+                <section className="appointments-doctor-card">
+                    <img
+                        src={this.getDoctorImage(item)}
+                        alt={this.getDoctorName(item)}
+                        className="appointments-doctor-avatar"
+                        width="88"
+                        height="88"
+                    />
+                    <div>
+                        <span>{this.getText("doctorInfoTitle")}</span>
+                        <strong>{this.getDoctorName(item)}</strong>
+                        <p>{this.getClinicAddress(item)}</p>
+                    </div>
+                </section>
+
+                <section className="appointments-section">
+                    <h3>{this.getText("bookingInfoTitle")}</h3>
+                    {this.renderDetailRow("bookingCode", item.id)}
+                    {this.renderDetailRow("appointmentDate", this.formatDate(item.date))}
+                    {this.renderDetailRow("appointmentTime", this.formatTime(item))}
+                </section>
+
+                <section className="appointments-section">
+                    <h3>{this.getText("patientInfoTitle")}</h3>
+                    {this.renderDetailRow("medicalCode", item.medicalCode)}
+                    {this.renderDetailRow("patientName", this.getPatientName(item))}
+                    {this.renderDetailRow("dateOfBirth", this.formatDate(item.dateOfBirth))}
+                    {this.renderDetailRow("phoneNumber", item.patientPhoneNumber)}
+                    {this.renderDetailRow("gender", this.formatGender(item.patientGender))}
+                    {this.renderDetailRow("address", item.patientAddress)}
+                </section>
+
+                {this.renderResultSection(item)}
+                {this.renderActions(item)}
+            </div>
+        );
+    };
+
+    renderAppointmentList = (selectedAppointment) => {
+        const { appointments } = this.state;
+
+        return (
+            <div className="appointments-list-panel">
+                <div className="appointments-list">
+                    {appointments.map((item) => {
+                        const isSelected = Number(selectedAppointment?.id) === Number(item.id);
+
+                        return (
+                            <button
+                                type="button"
+                                key={item.id}
+                                className={`appointments-list-item ${isSelected ? "selected" : ""}`}
+                                aria-pressed={isSelected}
+                                onClick={() => this.handleSelectAppointment(item)}
+                            >
+                                <div className="appointments-list-item__main">
+                                    <div className="appointments-list-item__info">
+                                        <strong>{this.getDoctorName(item)}</strong>
+                                        <span>{this.formatDate(item.date)} - {this.formatTime(item)}</span>
+                                        <span>{this.getPatientName(item)}</span>
+                                    </div>
+                                    <div className="appointments-list-item__queue">
+                                        {this.renderQueueNumber(item.queueNumber)}
+                                    </div>
+                                </div>
+                                <div className="appointments-list-item__meta">
+                                    {this.renderStatus(item.statusId, item.statusVi, item.statusEn)}
+                                    <span className={`appointment-type-badge ${item.appointmentTypeId || "AT1"}`}>
+                                        {this.getAppointmentTypeLabel(item)}
+                                    </span>
+                                </div>
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    };
+
+    renderAppointmentLayout = () => {
+        const selectedAppointment = this.getSelectedAppointment();
+
+        return (
+            <div className="appointments-layout">
+                {this.renderAppointmentList(selectedAppointment)}
+                {this.renderAppointmentDetail()}
+            </div>
         );
     };
 
@@ -191,7 +381,7 @@ class Appointments extends Component {
         return (
             <>
                 {errorMessage && <div className="appointments-inline-error">{errorMessage}</div>}
-                {this.renderTable()}
+                {this.renderAppointmentLayout()}
             </>
         );
     };

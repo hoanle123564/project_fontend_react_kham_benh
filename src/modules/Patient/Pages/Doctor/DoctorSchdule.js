@@ -4,10 +4,14 @@ import "./DoctorSchdule.scss";
 import * as action from "../../../../store/actions";
 import { languages } from "../../../../utils";
 import moment from "moment";
-import localization from "moment/locale/vi"; // phải thêm để đổi sang tiếng việt trong moment mặc đù không dùng trực tiếp
 import { getScheduleDoctor } from "../../../../services/userService";
 import { FormattedMessage } from "react-intl";
 import BookingModal from "./BookingModal";
+
+const APPOINTMENT_TYPES = [
+    { id: "AT1", vi: "Khám tại cơ sở", en: "In-person" },
+    { id: "AT2", vi: "Khám online", en: "Online" },
+];
 
 class DoctorSchdule extends Component {
     constructor(props) {
@@ -15,6 +19,7 @@ class DoctorSchdule extends Component {
         this.state = {
             allDays: [],
             allAvailableTime: [],
+            appointmentTypeId: this.props.appointmentTypeId || "AT1",
             isOpenMondalBooking: false,
             ScheduleTime: {}
         };
@@ -52,6 +57,16 @@ class DoctorSchdule extends Component {
     handleChange = async (selectedOption) => {
         this.setState({ selectedOption: selectedOption });
     };
+
+    handleAppointmentTypeChange = (appointmentTypeId) => {
+        if (this.props.onAppointmentTypeChange) {
+            this.props.onAppointmentTypeChange(appointmentTypeId);
+        }
+
+        this.setState({ appointmentTypeId });
+    };
+
+    getCurrentAppointmentTypeId = () => this.props.appointmentTypeId || this.state.appointmentTypeId || "AT1";
 
     handleClickScheduleTime = (time) => {
         this.setState({
@@ -94,10 +109,27 @@ class DoctorSchdule extends Component {
 
     render() {
         let { allDays, allAvailableTime } = this.state;
+        const appointmentTypeId = this.getCurrentAppointmentTypeId();
+        const visibleAvailableTime = allAvailableTime.filter(
+            (item) => (item.appointmentTypeId || "AT1") === appointmentTypeId
+        );
 
         return (
             <>
                 <div className="doctor-schedule-container">
+                    <div className={`appointment-type-tabs appointment-type-tabs--${appointmentTypeId}`}>
+                        {APPOINTMENT_TYPES.map((type) => (
+                            <button
+                                type="button"
+                                key={type.id}
+                                className={appointmentTypeId === type.id ? "active" : ""}
+                                onClick={() => this.handleAppointmentTypeChange(type.id)}
+                            >
+                                {this.props.language === languages.VI ? type.vi : type.en}
+                            </button>
+                        ))}
+                    </div>
+
                     <div className="all-schedule">
                         <select
                             defaultValue={allDays[0]}
@@ -121,10 +153,10 @@ class DoctorSchdule extends Component {
                     <div className="all-available-time">
                         <div className="text-calendar my-2">
                             <div className="time-content">
-                                {allAvailableTime && allAvailableTime.length > 0 ? (
+                                {visibleAvailableTime && visibleAvailableTime.length > 0 ? (
                                     <>
                                         <div className="time-content-btn">
-                                            {allAvailableTime.map((item, index) => {
+                                            {visibleAvailableTime.map((item, index) => {
                                                 return (
                                                     <button
                                                         key={index}

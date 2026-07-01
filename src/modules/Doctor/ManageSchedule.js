@@ -13,6 +13,11 @@ import {
   DeleteScheduleDoctor
 } from "../../services/userService";
 
+const APPOINTMENT_TYPES = [
+  { id: "AT1", vi: "Khám tại cơ sở", en: "In-person" },
+  { id: "AT2", vi: "Khám online", en: "Online" },
+];
+
 class ManageSchedule extends Component {
   constructor(props) {
     super(props);
@@ -22,6 +27,7 @@ class ManageSchedule extends Component {
       currentDate: new Date(),
       AllTime: [],
       selectedTime: [],
+      appointmentTypeId: "AT1",
       registeredSchedule: []
     };
   }
@@ -89,9 +95,22 @@ class ManageSchedule extends Component {
     });
   };
 
+  handleAppointmentTypeChange = (appointmentTypeId) => {
+    this.setState({ appointmentTypeId });
+  };
+
+  getAppointmentTypeLabel = (item = {}) => {
+    const fallback = APPOINTMENT_TYPES.find((type) => type.id === item.appointmentTypeId);
+    if (this.props.language === "vi") {
+      return item.appointmentTypeVi || fallback?.vi || item.appointmentTypeId || "AT1";
+    }
+
+    return item.appointmentTypeEn || fallback?.en || item.appointmentTypeId || "AT1";
+  };
+
   // Lưu lịch
   handleSaveSchedule = async () => {
-    const { selectedTime, selectDoctor, currentDate } = this.state;
+    const { selectedTime, selectDoctor, currentDate, appointmentTypeId } = this.state;
 
     if (!currentDate) return toast.error("Invalid date!");
     if (!selectDoctor) return toast.error("Vui lòng chọn bác sĩ!");
@@ -103,6 +122,7 @@ class ManageSchedule extends Component {
       doctorId: selectDoctor.value,
       date: formattedDate,
       timeType: selectedTime,
+      appointmentTypeId,
     });
 
     if (res && res.errCode === 0) {
@@ -183,11 +203,15 @@ class ManageSchedule extends Component {
     const {
       AllTime,
       selectedTime,
+      appointmentTypeId,
       selectDoctor,
       currentDate,
       ListDoctor,
       registeredSchedule
     } = this.state;
+    const visibleRegisteredSchedule = registeredSchedule.filter(
+      (item) => (item.appointmentTypeId || "AT1") === appointmentTypeId
+    );
 
     return (
       <div className="manage-schedule-container manage-schedule-container--admin">
@@ -222,6 +246,22 @@ class ManageSchedule extends Component {
               />
             </div>
 
+            <div className="col-12 appointment-type-container">
+              <label>{this.props.language === "vi" ? "Loại lịch khám" : "Appointment type"}</label>
+              <div className={`appointment-type-tabs appointment-type-tabs--${appointmentTypeId}`}>
+                {APPOINTMENT_TYPES.map((type) => (
+                  <button
+                    type="button"
+                    key={type.id}
+                    className={appointmentTypeId === type.id ? "active" : ""}
+                    onClick={() => this.handleAppointmentTypeChange(type.id)}
+                  >
+                    {this.props.language === "vi" ? type.vi : type.en}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Chọn giờ */}
             <div className="col-12 pick-hour-container">
               <label>{this.props.language === 'vi' ? 'Chọn giờ khám' : 'Select time slot'}</label>
@@ -246,7 +286,7 @@ class ManageSchedule extends Component {
             <div className="col-12 registered-table">
               <h5>{this.props.language === 'vi' ? 'Ca đã đăng ký trong ngày' : 'Registered shifts today'}</h5>
 
-              {registeredSchedule.length === 0 ? (
+              {visibleRegisteredSchedule.length === 0 ? (
                 <div className="text-muted">{this.props.language === 'vi' ? 'Chưa có ca nào.' : 'No shifts yet.'}</div>
               ) : (
                 <table className="table table-bordered">
@@ -254,14 +294,16 @@ class ManageSchedule extends Component {
                     <tr>
                       <th>#</th>
                       <th>{this.props.language === 'vi' ? 'Khung giờ' : 'Time slot'}</th>
+                      <th>{this.props.language === 'vi' ? 'Loại khám' : 'Type'}</th>
                       <th>{this.props.language === 'vi' ? 'Xoá' : 'Delete'}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {registeredSchedule.map((item, index) => (
+                    {visibleRegisteredSchedule.map((item, index) => (
                       <tr key={item.id}>
                         <td>{index + 1}</td>
                         <td>{item.value_vi}</td>
+                        <td>{this.getAppointmentTypeLabel(item)}</td>
                         <td>
                           <button
                             className="btn-delete"

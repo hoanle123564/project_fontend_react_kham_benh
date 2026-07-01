@@ -17,12 +17,11 @@ class DoctorQueueSidePanel extends Component {
     };
 
     renderStatusTabs = () => {
-        const { queue, activeStatusTab, onStatusTabChange } = this.props;
+        const { activeStatusTab, onStatusTabChange } = this.props;
 
         return (
-            <div className="doctor-queue__status-tabs">
+            <div className={`doctor-queue__status-tabs doctor-queue__status-tabs--${activeStatusTab}`}>
                 {VISIT_STATUS_TABS.map((statusId) => {
-                    const count = queue.filter((item) => item.visitStatusId === statusId).length;
                     return (
                         <button
                             type="button"
@@ -31,7 +30,6 @@ class DoctorQueueSidePanel extends Component {
                             onClick={() => onStatusTabChange(statusId)}
                         >
                             <span>{this.getStatusLabel(statusId)}</span>
-                            <strong>{count}</strong>
                         </button>
                     );
                 })}
@@ -53,6 +51,10 @@ class DoctorQueueSidePanel extends Component {
 
         return (
             <div className="doctor-queue__side-list">
+                <div className="doctor-queue__side-list-head">
+                    <span>{getText("queueNumber")}</span>
+                    <span>{getText("patient")}</span>
+                </div>
                 {visibleItems.length > 0 ? (
                     visibleItems.map((item) => (
                         <button
@@ -61,7 +63,7 @@ class DoctorQueueSidePanel extends Component {
                             className={Number(item.bookingId) === Number(selectedBookingId) ? "active" : ""}
                             onClick={() => onSelectRow(item)}
                         >
-                            <span>#{item.queueNumber || "-"}</span>
+                            <span className="doctor-queue__side-number">#{item.queueNumber || "-"}</span>
                             <div className="doctor-queue__side-patient">
                                 <strong>{getPatientName(item)}</strong>
                                 <small>{item.patientPhoneNumber || "-"}</small>

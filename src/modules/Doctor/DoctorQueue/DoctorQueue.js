@@ -176,6 +176,31 @@ class DoctorQueue extends Component {
     getFallbackPaymentStatus = (statusId) =>
         statusId === "PS2" ? this.getText("paid") : this.getText("unpaid");
 
+    getAppointmentTypeLabel = (item = {}) => {
+        if (this.props.language === "vi") {
+            return item.appointmentTypeVi || (item.appointmentTypeId === "AT2" ? "Khám online" : "Khám tại cơ sở");
+        }
+
+        return item.appointmentTypeEn || (item.appointmentTypeId === "AT2" ? "Online" : "In-person");
+    };
+
+    getVideoStatusLabel = (item = {}) => {
+        if (item.appointmentTypeId !== "AT2") {
+            return this.props.language === "vi" ? "Không áp dụng" : "Not applicable";
+        }
+
+        switch (item.videoSessionStatusId) {
+            case "VCS2":
+                return this.props.language === "vi" ? "Phòng đã mở" : "Room open";
+            case "VCS3":
+                return this.props.language === "vi" ? "Đã kết thúc" : "Ended";
+            case "VCS4":
+                return this.props.language === "vi" ? "Đã hủy" : "Cancelled";
+            default:
+                return this.props.language === "vi" ? "Chưa mở phòng" : "Not opened";
+        }
+    };
+
     getPaymentMethodLabel = (methodId) => {
         switch (methodId) {
             case "PAY2":
@@ -351,6 +376,14 @@ class DoctorQueue extends Component {
         if (!item?.bookingId || !this.props.history) return;
 
         this.props.history.push(`/doctor/appointment/${encodeURIComponent(item.bookingId)}`);
+    };
+
+    handleOpenVideoRoom = (item) => {
+        if (!item?.bookingId || !item.canJoinVideo || !this.props.history) return;
+
+        this.props.history.push(
+            `/video-consultation/${encodeURIComponent(item.bookingId)}?role=doctor`
+        );
     };
 
     handleStartVisit = async (item) => {
@@ -666,6 +699,14 @@ class DoctorQueue extends Component {
                     )}
                     {this.renderDetailRow(this.getText("price"), this.formatMoney(detail.priceAtBooking))}
                     {this.renderDetailRow(
+                        this.getText("appointmentType", "Appointment type"),
+                        this.getAppointmentTypeLabel(detail)
+                    )}
+                    {this.renderDetailRow(
+                        this.getText("videoStatus", "Video status"),
+                        this.getVideoStatusLabel(detail)
+                    )}
+                    {this.renderDetailRow(
                         this.getText("visitStatus"),
                         this.getVisitStatusLabel(detail)
                     )}
@@ -725,6 +766,21 @@ class DoctorQueue extends Component {
                             {detail.paymentStatusId === "PS2"
                                 ? this.getText("paid")
                                 : this.getText("collectPayment")}
+                        </button>
+                    </div>
+                )}
+
+                {selectedItem.appointmentTypeId === "AT2" && (
+                    <div className="doctor-queue__detail-actions">
+                        <button
+                            type="button"
+                            className="doctor-queue__video-button"
+                            disabled={!selectedItem.canJoinVideo}
+                            title={this.getVideoStatusLabel(selectedItem)}
+                            onClick={() => this.handleOpenVideoRoom(selectedItem)}
+                        >
+                            <i className="bi bi-camera-video" />
+                            {this.getText("openVideo", "Open video")}
                         </button>
                     </div>
                 )}
@@ -894,12 +950,15 @@ class DoctorQueue extends Component {
                                 getPatientName={this.getPatientName}
                                 getVisitStatusLabel={this.getVisitStatusLabel}
                                 getPaymentStatusLabel={this.getPaymentStatusLabel}
+                                getAppointmentTypeLabel={this.getAppointmentTypeLabel}
+                                getVideoStatusLabel={this.getVideoStatusLabel}
                                 renderStatusBadge={this.renderStatusBadge}
                                 canStartVisit={this.canStartVisit}
                                 canCollectPayment={this.canCollectPayment}
                                 onSelectRow={this.handleSelectRow}
                                 onStartVisit={this.handleStartVisit}
                                 onOpenPaymentModal={this.handleOpenPaymentModal}
+                                onOpenVideoRoom={this.handleOpenVideoRoom}
                             />
                         </section>
                     </div>

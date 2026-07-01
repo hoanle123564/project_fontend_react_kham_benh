@@ -235,6 +235,28 @@
     font-size: 12px;
 }
 
+.doctor-queue__type-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    margin-top: 5px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+
+    &.AT1 {
+        background: #e0f2fe;
+        color: #075985;
+    }
+
+    &.AT2 {
+        background: #ecfdf5;
+        color: #0f766e;
+    }
+}
+
 .doctor-queue__badge {
     display: inline-flex;
     align-items: center;
@@ -307,6 +329,11 @@
     border: 1px solid #cbd5e1;
     background: #ffffff;
     color: #475569;
+}
+
+.doctor-queue__video-icon {
+    border-color: #99f6e4;
+    color: #0f766e;
 }
 
 .doctor-queue__payment-button {
@@ -386,29 +413,55 @@
 }
 
 .doctor-queue__status-tabs {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
     margin-top: 12px;
+    padding: 4px;
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
+    background: #f8fafc;
+    isolation: isolate;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        z-index: 0;
+        width: calc((100% - 8px) / 3);
+        height: calc(100% - 8px);
+        border: 1px solid #0f766e;
+        border-radius: 6px;
+        background: #ffffff;
+        transition: transform 0.18s ease;
+    }
+
+    &.doctor-queue__status-tabs--VS2::before {
+        transform: translateX(100%);
+    }
+
+    &.doctor-queue__status-tabs--VS3::before {
+        transform: translateX(200%);
+    }
 
     button {
+        position: relative;
+        z-index: 1;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
         min-height: 40px;
         padding: 8px;
-        border: 1px solid #dbe3ef;
-        border-radius: 8px;
-        background: #ffffff;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        background: transparent;
         color: #334155;
         font-size: 13px;
         font-weight: 700;
         text-align: center;
 
         &.active {
-            border-color: #0f766e;
-            background: #e8f5f3;
             color: #0f766e;
         }
 
@@ -418,26 +471,28 @@
             white-space: nowrap;
         }
 
-        strong {
-            min-width: 22px;
-            padding: 2px 6px;
-            border-radius: 999px;
-            background: #f1f5f9;
-            color: #475569;
-            font-size: 12px;
-            line-height: 1.25;
-        }
     }
 }
 
 .doctor-queue__side-list {
     display: grid;
-    gap: 8px;
+    gap: 6px;
     margin-top: 12px;
+
+    .doctor-queue__side-list-head {
+        display: grid;
+        grid-template-columns: 64px minmax(0, 1fr);
+        gap: 8px;
+        padding: 0 8px 4px;
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
 
     button {
         display: grid;
-        grid-template-columns: 52px minmax(0, 1fr);
+        grid-template-columns: 64px minmax(0, 1fr);
         gap: 8px;
         align-items: center;
         min-height: 44px;
@@ -452,7 +507,7 @@
             background: #e8f5f3;
         }
 
-        span {
+        .doctor-queue__side-number {
             color: #075985;
             font-weight: 800;
         }
@@ -797,5 +852,34 @@
         button {
             width: 100%;
         }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .doctor-queue__status-tabs::before {
+        transition: none;
+    }
+}
+
+.doctor-queue__video-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 132px;
+    height: 38px;
+    padding: 0 14px;
+    border: 1px solid #0f766e;
+    border-radius: 8px;
+    background: #0f766e;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+
+    &:disabled {
+        border-color: #cbd5e1;
+        background: #e2e8f0;
+        color: #64748b;
+        cursor: not-allowed;
     }
 }

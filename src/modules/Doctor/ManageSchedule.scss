@@ -325,6 +325,65 @@
         }
     }
 
+    .appointment-type-container {
+        margin-top: 10px;
+        margin-bottom: 12px;
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 700;
+        }
+    }
+
+    .appointment-type-tabs {
+        position: relative;
+        display: inline-flex;
+        padding: 4px;
+        border: 1px solid #dbe3ef;
+        border-radius: 8px;
+        background: #f8fafc;
+        isolation: isolate;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            z-index: 0;
+            width: calc((100% - 8px) / 2);
+            height: calc(100% - 8px);
+            border: 1px solid #0f766e;
+            border-radius: 6px;
+            background: #ffffff;
+            transition: transform 0.18s ease;
+        }
+
+        &.appointment-type-tabs--AT2::before {
+            transform: translateX(100%);
+        }
+
+        button {
+            position: relative;
+            z-index: 1;
+            min-width: 128px;
+            min-height: 34px;
+            padding: 0 12px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            background: transparent;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 700;
+
+            &.active {
+                color: #0f766e;
+            }
+        }
+    }
+
     @media (max-width: 768px) {
         &.manage-schedule-container--doctor,
         &.manage-schedule-container--admin {
@@ -342,6 +401,14 @@
             .pick-hour-content {
                 grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             }
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .manage-schedule-container {
+        .appointment-type-tabs::before {
+            transition: none;
         }
     }
 }

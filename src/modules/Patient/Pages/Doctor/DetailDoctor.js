@@ -21,6 +21,7 @@ class DetailDoctor extends Component {
     super(props);
     this.state = {
       relatedDoctors: [],
+      appointmentTypeId: "AT1",
     };
   }
 
@@ -71,11 +72,16 @@ class DetailDoctor extends Component {
     }
   }
 
+  handleAppointmentTypeChange = (appointmentTypeId) => {
+    this.setState({ appointmentTypeId });
+  }
+
   render() {
     // const { id } = this.props.match.params;
     // TODO: fetch doctor detail by id
     let item = this.props.DetailDoctor;
     let language = this.props.language;
+    const { appointmentTypeId } = this.state;
 
     return (
       <>
@@ -107,10 +113,19 @@ class DetailDoctor extends Component {
             {/* Lịch khám bệnh  */}
             <div className="schedule-doctor">
               <div className="content-left-schedule">
-                <DoctorSchdule doctorId={item.id} doctorProfile={item} />
+                <DoctorSchdule
+                  doctorId={item.id}
+                  doctorProfile={item}
+                  appointmentTypeId={appointmentTypeId}
+                  onAppointmentTypeChange={this.handleAppointmentTypeChange}
+                />
               </div>
               <div className="content-right-schedule">
-                <DoctorExtendInfo doctorId={item.id} />
+                <DoctorExtendInfo
+                  doctorId={item.id}
+                  doctorProfile={item}
+                  appointmentTypeId={appointmentTypeId}
+                />
               </div>
             </div>
           </div>

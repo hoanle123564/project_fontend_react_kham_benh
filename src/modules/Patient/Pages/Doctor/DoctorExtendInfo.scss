@@ -73,6 +73,7 @@
     .price-block {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 8px; // khoảng cách giữa các phần tử
         color: #444;
 
@@ -85,6 +86,15 @@
         .price {
             font-weight: 500;
             color: #000;
+            white-space: nowrap;
+        }
+
+        .appointment-type-label {
+            display: block;
+            margin-top: 2px;
+            color: #007b91;
+            font-size: 12px;
+            font-weight: 700;
         }
 
         .link {

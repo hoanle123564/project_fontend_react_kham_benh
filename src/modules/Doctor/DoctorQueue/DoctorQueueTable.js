@@ -9,12 +9,15 @@ class DoctorQueueTable extends Component {
             getPatientName,
             getVisitStatusLabel,
             getPaymentStatusLabel,
+            getAppointmentTypeLabel,
+            getVideoStatusLabel,
             renderStatusBadge,
             canStartVisit,
             canCollectPayment,
             onSelectRow,
             onStartVisit,
             onOpenPaymentModal,
+            onOpenVideoRoom,
         } = this.props;
 
         return (
@@ -39,9 +42,15 @@ class DoctorQueueTable extends Component {
                     </button>
                     <small>{item.medicalCode || "-"}</small>
                 </td>
-                <td>{item.timeTypeVi || item.timeTypeEn || item.timeType || "-"}</td>
+                <td>
+                    {item.timeTypeVi || item.timeTypeEn || item.timeType || "-"}
+                    <span className={`doctor-queue__type-badge ${item.appointmentTypeId || "AT1"}`}>
+                        {getAppointmentTypeLabel(item)}
+                    </span>
+                </td>
                 <td>{item.patientPhoneNumber || "-"}</td>
                 <td>{item.reason || "-"}</td>
+                <td>{getVideoStatusLabel(item)}</td>
                 <td>{renderStatusBadge("visit", getVisitStatusLabel(item), item.visitStatusId)}</td>
                 <td>{renderStatusBadge("payment", getPaymentStatusLabel(item), item.paymentStatusId)}</td>
                 <td>
@@ -75,6 +84,20 @@ class DoctorQueueTable extends Component {
                         >
                             <i className="bi bi-cash-coin" />
                         </button>
+                        {item.appointmentTypeId === "AT2" && (
+                            <button
+                                type="button"
+                                className="doctor-queue__icon-button doctor-queue__video-icon"
+                                disabled={!item.canJoinVideo}
+                                title={getText("openVideo", "Open video")}
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    onOpenVideoRoom(item);
+                                }}
+                            >
+                                <i className="bi bi-camera-video" />
+                            </button>
+                        )}
                         <button
                             type="button"
                             className="doctor-queue__icon-button"
@@ -105,6 +128,7 @@ class DoctorQueueTable extends Component {
                             <th>{getText("time")}</th>
                             <th>{getText("phone")}</th>
                             <th>{getText("reason")}</th>
+                            <th>{getText("videoStatus", "Video")}</th>
                             <th>{getText("status")}</th>
                             <th>{getText("paymentStatus")}</th>
                             <th>{getText("actions")}</th>
@@ -115,7 +139,7 @@ class DoctorQueueTable extends Component {
                             queue.map(this.renderRow)
                         ) : (
                             <tr>
-                                <td colSpan="8" className="doctor-queue__empty">
+                                <td colSpan="9" className="doctor-queue__empty">
                                     {isLoading ? `${getText("loading")}...` : getText("noQueue")}
                                 </td>
                             </tr>

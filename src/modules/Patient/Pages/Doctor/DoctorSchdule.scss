@@ -1,4 +1,51 @@
 .doctor-schedule-container {
+    .appointment-type-tabs {
+        position: relative;
+        display: inline-flex;
+        margin-bottom: 10px;
+        padding: 4px;
+        border: 1px solid #dbe3ef;
+        border-radius: 8px;
+        background: #f8fafc;
+        isolation: isolate;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            z-index: 0;
+            width: calc((100% - 8px) / 2);
+            height: calc(100% - 8px);
+            border: 1px solid #45c3d2;
+            border-radius: 6px;
+            background: #ffffff;
+            transition: transform 0.18s ease;
+        }
+
+        &.appointment-type-tabs--AT2::before {
+            transform: translateX(100%);
+        }
+
+        button {
+            position: relative;
+            z-index: 1;
+            min-height: 34px;
+            min-width: 118px;
+            padding: 0 12px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            background: transparent;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 700;
+
+            &.active {
+                color: #007b91;
+            }
+        }
+    }
+
     .all-schedule {
         select {
             border-bottom: 1px solid #ddd;
@@ -28,6 +75,9 @@
         .time-content {
             .time-content-btn {
                 button {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
                     min-width: 120px;
                     padding: 8px 10px;
                     margin: 5px;
@@ -51,9 +101,16 @@
                         font-weight: 600;
                         transform: scale(1.03);
                     }
-
                 }
             }
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .doctor-schedule-container {
+        .appointment-type-tabs::before {
+            transition: none;
         }
     }
 }

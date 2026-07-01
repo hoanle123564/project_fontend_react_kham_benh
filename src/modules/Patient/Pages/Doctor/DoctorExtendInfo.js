@@ -19,29 +19,50 @@ class DoctorExtendInfo extends Component {
     async componentDidUpdate(prevProps) {
         if (prevProps.doctorId !== this.props.doctorId) {
             await this.loadInfo();
+        } else if (prevProps.doctorProfile !== this.props.doctorProfile && this.props.doctorProfile) {
+            this.setState({ info: this.props.doctorProfile });
         }
     }
 
     loadInfo = async () => {
-        const { doctorId } = this.props;
+        const { doctorId, doctorProfile } = this.props;
+        if (doctorProfile) {
+            this.setState({ info: doctorProfile });
+            return;
+        }
+
         if (doctorId) {
             let res = await getDetailDoctor(doctorId);
-            console.log("getDetailDoctor", res);
-
             if (res) {
                 this.setState({ info: res.data });
             }
         }
     };
 
+    getTypeLabel = () => {
+        const isOnline = this.props.appointmentTypeId === "AT2";
+        if (this.props.language === "vi") {
+            return isOnline ? "Khám online" : "Khám tại cơ sở";
+        }
+
+        return isOnline ? "Online" : "In-person";
+    };
+
+    getPrice = () => {
+        const { info } = this.state;
+        const isOnline = this.props.appointmentTypeId === "AT2";
+        const priceVi = isOnline ? info.onlinePriceVi : info.priceVi;
+        const priceEn = isOnline ? info.onlinePriceEn : info.priceEn;
+
+        if (this.props.language === "vi") {
+            return `${Number(priceVi || 0).toLocaleString("vi-VN")} VNĐ`;
+        }
+
+        return `${priceEn || 0} $`;
+    };
+
     render() {
         const { info } = this.state;
-        const { language } = this.props;
-
-        const price =
-            language === "vi"
-                ? `${Number(info.priceVi || 0).toLocaleString("vi-VN")} VNĐ`
-                : `${info.priceEn || 0} $`;
 
         return (
             <div className="doctor-extend-info-container">
@@ -66,10 +87,13 @@ class DoctorExtendInfo extends Component {
                 <div className="line"></div>
 
                 <div className="price-block">
-                    <span className="title">
-                        <FormattedMessage id="detail-doctor.price" />:
-                    </span>
-                    <span className="price">{price}</span>
+                    <div>
+                        <span className="title">
+                            <FormattedMessage id="detail-doctor.price" />:
+                        </span>
+                        <span className="appointment-type-label">{this.getTypeLabel()}</span>
+                    </div>
+                    <span className="price">{this.getPrice()}</span>
                     <button className="link">
                         <FormattedMessage id="detail-doctor.see-detail" />
                     </button>
