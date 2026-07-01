@@ -472,8 +472,32 @@ const getAllBooking = () => {
   return getCurrentAuthAxios().get("/api/get-all-list-booking");
 };
 
-const getAdminDashboardStatistics = (revenueType = "month", topDoctorType = "month") => {
-  return adminAxios.get(`/api/admin/dashboard-statistics?revenueType=${revenueType}&topDoctorType=${topDoctorType}`);
+const getAdminDashboardStatistics = (
+  revenueType = "month",
+  topDoctorType = "month",
+  options = {}
+) => {
+  const recentPage = options.recentPage || 1;
+  const recentLimit = options.recentLimit || 5;
+  return adminAxios.get(
+    `/api/admin/dashboard-statistics?revenueType=${revenueType}&topDoctorType=${topDoctorType}&recentPage=${recentPage}&recentLimit=${recentLimit}`
+  );
+};
+
+const joinVideoConsultation = (bookingId, options = {}) => {
+  return getAuthAxiosByRole(options.authRole).post("/api/video-consultation/join-token", {
+    bookingId,
+  });
+};
+
+const markVideoConsultationStarted = (bookingId, options = {}) => {
+  return getAuthAxiosByRole(options.authRole).post("/api/video-consultation/mark-started", {
+    bookingId,
+  });
+};
+
+const getDoctorDashboardStatistics = (range = "week") => {
+  return doctorAxios.get(`/api/doctor/dashboard-statistics?range=${encodeURIComponent(range)}`);
 };
 
 export {
@@ -561,5 +585,8 @@ export {
   collectVisitPayment,
   getAllBooking,
   getAdminDashboardStatistics,
+  joinVideoConsultation,
+  markVideoConsultationStarted,
+  getDoctorDashboardStatistics,
   buildImageSrc
 };
