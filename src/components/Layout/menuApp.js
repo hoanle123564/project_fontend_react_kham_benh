@@ -102,6 +102,16 @@ export const adminMenu = [
   },
 ];
 export const doctorMenu = [
+  {
+    name: "menu.doctor.dashboard",
+    menus: [
+      {
+        name: "menu.doctor.dashboard",
+        icon: "bi bi-speedometer2",
+        link: "/doctor/dashboard",
+      },
+    ],
+  },
   // quản lý kế hoạch khám bệnh
   {
     name: "menu.doctor.manage-medical",

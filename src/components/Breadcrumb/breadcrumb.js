@@ -49,6 +49,7 @@ const ROUTE_MAP = {
 
     // === DOCTOR (/doctor) ===
     '/doctor': { vi: 'Dashboard', en: 'Dashboard' },
+    '/doctor/dashboard': { vi: 'Dashboard', en: 'Dashboard' },
     '/doctor/manage-schedule-private': { vi: 'Lịch làm việc của tôi', en: 'My Schedule' },
     '/doctor/manage-patient': { vi: 'Quản lý bệnh nhân', en: 'Manage Patients' },
     '/doctor/medical-record': { vi: 'Hồ sơ bệnh án', en: 'Medical Records' },
@@ -66,7 +67,7 @@ const ROOT_LABELS = {
 const ROOT_PATHS = {
     patient: '/home',
     admin: '/system/dashboard',
-    doctor: '/doctor/manage-schedule-private',
+    doctor: '/doctor/dashboard',
 };
 
 // Tìm label từ bảng map, hỗ trợ route động (strip segment cuối nếu có id)

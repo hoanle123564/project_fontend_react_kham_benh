@@ -4,6 +4,7 @@ import { Route, Switch } from "react-router-dom";
 import SlideBar from "../components/Layout/SlideBar";
 import Header from "../components/Layout/Header";
 import DoctorMedicalRecords from "../modules/Doctor/MedicalRecords/DoctorMedicalRecords";
+import DoctorDashboard from "../modules/Doctor/DoctorDashboard/DoctorDashboard";
 import DoctorQueue from "../modules/Doctor/DoctorQueue/DoctorQueue";
 import ManagePatient from "../modules/Doctor/ManagePatient";
 import ManageSchedulePrivate from "../modules/Doctor/ManageSchedulePrivate";
@@ -30,6 +31,7 @@ class Doctor extends Component {
           <Header toggleSidebar={this.toggleSidebar} />
           <div className="system-list">
             <Switch>
+              <Route exact path="/doctor/dashboard" component={DoctorDashboard} />
               <Route path="/doctor/medical-record/:bookingId" component={DoctorMedicalRecords} />
               <Route exact path="/doctor/medical-record" component={DoctorMedicalRecords} />
               <Route path="/doctor/manage-patient/:patientId" component={ManagePatient} />

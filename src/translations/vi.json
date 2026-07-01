@@ -94,7 +94,8 @@
       "history-appointment": "Lịch sử khám bệnh",
       "profile": "Hồ sơ",
       "medical-record": "Hồ sơ bệnh án",
-      "appointment": "Lịch hẹn"
+      "appointment": "Lịch hẹn",
+      "dashboard": "Dashboard bác sĩ"
     },
     "clinic-manager": {
       "clinic": "Quản lý cơ sở",
@@ -373,7 +374,39 @@
       "actions": "Hành động",
       "cancel": "Hủy lịch",
       "canceling": "Đang hủy...",
-      "noQueue": "Chưa cấp"
+      "noQueue": "Chưa cấp",
+      "appointmentType": "Loại khám",
+      "videoStatus": "Trạng thái video",
+      "joinVideo": "Vào phòng video",
+      "detail": "Chi tiết",
+      "reason": "Lý do",
+      "notAvailable": "Chưa cập nhật",
+      "typeOnline": "Khám online",
+      "typeInPerson": "Khám tại cơ sở",
+      "videoNotApplicable": "Không áp dụng",
+      "videoRoomOpen": "Phòng đã mở",
+      "videoEnded": "Đã kết thúc",
+      "videoCancelled": "Đã hủy",
+      "videoWaiting": "Chờ bác sĩ mở phòng",
+      "doctorInfoTitle": "Bác sĩ",
+      "bookingInfoTitle": "Thông tin đặt lịch",
+      "patientInfoTitle": "Thông tin bệnh nhân",
+      "resultTitle": "Kết quả",
+      "bookingCode": "Mã phiếu",
+      "appointmentDate": "Ngày khám",
+      "appointmentTime": "Giờ khám",
+      "patientName": "Họ tên",
+      "medicalCode": "Mã bệnh nhân",
+      "dateOfBirth": "Ngày sinh",
+      "phoneNumber": "SĐT",
+      "gender": "Giới tính",
+      "address": "Địa chỉ",
+      "male": "Nam",
+      "female": "Nữ",
+      "other": "Khác",
+      "resultWaiting": "Kết quả chưa được cập nhật, vui lòng chờ bác sĩ hoàn tất.",
+      "preliminaryDiagnosis": "Chẩn đoán sơ bộ",
+      "doctorConclusion": "Kết luận của bác sĩ"
     },
     "profile": {
       "notFound": "Không tìm thấy thông tin bệnh nhân",
@@ -587,7 +620,10 @@
       "paymentError": "Không thể thu tiền",
       "paymentSuccess": "Đã ghi nhận thanh toán",
       "alreadyPaid": "Lượt khám đã thanh toán",
-      "insufficientPayment": "Tiền khách đưa chưa đủ"
+      "insufficientPayment": "Tiền khách đưa chưa đủ",
+      "appointmentType": "Loại khám",
+      "videoStatus": "Trạng thái video",
+      "openVideo": "Mở phòng video"
     },
     "medical-records": {
       "detailTitle": "Chi tiết bệnh án",

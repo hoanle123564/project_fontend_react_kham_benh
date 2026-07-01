@@ -12,6 +12,7 @@ export const path = {
   DETAIL_CLINIC: "/detail-clinic/:slug",
   PROFILE_PATIENT: "/patient-profile",
   APPOINTMENTS: "/appointments",
+  VIDEO_CONSULTATION: "/video-consultation/:bookingId",
   LIST_DOCTOR: "/list-doctor",
   LIST_CLINIC: "/list-clinic",
   LIST_SPECIALTY: "/list-specialty",

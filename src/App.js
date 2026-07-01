@@ -24,6 +24,7 @@ import DetailClinic from "./modules/Patient/Pages/Clinic/DetailClinic";
 import VerifyEmailBooking from "./modules/Patient/Pages/VerifyEmailBooking";
 import PatientProfile from "./modules/Patient/Pages/Profile/PatientProfile";
 import Appointments from "./modules/Patient/Pages/Appointment/Appointments";
+import VideoConsultation from "./modules/VideoConsultation/VideoConsultation";
 import Register from "./modules/Auth/Register";
 import ListDoctor from "./modules/Patient/Pages/Doctor/ListDoctor";
 import ListClinic from "./modules/Patient/Pages/Clinic/ListClinic";
@@ -78,6 +79,7 @@ class App extends Component {
               <Route path={path.VERIFY_BOOKING} exact component={VerifyEmailBooking} />
               <Route path={path.PROFILE_PATIENT} component={patientIsAuthenticated(PatientProfile)} />
               <Route path={path.APPOINTMENTS} exact component={patientIsAuthenticated(Appointments)} />
+              <Route path={path.VIDEO_CONSULTATION} exact component={VideoConsultation} />
 
               <Route path={path.SYSTEM} component={adminIsAuthenticated(System)} />
               <Route path={path.DOCTOR} component={doctorIsAuthenticated(Doctor)} />
