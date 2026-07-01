@@ -1,0 +1,211 @@
+.doctor-dashboard-page {
+    min-height: calc(100vh - 64px);
+    padding: 24px;
+    background: #f6f8fb;
+    color: #1f2937;
+}
+
+.doctor-dashboard__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+
+    h2 {
+        margin: 0;
+        color: #111827;
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 0;
+    }
+
+    p {
+        margin: 5px 0 0;
+        color: #64748b;
+        font-size: 14px;
+    }
+}
+
+.doctor-dashboard__range-tabs {
+    display: inline-flex;
+    gap: 6px;
+    padding: 4px;
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
+    background: #ffffff;
+
+    button {
+        min-height: 34px;
+        padding: 0 12px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        background: transparent;
+        color: #475569;
+        font-size: 13px;
+        font-weight: 700;
+
+        &.active {
+            border-color: #0f766e;
+            background: #ecfdf5;
+            color: #0f766e;
+        }
+    }
+}
+
+.doctor-dashboard__revenue-grid,
+.doctor-dashboard__metric-lines-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.doctor-dashboard__revenue-card,
+.doctor-dashboard__panel,
+.doctor-dashboard__metric-line-card {
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.doctor-dashboard__revenue-card {
+    min-height: 112px;
+    padding: 16px;
+
+    span {
+        display: block;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    strong {
+        display: block;
+        margin-top: 10px;
+        color: #0f766e;
+        font-size: 24px;
+        line-height: 1.15;
+        word-break: break-word;
+    }
+}
+
+.doctor-dashboard__main-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.8fr);
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.doctor-dashboard__panel {
+    min-width: 0;
+    padding: 16px;
+}
+
+.doctor-dashboard__patient-visit-panel {
+    padding: 18px 18px 12px;
+    overflow: hidden;
+}
+
+.doctor-dashboard__panel-header {
+    margin-bottom: 10px;
+
+    h3 {
+        margin: 0;
+        color: #111827;
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: 0;
+    }
+}
+
+.doctor-dashboard__metric-line-card {
+    min-width: 0;
+    padding: 14px;
+
+    > div:first-child {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 6px;
+    }
+
+    span {
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    strong {
+        color: #111827;
+        font-size: 22px;
+        font-weight: 700;
+        line-height: 1;
+    }
+}
+
+.doctor-dashboard__state {
+    display: grid;
+    place-items: center;
+    min-height: 260px;
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #64748b;
+    font-weight: 700;
+    text-align: center;
+
+    &.error {
+        color: #be123c;
+
+        button {
+            min-height: 36px;
+            margin-top: 12px;
+            padding: 0 14px;
+            border: 1px solid #be123c;
+            border-radius: 8px;
+            background: #be123c;
+            color: #ffffff;
+            font-weight: 700;
+        }
+    }
+}
+
+.doctor-dashboard__inline-error {
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    background: #fff1f2;
+    color: #be123c;
+    font-weight: 700;
+}
+
+@media (max-width: 1080px) {
+    .doctor-dashboard__main-grid,
+    .doctor-dashboard__revenue-grid,
+    .doctor-dashboard__metric-lines-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .doctor-dashboard-page {
+        padding: 16px;
+    }
+
+    .doctor-dashboard__header {
+        flex-direction: column;
+    }
+
+    .doctor-dashboard__range-tabs {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .doctor-dashboard__patient-visit-panel {
+        padding: 14px 10px 8px;
+    }
+}
