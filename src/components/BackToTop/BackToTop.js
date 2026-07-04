@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
+import chatbotIcon from '../../assets/chatbot/chatbot.png';
 import './BackToTop.scss';
 
 class BackToTop extends Component {
@@ -33,9 +35,28 @@ class BackToTop extends Component {
         });
     }
 
+    handleOpenChatbot = () => {
+        if (this.props.history) {
+            this.props.history.push('/chatbot');
+        }
+    }
+
     render() {
+        const pathname = this.props.location?.pathname || '';
+        const hideChatbot = pathname.startsWith('/system') || pathname.startsWith('/doctor');
+
         return (
             <>
+                {!hideChatbot && (
+                    <button
+                        className='chatbot-floating-button'
+                        type='button'
+                        aria-label='Mở chatbot'
+                        onClick={this.handleOpenChatbot}
+                    >
+                        <img src={chatbotIcon} alt='' />
+                    </button>
+                )}
                 {this.state.showBackToTop && (
                     <button className='back-to-top' onClick={this.handleBackToTop}>
                         <i className="fa-solid fa-angle-up"></i>
@@ -49,4 +70,4 @@ class BackToTop extends Component {
 const mapStateToProps = state => ({});
 const mapDispatchToProps = dispatch => ({});
 
-export default connect(mapStateToProps, mapDispatchToProps)(BackToTop);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(BackToTop));

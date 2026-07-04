@@ -19,3 +19,50 @@
         font-size: 20px;
     }
 }
+
+.chatbot-floating-button {
+    position: fixed;
+    right: 24px;
+    bottom: 88px;
+    width: 62px;
+    height: 62px;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 8px 22px rgba(15, 74, 88, 0.25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    img {
+        width: 90px;
+        height: 90px;
+        object-fit: contain;
+    }
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(15, 74, 88, 0.32);
+    }
+}
+
+@media (max-width: 576px) {
+    .back-to-top {
+        right: 18px;
+        bottom: 24px;
+    }
+
+    .chatbot-floating-button {
+        right: 14px;
+        bottom: 82px;
+        width: 58px;
+        height: 58px;
+
+        img {
+            width: 44px;
+            height: 44px;
+        }
+    }
+}

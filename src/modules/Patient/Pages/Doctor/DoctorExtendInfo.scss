@@ -73,8 +73,8 @@
     .price-block {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 8px; // khoảng cách giữa các phần tử
+        // justify-content: space-between;
+        gap: 10px; // khoảng cách giữa các phần tử
         color: #444;
 
         .title {

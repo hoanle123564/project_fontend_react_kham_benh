@@ -5,7 +5,7 @@ import "./Chatbot.scss";
 const ChatbotPage = () => {
   return (
     <div className="chatbot-page">
-      <div className="container">
+      <div className="container-fluid">
         <Chatbot />
       </div>
     </div>
