@@ -124,6 +124,10 @@ const getScheduleDoctor = (doctorId, date) => {
   return axios.get(`/api/get-schedule-doctor?doctorId=${doctorId}&date=${date}`);
 };
 
+const updateScheduleDoctor = (data, options = {}) => {
+  return getAuthAxiosByRole(options.authRole).put("/api/update-schedule-doctor", data);
+};
+
 // Lấy danh sách bệnh nhân theo ngày khám của bác sĩ
 const getAllPatientForDoctor = (doctorId, date) => {
   return doctorAxios.get(`/api/get-list-patient-for-doctor?id=${doctorId}&date=${date}`);
@@ -517,6 +521,7 @@ export {
   getRelatedDoctorsService,
   postScheduleDoctor,
   getScheduleDoctor,
+  updateScheduleDoctor,
   postPatientBooking,
   VerifyPatientBooking,
   postSaveSpecialty,

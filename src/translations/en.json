@@ -310,7 +310,10 @@
     "title": "Doctor's appointment schedule management",
     "choose-doctor": "Choose doctor",
     "select-date": "Select date",
-    "save-schedule": "Save schedule"
+    "save-schedule": "Save schedule",
+    "price": "Consultation price",
+    "online-price": "Online consultation price",
+    "invalid-price": "Price must be a valid non-negative number"
   },
   "manage-patient": {
     "title": "Patient management",

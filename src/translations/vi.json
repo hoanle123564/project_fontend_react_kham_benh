@@ -310,7 +310,10 @@
     "title": "Quản lý kế hoạch khám bệnh của bác sĩ",
     "choose-doctor": "Chọn bác sĩ",
     "select-date": "Chọn ngày",
-    "save-schedule": "Lưu kế hoạch"
+    "save-schedule": "Lưu kế hoạch",
+    "price": "Giá khám",
+    "online-price": "Giá khám online",
+    "invalid-price": "Giá khám phải là số hợp lệ và không âm"
   },
   "manage-patient": {
     "title": "Quản lý bệnh nhân",

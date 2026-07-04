@@ -34,6 +34,7 @@ class ManageDoctor extends Component {
 
       selectDoctor: "",
       selectPrice: "",
+      selectOnlinePrice: "",
       selectPayment: "",
       selectClinic: "",
       selectSpecialty: "",
@@ -144,6 +145,9 @@ class ManageDoctor extends Component {
     const selectedPrice = ListPri.find(
       (item) => item.value === this.state.selectPrice?.value
     );
+    const selectedOnlinePrice = ListPri.find(
+      (item) => item.value === this.state.selectOnlinePrice?.value
+    );
     const selectedPayment = ListPay.find(
       (item) => item.value === this.state.selectPayment?.value
     );
@@ -160,6 +164,7 @@ class ManageDoctor extends Component {
         ListSpecialty: ListSpec,
         ListClinic: ListClin,
         selectPrice: selectedPrice || this.state.selectPrice,
+        selectOnlinePrice: selectedOnlinePrice || this.state.selectOnlinePrice,
         selectPayment: selectedPayment || this.state.selectPayment,
         selectSpecialty: selectedSpecialty || this.state.selectSpecialty,
         selectClinic: selectedClinic || this.state.selectClinic,
@@ -258,6 +263,7 @@ class ManageDoctor extends Component {
       this.state;
     const findPayment = ListPayment.find((item) => item.value === res?.paymentId);
     const findPrice = ListPrice.find((item) => item.value === res?.priceId);
+    const findOnlinePrice = ListPrice.find((item) => item.value === res?.onlinePriceId);
     const findSpecialty = ListSpecialty.find(
       (item) => item.value === res?.specialtyId
     );
@@ -267,6 +273,7 @@ class ManageDoctor extends Component {
       contentMarkdown: res?.contentMarkdown || res?.contentHTML || "",
       description: res?.description || "",
       selectPrice: findPrice || "",
+      selectOnlinePrice: findOnlinePrice || "",
       selectPayment: findPayment || "",
       selectSpecialty: findSpecialty || "",
       selectClinic: findClinic || "",
@@ -378,6 +385,7 @@ class ManageDoctor extends Component {
       description: this.state.description,
       doctorId: this.state.selectDoctor.value,
       priceId: this.state.selectPrice.value,
+      onlinePriceId: this.state.selectOnlinePrice?.value || null,
       paymentId: this.state.selectPayment.value,
       specialtyId: this.state.selectSpecialty.value,
       clinicId: this.state.selectClinic.value,
@@ -400,6 +408,7 @@ class ManageDoctor extends Component {
       contentHTML,
       selectDoctor,
       selectPrice,
+      selectOnlinePrice,
       selectPayment,
       selectClinic,
       selectSpecialty,
@@ -566,6 +575,26 @@ class ManageDoctor extends Component {
                   />
                 </div>
 
+              </div>
+            </div>
+
+            <div className="manage-doctor__section">
+              <div className="manage-doctor__grid manage-doctor__grid--three">
+                <div className="form-group">
+                  <label>{language === "vi" ? "Giá khám online" : "Online examination fee"}</label>
+                  <Select
+                    value={selectOnlinePrice}
+                    onChange={this.handleChangeSelect}
+                    name="selectOnlinePrice"
+                    options={this.state.ListPrice}
+                    isClearable
+                    placeholder={
+                      language === "vi"
+                        ? "Chọn giá khám online ..."
+                        : "Select online examination fee ..."
+                    }
+                  />
+                </div>
               </div>
             </div>
 

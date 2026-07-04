@@ -9,6 +9,8 @@ import { toast } from "react-toastify";
 import {
     postScheduleDoctor,
     getScheduleDoctor,
+    updateScheduleDoctor,
+    getDetailDoctor,
     DeleteScheduleDoctor
 } from "../../services/userService";
 
@@ -16,6 +18,25 @@ const APPOINTMENT_TYPES = [
     { id: "AT1", vi: "Khám tại cơ sở", en: "In-person" },
     { id: "AT2", vi: "Khám online", en: "Online" },
 ];
+
+const formatPriceInput = (value) => {
+    if (value === null || value === undefined || value === "") return "";
+    return String(Number(value) || 0);
+};
+
+const formatVnd = (value) => {
+    const price = Number(value) || 0;
+    return `${price.toLocaleString("vi-VN")} VND`;
+};
+
+const parsePriceInput = (value) => {
+    if (value === "") return { valid: true, value: "" };
+    const price = Number(value);
+    return {
+        valid: Number.isFinite(price) && price >= 0 && Number.isInteger(price),
+        value: price,
+    };
+};
 
 class ManageSchedulePrivate extends Component {
     constructor(props) {
@@ -25,6 +46,10 @@ class ManageSchedulePrivate extends Component {
             AllTime: [],
             selectedTime: [],
             appointmentTypeId: "AT1",
+            priceInput: "",
+            priceTouched: false,
+            editingPrices: {},
+            doctorProfile: null,
             registeredSchedule: []
         };
     }
@@ -55,9 +80,30 @@ class ManageSchedulePrivate extends Component {
 
             if (res && res.errCode === 0) {
 
-                this.setState({ registeredSchedule: res.data });
+                this.setState({
+                    registeredSchedule: res.data,
+                    editingPrices: this.buildEditingPrices(res.data),
+                });
             }
         }
+    };
+
+    buildEditingPrices = (items = []) => {
+        return items.reduce((result, item) => {
+            result[item.id] = formatPriceInput(item.price ?? item.effectivePrice);
+            return result;
+        }, {});
+    };
+
+    getDoctorDefaultPrice = (appointmentTypeId = this.state.appointmentTypeId) => {
+        const profile = this.state.doctorProfile || {};
+        const price = appointmentTypeId === "AT2" ? profile.onlinePriceVi : profile.priceVi;
+        return price ? String(Number(price) || "") : "";
+    };
+
+    syncSuggestedPrice = (appointmentTypeId) => {
+        if (this.state.priceTouched && this.state.priceInput !== "") return;
+        this.setState({ priceInput: this.getDoctorDefaultPrice(appointmentTypeId) });
     };
 
     // Chọn giờ
@@ -73,7 +119,25 @@ class ManageSchedulePrivate extends Component {
     };
 
     handleAppointmentTypeChange = (appointmentTypeId) => {
-        this.setState({ appointmentTypeId });
+        this.setState({ appointmentTypeId }, () => {
+            this.syncSuggestedPrice(appointmentTypeId);
+        });
+    };
+
+    handlePriceChange = (event) => {
+        this.setState({
+            priceInput: event.target.value,
+            priceTouched: true,
+        });
+    };
+
+    handleEditingPriceChange = (id, value) => {
+        this.setState((prev) => ({
+            editingPrices: {
+                ...prev.editingPrices,
+                [id]: value,
+            },
+        }));
     };
 
     getAppointmentTypeLabel = (item = {}) => {
@@ -87,12 +151,15 @@ class ManageSchedulePrivate extends Component {
 
     // Lưu lịch
     handleSaveSchedule = async () => {
-        const { selectedTime, currentDate, appointmentTypeId } = this.state;
+        const { selectedTime, currentDate, appointmentTypeId, priceInput } = this.state;
         const doctorId = this.props.userInfo?.id;
 
         if (!doctorId) return toast.error("Không tìm thấy thông tin bác sĩ!");
         if (!currentDate) return toast.error("Invalid date!");
         if (selectedTime.length === 0) return toast.error("Chưa chọn khung giờ!");
+
+        const parsedPrice = parsePriceInput(priceInput);
+        if (!parsedPrice.valid) return toast.error("Gia kham phai la so nguyen khong am!");
 
         const formattedDate = moment(currentDate).format("DD/MM/YYYY");
 
@@ -100,7 +167,8 @@ class ManageSchedulePrivate extends Component {
             doctorId,
             date: formattedDate,
             timeType: selectedTime,
-            appointmentTypeId
+            appointmentTypeId,
+            price: parsedPrice.value
         }, { authRole: "doctor" });
 
         if (res && res.errCode === 0) {
@@ -113,6 +181,24 @@ class ManageSchedulePrivate extends Component {
     };
 
     // Xoá lịch theo ID
+    handleUpdateSchedulePrice = async (item) => {
+        const rawPrice = this.state.editingPrices[item.id] ?? "";
+        const parsedPrice = parsePriceInput(rawPrice);
+        if (!parsedPrice.valid) return toast.error("Gia kham phai la so nguyen khong am!");
+
+        const res = await updateScheduleDoctor({
+            id: item.id,
+            price: parsedPrice.value,
+        }, { authRole: "doctor" });
+
+        if (res && res.errCode === 0) {
+            toast.success(this.props.language === "vi" ? "Cap nhat gia thanh cong!" : "Price updated!");
+            this.handleOnchangeDatePicker([this.state.currentDate]);
+        } else {
+            toast.error(res?.errMessage || "Update failed!");
+        }
+    };
+
     handleDeleteSchedule = async (id) => {
         let res = await DeleteScheduleDoctor(id);
         if (res && res.errCode === 0) {
@@ -129,13 +215,28 @@ class ManageSchedulePrivate extends Component {
         if (doctorId) {
             let res = await getScheduleDoctor(doctorId, selectedDate);
             if (res && res.errCode === 0) {
-                this.setState({ registeredSchedule: res.data });
+                this.setState({
+                    registeredSchedule: res.data,
+                    editingPrices: this.buildEditingPrices(res.data),
+                });
             }
         }
     };
 
     async componentDidMount() {
         this.props.fetchAllHour();
+        if (this.props.userInfo?.id) {
+            const res = await getDetailDoctor(this.props.userInfo.id);
+            if (res && res.errCode === 0) {
+                const onlineDefault = this.state.appointmentTypeId === "AT2"
+                    ? res.data?.onlinePriceVi
+                    : res.data?.priceVi;
+                this.setState({
+                    doctorProfile: res.data,
+                    priceInput: onlineDefault ? String(Number(onlineDefault) || "") : "",
+                });
+            }
+        }
         await this.loadScheduleForDate(this.state.currentDate);
     }
 
@@ -147,7 +248,7 @@ class ManageSchedulePrivate extends Component {
     }
 
     render() {
-        const { AllTime, selectedTime, registeredSchedule, currentDate, appointmentTypeId } = this.state;
+        const { AllTime, selectedTime, registeredSchedule, currentDate, appointmentTypeId, priceInput, editingPrices } = this.state;
         const visibleRegisteredSchedule = registeredSchedule.filter(
             (item) => (item.appointmentTypeId || "AT1") === appointmentTypeId
         );
@@ -202,6 +303,20 @@ class ManageSchedulePrivate extends Component {
                         </div>
 
                         {/* Chọn giờ */}
+                        <div className="col-12 col-md-4 form-group schedule-price-field">
+                            <label>{this.props.language === "vi" ? "Giá khám" : "Consultation price"}</label>
+                            <input
+                                type="number"
+                                min="0"
+                                step="1"
+                                className="form-control"
+                                value={priceInput}
+                                onChange={this.handlePriceChange}
+                                placeholder={this.props.language === "vi" ? "Nhap gia kham" : "Enter price"}
+                            />
+                            <small>{formatVnd(priceInput || this.getDoctorDefaultPrice())}</small>
+                        </div>
+
                         <div className="col-12 pick-hour-container">
                             <label>{this.props.language === 'vi' ? 'Chọn giờ khám' : 'Select time slot'}</label>
                             <div className="pick-hour-content">
@@ -235,6 +350,7 @@ class ManageSchedulePrivate extends Component {
                                             <th>#</th>
                                             <th>{this.props.language === 'vi' ? 'Khung giờ' : 'Time slot'}</th>
                                             <th>{this.props.language === 'vi' ? 'Loại khám' : 'Type'}</th>
+                                            <th>{this.props.language === 'vi' ? 'Giá khám' : 'Price'}</th>
                                             <th>{this.props.language === 'vi' ? 'Xoá' : 'Delete'}</th>
                                         </tr>
                                     </thead>
@@ -244,6 +360,23 @@ class ManageSchedulePrivate extends Component {
                                                 <td>{index + 1}</td>
                                                 <td>{item.value_vi}</td>
                                                 <td>{this.getAppointmentTypeLabel(item)}</td>
+                                                <td className="schedule-price-cell">
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        step="1"
+                                                        value={editingPrices[item.id] ?? ""}
+                                                        onChange={(event) => this.handleEditingPriceChange(item.id, event.target.value)}
+                                                    />
+                                                    <span>{formatVnd(editingPrices[item.id] ?? item.effectivePrice)}</span>
+                                                    <button
+                                                        type="button"
+                                                        className="btn-save-price"
+                                                        onClick={() => this.handleUpdateSchedulePrice(item)}
+                                                    >
+                                                        {this.props.language === 'vi' ? 'Lưu' : 'Save'}
+                                                    </button>
+                                                </td>
                                                 <td>
                                                     <button
                                                         className="btn-delete"
