@@ -203,7 +203,7 @@ const Chatbot = ({ history, isLoggedIn, patientName }) => {
     if (!isLatest) return null;
 
     const doctors = message.data?.doctors || message.data?.recommended_doctors || [];
-    const slots = message.data?.slots || [];
+    const slots = (message.data?.slots || []).filter((slot) => Number(slot.hasActiveBooking) !== 1);
 
     if (message.state === "WAIT_SELECT_DOCTOR" && doctors.length) {
       return (
