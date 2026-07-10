@@ -1,14 +1,12 @@
 import { buildSlug } from "../../../utils/textUtils";
 import { getImagePayload } from "../../../utils/imageUtils";
-import { hasVisibleEditorContent } from "../../../utils/richTextUtils";
 
 export const getDefaultClinicFormData = (overrides = {}) => ({
   name: "",
   slug: "",
   address: "",
-  descriptionHTML: "",
-  descriptionMarkdown: "",
   image: "",
+  banner_img: "",
   clinicTypeId: "",
   managerUserId: "",
   provinceCode: "",
@@ -72,9 +70,8 @@ export const mapClinicToFormData = (clinicData = {}) =>
     name: clinicData.name || "",
     slug: clinicData.slug || buildSlug(clinicData.name),
     address: clinicData.address || "",
-    descriptionHTML: clinicData.descriptionHTML || "",
-    descriptionMarkdown: clinicData.descriptionMarkdown || clinicData.descriptionHTML || "",
     image: getImagePayload(clinicData.image),
+    banner_img: getImagePayload(clinicData.banner_img),
     clinicTypeId: clinicData.clinicTypeId || "",
     managerUserId: clinicData.managerUserId || "",
     provinceCode: clinicData.provinceCode || "",
@@ -103,10 +100,6 @@ export const validateClinicForm = (formData = {}) => {
     errors.image = "Vui l\u00f2ng ch\u1ecdn \u1ea3nh ph\u00f2ng kh\u00e1m.";
   }
 
-  if (!hasVisibleEditorContent(formData.descriptionHTML)) {
-    errors.descriptionHTML = "Vui l\u00f2ng nh\u1eadp m\u00f4 t\u1ea3 ph\u00f2ng kh\u00e1m.";
-  }
-
   return errors;
 };
 
@@ -116,13 +109,12 @@ export const buildClinicPayload = (formData, id) => ({
   slug: String(formData.slug || "").trim(),
   address: String(formData.address || "").trim(),
   image: formData.image,
+  banner_img: formData.banner_img,
   clinicTypeId: formData.clinicTypeId || null,
   managerUserId: formData.managerUserId || null,
   provinceCode: formData.provinceCode || null,
   districtCode: formData.districtCode || null,
   wardCode: formData.wardCode || null,
-  descriptionHTML: formData.descriptionHTML,
-  descriptionMarkdown: formData.descriptionMarkdown,
   isActive: Number(formData.isActive),
   displayOrder: Number(formData.displayOrder) || 1,
 });

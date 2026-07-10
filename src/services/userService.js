@@ -169,10 +169,21 @@ const getDoctorAppointmentDetail = (bookingId) => {
   );
 };
 
+const getAdminMedicalRecordAppointmentDetail = (bookingId) => {
+  return adminAxios.get(
+    `/api/doctor/appointment-detail?bookingId=${encodeURIComponent(bookingId)}`
+  );
+};
+
 // params có thể có hoặc rỗng
 const getDoctorMedicalRecords = (params = {}) => {
   const query = buildDoctorPatientQuery(params);
   return doctorAxios.get(`/api/doctor/medical-records${query ? `?${query}` : ""}`);
+};
+
+const getAdminMedicalRecords = (params = {}) => {
+  const query = buildDoctorPatientQuery(params);
+  return adminAxios.get(`/api/admin/medical-records${query ? `?${query}` : ""}`);
 };
 
 const startDoctorExaminationVisit = (bookingId) => {
@@ -193,6 +204,12 @@ const ensureDoctorMedicalRecord = (examinationVisitId) => {
 
 const getMedicalRecordDetail = (medicalRecordId) => {
   return doctorAxios.get(
+    `/api/medical-record/detail?medicalRecordId=${encodeURIComponent(medicalRecordId)}`
+  );
+};
+
+const getAdminMedicalRecordDetail = (medicalRecordId) => {
+  return adminAxios.get(
     `/api/medical-record/detail?medicalRecordId=${encodeURIComponent(medicalRecordId)}`
   );
 };
@@ -346,6 +363,30 @@ const DeleteClinic = (ClinicId) => {
       id: ClinicId,
     },
   });
+};
+
+const getClinicContentSections = (clinicId) => {
+  return adminAxios.get(`/api/get-clinic-content-section?clinicId=${encodeURIComponent(clinicId)}`);
+};
+
+const postSaveClinicContentSection = (data) => {
+  return adminAxios.post("/api/create-clinic-content-section", data);
+};
+
+const EditClinicContentSection = (data) => {
+  return adminAxios.put("/api/edit-clinic-content-section", data);
+};
+
+const DeleteClinicContentSection = (data) => {
+  return adminAxios.delete("/api/delete-clinic-content-section", { data });
+};
+
+const ChangeStatusClinicContentSection = (data) => {
+  return adminAxios.put("/api/change-status-clinic-content-section", data);
+};
+
+const updateClinicContentSectionOrder = (clinicId, items) => {
+  return adminAxios.put("/api/update-clinic-content-section-order", { clinicId, items });
 };
 
 const getClinicDepartment = (clinicId) => {
@@ -536,6 +577,12 @@ export {
   getDetailClinicBySlug,
   ChangeStatusClinic,
   updateClinicOrder,
+  getClinicContentSections,
+  postSaveClinicContentSection,
+  EditClinicContentSection,
+  DeleteClinicContentSection,
+  ChangeStatusClinicContentSection,
+  updateClinicContentSectionOrder,
   postSavePostCategory,
   getAllPostCategory,
   getDetailPostCategoryById,
@@ -577,10 +624,13 @@ export {
   getDoctorQueue,
   getDoctorAppointmentDetail,
   getDoctorMedicalRecords,
+  getAdminMedicalRecordAppointmentDetail,
+  getAdminMedicalRecords,
   startDoctorExaminationVisit,
   getDoctorExaminationVisitDetail,
   ensureDoctorMedicalRecord,
   getMedicalRecordDetail,
+  getAdminMedicalRecordDetail,
   saveMedicalRecordDraft,
   saveMedicalRecordPrescription,
   saveMedicalRecordParaclinicalResults,

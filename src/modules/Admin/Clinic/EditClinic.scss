@@ -1,104 +1,234 @@
-.manage-specialty-container {
-    padding: 25px 0px;
-    background: #fff;
-    border-radius: 10px;
+.clinic-section-manager {
+    padding: 0 24px 88px;
+    background: #f4f8fb;
+    color: #123047;
 
-    .title-page {
-        font-size: 22px;
-        font-weight: 600;
-        color: #004fa2;
-        margin-bottom: 25px;
+    .clinic-section-manager__inner {
+        width: min(1180px, 100%);
+        margin: 0 auto;
     }
 
-    .form-label {
-        font-weight: 600;
-        color: #444;
-    }
-
-    .upload-btn-wrapper {
-        position: relative;
-
-        label {
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-    }
-
-    .preview-image-container {
-        border-radius: 6px;
-        padding: 6px 15px;
+    .clinic-section-manager__header {
         display: flex;
         align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        cursor: pointer;
-        transition: all 0.3s ease;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 20px;
 
-        img.preview-image {
-            width: 100%;
-            height: 100%;
-            max-width: 150px;
-            object-fit: cover;
-
-            &:hover {
-                background-color: #f8f9fa;
-            }
-        }
-
-        .text-muted {
-            display: inline-block;
+        h3 {
+            margin: 0;
+            color: #0b3d5d;
+            font-size: 24px;
+            font-weight: 700;
         }
     }
 
-    .manage-specialty-editor {
-        margin: 20px 0;
+    .clinic-section-manager__actions,
+    .clinic-section-manager__form-actions,
+    .clinic-section-manager__row-actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .clinic-section-manager__actions,
+    .clinic-section-manager__form-actions {
+        .btn-primary {
+            border: 0;
+            background: #0f8f8c;
+            font-weight: 600;
+        }
+    }
+
+    .clinic-section-manager__grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 420px;
+        gap: 24px;
+        align-items: start;
+    }
+
+    .clinic-section-manager__form-card,
+    .clinic-section-manager__table-card {
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid #d9e6ee;
+        border-radius: 8px;
+        box-shadow: 0 14px 34px rgba(13, 52, 78, 0.07);
+    }
+
+    .clinic-section-manager__form-card {
+        padding: 20px;
+
+        .form-label {
+            color: #244b62;
+            font-weight: 700;
+        }
+
+        .field-error {
+            display: block;
+            margin-top: 6px;
+            color: #cf3f4a;
+            font-size: 13px;
+            font-weight: 600;
+        }
 
         .quill {
-            background: #fff;
-            border-radius: 8px;
             overflow: hidden;
+            background: #ffffff;
             border: 1px solid #d9d9d9;
+            border-radius: 8px;
         }
 
         .ql-toolbar.ql-snow {
-            border: none;
+            border: 0;
             border-bottom: 1px solid #e5e7eb;
             background: #f8fafc;
         }
 
         .ql-container.ql-snow {
-            border: none;
-            min-height: 420px;
+            min-height: 280px;
+            border: 0;
             font-size: 15px;
         }
 
         .ql-editor {
-            min-height: 420px;
+            min-height: 280px;
             line-height: 1.7;
         }
     }
 
-    .save-specialty {
-        display: block;
-        margin: 0 auto;
-        padding: 8px 20px;
-        border: none;
-        border-radius: 4px;
-        background-color: #0071ba;
-        color: white;
-        font-weight: 500;
-        font-size: 16px;
-        cursor: pointer;
-        transition: all 0.3s ease;
+    .clinic-section-manager__switch {
+        display: flex;
+        align-items: center;
+        min-height: 38px;
+    }
 
-        &:hover {
-            background-color: #005fa3;
+    .clinic-section-manager__form-actions {
+        justify-content: flex-end;
+        margin-top: 16px;
+
+    }
+
+    .clinic-section-manager__table-card {
+        overflow-x: auto;
+
+        table {
+            width: 100%;
+            min-width: 360px;
+            margin: 0;
+            border-collapse: separate;
+            border-spacing: 0;
         }
 
-        &:active {
-            transform: scale(0.97);
+        th,
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #d9e6ee;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #244b62;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            cursor: pointer;
+            transition: background-color 0.18s ease, box-shadow 0.18s ease;
+
+            &:hover,
+            &:focus-visible {
+                background: #f7fbfd;
+                outline: 0;
+            }
+
+            &:active {
+                cursor: grabbing;
+            }
+
+            &.active {
+                background: #eef8f7;
+                box-shadow: inset 3px 0 0 #0f8f8c;
+            }
+
+            &:last-child td {
+                border-bottom: 0;
+            }
+        }
+    }
+
+    .clinic-section-manager__order {
+        color: #0b3d5d;
+        font-weight: 700;
+    }
+
+    .clinic-section-manager__title {
+        color: #244b62;
+        font-weight: 600;
+        text-align: left;
+    }
+
+    .clinic-section-manager__key {
+        color: #6c8190;
+        word-break: break-word;
+    }
+
+    .clinic-section-manager__empty {
+        padding: 34px 16px;
+        color: #6c8190;
+        font-weight: 600;
+    }
+
+    .clinic-section-manager__row-actions {
+        justify-content: center;
+    }
+
+    .clinic-section-manager__icon-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+
+        &:hover {
+            transform: translateY(-1px);
+        }
+    }
+
+    .clinic-section-manager__icon-button--delete {
+        background: #fff0f1;
+        border-color: #f3b8bd;
+        color: #cf3f4a;
+    }
+
+    @media (max-width: 992px) {
+        padding: 0 14px 72px;
+
+        .clinic-section-manager__grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .clinic-section-manager__header {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .clinic-section-manager__actions,
+        .clinic-section-manager__form-actions,
+        .clinic-section-manager__actions .btn,
+        .clinic-section-manager__form-actions .btn {
+            width: 100%;
         }
     }
 }

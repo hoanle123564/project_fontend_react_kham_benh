@@ -181,6 +181,8 @@
     "title": "Clinic management",
     "name-clinic": "Clinic name",
     "image-clinic": "Clinic image",
+    "banner-image": "Banner image",
+    "banner-preview": "Banner preview",
     "description-html": "Description in HTML",
     "description-markdown": "Description in Markdown",
     "save-info": "Save information",
@@ -517,11 +519,16 @@
       "detailTitle": "Medical record detail",
       "backToList": "Back to medical records",
       "searchAction": "Search",
-      "noMedicalRecord": "This appointment does not have a medical record yet."
+      "noMedicalRecord": "This appointment does not have a medical record yet.",
+      "adminTitle": "System medical records",
+      "adminScope": "All doctors",
+      "adminSearchPlaceholder": "Search by patient, doctor, phone, medical code, or reason",
+      "doctor": "Doctor"
     },
     "record-workspace": {
       "symptomsRequired": "Please enter symptoms.",
-      "prescriptionNumberInvalid": "Prescription quantities must not be negative."
+      "prescriptionNumberInvalid": "Prescription quantities must not be negative.",
+      "readOnly": "Admin view is read-only."
     }
   }
 }

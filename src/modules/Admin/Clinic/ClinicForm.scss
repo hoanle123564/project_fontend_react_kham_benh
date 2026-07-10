@@ -62,32 +62,6 @@
         }
     }
 
-    .clinic-form__editor-card {
-        .quill {
-            overflow: hidden;
-            background: #ffffff;
-            border: 1px solid #d9d9d9;
-            border-radius: 8px;
-        }
-
-        .ql-toolbar.ql-snow {
-            border: 0;
-            border-bottom: 1px solid #e5e7eb;
-            background: #f8fafc;
-        }
-
-        .ql-container.ql-snow {
-            min-height: 420px;
-            border: 0;
-            font-size: 15px;
-        }
-
-        .ql-editor {
-            min-height: 420px;
-            line-height: 1.7;
-        }
-    }
-
     .clinic-form__actions {
         display: flex;
         justify-content: flex-end;
@@ -153,6 +127,10 @@
             height: 100%;
             object-fit: cover;
         }
+    }
+
+    .clinic-form__preview--banner {
+        aspect-ratio: 16 / 7;
     }
 
     @media (max-width: 992px) {

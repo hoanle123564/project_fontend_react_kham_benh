@@ -26,6 +26,7 @@ class AddClinic extends Component {
             districtOptions: [],
             wardOptions: [],
             previewImg: "",
+            previewBannerImg: "",
             slugTouched: false,
             errors: {},
             isSubmitting: false,
@@ -139,35 +140,21 @@ class AddClinic extends Component {
         }
     };
 
-    handleEditorChange = (value) => {
-        this.setState((prevState) => ({
-            formData: {
-                ...prevState.formData,
-                descriptionHTML: value,
-                descriptionMarkdown: value,
-            },
-            errors: {
-                ...prevState.errors,
-                descriptionHTML: "",
-            },
-        }));
-    };
-
-    handleImageChange = async (event) => {
+    handleImageChange = async (event, field = "image", previewField = "previewImg") => {
         const file = event.target.files[0];
         if (!file) return;
 
         try {
             const result = await readFileAsDataUrl(file);
             this.setState((prevState) => ({
-                previewImg: result,
+                [previewField]: result,
                 formData: {
                     ...prevState.formData,
-                    image: String(result).split(",")[1] || "",
+                    [field]: String(result).split(",")[1] || "",
                 },
                 errors: {
                     ...prevState.errors,
-                    image: "",
+                    [field]: "",
                 },
             }));
         } catch (error) {
@@ -175,12 +162,12 @@ class AddClinic extends Component {
         }
     };
 
-    handleRemoveImage = () => {
+    handleRemoveImage = (field = "image", previewField = "previewImg") => {
         this.setState((prevState) => ({
-            previewImg: "",
+            [previewField]: "",
             formData: {
                 ...prevState.formData,
-                image: "",
+                [field]: "",
             },
         }));
     };
@@ -205,6 +192,7 @@ class AddClinic extends Component {
                 this.setState({
                     formData: getDefaultClinicFormData(),
                     previewImg: "",
+                    previewBannerImg: "",
                     slugTouched: false,
                     errors: {},
                 });
@@ -230,6 +218,7 @@ class AddClinic extends Component {
                 mode="ADD"
                 formData={this.state.formData}
                 previewImg={this.state.previewImg}
+                previewBannerImg={this.state.previewBannerImg}
                 errors={this.state.errors}
                 isSubmitting={this.state.isSubmitting}
                 language={this.props.language}
@@ -239,7 +228,6 @@ class AddClinic extends Component {
                 districtOptions={this.state.districtOptions}
                 wardOptions={this.state.wardOptions}
                 onInputChange={this.handleInputChange}
-                onEditorChange={this.handleEditorChange}
                 onImageChange={this.handleImageChange}
                 onRemoveImage={this.handleRemoveImage}
                 onSubmit={this.handleSaveContent}
