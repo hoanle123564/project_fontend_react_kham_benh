@@ -111,7 +111,9 @@ class DoctorSchdule extends Component {
         let { allDays, allAvailableTime } = this.state;
         const appointmentTypeId = this.getCurrentAppointmentTypeId();
         const visibleAvailableTime = allAvailableTime.filter(
-            (item) => (item.appointmentTypeId || "AT1") === appointmentTypeId
+            (item) =>
+                (item.appointmentTypeId || "AT1") === appointmentTypeId &&
+                Number(item.hasActiveBooking) !== 1
         );
 
         return (

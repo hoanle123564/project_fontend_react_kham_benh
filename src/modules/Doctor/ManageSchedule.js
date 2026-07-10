@@ -338,24 +338,43 @@ class ManageSchedule extends Component {
               />
             </div>
 
-            <div className="col-12 appointment-type-container">
-              <label>{this.props.language === "vi" ? "Loại lịch khám" : "Appointment type"}</label>
-              <div className={`appointment-type-tabs appointment-type-tabs--${appointmentTypeId}`}>
-                {APPOINTMENT_TYPES.map((type) => (
-                  <button
-                    type="button"
-                    key={type.id}
-                    className={appointmentTypeId === type.id ? "active" : ""}
-                    onClick={() => this.handleAppointmentTypeChange(type.id)}
-                  >
-                    {this.props.language === "vi" ? type.vi : type.en}
-                  </button>
-                ))}
+            <div className="row">
+              <div className="col-6 appointment-type-container">
+                <label>{this.props.language === 'vi' ? 'Loại lịch khám' : 'Appointment type'}</label>
+                <div className={`appointment-type-tabs appointment-type-tabs--${appointmentTypeId}`}>
+                  {APPOINTMENT_TYPES.map((type) => (
+                    <button
+                      type="button"
+                      key={type.id}
+                      className={appointmentTypeId === type.id ? "active" : ""}
+                      onClick={() => this.handleAppointmentTypeChange(type.id)}
+                    >
+                      {this.props.language === "vi" ? type.vi : type.en}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="col-5 form-group schedule-price-field">
+                <label>{this.props.language === "vi" ? "Giá khám" : "Consultation price"}</label>
+                <div className="price-input-wrapper">
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    className="form-control"
+                    value={priceInput}
+                    onChange={this.handlePriceChange}
+                    placeholder={this.props.language === "vi" ? "Nhap gia kham" : "Enter price"}
+                  />
+                  <small className="price-preview">
+                    {formatVnd(priceInput || this.getDoctorDefaultPrice())}
+                  </small>
+                </div>
               </div>
             </div>
 
             {/* Chọn giờ */}
-            <div className="col-12 col-md-4 form-group schedule-price-field">
+            {/* <div className="col-12 col-md-4 form-group schedule-price-field">
               <label>{this.props.language === "vi" ? "Giá khám" : "Consultation price"}</label>
               <input
                 type="number"
@@ -367,7 +386,7 @@ class ManageSchedule extends Component {
                 placeholder={this.props.language === "vi" ? "Nhap gia kham" : "Enter price"}
               />
               <small>{formatVnd(priceInput || this.getDoctorDefaultPrice())}</small>
-            </div>
+            </div> */}
 
             <div className="col-12 pick-hour-container">
               <label>{this.props.language === 'vi' ? 'Chọn giờ khám' : 'Select time slot'}</label>
@@ -402,6 +421,7 @@ class ManageSchedule extends Component {
                       <th>{this.props.language === 'vi' ? 'Khung giờ' : 'Time slot'}</th>
                       <th>{this.props.language === 'vi' ? 'Loại khám' : 'Type'}</th>
                       <th>{this.props.language === 'vi' ? 'Giá khám' : 'Price'}</th>
+                      <th>{this.props.language === 'vi' ? 'Đã đặt' : 'Booked'}</th>
                       <th>{this.props.language === 'vi' ? 'Xoá' : 'Delete'}</th>
                     </tr>
                   </thead>
@@ -428,6 +448,7 @@ class ManageSchedule extends Component {
                             {this.props.language === 'vi' ? 'Lưu' : 'Save'}
                           </button>
                         </td>
+                        <td>{Number(item.hasActiveBooking) === 1 ? (this.props.language === 'vi' ? 'Có' : 'Yes') : (this.props.language === 'vi' ? 'Không' : 'No')}</td>
                         <td>
                           <button
                             className="btn-delete"
