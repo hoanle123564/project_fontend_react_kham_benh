@@ -22,6 +22,7 @@ import ManagePost from "../modules/Admin/Post/ManagePost";
 import AddPost from "../modules/Admin/Post/AddPost";
 import EditPost from "../modules/Admin/Post/EditPost";
 import EditProfile from "../modules/Admin/ManageUser/EditProfile";
+import DoctorMedicalRecords from "../modules/Doctor/MedicalRecords/DoctorMedicalRecords";
 
 class System extends Component {
   state = {
@@ -57,6 +58,15 @@ class System extends Component {
               <Route path="/system/edit-clinic/:id" component={EditClinic} />
               <Route path="/system/manage-schedule" component={ManageSchedule} />
               <Route path="/system/list-appointment" component={ListAppointment} />
+              <Route
+                path="/system/medical-record/:bookingId"
+                render={(props) => <DoctorMedicalRecords {...props} adminMode />}
+              />
+              <Route
+                exact
+                path="/system/medical-record"
+                render={(props) => <DoctorMedicalRecords {...props} adminMode />}
+              />
               <Route path="/system/manage-specialty" component={ManageSpecialty} />
               <Route path="/system/add-specialty" component={AddSpecialty} />
               <Route path="/system/edit-specialty/:id" component={EditSpecialty} />

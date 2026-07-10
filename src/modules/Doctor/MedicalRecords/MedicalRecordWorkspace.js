@@ -119,7 +119,10 @@ class MedicalRecordWorkspace extends Component {
         this.props.selectedItem?.medicalRecordStatusId ||
         null;
 
-    canEditRecord = () => this.getRecordStatusId() !== MEDICAL_RECORD_STATUS.CLOSED;
+    isReadOnly = () => Boolean(this.props.readOnly);
+
+    canEditRecord = () =>
+        !this.isReadOnly() && this.getRecordStatusId() !== MEDICAL_RECORD_STATUS.CLOSED;
 
     formatDateForInput = (value) => {
         if (!value) return "";
@@ -227,7 +230,8 @@ class MedicalRecordWorkspace extends Component {
         this.setState({ isLoading: true });
 
         try {
-            const response = await getMedicalRecordDetail(medicalRecordId);
+            const fetchMedicalRecord = this.props.getMedicalRecordDetail || getMedicalRecordDetail;
+            const response = await fetchMedicalRecord(medicalRecordId);
             if (requestId !== this.recordRequestId) return;
 
             if (!response || response.errCode !== 0) {
@@ -623,10 +627,12 @@ class MedicalRecordWorkspace extends Component {
         <section className="medical-record-workspace__section">
             <div className="medical-record-workspace__section-title">
                 <h4>{this.getText("prescription")}</h4>
-                <button type="button" onClick={this.addPrescriptionItem} disabled={!this.canEditRecord()}>
-                    <i className="bi bi-plus-lg" />
-                    {this.getText("addMedicine")}
-                </button>
+                {!this.isReadOnly() && (
+                    <button type="button" onClick={this.addPrescriptionItem} disabled={!this.canEditRecord()}>
+                        <i className="bi bi-plus-lg" />
+                        {this.getText("addMedicine")}
+                    </button>
+                )}
             </div>
 
             <div className="medical-record-workspace__table-scroll">
@@ -642,7 +648,7 @@ class MedicalRecordWorkspace extends Component {
                             <th>{this.getText("eveningQty")}</th>
                             <th>{this.getText("totalQuantity")}</th>
                             <th>{this.getText("instruction")}</th>
-                            <th>{this.getText("remove")}</th>
+                            {!this.isReadOnly() && <th>{this.getText("remove")}</th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -661,17 +667,19 @@ class MedicalRecordWorkspace extends Component {
                                     })}
                                 </td>
                                 <td>{this.renderPrescriptionTableField(index, item, "instruction")}</td>
-                                <td>
-                                    <button
-                                        type="button"
-                                        className="medical-record-workspace__remove icon-only"
-                                        onClick={() => this.removePrescriptionItem(index)}
-                                        disabled={!this.canEditRecord()}
-                                        title={this.getText("remove")}
-                                    >
-                                        <i className="bi bi-trash" />
-                                    </button>
-                                </td>
+                                {!this.isReadOnly() && (
+                                    <td>
+                                        <button
+                                            type="button"
+                                            className="medical-record-workspace__remove icon-only"
+                                            onClick={() => this.removePrescriptionItem(index)}
+                                            disabled={!this.canEditRecord()}
+                                            title={this.getText("remove")}
+                                        >
+                                            <i className="bi bi-trash" />
+                                        </button>
+                                    </td>
+                                )}
                             </tr>
                         ))}
                     </tbody>
@@ -686,15 +694,17 @@ class MedicalRecordWorkspace extends Component {
                     onChange={(event) => this.setState({ prescriptionNote: event.target.value })}
                 />
             </label>
-            <button
-                type="button"
-                className="medical-record-workspace__secondary"
-                onClick={this.handleSavePrescription}
-                disabled={!this.canEditRecord() || this.state.isSavingPrescription}
-            >
-                <i className="bi bi-capsule" />
-                {this.state.isSavingPrescription ? this.getText("saving") : this.getText("savePrescription")}
-            </button>
+            {!this.isReadOnly() && (
+                <button
+                    type="button"
+                    className="medical-record-workspace__secondary"
+                    onClick={this.handleSavePrescription}
+                    disabled={!this.canEditRecord() || this.state.isSavingPrescription}
+                >
+                    <i className="bi bi-capsule" />
+                    {this.state.isSavingPrescription ? this.getText("saving") : this.getText("savePrescription")}
+                </button>
+            )}
         </section>
     );
 
@@ -715,10 +725,12 @@ class MedicalRecordWorkspace extends Component {
         <section className="medical-record-workspace__section">
             <div className="medical-record-workspace__section-title">
                 <h4>{this.getText("paraclinical")}</h4>
-                <button type="button" onClick={this.addParaclinicalItem} disabled={!this.canEditRecord()}>
-                    <i className="bi bi-plus-lg" />
-                    {this.getText("addParaclinical")}
-                </button>
+                {!this.isReadOnly() && (
+                    <button type="button" onClick={this.addParaclinicalItem} disabled={!this.canEditRecord()}>
+                        <i className="bi bi-plus-lg" />
+                        {this.getText("addParaclinical")}
+                    </button>
+                )}
             </div>
             <div className="medical-record-workspace__table-scroll">
                 <table className="medical-record-workspace__mini-table paraclinical">
@@ -728,7 +740,7 @@ class MedicalRecordWorkspace extends Component {
                             <th>{this.getText("name")}</th>
                             <th>{this.getText("resultSummary")}</th>
                             <th>{this.getText("note")}</th>
-                            <th>{this.getText("remove")}</th>
+                            {!this.isReadOnly() && <th>{this.getText("remove")}</th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -738,33 +750,37 @@ class MedicalRecordWorkspace extends Component {
                                 <td>{this.renderParaclinicalField(index, item, "name")}</td>
                                 <td>{this.renderParaclinicalField(index, item, "resultSummary")}</td>
                                 <td>{this.renderParaclinicalField(index, item, "note")}</td>
-                                <td>
-                                    <button
-                                        type="button"
-                                        className="medical-record-workspace__remove icon-only"
-                                        onClick={() => this.removeParaclinicalItem(index)}
-                                        disabled={!this.canEditRecord()}
-                                        title={this.getText("remove")}
-                                    >
-                                        <i className="bi bi-trash" />
-                                    </button>
-                                </td>
+                                {!this.isReadOnly() && (
+                                    <td>
+                                        <button
+                                            type="button"
+                                            className="medical-record-workspace__remove icon-only"
+                                            onClick={() => this.removeParaclinicalItem(index)}
+                                            disabled={!this.canEditRecord()}
+                                            title={this.getText("remove")}
+                                        >
+                                            <i className="bi bi-trash" />
+                                        </button>
+                                    </td>
+                                )}
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
-            <button
-                type="button"
-                className="medical-record-workspace__secondary"
-                onClick={this.handleSaveParaclinical}
-                disabled={!this.canEditRecord() || this.state.isSavingParaclinical}
-            >
-                <i className="bi bi-clipboard2-pulse" />
-                {this.state.isSavingParaclinical
-                    ? this.getText("saving")
-                    : this.getText("saveParaclinical")}
-            </button>
+            {!this.isReadOnly() && (
+                <button
+                    type="button"
+                    className="medical-record-workspace__secondary"
+                    onClick={this.handleSaveParaclinical}
+                    disabled={!this.canEditRecord() || this.state.isSavingParaclinical}
+                >
+                    <i className="bi bi-clipboard2-pulse" />
+                    {this.state.isSavingParaclinical
+                        ? this.getText("saving")
+                        : this.getText("saveParaclinical")}
+                </button>
+            )}
         </section>
     );
 
@@ -779,6 +795,10 @@ class MedicalRecordWorkspace extends Component {
     );
 
     renderActions = () => {
+        if (this.isReadOnly()) {
+            return <div className="medical-record-workspace__notice">{this.getText("readOnly")}</div>;
+        }
+
         const visitCompleted = this.getVisitStatusId() === VISIT_STATUS.COMPLETED;
         const recordClosed = this.getRecordStatusId() === MEDICAL_RECORD_STATUS.CLOSED;
         return (
@@ -844,15 +864,17 @@ class MedicalRecordWorkspace extends Component {
                 <div className="medical-record-workspace">
                     <h3>{this.getText("title")}</h3>
                     <div className="medical-record-workspace__notice">{this.getText("noRecord")}</div>
-                    <button
-                        type="button"
-                        className="medical-record-workspace__create"
-                        onClick={this.handleCreateRecord}
-                        disabled={this.state.isCreating}
-                    >
-                        <i className="bi bi-journal-plus" />
-                        {this.state.isCreating ? this.getText("loading") : this.getText("createRecord")}
-                    </button>
+                    {!this.isReadOnly() && (
+                        <button
+                            type="button"
+                            className="medical-record-workspace__create"
+                            onClick={this.handleCreateRecord}
+                            disabled={this.state.isCreating}
+                        >
+                            <i className="bi bi-journal-plus" />
+                            {this.state.isCreating ? this.getText("loading") : this.getText("createRecord")}
+                        </button>
+                    )}
                 </div>
             );
         }

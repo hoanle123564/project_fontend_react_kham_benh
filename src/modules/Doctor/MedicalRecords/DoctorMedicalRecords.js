@@ -3,6 +3,9 @@ import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import moment from "moment";
 import {
+    getAdminMedicalRecordAppointmentDetail,
+    getAdminMedicalRecordDetail,
+    getAdminMedicalRecords,
     getDoctorAppointmentDetail,
     getDoctorMedicalRecords,
 } from "../../../services/userService";
@@ -100,15 +103,30 @@ class DoctorMedicalRecords extends Component {
             defaultMessage,
         });
 
+    isAdminMode = () => Boolean(this.props.adminMode);
+
     getRouteBookingId = () => this.props.match?.params?.bookingId || null;
 
     isDetailRoute = () => Boolean(this.getRouteBookingId());
+
+    getListPath = () => (this.isAdminMode() ? "/system/medical-record" : "/doctor/medical-record");
+
+    getDetailPath = (bookingId) =>
+        `${this.getListPath()}/${encodeURIComponent(bookingId)}`;
 
     getDoctorName = () => {
         const { userInfo } = this.props;
         return `${userInfo?.firstName || ""} ${userInfo?.lastName || ""}`
             .replace(/\s+/g, " ")
             .trim();
+    };
+
+    getRecordDoctorName = (item = {}) => {
+        const joinedName = `${item.doctorFirstName || ""} ${item.doctorLastName || ""}`
+            .replace(/\s+/g, " ")
+            .trim();
+
+        return joinedName || item.doctorName || "-";
     };
 
     getPatientName = (item = {}) => {
@@ -175,7 +193,10 @@ class DoctorMedicalRecords extends Component {
         this.setState({ isLoading: true, errorMessage: "" });
 
         try {
-            const response = await getDoctorMedicalRecords({
+            const fetchMedicalRecords = this.isAdminMode()
+                ? getAdminMedicalRecords
+                : getDoctorMedicalRecords;
+            const response = await fetchMedicalRecords({
                 date: this.state.appointmentDate,
                 visitStatusId: this.state.visitStatusId,
                 recordStatusId: this.state.recordStatusId,
@@ -227,7 +248,10 @@ class DoctorMedicalRecords extends Component {
         });
 
         try {
-            const response = await getDoctorAppointmentDetail(bookingId);
+            const fetchAppointmentDetail = this.isAdminMode()
+                ? getAdminMedicalRecordAppointmentDetail
+                : getDoctorAppointmentDetail;
+            const response = await fetchAppointmentDetail(bookingId);
             if (requestId !== this.detailRequestId) return;
             if (String(this.getRouteBookingId() || "") !== String(bookingId || "")) return;
 
@@ -306,12 +330,12 @@ class DoctorMedicalRecords extends Component {
     handleOpenDetail = (item) => {
         if (!item?.bookingId || !this.props.history) return;
 
-        this.props.history.push(`/doctor/medical-record/${encodeURIComponent(item.bookingId)}`);
+        this.props.history.push(this.getDetailPath(item.bookingId));
     };
 
     handleBackToList = () => {
         if (this.props.history) {
-            this.props.history.push("/doctor/medical-record");
+            this.props.history.push(this.getListPath());
         }
     };
 
@@ -377,6 +401,7 @@ class DoctorMedicalRecords extends Component {
                     <tr>
                         <th>{this.getText("record")}</th>
                         <th>{this.getText("patient")}</th>
+                        {this.isAdminMode() && <th>{this.getText("doctor")}</th>}
                         <th>{this.getText("appointmentDate")}</th>
                         <th>{this.getText("queueNumber")}</th>
                         <th>{this.getText("visitStatus")}</th>
@@ -406,6 +431,12 @@ class DoctorMedicalRecords extends Component {
                                     </button>
                                     <small>{item.medicalCode || item.patientPhoneNumber || "-"}</small>
                                 </td>
+                                {this.isAdminMode() && (
+                                    <td>
+                                        <strong>{this.getRecordDoctorName(item)}</strong>
+                                        <small>{item.doctorEmail || item.doctorPhoneNumber || "-"}</small>
+                                    </td>
+                                )}
                                 <td>
                                     {this.formatDate(item.appointmentDate || item.examDate)}
                                     <small>{item.timeTypeVi || item.timeTypeEn || item.timeType || "-"}</small>
@@ -443,7 +474,10 @@ class DoctorMedicalRecords extends Component {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="7" className="doctor-medical-records__empty">
+                            <td
+                                colSpan={this.isAdminMode() ? "8" : "7"}
+                                className="doctor-medical-records__empty"
+                            >
                                 {this.state.isLoading
                                     ? `${this.getText("loading")}...`
                                     : this.getText("noRecords")}
@@ -556,7 +590,11 @@ class DoctorMedicalRecords extends Component {
                         <input
                             type="text"
                             value={search}
-                            placeholder={this.getText("searchPlaceholder")}
+                            placeholder={
+                                this.isAdminMode()
+                                    ? this.getText("adminSearchPlaceholder")
+                                    : this.getText("searchPlaceholder")
+                            }
                             onChange={(event) => this.setState({ search: event.target.value })}
                         />
                     </label>
@@ -634,6 +672,8 @@ class DoctorMedicalRecords extends Component {
                         this.getText("visitStatus"),
                         this.getVisitStatusLabel(appointmentDetail)
                     )}
+                    {this.isAdminMode() &&
+                        this.renderDetailRow(this.getText("doctor"), this.getRecordDoctorName(appointmentDetail))}
                     {this.renderDetailRow(
                         this.getText("startedAt"),
                         this.formatDateTime(appointmentDetail.startedAt)
@@ -651,6 +691,10 @@ class DoctorMedicalRecords extends Component {
                         selectedVisitDetail={appointmentDetail}
                         onRecordChanged={this.handleRecordChanged}
                         onVisitCompleted={this.handleVisitCompleted}
+                        readOnly={this.isAdminMode()}
+                        getMedicalRecordDetail={
+                            this.isAdminMode() ? getAdminMedicalRecordDetail : undefined
+                        }
                     />
                 ) : (
                     <div className="doctor-medical-records__notice">
@@ -664,14 +708,21 @@ class DoctorMedicalRecords extends Component {
     render() {
         const { errorMessage } = this.state;
         const isDetailRoute = this.isDetailRoute();
+        const title = this.isAdminMode()
+            ? this.getText("adminTitle")
+            : isDetailRoute
+                ? this.getText("detailTitle")
+                : this.getText("title");
 
         return (
             <div className="doctor-medical-records-page">
                 <div className="doctor-medical-records__header">
                     <div>
-                        <h2>{isDetailRoute ? this.getText("detailTitle") : this.getText("title")}</h2>
+                        <h2>{title}</h2>
                         <p>
-                            {this.getText("doctor")}: {this.getDoctorName() || "-"}
+                            {this.isAdminMode()
+                                ? this.getText("adminScope")
+                                : `${this.getText("doctor")}: ${this.getDoctorName() || "-"}`}
                         </p>
                     </div>
                     {isDetailRoute ? (
@@ -696,9 +747,9 @@ class DoctorMedicalRecords extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state, ownProps) => ({
     language: state.app.language,
-    userInfo: state.doctor?.doctorInfo,
+    userInfo: ownProps.adminMode ? state.adminAuth?.adminInfo : state.doctor?.doctorInfo,
 });
 
 export default connect(mapStateToProps)(injectIntl(DoctorMedicalRecords));
