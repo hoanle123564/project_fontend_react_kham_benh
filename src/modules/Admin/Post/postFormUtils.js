@@ -92,6 +92,5 @@ export const buildPostPayload = (formData, id) => ({
   displayOrder: Number(formData.displayOrder),
   shortDescription: String(formData.shortDescription || "").trim(),
   contentHTML: formData.contentHTML,
-  contentMarkdown: "",
   categoryIds: formData.categoryIds,
 });

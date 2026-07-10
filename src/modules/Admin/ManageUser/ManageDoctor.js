@@ -29,7 +29,6 @@ class ManageDoctor extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      contentMarkdown: "",
       contentHTML: "",
 
       selectDoctor: "",
@@ -239,7 +238,6 @@ class ManageDoctor extends Component {
   handleEditorChange = (value) => {
     this.setState({
       contentHTML: value,
-      contentMarkdown: value,
     });
   };
 
@@ -270,7 +268,6 @@ class ManageDoctor extends Component {
     const findClinic = ListClinic.find((item) => item.value === res?.clinicId);
     this.setState({
       contentHTML: res?.contentHTML || "",
-      contentMarkdown: res?.contentMarkdown || res?.contentHTML || "",
       description: res?.description || "",
       selectPrice: findPrice || "",
       selectOnlinePrice: findOnlinePrice || "",
@@ -381,7 +378,6 @@ class ManageDoctor extends Component {
 
     const res = await this.props.SaveDetailDoctor({
       contentHTML: this.state.contentHTML,
-      contentMarkdown: this.state.contentMarkdown,
       description: this.state.description,
       doctorId: this.state.selectDoctor.value,
       priceId: this.state.selectPrice.value,

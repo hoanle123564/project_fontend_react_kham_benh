@@ -6,7 +6,6 @@ export const getDefaultSpecialtyFormData = (overrides = {}) => ({
   name: "",
   slug: "",
   descriptionHTML: "",
-  descriptionMarkdown: "",
   image: "",
   isActive: "1",
   displayOrder: "",
@@ -43,7 +42,6 @@ export const mapSpecialtyToFormData = (item = {}) =>
     name: item.name || "",
     slug: item.slug || buildSlug(item.name),
     descriptionHTML: item.descriptionHTML || "",
-    descriptionMarkdown: item.descriptionMarkdown || item.descriptionHTML || "",
     image: getImagePayload(item.image),
     isActive: String(item.isActive ?? 1),
     displayOrder: item.displayOrder ?? 1,
@@ -77,7 +75,6 @@ export const buildSpecialtyPayload = (formData, id) => ({
   slug: String(formData.slug || "").trim(),
   image: formData.image,
   descriptionHTML: formData.descriptionHTML,
-  descriptionMarkdown: formData.descriptionMarkdown,
   isActive: Number(formData.isActive),
   displayOrder: Number(formData.displayOrder) || 1,
 });

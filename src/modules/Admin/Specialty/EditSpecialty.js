@@ -85,7 +85,6 @@ class EditSpecialty extends Component {
             formData: {
                 ...prevState.formData,
                 descriptionHTML: value,
-                descriptionMarkdown: value,
             },
             errors: {
                 ...prevState.errors,
