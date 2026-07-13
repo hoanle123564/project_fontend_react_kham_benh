@@ -5,6 +5,8 @@
 .main-app-layout {
     display: flex;
     align-items: flex-start;
+    width: 100%;
+    min-width: 0;
     /* Cho các khối bắt đầu từ trên cùng */
 }
 
@@ -14,6 +16,7 @@
     left: 0;
     bottom: 0;
     width: 240px;
+    flex: 0 0 240px;
     transition: width 0.3s ease;
     background-color: #ffffff;
     border-right: 1px solid #e5e7eb;
@@ -135,6 +138,7 @@
 
     &.collapsed {
         width: 70px;
+        flex-basis: 70px;
 
         .sidebar-logo {
             justify-content: center;
@@ -215,4 +219,9 @@
 .app-container,
 .main-content {
     flex: 1;
+    min-width: 0;
+}
+
+.system-list {
+    min-width: 0;
 }
