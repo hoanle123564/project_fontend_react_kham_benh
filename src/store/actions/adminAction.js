@@ -526,17 +526,16 @@ export const CancelBookingAppointment = (data) => {
     try {
       let res = await postCancelBookingAppointment(data); // Gọi dịch vụ hủy lịch khám bệnh
       if (res && res.errCode === 0) {
-        toast.success("Cancel booking appointment success");
         return res;
       }
       else {
-        toast.error("Cancel booking appointment failed");
         dispatch(CancelBookingAppointmentFail());
+        return res || { errCode: 1, errMessage: "Cancel booking appointment failed" };
       }
     } catch (error) {
-      toast.error("Cancel booking appointment failed");
       dispatch(CancelBookingAppointmentFail());
       console.log("CancelBookingAppointment error: ", error);
+      return error?.response?.data || { errCode: 1, errMessage: error?.message };
     }
   };
 }

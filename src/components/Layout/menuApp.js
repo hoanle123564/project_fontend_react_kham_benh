@@ -24,6 +24,11 @@ export const adminMenu = [
         icon: "bi bi-journal-medical",
         link: "/system/medical-record",
       },
+      {
+        name: "menu.admin.manage-booking",
+        icon: "bi bi-calendar2-check",
+        link: "/system/manage-booking",
+      },
     ],
   },
   // bác sĩ
@@ -125,6 +130,11 @@ export const doctorMenu = [
         name: "menu.doctor.appointment",
         icon: "bi bi-person-lines-fill",
         link: "/doctor/appointment",
+      },
+      {
+        name: "menu.doctor.manage-booking",
+        icon: "bi bi-calendar2-check",
+        link: "/doctor/manage-booking",
       },
     ],
   },
@@ -229,6 +239,11 @@ export const patientMenu = [
         name: "menu.patient.appointments",
         icon: "fas fa-calendar-alt",
         link: "/appointments",
+      },
+      {
+        name: "menu.patient.chat",
+        icon: "bi bi-chat-left-text",
+        link: "/patient/chat",
       },
     ],
   },

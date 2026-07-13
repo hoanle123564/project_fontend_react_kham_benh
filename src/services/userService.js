@@ -128,6 +128,40 @@ const updateScheduleDoctor = (data, options = {}) => {
   return getAuthAxiosByRole(options.authRole).put("/api/update-schedule-doctor", data);
 };
 
+const getDoctorScheduleRules = (doctorId, params = {}, options = {}) => {
+  const query = new URLSearchParams({
+    doctorId,
+    ...Object.entries(params).reduce((acc, [key, value]) => {
+      if (value !== undefined && value !== null && String(value).trim() !== "") {
+        acc[key] = value;
+      }
+      return acc;
+    }, {}),
+  });
+  return getAuthAxiosByRole(options.authRole).get(`/api/doctor-schedule/rules?${query.toString()}`);
+};
+
+const previewDoctorScheduleRule = (data, options = {}) => {
+  return getAuthAxiosByRole(options.authRole).post("/api/doctor-schedule/rules/preview", data);
+};
+
+const createDoctorScheduleRule = (data, options = {}) => {
+  return getAuthAxiosByRole(options.authRole).post("/api/doctor-schedule/rules", data);
+};
+
+const updateDoctorScheduleRule = (ruleId, data, options = {}) => {
+  return getAuthAxiosByRole(options.authRole).put(
+    `/api/doctor-schedule/rules/${encodeURIComponent(ruleId)}`,
+    data
+  );
+};
+
+const deleteDoctorScheduleRule = (ruleId, options = {}) => {
+  return getAuthAxiosByRole(options.authRole).delete(
+    `/api/doctor-schedule/rules/${encodeURIComponent(ruleId)}`
+  );
+};
+
 // Lấy danh sách bệnh nhân theo ngày khám của bác sĩ
 const getAllPatientForDoctor = (doctorId, date) => {
   return doctorAxios.get(`/api/get-list-patient-for-doctor?id=${doctorId}&date=${date}`);
@@ -517,6 +551,13 @@ const getAllBooking = () => {
   return getCurrentAuthAxios().get("/api/get-all-list-booking");
 };
 
+const getAdminBookingManagement = () => adminAxios.get("/api/admin/bookings");
+const updateAdminBookingStatus = (bookingId, data) =>
+  adminAxios.patch(`/api/admin/bookings/${encodeURIComponent(bookingId)}/status`, data);
+const getDoctorBookingManagement = () => doctorAxios.get("/api/doctor/bookings");
+const updateDoctorBookingStatus = (bookingId, data) =>
+  doctorAxios.patch(`/api/doctor/bookings/${encodeURIComponent(bookingId)}/status`, data);
+
 const getAdminDashboardStatistics = (
   revenueType = "month",
   topDoctorType = "month",
@@ -563,6 +604,11 @@ export {
   postScheduleDoctor,
   getScheduleDoctor,
   updateScheduleDoctor,
+  getDoctorScheduleRules,
+  previewDoctorScheduleRule,
+  createDoctorScheduleRule,
+  updateDoctorScheduleRule,
+  deleteDoctorScheduleRule,
   postPatientBooking,
   VerifyPatientBooking,
   postSaveSpecialty,
@@ -639,6 +685,10 @@ export {
   getVisitPaymentSummary,
   collectVisitPayment,
   getAllBooking,
+  getAdminBookingManagement,
+  updateAdminBookingStatus,
+  getDoctorBookingManagement,
+  updateDoctorBookingStatus,
   getAdminDashboardStatistics,
   joinVideoConsultation,
   markVideoConsultationStarted,

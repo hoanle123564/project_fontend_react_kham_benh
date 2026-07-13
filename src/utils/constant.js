@@ -12,6 +12,8 @@ export const path = {
   DETAIL_CLINIC: "/detail-clinic/:slug",
   PROFILE_PATIENT: "/patient-profile",
   APPOINTMENTS: "/appointments",
+  PATIENT_CHAT: "/patient/chat",
+  PATIENT_CHAT_ROOM: "/patient/chat/:roomId",
   VIDEO_CONSULTATION: "/video-consultation/:bookingId",
   CHATBOT: "/chatbot",
   LIST_DOCTOR: "/list-doctor",
