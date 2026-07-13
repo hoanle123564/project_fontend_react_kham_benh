@@ -81,7 +81,8 @@
       "handbook": "Cẩm nang",
       "manage-handbook": "Quản lý cẩm nang",
       "medical-record": "Hồ sơ bệnh án",
-      "manage-clinic-department": "Quản lý khoa"
+      "manage-clinic-department": "Quản lý khoa",
+      "manage-booking": "Quản lý lịch hẹn"
     },
     "doctor": {
       "manage-medical": "Quản lý khám bệnh",
@@ -95,6 +96,7 @@
       "profile": "Hồ sơ",
       "medical-record": "Hồ sơ bệnh án",
       "appointment": "Lịch hẹn",
+      "manage-booking": "Quản lý lịch hẹn",
       "dashboard": "Dashboard bác sĩ"
     },
     "clinic-manager": {
@@ -110,7 +112,8 @@
     "patient": {
       "account": "Tài khoản",
       "profile": "Hồ sơ cá nhân",
-      "appointments": "Lịch hẹn của tôi"
+      "appointments": "Lịch hẹn của tôi",
+      "chat": "Tin nhắn"
     }
   },
   "user-manage": {
@@ -370,6 +373,8 @@
       "empty": "Không có lịch hẹn nào.",
       "error": "Không tải được danh sách lịch hẹn.",
       "cancelError": "Không hủy được lịch hẹn.",
+      "cancelSuccess": "Hủy lịch thành công.",
+      "cancelReasonPrompt": "Lý do hủy lịch (không bắt buộc):",
       "retry": "Thử lại",
       "date": "Ngày",
       "queue": "STT",
@@ -411,7 +416,11 @@
       "other": "Khác",
       "resultWaiting": "Kết quả chưa được cập nhật, vui lòng chờ bác sĩ hoàn tất.",
       "preliminaryDiagnosis": "Chẩn đoán sơ bộ",
-      "doctorConclusion": "Kết luận của bác sĩ"
+      "doctorConclusion": "Kết luận của bác sĩ",
+      "chatWithDoctor": "Chat với bác sĩ",
+      "chatWaitingConfirm": "Chờ xác nhận",
+      "openingChat": "Đang mở chat...",
+      "chatError": "Không thể mở chat."
     },
     "profile": {
       "notFound": "Không tìm thấy thông tin bệnh nhân",
@@ -601,6 +610,10 @@
       "detailError": "Không tải được chi tiết lượt khám",
       "startError": "Không thể bắt đầu khám",
       "startSuccess": "Đã bắt đầu khám",
+      "patientNoShow": "Bệnh nhân không đến",
+      "confirmNoShow": "Xác nhận bệnh nhân không đến khám?",
+      "noShowSuccess": "Đã đánh dấu bệnh nhân không đến khám",
+      "noShowError": "Không thể cập nhật trạng thái bệnh nhân không đến",
       "chooseVisit": "Chọn một lượt khám",
       "notStarted": "Chưa bắt đầu",
       "medicalCode": "Mã hồ sơ",
@@ -628,7 +641,9 @@
       "insufficientPayment": "Tiền khách đưa chưa đủ",
       "appointmentType": "Loại khám",
       "videoStatus": "Trạng thái video",
-      "openVideo": "Mở phòng video"
+      "openVideo": "Mở phòng video",
+      "openChat": "Mở chat",
+      "chatError": "Không thể mở chat"
     },
     "medical-records": {
       "detailTitle": "Chi tiết bệnh án",
@@ -733,5 +748,76 @@
       "addParaclinical": "Thêm cận lâm sàng",
       "noRecord": "Chưa có hồ sơ khám."
     }
+  },
+  "chat": {
+    "title": "Tin nhắn",
+    "rooms": "Cuộc trò chuyện",
+    "empty": "Chưa có cuộc trò chuyện.",
+    "loading": "Đang tải...",
+    "loadError": "Không tải được tin nhắn.",
+    "sendError": "Không gửi được tin nhắn.",
+    "socketError": "Kết nối chat bị lỗi.",
+    "chooseRoom": "Chọn một cuộc trò chuyện.",
+    "conversationWith": "Trò chuyện với",
+    "noMessages": "Chưa có tin nhắn.",
+    "placeholder": "Nhập tin nhắn...",
+    "send": "Gửi",
+    "sending": "Đang gửi...",
+    "searchPlaceholder": "Tìm cuộc trò chuyện",
+    "noResults": "Không tìm thấy cuộc trò chuyện phù hợp.",
+    "back": "Quay lại danh sách"
+  },
+  "booking-management": {
+    "adminTitle": "Quản lý lịch hẹn toàn hệ thống",
+    "doctorTitle": "Quản lý lịch hẹn của tôi",
+    "eyebrow": "Vận hành lịch khám",
+    "subtitle": "Theo dõi thông tin và cập nhật trạng thái lịch hẹn tại một nơi.",
+    "refresh": "Làm mới",
+    "total": "Tổng lịch hẹn",
+    "pending": "Chờ xác nhận",
+    "confirmed": "Đã xác nhận",
+    "finished": "Đã kết thúc",
+    "filters": "Bộ lọc lịch hẹn",
+    "search": "Tìm kiếm",
+    "searchPlaceholder": "Mã lịch, bệnh nhân, bác sĩ hoặc số điện thoại…",
+    "filterStatus": "Trạng thái",
+    "allStatuses": "Tất cả trạng thái",
+    "booking": "Lịch hẹn",
+    "patient": "Bệnh nhân",
+    "doctor": "Bác sĩ",
+    "schedule": "Thời gian khám",
+    "status": "Trạng thái",
+    "note": "Lý do / ghi chú",
+    "actions": "Cập nhật",
+    "chooseStatus": "Chọn trạng thái mới",
+    "update": "Cập nhật",
+    "updating": "Đang cập nhật…",
+    "noActions": "Không có thao tác",
+    "loading": "Đang tải danh sách lịch hẹn…",
+    "empty": "Chưa có lịch hẹn nào.",
+    "noResults": "Không tìm thấy lịch hẹn phù hợp.",
+    "loadError": "Không tải được danh sách lịch hẹn.",
+    "updateError": "Không thể cập nhật trạng thái lịch hẹn.",
+    "updateSuccess": "Cập nhật trạng thái lịch hẹn thành công.",
+    "confirm": "Xác nhận cập nhật trạng thái lịch hẹn?",
+    "cancelReason": "Lý do hủy lịch (không bắt buộc):",
+    "rejectReason": "Lý do từ chối (không bắt buộc):",
+    "noShowNote": "Ghi chú bệnh nhân không đến (không bắt buộc):",
+    "resultCount": "{count} lịch hẹn",
+    "page": "Trang",
+    "of": "trên",
+    "previous": "Trước",
+    "next": "Sau"
+  },
+  "notifications": {
+    "open": "Mở thông báo",
+    "title": "Thông báo",
+    "markAll": "Đánh dấu đã đọc",
+    "loading": "Đang tải thông báo...",
+    "empty": "Bạn chưa có thông báo mới.",
+    "appointmentTitle": "Lịch khám mới",
+    "messageTitle": "Tin nhắn mới",
+    "appointmentDescription": "{name} đã xác nhận lịch khám.",
+    "messageDescription": "{name} đã gửi một tin nhắn mới."
   }
 }

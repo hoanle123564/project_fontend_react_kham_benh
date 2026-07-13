@@ -80,7 +80,8 @@
       "handbook": "Handbook",
       "manage-handbook": "Manage handbook",
       "medical-record": "Medical records",
-      "manage-clinic-department": "Manage departments"
+      "manage-clinic-department": "Manage departments",
+      "manage-booking": "Booking management"
     },
     "doctor": {
       "manage-medical": "Medical examination management",
@@ -94,6 +95,7 @@
       "profile": "Profile",
       "medical-record": "Medical records",
       "appointment": "Appointment",
+      "manage-booking": "Booking management",
       "dashboard": "Doctor dashboard"
     },
     "clinic-manager": {
@@ -109,7 +111,8 @@
     "patient": {
       "account": "Patient account",
       "profile": "My profile",
-      "appointments": "My appointments"
+      "appointments": "My appointments",
+      "chat": "Chat"
     }
   },
   "user-manage": {
@@ -437,6 +440,8 @@
       "empty": "No appointments.",
       "error": "Could not load appointments.",
       "cancelError": "Could not cancel appointment.",
+      "cancelSuccess": "Appointment cancelled successfully.",
+      "cancelReasonPrompt": "Cancellation reason (optional):",
       "retry": "Retry",
       "date": "Date",
       "queue": "Queue",
@@ -478,7 +483,11 @@
       "other": "Other",
       "resultWaiting": "The result is not available yet. Please wait for the doctor to update it.",
       "preliminaryDiagnosis": "Preliminary diagnosis",
-      "doctorConclusion": "Doctor conclusion"
+      "doctorConclusion": "Doctor conclusion",
+      "chatWithDoctor": "Chat with doctor",
+      "chatWaitingConfirm": "Waiting for confirmation",
+      "openingChat": "Opening chat...",
+      "chatError": "Could not open chat."
     }
   },
   "admin": {
@@ -513,7 +522,13 @@
       "searchAction": "Search",
       "appointmentType": "Appointment type",
       "videoStatus": "Video status",
-      "openVideo": "Open video"
+      "openVideo": "Open video",
+      "openChat": "Open chat",
+      "chatError": "Could not open chat",
+      "patientNoShow": "Patient no-show",
+      "confirmNoShow": "Mark this patient as no-show?",
+      "noShowSuccess": "Patient marked as no-show",
+      "noShowError": "Could not mark patient as no-show"
     },
     "medical-records": {
       "detailTitle": "Medical record detail",
@@ -530,5 +545,76 @@
       "prescriptionNumberInvalid": "Prescription quantities must not be negative.",
       "readOnly": "Admin view is read-only."
     }
+  },
+  "chat": {
+    "title": "Messages",
+    "rooms": "Conversations",
+    "empty": "No conversations yet.",
+    "loading": "Loading...",
+    "loadError": "Could not load messages.",
+    "sendError": "Could not send message.",
+    "socketError": "Chat connection error.",
+    "chooseRoom": "Choose a conversation.",
+    "conversationWith": "Conversation with",
+    "noMessages": "No messages yet.",
+    "placeholder": "Type a message...",
+    "send": "Send",
+    "sending": "Sending...",
+    "searchPlaceholder": "Search conversations",
+    "noResults": "No matching conversations.",
+    "back": "Back to conversations"
+  },
+  "booking-management": {
+    "adminTitle": "System booking management",
+    "doctorTitle": "My booking management",
+    "eyebrow": "Appointment operations",
+    "subtitle": "Track appointment details and update status from one place.",
+    "refresh": "Refresh",
+    "total": "Total bookings",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "finished": "Finished",
+    "filters": "Booking filters",
+    "search": "Search",
+    "searchPlaceholder": "Booking ID, patient, doctor or phone…",
+    "filterStatus": "Status",
+    "allStatuses": "All statuses",
+    "booking": "Booking",
+    "patient": "Patient",
+    "doctor": "Doctor",
+    "schedule": "Schedule",
+    "status": "Status",
+    "note": "Reason / note",
+    "actions": "Update",
+    "chooseStatus": "Choose a new status",
+    "update": "Update",
+    "updating": "Updating…",
+    "noActions": "No actions",
+    "loading": "Loading bookings…",
+    "empty": "No bookings found.",
+    "noResults": "No matching bookings.",
+    "loadError": "Could not load bookings.",
+    "updateError": "Could not update booking status.",
+    "updateSuccess": "Booking status updated successfully.",
+    "confirm": "Confirm booking status update?",
+    "cancelReason": "Cancellation reason (optional):",
+    "rejectReason": "Reason for rejection (optional):",
+    "noShowNote": "Patient no-show note (optional):",
+    "resultCount": "{count} bookings",
+    "page": "Page",
+    "of": "of",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "notifications": {
+    "open": "Open notifications",
+    "title": "Notifications",
+    "markAll": "Mark all as read",
+    "loading": "Loading notifications...",
+    "empty": "You have no new notifications.",
+    "appointmentTitle": "New appointment",
+    "messageTitle": "New message",
+    "appointmentDescription": "{name} confirmed an appointment.",
+    "messageDescription": "{name} sent a new message."
   }
 }
