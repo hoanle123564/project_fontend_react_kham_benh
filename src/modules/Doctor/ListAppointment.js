@@ -50,6 +50,7 @@ class ListAppointment extends Component {
     const statusMap = {
       S1: language === "vi" ? "Chờ xác nhận" : "Pending",
       S2: language === "vi" ? "Đã xác nhận" : "Confirmed",
+      S8: language === "vi" ? "Bác sĩ đã xác nhận khám" : "Confirmed by doctor",
       S3: language === "vi" ? "Đã khám" : "Completed",
       S4: language === "vi" ? "Đã hủy" : "Cancelled",
     };

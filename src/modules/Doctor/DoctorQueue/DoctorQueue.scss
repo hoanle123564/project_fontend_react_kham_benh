@@ -199,6 +199,17 @@
         &.selected {
             background: #e8f5f3;
         }
+
+        &.no-show {
+            background: #f8fafc;
+            opacity: 0.62;
+
+            td,
+            button {
+                color: #b91c1c;
+                text-decoration: line-through;
+            }
+        }
     }
 }
 
@@ -331,9 +342,19 @@
     color: #475569;
 }
 
+.doctor-queue__no-show-button {
+    border-color: #fecaca;
+    color: #b91c1c;
+}
+
 .doctor-queue__video-icon {
     border-color: #99f6e4;
     color: #0f766e;
+}
+
+.doctor-queue__chat-icon {
+    border-color: #bfdbfe;
+    color: #1d4ed8;
 }
 
 .doctor-queue__payment-button {
@@ -872,6 +893,29 @@
     border: 1px solid #0f766e;
     border-radius: 8px;
     background: #0f766e;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+
+    &:disabled {
+        border-color: #cbd5e1;
+        background: #e2e8f0;
+        color: #64748b;
+        cursor: not-allowed;
+    }
+}
+
+.doctor-queue__chat-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 132px;
+    height: 38px;
+    padding: 0 14px;
+    border: 1px solid #1d4ed8;
+    border-radius: 8px;
+    background: #1d4ed8;
     color: #ffffff;
     font-size: 13px;
     font-weight: 700;

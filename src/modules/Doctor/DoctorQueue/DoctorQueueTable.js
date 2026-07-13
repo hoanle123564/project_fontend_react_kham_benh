@@ -13,17 +13,26 @@ class DoctorQueueTable extends Component {
             getVideoStatusLabel,
             renderStatusBadge,
             canStartVisit,
+            canMarkNoShow,
+            isNoShow,
+            canOpenChatRoom,
             canCollectPayment,
             onSelectRow,
             onStartVisit,
+            onPatientNoShow,
             onOpenPaymentModal,
             onOpenVideoRoom,
+            onOpenChatRoom,
+            openingChatBookingId,
+            updatingNoShowBookingId,
         } = this.props;
+
+        const noShow = isNoShow(item);
 
         return (
             <tr
                 key={item.bookingId}
-                className={Number(selectedBookingId) === Number(item.bookingId) ? "selected" : ""}
+                className={`${Number(selectedBookingId) === Number(item.bookingId) ? "selected" : ""} ${noShow ? "no-show" : ""}`.trim()}
                 onClick={() => onSelectRow(item)}
             >
                 <td>
@@ -51,7 +60,13 @@ class DoctorQueueTable extends Component {
                 <td>{item.patientPhoneNumber || "-"}</td>
                 <td>{item.reason || "-"}</td>
                 <td>{getVideoStatusLabel(item)}</td>
-                <td>{renderStatusBadge("visit", getVisitStatusLabel(item), item.visitStatusId)}</td>
+                <td>
+                    {renderStatusBadge(
+                        "visit",
+                        noShow ? getText("patientNoShow") : getVisitStatusLabel(item),
+                        noShow ? "S7" : item.visitStatusId
+                    )}
+                </td>
                 <td>{renderStatusBadge("payment", getPaymentStatusLabel(item), item.paymentStatusId)}</td>
                 <td>
                     <div className="doctor-queue__actions">
@@ -84,6 +99,20 @@ class DoctorQueueTable extends Component {
                         >
                             <i className="bi bi-cash-coin" />
                         </button>
+                        {canMarkNoShow(item) && (
+                            <button
+                                type="button"
+                                className="doctor-queue__icon-button doctor-queue__no-show-button"
+                                disabled={Number(updatingNoShowBookingId) === Number(item.bookingId)}
+                                title={getText("patientNoShow")}
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    onPatientNoShow(item);
+                                }}
+                            >
+                                <i className="bi bi-person-x" />
+                            </button>
+                        )}
                         {item.appointmentTypeId === "AT2" && (
                             <button
                                 type="button"
@@ -98,9 +127,27 @@ class DoctorQueueTable extends Component {
                                 <i className="bi bi-camera-video" />
                             </button>
                         )}
+                        {item.appointmentTypeId === "AT2" && (
+                            <button
+                                type="button"
+                                className="doctor-queue__icon-button doctor-queue__chat-icon"
+                                disabled={
+                                    !canOpenChatRoom(item) ||
+                                    Number(openingChatBookingId) === Number(item.bookingId)
+                                }
+                                title={getText("openChat", "Open chat")}
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    onOpenChatRoom(item);
+                                }}
+                            >
+                                <i className="bi bi-chat-left-text" />
+                            </button>
+                        )}
                         <button
                             type="button"
                             className="doctor-queue__icon-button"
+                            disabled={noShow}
                             title={getText("detail")}
                             onClick={(event) => {
                                 event.stopPropagation();

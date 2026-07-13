@@ -113,7 +113,9 @@ class DoctorSchdule extends Component {
         const visibleAvailableTime = allAvailableTime.filter(
             (item) =>
                 (item.appointmentTypeId || "AT1") === appointmentTypeId &&
-                Number(item.hasActiveBooking) !== 1
+                Number(item.isActive) !== 0 &&
+                Number(item.remaining) > 0 &&
+                Number(item.isBookable) !== 0
         );
 
         return (
@@ -165,7 +167,7 @@ class DoctorSchdule extends Component {
                                                         className="btn-time"
                                                         onClick={() => this.handleClickScheduleTime(item)}
                                                     >
-                                                        {item.value_vi}
+                                                        {this.props.language === languages.VI ? item.value_vi : item.value_en}
                                                     </button>
                                                 );
                                             })}

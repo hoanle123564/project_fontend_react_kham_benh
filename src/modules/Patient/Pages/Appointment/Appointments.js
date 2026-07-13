@@ -9,6 +9,8 @@ import "./Appointments.scss";
 import moment from "moment";
 import { buildImageSrc } from "../../../../utils/imageUtils";
 import userDefault from "../../../../assets/user_default.png";
+import { createChatRoomFromBooking } from "../../../../services/doctorPatientChatService";
+import { toast } from "react-toastify";
 
 class Appointments extends Component {
     constructor(props) {
@@ -18,6 +20,7 @@ class Appointments extends Component {
             isLoading: false,
             errorMessage: "",
             cancelingId: null,
+            creatingChatId: null,
             selectedAppointmentId: null,
         };
     }
@@ -67,14 +70,17 @@ class Appointments extends Component {
     };
 
     handleCancel = async (bookingId) => {
+        const cancelReason = window.prompt(this.getText("cancelReasonPrompt", "Lý do hủy lịch (không bắt buộc):"));
+        if (cancelReason === null) return;
         this.setState({ cancelingId: bookingId, errorMessage: "" });
 
         try {
-            const res = await this.props.CancelBooking({ BookingId: bookingId });
+            const res = await this.props.CancelBooking({ BookingId: bookingId, cancelReason });
 
             if (res?.errCode === 0) {
                 await this.loadAppointments();
                 this.setState({ cancelingId: null });
+                toast.success(this.getText("cancelSuccess", "Hủy lịch thành công."));
                 return;
             }
 
@@ -96,12 +102,20 @@ class Appointments extends Component {
             S2: "green",
             S3: "blue",
             S4: "red",
+            S5: "red",
+            S6: "red",
+            S7: "red",
+            S8: "green",
         };
         const statusEn = {
             S1: "Pending",
             S2: "Confirmed",
             S3: "Completed",
             S4: "Cancelled",
+            S5: "Cancelled by doctor",
+            S6: "Rejected by doctor",
+            S7: "Patient no-show",
+            S8: "Confirmed by doctor",
         };
         const displayText =
             this.props.language === "vi"
@@ -158,6 +172,31 @@ class Appointments extends Component {
         this.props.history.push(`/video-consultation/${encodeURIComponent(bookingId)}?role=patient`);
     };
 
+    handleOpenChat = async (item) => {
+        if (!item?.id || this.state.creatingChatId) return;
+
+        this.setState({ creatingChatId: item.id, errorMessage: "" });
+
+        try {
+            const response = await createChatRoomFromBooking(item.id, "patient");
+            if (response?.errCode === 0 && response.data?.id) {
+                this.props.history.push(`/patient/chat/${encodeURIComponent(response.data.id)}`);
+                return;
+            }
+
+            this.setState({
+                creatingChatId: null,
+                errorMessage: response?.errMessage || this.getText("chatError"),
+            });
+        } catch (error) {
+            const data = error.response?.data;
+            this.setState({
+                creatingChatId: null,
+                errorMessage: data?.errMessage || this.getText("chatError"),
+            });
+        }
+    };
+
     getSelectedAppointment = () => {
         const selectedAppointment = this.state.appointments.find(
             (item) => Number(item.id) === Number(this.state.selectedAppointmentId)
@@ -205,10 +244,27 @@ class Appointments extends Component {
     );
 
     renderActions = (item) => {
-        const { cancelingId } = this.state;
+        const { cancelingId, creatingChatId } = this.state;
 
         return (
             <div className="appointments-actions">
+                {item.appointmentTypeId === "AT2" && ["S1", "S2"].includes(item.statusId) && (
+                    <button type="button" className="btn-video" disabled>
+                        {this.getText("chatWaitingConfirm")}
+                    </button>
+                )}
+                {item.appointmentTypeId === "AT2" && ["S8", "S3"].includes(item.statusId) && (
+                    <button
+                        type="button"
+                        className="btn-video"
+                        disabled={creatingChatId === item.id}
+                        onClick={() => this.handleOpenChat(item)}
+                    >
+                        {creatingChatId === item.id
+                            ? this.getText("openingChat")
+                            : this.getText("chatWithDoctor")}
+                    </button>
+                )}
                 {item.canJoinVideo && (
                     <button
                         type="button"

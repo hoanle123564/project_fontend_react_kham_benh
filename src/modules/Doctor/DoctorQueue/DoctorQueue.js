@@ -10,7 +10,9 @@ import {
     getDoctorQueue,
     getVisitPaymentSummary,
     startDoctorExaminationVisit,
+    updateDoctorBookingStatus,
 } from "../../../services/userService";
+import { createChatRoomFromBooking } from "../../../services/doctorPatientChatService";
 import DoctorPaymentModal from "./DoctorPaymentModal";
 import DoctorQueueSidePanel from "./DoctorQueueSidePanel";
 import DoctorQueueTable from "./DoctorQueueTable";
@@ -24,8 +26,9 @@ const VISIT_STATUS = Object.freeze({
 });
 
 const BOOKING_STATUS = Object.freeze({
-    CONFIRMED: "S2",
+    DOCTOR_CONFIRMED: "S8",
     COMPLETED: "S3",
+    PATIENT_NO_SHOW: "S7",
 });
 
 
@@ -55,6 +58,8 @@ class DoctorQueue extends Component {
             amountReceived: "",
             isPaymentLoading: false,
             isCollectingPayment: false,
+            openingChatBookingId: null,
+            updatingNoShowBookingId: null,
             errorMessage: "",
         };
     }
@@ -213,7 +218,7 @@ class DoctorQueue extends Component {
     };
 
     canCollectPayment = (item = {}) =>
-        Boolean(item.examinationVisitId) && item.paymentStatusId !== "PS2";
+        !this.isNoShow(item) && Boolean(item.examinationVisitId) && item.paymentStatusId !== "PS2";
 
     fetchQueue = async (options = {}) => {
         if (!this.props.userInfo?.id) return;
@@ -373,7 +378,7 @@ class DoctorQueue extends Component {
     };
 
     handleSelectRow = (item) => {
-        if (!item?.bookingId || !this.props.history) return;
+        if (!item?.bookingId || this.isNoShow(item) || !this.props.history) return;
 
         this.props.history.push(`/doctor/appointment/${encodeURIComponent(item.bookingId)}`);
     };
@@ -384,6 +389,31 @@ class DoctorQueue extends Component {
         this.props.history.push(
             `/video-consultation/${encodeURIComponent(item.bookingId)}?role=doctor`
         );
+    };
+
+    handleOpenChatRoom = async (item) => {
+        if (!item?.bookingId || !this.canOpenChatRoom(item) || this.state.openingChatBookingId) return;
+
+        this.setState({ openingChatBookingId: item.bookingId, errorMessage: "" });
+
+        try {
+            const response = await createChatRoomFromBooking(item.bookingId, "doctor");
+            if (response?.errCode === 0 && response.data?.id) {
+                this.props.history.push(`/doctor/message/${encodeURIComponent(response.data.id)}`);
+                return;
+            }
+
+            this.setState({
+                openingChatBookingId: null,
+                errorMessage: response?.errMessage || this.getText("chatError", "Could not open chat"),
+            });
+        } catch (error) {
+            const data = error.response?.data;
+            this.setState({
+                openingChatBookingId: null,
+                errorMessage: data?.errMessage || this.getText("chatError", "Could not open chat"),
+            });
+        }
     };
 
     handleStartVisit = async (item) => {
@@ -422,6 +452,27 @@ class DoctorQueue extends Component {
         } catch (error) {
             toast.error(this.getText("startError"));
             this.setState({ startingBookingId: null });
+        }
+    };
+
+    handlePatientNoShow = async (item) => {
+        if (!this.canMarkNoShow(item) || this.state.updatingNoShowBookingId) return;
+        if (!window.confirm(this.getText("confirmNoShow", "Mark this patient as no-show?"))) return;
+
+        this.setState({ updatingNoShowBookingId: item.bookingId, errorMessage: "" });
+        try {
+            const response = await updateDoctorBookingStatus(item.bookingId, { statusId: "S7" });
+            if (response?.errCode !== 0) {
+                throw new Error(response?.errMessage || this.getText("noShowError"));
+            }
+            toast.success(this.getText("noShowSuccess"));
+            this.setState(
+                { updatingNoShowBookingId: null, visitStatusId: "" },
+                () => this.fetchQueue()
+            );
+        } catch (error) {
+            toast.error(error.message || this.getText("noShowError"));
+            this.setState({ updatingNoShowBookingId: null });
         }
     };
 
@@ -590,8 +641,18 @@ class DoctorQueue extends Component {
     };
 
     canStartVisit = (item = {}) =>
-        item.bookingStatusId === BOOKING_STATUS.CONFIRMED &&
+        item.bookingStatusId === BOOKING_STATUS.DOCTOR_CONFIRMED &&
         item.visitStatusId === VISIT_STATUS.WAITING;
+
+    isNoShow = (item = {}) => item.bookingStatusId === BOOKING_STATUS.PATIENT_NO_SHOW;
+
+    canMarkNoShow = (item = {}) =>
+        item.bookingStatusId === BOOKING_STATUS.DOCTOR_CONFIRMED &&
+        (!item.examinationVisitId || item.visitStatusId === VISIT_STATUS.WAITING);
+
+    canOpenChatRoom = (item = {}) =>
+        item.appointmentTypeId === "AT2" &&
+        [BOOKING_STATUS.DOCTOR_CONFIRMED, BOOKING_STATUS.COMPLETED].includes(item.bookingStatusId);
 
     formatDate = (value) => {
         if (!value) return "-";
@@ -616,7 +677,9 @@ class DoctorQueue extends Component {
 
     renderSummary = () => {
         const { queue } = this.state;
-        const waiting = queue.filter((item) => item.visitStatusId === VISIT_STATUS.WAITING).length;
+        const waiting = queue.filter(
+            (item) => !this.isNoShow(item) && item.visitStatusId === VISIT_STATUS.WAITING
+        ).length;
         const inProgress = queue.filter(
             (item) => item.visitStatusId === VISIT_STATUS.IN_PROGRESS
         ).length;
@@ -666,6 +729,7 @@ class DoctorQueue extends Component {
         }
 
         const detail = selectedVisitDetail || selectedItem;
+        const isNoShow = this.isNoShow(selectedItem);
         const patientName =
             detail.patientFirstName || detail.patientLastName
                 ? `${detail.patientFirstName || ""} ${detail.patientLastName || ""}`
@@ -734,7 +798,9 @@ class DoctorQueue extends Component {
                 </div>
 
                 {!selectedItem.examinationVisitId && (
-                    <div className="doctor-queue__notice">{this.getText("notStarted")}</div>
+                    <div className="doctor-queue__notice">
+                        {isNoShow ? this.getText("patientNoShow") : this.getText("notStarted")}
+                    </div>
                 )}
 
                 {this.canStartVisit(selectedItem) && (
@@ -753,7 +819,7 @@ class DoctorQueue extends Component {
                     </div>
                 )}
 
-                {selectedItem.examinationVisitId && (
+                {!isNoShow && selectedItem.examinationVisitId && (
                     <div className="doctor-queue__detail-actions">
                         <button
                             type="button"
@@ -770,7 +836,7 @@ class DoctorQueue extends Component {
                     </div>
                 )}
 
-                {selectedItem.appointmentTypeId === "AT2" && (
+                {!isNoShow && selectedItem.appointmentTypeId === "AT2" && (
                     <div className="doctor-queue__detail-actions">
                         <button
                             type="button"
@@ -785,13 +851,35 @@ class DoctorQueue extends Component {
                     </div>
                 )}
 
-                <MedicalRecordWorkspace
-                    language={this.props.language}
-                    selectedItem={selectedItem}
-                    selectedVisitDetail={selectedVisitDetail}
-                    onRecordChanged={this.handleRecordChanged}
-                    onVisitCompleted={this.handleVisitCompleted}
-                />
+                {!isNoShow && selectedItem.appointmentTypeId === "AT2" && (
+                    <div className="doctor-queue__detail-actions">
+                        <button
+                            type="button"
+                            className="doctor-queue__chat-button"
+                            disabled={
+                                !this.canOpenChatRoom(selectedItem) ||
+                                Number(this.state.openingChatBookingId) === Number(selectedItem.bookingId)
+                            }
+                            title={this.getText("openChat", "Open chat")}
+                            onClick={() => this.handleOpenChatRoom(selectedItem)}
+                        >
+                            <i className="bi bi-chat-left-text" />
+                            {Number(this.state.openingChatBookingId) === Number(selectedItem.bookingId)
+                                ? `${this.getText("loading")}...`
+                                : this.getText("openChat", "Open chat")}
+                        </button>
+                    </div>
+                )}
+
+                {!isNoShow && (
+                    <MedicalRecordWorkspace
+                        language={this.props.language}
+                        selectedItem={selectedItem}
+                        selectedVisitDetail={selectedVisitDetail}
+                        onRecordChanged={this.handleRecordChanged}
+                        onVisitCompleted={this.handleVisitCompleted}
+                    />
+                )}
             </aside>
         );
     };
@@ -851,6 +939,8 @@ class DoctorQueue extends Component {
             amountReceived,
             isPaymentLoading,
             isCollectingPayment,
+            openingChatBookingId,
+            updatingNoShowBookingId,
             errorMessage,
         } = this.state;
         const doctorName = this.getDoctorName();
@@ -954,11 +1044,18 @@ class DoctorQueue extends Component {
                                 getVideoStatusLabel={this.getVideoStatusLabel}
                                 renderStatusBadge={this.renderStatusBadge}
                                 canStartVisit={this.canStartVisit}
+                                canMarkNoShow={this.canMarkNoShow}
+                                isNoShow={this.isNoShow}
+                                canOpenChatRoom={this.canOpenChatRoom}
                                 canCollectPayment={this.canCollectPayment}
                                 onSelectRow={this.handleSelectRow}
                                 onStartVisit={this.handleStartVisit}
+                                onPatientNoShow={this.handlePatientNoShow}
                                 onOpenPaymentModal={this.handleOpenPaymentModal}
                                 onOpenVideoRoom={this.handleOpenVideoRoom}
+                                onOpenChatRoom={this.handleOpenChatRoom}
+                                openingChatBookingId={openingChatBookingId}
+                                updatingNoShowBookingId={updatingNoShowBookingId}
                             />
                         </section>
                     </div>
