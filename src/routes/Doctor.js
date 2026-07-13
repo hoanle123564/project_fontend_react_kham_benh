@@ -6,10 +6,12 @@ import Header from "../components/Layout/Header";
 import DoctorMedicalRecords from "../modules/Doctor/MedicalRecords/DoctorMedicalRecords";
 import DoctorDashboard from "../modules/Doctor/DoctorDashboard/DoctorDashboard";
 import DoctorQueue from "../modules/Doctor/DoctorQueue/DoctorQueue";
+import ChatPage from "../modules/Chat/ChatPage";
 import ManagePatient from "../modules/Doctor/ManagePatient";
 import ManageSchedulePrivate from "../modules/Doctor/ManageSchedulePrivate";
 import ListAppointment from "../modules/Doctor/ListAppointment";
 import EditProfile from "../modules/Admin/ManageUser/EditProfile";
+import BookingManagement from "../modules/Booking/BookingManagement";
 
 class Doctor extends Component {
   state = {
@@ -38,6 +40,9 @@ class Doctor extends Component {
               <Route exact path="/doctor/manage-patient" component={ManagePatient} />
               <Route path="/doctor/appointment/:bookingId" component={DoctorQueue} />
               <Route exact path="/doctor/appointment" component={DoctorQueue} />
+              <Route path="/doctor/manage-booking" component={BookingManagement} />
+              <Route path="/doctor/message/:roomId" component={ChatPage} />
+              <Route exact path="/doctor/message" component={ChatPage} />
               <Route path="/doctor/manage-schedule-private" component={ManageSchedulePrivate} />
               <Route path="/doctor/list-appointment" component={ListAppointment} />
               <Route path="/doctor/edit-profile" component={EditProfile} />
