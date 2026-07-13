@@ -1,16 +1,7 @@
+@import "../../../styles/admin-list";
+
 .manage-clinic-container {
-    --clinic-bg: #f4f8fb;
-    --clinic-card: #ffffff;
-    --clinic-border: #d9e6ee;
-    --clinic-border-strong: #bdd3df;
-    --clinic-text: #123047;
-    --clinic-muted: #6c8190;
-    --clinic-navy: #0b3d5d;
-    --clinic-teal: #0f8f8c;
-    --clinic-teal-soft: #e6f6f4;
-    --clinic-danger: #cf3f4a;
-    --clinic-warning: #b7791f;
-    --clinic-shadow: 0 18px 40px rgba(13, 52, 78, 0.09);
+    @include admin-list-tokens("clinic");
 
     min-height: 100%;
     padding: 28px 24px 96px;

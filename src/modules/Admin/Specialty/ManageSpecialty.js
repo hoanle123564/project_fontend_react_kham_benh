@@ -10,6 +10,7 @@ import {
     DeleteSpecialty,
     updateSpecialtyOrder,
 } from "../../../services/userService";
+import PagePagination from "../../../components/Pagination/PagePagination";
 import "./ManageSpecialty.scss";
 
 const cloneSpecialties = (specialties = []) => specialties.map((item) => ({ ...item }));
@@ -516,35 +517,15 @@ class ManageSpecialty extends Component {
 
                         <div className="manage-specialty__footer">
                             <span>Trang {currentPage} trên {footerTotalPages}</span>
-                            <nav className="manage-specialty__pagination">
-                                <ul>
-                                    <li>
-                                        <button
-                                            type="button"
-                                            onClick={() => this.handlePageChange(currentPage - 1)}
-                                            disabled={currentPage <= 1}
-                                        >
-                                            Trước
-                                        </button>
-                                    </li>
-                                    {Array.from({ length: footerTotalPages }, (_, i) => (
-                                        <li key={i} className={currentPage === i + 1 ? "active" : ""}>
-                                            <button type="button" onClick={() => this.handlePageChange(i + 1)}>
-                                                {i + 1}
-                                            </button>
-                                        </li>
-                                    ))}
-                                    <li>
-                                        <button
-                                            type="button"
-                                            onClick={() => this.handlePageChange(currentPage + 1)}
-                                            disabled={currentPage >= footerTotalPages}
-                                        >
-                                            Sau
-                                        </button>
-                                    </li>
-                                </ul>
-                            </nav>
+                            <PagePagination
+                                page={currentPage}
+                                totalPages={footerTotalPages}
+                                onChange={this.handlePageChange}
+                                className="manage-specialty__pagination"
+                                previousLabel="Trước"
+                                nextLabel="Sau"
+                                asList
+                            />
                         </div>
                     </div>
 

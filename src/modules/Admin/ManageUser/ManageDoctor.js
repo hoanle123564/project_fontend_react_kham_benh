@@ -10,20 +10,7 @@ import Select from "react-select";
 import { toast } from "react-toastify";
 import { buildImageSrc, readFileAsDataUrl } from "../../../utils/imageUtils";
 import { editorFormats, editorModules, hasVisibleEditorContent } from "../../../utils/richTextUtils";
-
-const generateSlug = (value = "") => {
-  return value
-    .toString()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d")
-    .replace(/Đ/g, "d")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-};
+import { buildSlug } from "../../../utils/textUtils";
 
 class ManageDoctor extends Component {
   constructor(props) {
@@ -275,7 +262,7 @@ class ManageDoctor extends Component {
       selectSpecialty: findSpecialty || "",
       selectClinic: findClinic || "",
       selectedClinicProvince: res?.province || findClinic?.province || "",
-      slug: res?.slug || generateSlug(option.label),
+      slug: res?.slug || buildSlug(option.label),
       isActive: Number(res?.isActive) === 0 ? 0 : 1,
       displayOrder: Number(res?.displayOrder) || this.getNextDisplayOrder(),
       image: res?.image || "",

@@ -1,16 +1,7 @@
+@import "../../../styles/admin-list";
+
 .manage-post-container {
-    --post-bg: #f4f8fb;
-    --post-card: #ffffff;
-    --post-border: #d9e6ee;
-    --post-border-strong: #bdd3df;
-    --post-text: #123047;
-    --post-muted: #6c8190;
-    --post-navy: #0b3d5d;
-    --post-teal: #0f8f8c;
-    --post-teal-soft: #e6f6f4;
-    --post-danger: #cf3f4a;
-    --post-warning: #b7791f;
-    --post-shadow: 0 18px 40px rgba(13, 52, 78, 0.09);
+    @include admin-list-tokens("post");
 
     min-height: 100%;
     padding: 28px 24px 96px;

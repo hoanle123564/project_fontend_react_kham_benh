@@ -1,16 +1,7 @@
+@import "../../../styles/admin-list";
+
 .manage-specialty-container {
-    --specialty-bg: #f4f8fb;
-    --specialty-card: #ffffff;
-    --specialty-border: #d9e6ee;
-    --specialty-border-strong: #bdd3df;
-    --specialty-text: #123047;
-    --specialty-muted: #6c8190;
-    --specialty-navy: #0b3d5d;
-    --specialty-teal: #0f8f8c;
-    --specialty-teal-soft: #e6f6f4;
-    --specialty-danger: #cf3f4a;
-    --specialty-warning: #b7791f;
-    --specialty-shadow: 0 18px 40px rgba(13, 52, 78, 0.09);
+    @include admin-list-tokens("specialty");
 
     min-height: 100%;
     padding: 28px 24px 96px;

@@ -10,6 +10,7 @@ import {
   DeleteClinic,
   updateClinicOrder,
 } from "../../../services/userService";
+import PagePagination from "../../../components/Pagination/PagePagination";
 import "./ManageClinic.scss";
 
 const cloneClinics = (clinics = []) =>
@@ -316,34 +317,7 @@ class ManageClinic extends Component {
     const totalPages = this.getTotalPages();
     const { currentPage } = this.state;
 
-    return (
-      <div className="manage-clinic__pagination">
-        <button
-          type="button"
-          onClick={() => this.handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          Trước
-        </button>
-        {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
-          <button
-            key={page}
-            type="button"
-            className={page === currentPage ? "active" : ""}
-            onClick={() => this.handlePageChange(page)}
-          >
-            {page}
-          </button>
-        ))}
-        <button
-          type="button"
-          onClick={() => this.handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
-          Sau
-        </button>
-      </div>
-    );
+    return <PagePagination page={currentPage} totalPages={totalPages} onChange={this.handlePageChange} className="manage-clinic__pagination" previousLabel="Trước" nextLabel="Sau" />;
   };
 
   renderFooter = () => {

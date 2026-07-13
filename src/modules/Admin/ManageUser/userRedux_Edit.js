@@ -7,6 +7,13 @@ import _ from "lodash";
 import { languages } from "../../../utils/constant";
 import * as action from "../../../store/actions";
 import { getLookUp } from "../../../services/userService";
+import { readFileAsDataUrl } from "../../../utils/imageUtils";
+import {
+  getUserLocationFieldState,
+  loadDistrictOptions,
+  loadLocationOptions,
+  loadWardOptions,
+} from "./userFormUtils";
 
 class UserEdit extends Component {
   constructor(props) {
@@ -72,40 +79,15 @@ class UserEdit extends Component {
   };
 
   loadLocationOptions = async (provinceCode = "", districtCode = "") => {
-    const [provinceRes, districtRes, wardRes] = await Promise.all([
-      getLookUp("PROVINCE"),
-      provinceCode ? getLookUp("DISTRICT", provinceCode) : Promise.resolve({ data: [] }),
-      districtCode ? getLookUp("WARD", districtCode) : Promise.resolve({ data: [] }),
-    ]);
-
-    this.setState({
-      provinceOptions: provinceRes?.errCode === 0 ? provinceRes.data || [] : [],
-      districtOptions: districtRes?.errCode === 0 ? districtRes.data || [] : [],
-      wardOptions: wardRes?.errCode === 0 ? wardRes.data || [] : [],
-    });
+    this.setState(await loadLocationOptions(getLookUp, provinceCode, districtCode));
   };
 
   loadDistrictOptions = async (provinceCode) => {
-    if (!provinceCode) {
-      this.setState({ districtOptions: [], wardOptions: [] });
-      return;
-    }
-
-    const res = await getLookUp("DISTRICT", provinceCode);
-    this.setState({
-      districtOptions: res?.errCode === 0 ? res.data || [] : [],
-      wardOptions: [],
-    });
+    this.setState(await loadDistrictOptions(getLookUp, provinceCode));
   };
 
   loadWardOptions = async (districtCode) => {
-    if (!districtCode) {
-      this.setState({ wardOptions: [] });
-      return;
-    }
-
-    const res = await getLookUp("WARD", districtCode);
-    this.setState({ wardOptions: res?.errCode === 0 ? res.data || [] : [] });
+    this.setState(await loadWardOptions(getLookUp, districtCode));
   };
 
   handleOnchange = (event, field) => {
@@ -113,27 +95,9 @@ class UserEdit extends Component {
     this.setState((prevState) => {
       const updatedState = {
         ...prevState,
-        [field]: value,
+        ...getUserLocationFieldState(field, value, "roleId", "positionId"),
         errors: { ...prevState.errors, [field]: "" },
       };
-
-      //  Nếu người dùng đổi vai trò mà KHÔNG phải bác sĩ => xóa chức danh
-      if (field === "roleId" && value !== "R2") {
-        updatedState.positionId = "";
-      }
-
-      if (field === "provinceCode") {
-        updatedState.districtCode = "";
-        updatedState.wardCode = "";
-        updatedState.districtOptions = [];
-        updatedState.wardOptions = [];
-      }
-
-      if (field === "districtCode") {
-        updatedState.wardCode = "";
-        updatedState.wardOptions = [];
-      }
-
       return updatedState;
     }, () => {
       if (field === "provinceCode") {
@@ -145,19 +109,12 @@ class UserEdit extends Component {
     });
   };
 
-  handleOnChangeImage = (e) => {
+  handleOnChangeImage = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const objectUrl = URL.createObjectURL(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        this.setState({
-          previewImg: objectUrl,
-          avatar: reader.result.split(",")[1],
-        });
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    const dataUrl = await readFileAsDataUrl(file);
+    this.setState({ previewImg: URL.createObjectURL(file), avatar: dataUrl.split(",")[1] || "" });
   };
 
   getText = (id, defaultMessage) =>

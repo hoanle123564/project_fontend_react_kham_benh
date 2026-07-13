@@ -12,24 +12,12 @@ import {
     updatePostCategoryOrder,
 } from "../../../services/userService";
 import PostCategoryModal from "./PostCategoryModal";
+import { buildSlug } from "../../../utils/textUtils";
 import "./ManagePostCategory.scss";
 
 const MODAL_MODE = {
     CREATE: "CREATE",
     EDIT: "EDIT",
-};
-
-const buildSlug = (value) => {
-    return String(value || "")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[đĐ]/g, "d")
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, " ")
-        .trim()
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^-+|-+$/g, "");
 };
 
 const sortCategories = (categories = []) => {

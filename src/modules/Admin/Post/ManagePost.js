@@ -12,6 +12,7 @@ import {
     getAllPostCategory,
     updatePostOrder,
 } from "../../../services/userService";
+import PagePagination from "../../../components/Pagination/PagePagination";
 import "./ManagePost.scss";
 
 const clonePosts = (posts = []) => posts.map((item) => ({ ...item }));
@@ -535,41 +536,15 @@ class ManagePost extends Component {
 
                         <div className="manage-post__footer">
                             <span>Trang {currentPage} trên {footerTotalPages}</span>
-                            <nav className="manage-post__pagination">
-                                <ul>
-                                    <li>
-                                        <button
-                                            type="button"
-                                            onClick={() => this.handlePageChange(currentPage - 1)}
-                                            disabled={currentPage <= 1}
-                                        >
-                                            Trước
-                                        </button>
-                                    </li>
-                                    {Array.from({ length: footerTotalPages }, (_, index) => (
-                                        <li
-                                            key={index}
-                                            className={currentPage === index + 1 ? "active" : ""}
-                                        >
-                                            <button
-                                                type="button"
-                                                onClick={() => this.handlePageChange(index + 1)}
-                                            >
-                                                {index + 1}
-                                            </button>
-                                        </li>
-                                    ))}
-                                    <li>
-                                        <button
-                                            type="button"
-                                            onClick={() => this.handlePageChange(currentPage + 1)}
-                                            disabled={currentPage >= footerTotalPages}
-                                        >
-                                            Sau
-                                        </button>
-                                    </li>
-                                </ul>
-                            </nav>
+                            <PagePagination
+                                page={currentPage}
+                                totalPages={footerTotalPages}
+                                onChange={this.handlePageChange}
+                                className="manage-post__pagination"
+                                previousLabel="Trước"
+                                nextLabel="Sau"
+                                asList
+                            />
                         </div>
                     </div>
 

@@ -1,15 +1,7 @@
+@import "../../../styles/admin-list";
+
 .manage-post-category-container {
-    --post-category-bg: #f4f8fb;
-    --post-category-card: #ffffff;
-    --post-category-border: #d9e6ee;
-    --post-category-text: #123047;
-    --post-category-muted: #6c8190;
-    --post-category-navy: #0b3d5d;
-    --post-category-teal: #0f8f8c;
-    --post-category-teal-soft: #e6f6f4;
-    --post-category-danger: #cf3f4a;
-    --post-category-warning: #b7791f;
-    --post-category-shadow: 0 18px 40px rgba(13, 52, 78, 0.09);
+    @include admin-list-tokens("post-category");
 
     min-height: 100%;
     padding: 28px 24px 96px;

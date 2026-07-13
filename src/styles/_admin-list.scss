@@ -1,0 +1,14 @@
+@mixin admin-list-tokens($name) {
+  --#{$name}-bg: #f4f8fb;
+  --#{$name}-card: #ffffff;
+  --#{$name}-border: #d9e6ee;
+  --#{$name}-border-strong: #bdd3df;
+  --#{$name}-text: #123047;
+  --#{$name}-muted: #6c8190;
+  --#{$name}-navy: #0b3d5d;
+  --#{$name}-teal: #0f8f8c;
+  --#{$name}-teal-soft: #e6f6f4;
+  --#{$name}-danger: #cf3f4a;
+  --#{$name}-warning: #b7791f;
+  --#{$name}-shadow: 0 18px 40px rgba(13, 52, 78, 0.09);
+}
