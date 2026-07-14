@@ -558,6 +558,36 @@ const getDoctorBookingManagement = () => doctorAxios.get("/api/doctor/bookings")
 const updateDoctorBookingStatus = (bookingId, data) =>
   doctorAxios.patch(`/api/doctor/bookings/${encodeURIComponent(bookingId)}/status`, data);
 
+const getPublicDoctorReviews = (doctorId, params = {}) => {
+  const query = buildDoctorPatientQuery(params);
+  return axios.get(`/api/doctors/${encodeURIComponent(doctorId)}/reviews${query ? `?${query}` : ""}`);
+};
+
+const getBookingReviewEligibility = (bookingId) =>
+  patientAxios.get(`/api/bookings/${encodeURIComponent(bookingId)}/review-eligibility`);
+
+const createBookingReview = (bookingId, data) =>
+  patientAxios.post(`/api/bookings/${encodeURIComponent(bookingId)}/review`, data);
+
+const getDoctorReviews = (params = {}) => {
+  const query = buildDoctorPatientQuery(params);
+  return doctorAxios.get(`/api/doctor/reviews${query ? `?${query}` : ""}`);
+};
+
+const createDoctorReviewReply = (reviewId, data) =>
+  doctorAxios.post(`/api/doctor/reviews/${encodeURIComponent(reviewId)}/reply`, data);
+
+const updateDoctorReviewReply = (reviewId, data) =>
+  doctorAxios.patch(`/api/doctor/reviews/${encodeURIComponent(reviewId)}/reply`, data);
+
+const getAdminReviews = (params = {}) => {
+  const query = buildDoctorPatientQuery(params);
+  return adminAxios.get(`/api/admin/reviews${query ? `?${query}` : ""}`);
+};
+
+const updateAdminReviewVisibility = (reviewId, data) =>
+  adminAxios.patch(`/api/admin/reviews/${encodeURIComponent(reviewId)}/visibility`, data);
+
 const getAdminDashboardStatistics = (
   revenueType = "month",
   topDoctorType = "month",
@@ -689,6 +719,14 @@ export {
   updateAdminBookingStatus,
   getDoctorBookingManagement,
   updateDoctorBookingStatus,
+  getPublicDoctorReviews,
+  getBookingReviewEligibility,
+  createBookingReview,
+  getDoctorReviews,
+  createDoctorReviewReply,
+  updateDoctorReviewReply,
+  getAdminReviews,
+  updateAdminReviewVisibility,
   getAdminDashboardStatistics,
   joinVideoConsultation,
   markVideoConsultationStarted,

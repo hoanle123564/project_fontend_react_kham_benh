@@ -105,6 +105,10 @@ class Header extends Component {
             this.props.history.push(`/doctor/message/${encodeURIComponent(notification.chatRoomId)}`);
             return;
         }
+        if (notification.type === 'NEW_REVIEW' && notification.reviewId) {
+            this.props.history.push(`/doctor/reviews?reviewId=${encodeURIComponent(notification.reviewId)}`);
+            return;
+        }
         if (notification.bookingId) this.props.history.push('/doctor/manage-booking');
     }
 
@@ -202,10 +206,16 @@ class Header extends Component {
                                             {isNotificationLoading && notifications.length === 0 ? <p>{this.getText('loading')}</p> :
                                                 notifications.length === 0 ? <p>{this.getText('empty')}</p> : notifications.map(item => {
                                                     const name = `${item.patientFirstName || ''} ${item.patientLastName || ''}`.trim() || '-';
-                                                    const title = item.type === 'NEW_MESSAGE' ? this.getText('messageTitle') : this.getText('appointmentTitle');
+                                                    const title = item.type === 'NEW_MESSAGE'
+                                                        ? this.getText('messageTitle')
+                                                        : item.type === 'NEW_REVIEW'
+                                                            ? this.getText('reviewTitle')
+                                                            : this.getText('appointmentTitle');
                                                     const detail = item.type === 'NEW_MESSAGE'
                                                         ? item.content || this.getText('messageDescription', { name })
-                                                        : this.getText('appointmentDescription', { name });
+                                                        : item.type === 'NEW_REVIEW'
+                                                            ? item.content || this.getText('reviewDescription', { name })
+                                                            : this.getText('appointmentDescription', { name });
                                                     const image = item.patientImage ? `data:image/jpeg;base64,${item.patientImage}` : null;
                                                     return <button type="button" key={item.id} className={`notification-menu__item ${item.isRead ? '' : 'unread'}`} onClick={() => this.openNotification(item)}>
                                                         {image ? <img src={image} alt="" /> : <span className="notification-menu__avatar">{name.slice(0, 1).toUpperCase()}</span>}

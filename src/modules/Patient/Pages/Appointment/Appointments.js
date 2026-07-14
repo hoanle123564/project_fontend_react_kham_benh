@@ -10,7 +10,12 @@ import moment from "moment";
 import { buildImageSrc } from "../../../../utils/imageUtils";
 import userDefault from "../../../../assets/user_default.png";
 import { createChatRoomFromBooking } from "../../../../services/doctorPatientChatService";
+import { createBookingReview } from "../../../../services/userService";
 import { toast } from "react-toastify";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+
+const REVIEW_COMMENT_MAX = 1000;
+const REVIEW_STARS = [1, 2, 3, 4, 5];
 
 class Appointments extends Component {
     constructor(props) {
@@ -22,6 +27,13 @@ class Appointments extends Component {
             cancelingId: null,
             creatingChatId: null,
             selectedAppointmentId: null,
+            reviewModalOpen: false,
+            reviewTarget: null,
+            reviewRating: 0,
+            reviewHoverRating: 0,
+            reviewComment: "",
+            reviewError: "",
+            submittingReview: false,
         };
     }
 
@@ -37,11 +49,11 @@ class Appointments extends Component {
         }
     }
 
-    getText = (key, defaultMessage = key) =>
+    getText = (key, defaultMessage = key, values) =>
         this.props.intl.formatMessage({
             id: `patient.appointments.${key}`,
             defaultMessage,
-        });
+        }, values);
 
     loadAppointments = async () => {
         this.setState({ isLoading: true, errorMessage: "" });
@@ -197,6 +209,85 @@ class Appointments extends Component {
         }
     };
 
+    openReviewModal = (item) => {
+        this.setState({
+            reviewModalOpen: true,
+            reviewTarget: item,
+            reviewRating: 0,
+            reviewHoverRating: 0,
+            reviewComment: "",
+            reviewError: "",
+            submittingReview: false,
+        });
+    };
+
+    closeReviewModal = () => {
+        if (this.state.submittingReview) return;
+        this.setState({
+            reviewModalOpen: false,
+            reviewTarget: null,
+            reviewRating: 0,
+            reviewHoverRating: 0,
+            reviewComment: "",
+            reviewError: "",
+        });
+    };
+
+    handleReviewSubmit = async () => {
+        const { reviewTarget, reviewRating, reviewComment, submittingReview } = this.state;
+        const comment = reviewComment.trim();
+        if (submittingReview || !reviewTarget?.id) return;
+        if (!reviewRating || !comment) {
+            this.setState({ reviewError: this.getText("reviewRequired") });
+            return;
+        }
+
+        this.setState({ submittingReview: true, reviewError: "" });
+        try {
+            const response = await createBookingReview(reviewTarget.id, {
+                rating: reviewRating,
+                comment,
+            });
+
+            if (response?.errCode === 0) {
+                const reviewId = response.data?.id || response.id;
+                this.setState((state) => ({
+                    appointments: state.appointments.map((item) =>
+                        Number(item.id) === Number(reviewTarget.id)
+                            ? {
+                                ...item,
+                                reviewId,
+                                canReviewDoctor: false,
+                                reviewedDoctor: true,
+                                reviewReason: "ALREADY_REVIEWED",
+                            }
+                            : item
+                    ),
+                    reviewModalOpen: false,
+                    reviewTarget: null,
+                    reviewRating: 0,
+                    reviewHoverRating: 0,
+                    reviewComment: "",
+                    reviewError: "",
+                    submittingReview: false,
+                }));
+                toast.success(this.getText("reviewSuccess"));
+                return;
+            }
+
+            this.setState({
+                submittingReview: false,
+                reviewError: response?.errMessage || this.getText("reviewError"),
+            });
+        } catch (error) {
+            const data = error.response?.data;
+            this.setState({
+                submittingReview: false,
+                reviewError: data?.errMessage || this.getText("reviewError"),
+            });
+        }
+    };
+
     getSelectedAppointment = () => {
         const selectedAppointment = this.state.appointments.find(
             (item) => Number(item.id) === Number(this.state.selectedAppointmentId)
@@ -274,6 +365,22 @@ class Appointments extends Component {
                         {this.getText("joinVideo")}
                     </button>
                 )}
+                {item.reviewedDoctor && (
+                    <span className="review-status-badge">
+                        <i className="fas fa-check" aria-hidden="true"></i>
+                        {this.getText("reviewedDoctor")}
+                    </span>
+                )}
+                {item.canReviewDoctor && (
+                    <button
+                        type="button"
+                        className="btn-review"
+                        onClick={() => this.openReviewModal(item)}
+                    >
+                        <i className="fas fa-star" aria-hidden="true"></i>
+                        {this.getText("reviewDoctor")}
+                    </button>
+                )}
                 {(item.statusId === "S1" || item.statusId === "S2") && (
                     <button
                         type="button"
@@ -287,6 +394,105 @@ class Appointments extends Component {
                     </button>
                 )}
             </div>
+        );
+    };
+
+    renderReviewModal = () => {
+        const {
+            reviewModalOpen,
+            reviewTarget,
+            reviewRating,
+            reviewHoverRating,
+            reviewComment,
+            reviewError,
+            submittingReview,
+        } = this.state;
+        const activeRating = reviewHoverRating || reviewRating;
+        const remaining = REVIEW_COMMENT_MAX - reviewComment.length;
+
+        return (
+            <Modal
+                isOpen={reviewModalOpen}
+                toggle={this.closeReviewModal}
+                centered
+                className="doctor-review-modal"
+            >
+                <ModalHeader toggle={this.closeReviewModal}>
+                    {this.getText("reviewTitle")}
+                </ModalHeader>
+                <ModalBody>
+                    {reviewTarget && (
+                        <div className="doctor-review-modal__doctor">
+                            <img
+                                src={this.getDoctorImage(reviewTarget)}
+                                alt={this.getDoctorName(reviewTarget)}
+                                width="56"
+                                height="56"
+                            />
+                            <div>
+                                <strong>{this.getDoctorName(reviewTarget)}</strong>
+                                <span>
+                                    {this.formatDate(reviewTarget.date)} - {this.formatTime(reviewTarget)}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                    <div className="doctor-review-modal__field">
+                        <label>{this.getText("reviewRating")}</label>
+                        <div
+                            className="doctor-review-modal__stars"
+                            onMouseLeave={() => this.setState({ reviewHoverRating: 0 })}
+                        >
+                            {REVIEW_STARS.map((star) => (
+                                <button
+                                    type="button"
+                                    key={star}
+                                    className={star <= activeRating ? "active" : ""}
+                                    aria-label={this.getText("reviewStarLabel", "{count} stars", { count: star })}
+                                    onMouseEnter={() => this.setState({ reviewHoverRating: star })}
+                                    onFocus={() => this.setState({ reviewHoverRating: star })}
+                                    onBlur={() => this.setState({ reviewHoverRating: 0 })}
+                                    onClick={() => this.setState({ reviewRating: star })}
+                                >
+                                    <i className="fas fa-star" aria-hidden="true"></i>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="doctor-review-modal__field">
+                        <label htmlFor="doctorReviewComment">{this.getText("reviewComment")}</label>
+                        <textarea
+                            id="doctorReviewComment"
+                            rows="5"
+                            maxLength={REVIEW_COMMENT_MAX}
+                            value={reviewComment}
+                            placeholder={this.getText("reviewCommentPlaceholder")}
+                            onChange={(event) =>
+                                this.setState({ reviewComment: event.target.value, reviewError: "" })
+                            }
+                        />
+                        <small>
+                            {this.getText("reviewCounter", "{count} characters remaining", { count: remaining })}
+                        </small>
+                    </div>
+                    {reviewError && <div className="doctor-review-modal__error">{reviewError}</div>}
+                </ModalBody>
+                <ModalFooter>
+                    <Button color="secondary" type="button" onClick={this.closeReviewModal} disabled={submittingReview}>
+                        {this.getText("reviewClose")}
+                    </Button>
+                    <Button
+                        color="primary"
+                        type="button"
+                        onClick={this.handleReviewSubmit}
+                        disabled={submittingReview || !reviewRating || !reviewComment.trim()}
+                    >
+                        {submittingReview
+                            ? this.getText("reviewSubmitting")
+                            : this.getText("reviewSubmit")}
+                    </Button>
+                </ModalFooter>
+            </Modal>
         );
     };
 
@@ -459,6 +665,7 @@ class Appointments extends Component {
                     </div>
                 </div>
                 <HomeFooter />
+                {this.renderReviewModal()}
             </>
         );
     }

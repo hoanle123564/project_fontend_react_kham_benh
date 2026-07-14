@@ -7,6 +7,7 @@ import * as action from "../../../../store/actions";
 import { languages } from "../../../../utils";
 import DoctorSchdule from "./DoctorSchdule";
 import DoctorExtendInfo from "./DoctorExtendInfo";
+import DoctorReviews from "./DoctorReviews";
 import BackToTop from "../../../../components/BackToTop/BackToTop";
 import { getRelatedDoctorsService } from "../../../../services/userService";
 import { withRouter } from "react-router";
@@ -144,7 +145,9 @@ class DetailDoctor extends Component {
             </div>
 
             {/* Đánh giá */}
-            <div className="comment-doctor"></div>
+            <div className="comment-doctor">
+              {item?.id && <DoctorReviews doctorId={item.id} language={language} />}
+            </div>
 
             {/* Câu hỏi thường gặp */}
             <div className="faq-section">

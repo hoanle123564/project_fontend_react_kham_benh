@@ -12,6 +12,7 @@ import ManageSchedulePrivate from "../modules/Doctor/ManageSchedulePrivate";
 import ListAppointment from "../modules/Doctor/ListAppointment";
 import EditProfile from "../modules/Admin/ManageUser/EditProfile";
 import BookingManagement from "../modules/Booking/BookingManagement";
+import ReviewManagement from "../modules/Review/ReviewManagement";
 
 class Doctor extends Component {
   state = {
@@ -41,6 +42,7 @@ class Doctor extends Component {
               <Route path="/doctor/appointment/:bookingId" component={DoctorQueue} />
               <Route exact path="/doctor/appointment" component={DoctorQueue} />
               <Route path="/doctor/manage-booking" component={BookingManagement} />
+              <Route path="/doctor/reviews" component={ReviewManagement} />
               <Route path="/doctor/message/:roomId" component={ChatPage} />
               <Route exact path="/doctor/message" component={ChatPage} />
               <Route path="/doctor/manage-schedule-private" component={ManageSchedulePrivate} />

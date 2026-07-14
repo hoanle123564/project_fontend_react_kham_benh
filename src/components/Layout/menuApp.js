@@ -29,6 +29,11 @@ export const adminMenu = [
         icon: "bi bi-calendar2-check",
         link: "/system/manage-booking",
       },
+      {
+        name: "menu.admin.manage-review",
+        icon: "bi bi-star",
+        link: "/system/manage-review",
+      },
     ],
   },
   // bác sĩ
@@ -135,6 +140,11 @@ export const doctorMenu = [
         name: "menu.doctor.manage-booking",
         icon: "bi bi-calendar2-check",
         link: "/doctor/manage-booking",
+      },
+      {
+        name: "menu.doctor.reviews",
+        icon: "bi bi-star",
+        link: "/doctor/reviews",
       },
     ],
   },
