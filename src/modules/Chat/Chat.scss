@@ -29,7 +29,7 @@
 .chat-page__layout {
   display: grid;
   grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
-  min-height: calc(100vh - 190px);
+  height: calc(100vh - 190px);
   border: 1px solid #cbd9ed;
   border-radius: 14px;
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
@@ -39,16 +39,20 @@
 
 .chat-page--doctor {
   display: grid;
-  grid-template-rows: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
   height: calc(100dvh - 70px);
 
   .chat-page__layout {
     min-height: 0;
-    height: auto;
+    height: 100%;
   }
 }
 
 .chat-list {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
   min-width: 0;
   border-right: 1px solid #cbd9ed;
   background: #ffffff;
@@ -111,7 +115,7 @@
 }
 
 .chat-list__items {
-  max-height: calc(100vh - 304px);
+  min-height: 0;
   overflow-y: auto;
 }
 
@@ -227,11 +231,24 @@
   text-align: center;
 }
 
+.chat-list__empty,
+.chat-room__messages .chat-room__state {
+  flex: 1;
+  min-height: 0;
+}
+
 .chat-room {
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr) auto;
+  height: 100%;
+  min-height: 0;
   min-width: 0;
   background: #f3f6fb;
+}
+
+.chat-room.chat-room--empty {
+  display: flex;
+  min-height: 0;
 }
 
 .chat-room__header {
@@ -293,6 +310,7 @@
 }
 
 .chat-room__error {
+  grid-row: 2;
   margin: 12px 18px 0;
   padding: 10px 12px;
   border: 1px solid #fecaca;
@@ -304,11 +322,11 @@
 }
 
 .chat-room__messages {
+  grid-row: 3;
   display: flex;
   flex-direction: column;
   gap: 8px;
   min-height: 0;
-  max-height: calc(100vh - 240px);
   overflow-y: auto;
   padding: 18px;
   background: #edf3fb;
@@ -359,22 +377,28 @@
 }
 
 .chat-room__composer {
+  grid-row: 4;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   gap: 8px;
+  box-sizing: border-box;
+  height: 59px;
+  min-height: 59px;
+  max-height: 59px;
   padding: 10px 14px;
   border-top: 1px solid #cbd9ed;
   background: #ffffff;
 
   textarea {
     box-sizing: border-box;
-    height: 38px;
+    height: 38px !important;
     min-height: 38px;
-    max-height: 116px;
+    max-height: 38px;
     padding: 8px 12px;
     line-height: 20px;
     resize: none;
-    overflow-y: hidden;
+    overflow-y: auto !important;
     border: 1px solid #b9cae2;
     border-radius: 19px;
     color: #1f2937;
@@ -420,7 +444,7 @@
   }
 
   .chat-page__layout {
-    min-height: calc(100vh - 160px);
+    height: calc(100vh - 160px);
   }
 
   .chat-page--doctor {
@@ -441,7 +465,7 @@
   }
 
   .chat-room__messages {
-    max-height: none;
+    min-height: 0;
   }
 
   .chat-room__back {
@@ -464,6 +488,9 @@
 
   .chat-room__composer {
     grid-template-columns: 1fr;
+    height: 104px;
+    min-height: 104px;
+    max-height: 104px;
 
     button {
       width: 100%;
@@ -471,13 +498,13 @@
   }
 
   .chat-page__layout {
-    min-height: calc(100vh - 120px);
+    height: calc(100vh - 120px);
     border-radius: 0;
     border-left: 0;
     border-right: 0;
   }
 
   .chat-list__items {
-    max-height: calc(100vh - 270px);
+    min-height: 0;
   }
 }
