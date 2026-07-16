@@ -168,6 +168,13 @@
     }
 }
 
+.appointments-detail-status {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .appointments-doctor-card {
     display: grid;
     grid-template-columns: 88px minmax(0, 1fr);
@@ -524,6 +531,21 @@
         background: #ecfdf5;
         color: #0f766e;
     }
+}
+
+.appointment-reminder-badge {
+    align-items: center;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 999px;
+    color: #c2410c;
+    display: inline-flex;
+    font-size: 0.82rem;
+    font-weight: 700;
+    gap: 6px;
+    min-height: 26px;
+    padding: 3px 9px;
+    white-space: nowrap;
 }
 
 .status-label {

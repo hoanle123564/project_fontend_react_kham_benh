@@ -35,10 +35,23 @@ class Appointments extends Component {
             reviewError: "",
             submittingReview: false,
         };
+        this.reminderToastKeys = new Set();
+        this.hasLoadedAppointments = false;
+        this.appointmentPollTimer = null;
+        this.isComponentMounted = false;
     }
 
     async componentDidMount() {
+        this.isComponentMounted = true;
         await this.loadAppointments();
+        this.appointmentPollTimer = setInterval(this.loadAppointments, 60 * 1000);
+    }
+
+    componentWillUnmount() {
+        this.isComponentMounted = false;
+        if (this.appointmentPollTimer) {
+            clearInterval(this.appointmentPollTimer);
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -60,8 +73,10 @@ class Appointments extends Component {
 
         try {
             const actionResult = await this.props.ListAppointments();
+            if (!this.isComponentMounted) return;
 
             if (Array.isArray(actionResult?.data)) {
+                this.handleReminderToasts(actionResult.data);
                 this.setState({
                     appointments: actionResult.data,
                     isLoading: false,
@@ -74,11 +89,31 @@ class Appointments extends Component {
                 errorMessage: this.getText("error"),
             });
         } catch (error) {
+            if (!this.isComponentMounted) return;
             this.setState({
                 isLoading: false,
                 errorMessage: this.getText("error"),
             });
         }
+    };
+
+    handleReminderToasts = (appointments = []) => {
+        const keys = appointments
+            .filter((item) => item.inAppNotifiedAt)
+            .map((item) => `${item.id}:${item.inAppNotifiedAt}`);
+
+        if (!this.hasLoadedAppointments) {
+            keys.forEach((key) => this.reminderToastKeys.add(key));
+            this.hasLoadedAppointments = true;
+            return;
+        }
+
+        keys.forEach((key) => {
+            if (!this.reminderToastKeys.has(key)) {
+                this.reminderToastKeys.add(key);
+                toast.info(this.getText("reminderToast"));
+            }
+        });
     };
 
     handleCancel = async (bookingId) => {
@@ -147,6 +182,17 @@ class Appointments extends Component {
         }
 
         return <span className="queue-number">{queueNumber}</span>;
+    };
+
+    renderReminderBadge = (item) => {
+        if (!item?.inAppNotifiedAt) return null;
+
+        return (
+            <span className="appointment-reminder-badge">
+                <i className="fas fa-clock" aria-hidden="true"></i>
+                {this.getText("reminderBadge")}
+            </span>
+        );
     };
 
     getAppointmentTypeLabel = (item = {}) => {
@@ -525,7 +571,10 @@ class Appointments extends Component {
                         <span>{this.getText("queue")}</span>
                         <strong>{item.queueNumber || this.getText("noQueue")}</strong>
                     </div>
-                    {this.renderStatus(item.statusId, item.statusVi, item.statusEn)}
+                    <div className="appointments-detail-status">
+                        {this.renderStatus(item.statusId, item.statusVi, item.statusEn)}
+                        {this.renderReminderBadge(item)}
+                    </div>
                 </div>
 
                 <section className="appointments-doctor-card">
@@ -595,6 +644,7 @@ class Appointments extends Component {
                                 </div>
                                 <div className="appointments-list-item__meta">
                                     {this.renderStatus(item.statusId, item.statusVi, item.statusEn)}
+                                    {this.renderReminderBadge(item)}
                                     <span className={`appointment-type-badge ${item.appointmentTypeId || "AT1"}`}>
                                         {this.getAppointmentTypeLabel(item)}
                                     </span>
