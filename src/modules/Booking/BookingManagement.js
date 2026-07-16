@@ -13,6 +13,22 @@ import "./BookingManagement.scss";
 
 const PAGE_SIZE = 10;
 const TERMINAL_STATUSES = ["S3", "S4", "S5", "S6", "S7"];
+const DOCTOR_ACTIONS = [
+  {
+    statusId: "S8",
+    key: "accept",
+    fallback: "Accept",
+    icon: "bi-check-lg",
+    className: "accept",
+  },
+  {
+    statusId: "S6",
+    key: "reject",
+    fallback: "Reject",
+    icon: "bi-x-lg",
+    className: "reject",
+  },
+];
 
 class BookingManagement extends Component {
   state = {
@@ -143,8 +159,9 @@ class BookingManagement extends Component {
     return null;
   };
 
-  updateStatus = async (booking) => {
-    const statusId = this.state.selectedStatusByBooking[booking.id];
+  updateStatus = async (booking, requestedStatusId = "") => {
+    const statusId =
+      requestedStatusId || this.state.selectedStatusByBooking[booking.id];
     if (!statusId) return;
     const prompt = this.getReasonPrompt(statusId);
     const note = prompt ? window.prompt(prompt) : null;
@@ -226,7 +243,60 @@ class BookingManagement extends Component {
     );
   };
 
+  renderDoctorActions = (booking) => {
+    const availableStatusIds = new Set(
+      this.getAvailableStatuses(booking).map(({ keyMap }) => keyMap),
+    );
+    const actions = DOCTOR_ACTIONS.filter(({ statusId }) =>
+      availableStatusIds.has(statusId),
+    );
+
+    if (!actions.length)
+      return (
+        <span className="booking-management__muted">
+          {this.getText("noActions", "No actions")}
+        </span>
+      );
+
+    const isUpdating = this.state.updatingId === booking.id;
+    return (
+      <div
+        className="booking-management__doctor-actions"
+        role="group"
+        aria-label={this.getText("doctorActions", "Booking actions")}
+        aria-busy={isUpdating}
+      >
+        {actions.map(({ statusId, key, fallback, icon, className }, index) => (
+          <React.Fragment key={statusId}>
+            {index > 0 && (
+              <span
+                className="booking-management__doctor-action-divider"
+                aria-hidden="true"
+              />
+            )}
+            <button
+              type="button"
+              className={`booking-management__doctor-action booking-management__doctor-action--${className}`}
+              disabled={isUpdating}
+              aria-label={this.getText(key, fallback)}
+              onClick={() => this.updateStatus(booking, statusId)}
+            >
+              <i className={`bi ${icon}`} aria-hidden="true" />
+              <span>
+                {isUpdating
+                  ? this.getText("updating", "Updating…")
+                  : this.getText(key, fallback)}
+              </span>
+            </button>
+          </React.Fragment>
+        ))}
+      </div>
+    );
+  };
+
   renderActions = (booking) => {
+    if (!this.isAdmin()) return this.renderDoctorActions(booking);
+
     const options = this.getAvailableStatuses(booking);
     if (!options.length)
       return (
@@ -288,7 +358,11 @@ class BookingManagement extends Component {
       : this.getText("doctorTitle", "My bookings");
 
     return (
-      <div className="booking-management">
+      <div
+        className={`booking-management${
+          this.isAdmin() ? "" : " booking-management--doctor"
+        }`}
+      >
         <div className="booking-management__inner">
           <div className="booking-management__header">
             <div>
@@ -375,8 +449,15 @@ class BookingManagement extends Component {
                       <th>{this.getText("doctor", "Doctor")}</th>
                       <th>{this.getText("schedule", "Schedule")}</th>
                       <th>{this.getText("status", "Status")}</th>
-                      <th>{this.getText("note", "Note")}</th>
-                      <th>{this.getText("actions", "Actions")}</th>
+                      {this.isAdmin() && (
+                        <th>{this.getText("note", "Note")}</th>
+                      )}
+                      <th>
+                        {this.getText(
+                          this.isAdmin() ? "actions" : "doctorActions",
+                          this.isAdmin() ? "Update" : "Actions",
+                        )}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -418,13 +499,15 @@ class BookingManagement extends Component {
                             {this.getStatusLabel(booking.statusId)}
                           </span>
                         </td>
-                        <td className="booking-management__note">
-                          {booking.rejectReason ||
-                            booking.cancelReason ||
-                            booking.noShowNote ||
-                            booking.reason ||
-                            "-"}
-                        </td>
+                        {this.isAdmin() && (
+                          <td className="booking-management__note">
+                            {booking.rejectReason ||
+                              booking.cancelReason ||
+                              booking.noShowNote ||
+                              booking.reason ||
+                              "-"}
+                          </td>
+                        )}
                         <td>{this.renderActions(booking)}</td>
                       </tr>
                     ))}
