@@ -1,331 +1,435 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import "./BookingModal.scss";
-import * as action from "../../../../store/actions";
-import { languages } from "../../../../utils";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import { injectIntl, FormattedMessage } from "react-intl";
+import { Link } from "react-router-dom";
+import { Modal, ModalBody, ModalHeader } from "reactstrap";
+import { injectIntl } from "react-intl";
 import moment from "moment";
-import { getDetailDoctor } from "../../../../services/userService";
+import { toast } from "react-toastify";
+
+import "./BookingModal.scss";
+import EditModal from "../Profile/EditModal";
+import { languages, path } from "../../../../utils";
+import {
+    getDetailDoctor,
+    getPatientProfile,
+    getScheduleDoctor,
+    postPatientBooking,
+    updatePatientProfile,
+} from "../../../../services/userService";
+import { startOnlineBookingPayment } from "../../../../services/onlineBookingPaymentService";
+
 class BookingModal extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            fỉrstName: "",
-            lastName: "",
-            phoneNumber: "",
-            email: "",
-            address: "",
-            reason: "",
-            day: "",
-            gender: "",
-            timeString: "",
-            genderArr: [],
-            profile: {},
-            errors: {},
-        };
+    state = {
+        doctorProfile: null,
+        patientProfile: null,
+        schedule: null,
+        isDetailsOpen: true,
+        isEditingProfile: false,
+        isLoading: false,
+        isSubmitting: false,
+        isSavingProfile: false,
+        reason: "",
+        errorMessage: "",
+        submitError: "",
+    };
+
+    componentDidMount() {
+        if (this.props.isOpenModal) this.loadBookingData();
     }
 
-    toggleModal = () => {
-        this.props.toggleModal();
-    };
-
-    getFormattedDateTime = () => {
-        const { ScheduleTime, language } = this.props;
-        if (!ScheduleTime || !ScheduleTime.date) return "";
-
-        const date = moment(ScheduleTime.date).format("DD/MM/YYYY");
-        const dayOfWeek =
-            language === languages.VI
-                ? moment(ScheduleTime.date).locale("vi").format("dddd")
-                : moment(ScheduleTime.date).locale("en").format("dddd");
-
-        const day = dayOfWeek.charAt(0).toUpperCase() + dayOfWeek.slice(1);
-        const time =
-            language === languages.VI
-                ? ScheduleTime.value_vi
-                : ScheduleTime.value_en;
-
-        return `${time} - ${day} - ${date}`;
-    };
-
-    validateForm = (isLoggedIn) => {
-        const { fỉrstName, lastName, email, phoneNumber, address, reason, gender } = this.state;
-        const { intl } = this.props;
-        let errors = {};
-        let isValid = true;
-
-        // Lý do khám luôn phải có
-        if (!reason.trim()) {
-            errors.reason = intl.formatMessage({ id: "booking-modal.error-reason", defaultMessage: "Vui lòng nhập lý do khám." });
-            isValid = false;
+    componentDidUpdate(prevProps) {
+        if (
+            (!prevProps.isOpenModal && this.props.isOpenModal) ||
+            (this.props.isOpenModal && prevProps.ScheduleTime !== this.props.ScheduleTime)
+        ) {
+            this.loadBookingData();
         }
+    }
 
-        // Nếu KHÔNG đăng nhập → phải nhập full form
-        if (!isLoggedIn) {
-            if (!fỉrstName.trim()) {
-                errors.fỉrstName = intl.formatMessage({ id: "booking-modal.error-firstname", defaultMessage: "Vui lòng nhập họ và tên lót." });
-                isValid = false;
-            }
-            if (!lastName.trim()) {
-                errors.lastName = intl.formatMessage({ id: "booking-modal.error-lastname", defaultMessage: "Vui lòng nhập tên." });
-                isValid = false;
-            }
-            if (!email.trim()) {
-                errors.email = intl.formatMessage({ id: "booking-modal.error-email", defaultMessage: "Vui lòng nhập email." });
-                isValid = false;
-            }
-            if (!phoneNumber.trim()) {
-                errors.phoneNumber = intl.formatMessage({ id: "booking-modal.error-phone", defaultMessage: "Vui lòng nhập số điện thoại." });
-                isValid = false;
-            }
-            if (!address.trim()) {
-                errors.address = intl.formatMessage({ id: "booking-modal.error-address", defaultMessage: "Vui lòng nhập địa chỉ liên hệ." });
-                isValid = false;
-            }
-            if (!gender.trim()) {
-                errors.gender = intl.formatMessage({ id: "booking-modal.error-gender", defaultMessage: "Vui lòng chọn giới tính." });
-                isValid = false;
-            }
-        }
+    getText = (key, defaultMessage) =>
+        this.props.intl.formatMessage({
+            id: `booking-modal.${key}`,
+            defaultMessage,
+        });
 
-        this.setState({ errors });
-        return isValid;
-    };
+    getErrorMessage = (error, fallback) =>
+        error?.response?.data?.errMessage || error?.message || fallback;
 
-    SavePatient = async () => {
-        const { isLoggedIn, patientInfo } = this.props;
+    loadBookingData = async () => {
+        const { ScheduleTime, profile, isLoggedIn } = this.props;
+        const doctorId = ScheduleTime?.doctorId || profile?.id;
 
-        if (!this.validateForm(isLoggedIn)) return;
+        if (!isLoggedIn) return;
 
-        let submitData = {
-            doctorId: this.state.profile.id,
-            scheduleId: this.props.ScheduleTime?.id,
-            date: this.props.ScheduleTime?.date || this.state.day,
-            timeString: this.getFormattedDateTime(),
-            reason: this.state.reason,
-        };
-
-        if (isLoggedIn) {
-            // LẤY DỮ LIỆU TỪ REDUX PATIENT
-            submitData.patientId = patientInfo.id;
-            submitData.firstName = patientInfo.firstName;
-            submitData.lastName = patientInfo.lastName;
-            submitData.email = patientInfo.email;
-            submitData.address = patientInfo.address;
-            submitData.gender = patientInfo.gender;
-            submitData.phoneNumber = patientInfo.phoneNumber;
-        } else {
-            // FORM TỰ NHẬP
-            submitData.firstName = this.state.fỉrstName;
-            submitData.lastName = this.state.lastName;
-            submitData.email = this.state.email;
-            submitData.address = this.state.address;
-            submitData.gender = this.state.gender;
-            submitData.phoneNumber = this.state.phoneNumber;
-        }
-
-        const res = await this.props.postPatientBooking(submitData);
-
-        if (res && res.errCode === 0) {
-            this.toggleModal();
+        if (!ScheduleTime?.id || !doctorId || !ScheduleTime?.date) {
             this.setState({
-                fỉrstName: "",
-                lastName: "",
-                phoneNumber: "",
-                email: "",
-                address: "",
-                reason: "",
-                gender: "",
+                schedule: null,
+                isLoading: false,
+                errorMessage: this.getText("schedule-not-found", "Không tìm thấy lịch khám đã chọn."),
+            });
+            return;
+        }
+
+        this.setState({
+            isLoading: true,
+            errorMessage: "",
+            submitError: "",
+            schedule: null,
+        });
+
+        try {
+            const [patientRes, doctorRes, scheduleRes] = await Promise.all([
+                getPatientProfile(),
+                getDetailDoctor(doctorId),
+                getScheduleDoctor(doctorId, ScheduleTime.date),
+            ]);
+            const schedule = (scheduleRes?.data || []).find(
+                (item) => Number(item.id) === Number(ScheduleTime.id)
+            );
+
+            if (patientRes?.errCode !== 0 || !patientRes?.data) {
+                throw new Error(this.getText("patient-not-found", "Không tìm thấy hồ sơ bệnh nhân."));
+            }
+
+            if (doctorRes?.errCode !== 0 || !doctorRes?.data) {
+                throw new Error(this.getText("doctor-not-found", "Không tìm thấy thông tin bác sĩ."));
+            }
+
+            if (!schedule) {
+                throw new Error(this.getText("schedule-not-found", "Lịch khám đã chọn không còn khả dụng."));
+            }
+
+            this.setState({
+                patientProfile: patientRes.data,
+                doctorProfile: doctorRes.data,
+                schedule,
+                isLoading: false,
+            });
+        } catch (error) {
+            this.setState({
+                isLoading: false,
+                errorMessage: this.getErrorMessage(
+                    error,
+                    this.getText("load-error", "Không thể tải thông tin đặt khám.")
+                ),
             });
         }
     };
 
-    async componentDidMount() {
-        this.props.getGender();
-        await this.loadInfo();
-    }
+    toggleModal = () => {
+        if (!this.state.isSubmitting) this.props.toggleModal();
+    };
 
-    loadInfo = async () => {
-        const { profile } = this.props;
-        if (profile?.id) {
-            let res = await getDetailDoctor(profile.id);
-            if (res && res.errCode === 0) {
-                this.setState({ profile: res.data });
+    getFullName = (person = {}) =>
+        `${person.firstName || ""} ${person.lastName || ""}`.trim() || this.getText("not-updated", "Chưa cập nhật");
+
+    getInitials = (person = {}) =>
+        `${person.firstName || ""} ${person.lastName || ""}`
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((part) => part.charAt(0).toUpperCase())
+            .join("") || "?";
+
+    getImageSrc = (image) => {
+        if (!image || image === "undefined") return "";
+        return image.startsWith?.("data:") ? image : `data:image/jpeg;base64,${image}`;
+    };
+
+    formatDate = (value) => {
+        const date = moment(value);
+        return date.isValid() ? date.format("DD/MM/YYYY") : this.getText("not-updated", "Chưa cập nhật");
+    };
+
+    formatGender = (value) => {
+        if (value === "M") return this.getText("male", "Nam");
+        if (value === "F") return this.getText("female", "Nữ");
+        if (value === "O") return this.getText("other", "Khác");
+        return this.getText("not-updated", "Chưa cập nhật");
+    };
+
+    formatTime = (schedule = {}) => {
+        if (schedule.startTime && schedule.endTime) {
+            return `${String(schedule.startTime).slice(0, 5)} - ${String(schedule.endTime).slice(0, 5)}`;
+        }
+
+        return this.props.language === languages.VI ? schedule.value_vi : schedule.value_en;
+    };
+
+    getPrice = () => Number(this.state.schedule?.effectivePrice);
+
+    hasValidPrice = () => Number.isInteger(this.getPrice()) && this.getPrice() > 0;
+
+    formatMoney = (value) =>
+        new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+            maximumFractionDigits: 0,
+        }).format(value);
+
+    handleProfileSave = async (data) => {
+        this.setState({ isSavingProfile: true });
+        try {
+            const response = await updatePatientProfile(data);
+            if (response?.errCode !== 0 || !response?.data) {
+                throw new Error(response?.errMessage || this.getText("profile-save-error", "Không thể cập nhật hồ sơ."));
             }
+
+            this.setState({
+                patientProfile: response.data,
+                isEditingProfile: false,
+                isSavingProfile: false,
+            });
+            this.props.patientEditSuccess(response.data);
+            toast.success(response.errMessage || this.getText("profile-save-success", "Đã cập nhật hồ sơ."));
+        } catch (error) {
+            this.setState({ isSavingProfile: false });
+            toast.error(this.getErrorMessage(error, this.getText("profile-save-error", "Không thể cập nhật hồ sơ.")));
         }
     };
 
-    componentDidUpdate = async (prevProps) => {
-        if (prevProps.profile !== this.props.profile) {
-            await this.loadInfo();
-        }
-        if (prevProps.gender !== this.props.gender) {
-            this.setState({ genderArr: this.props.gender });
-        }
-        if (this.props.ScheduleTime && prevProps.ScheduleTime !== this.props.ScheduleTime) {
-            this.setState({ day: this.props.ScheduleTime.date });
+    handleSubmit = async () => {
+        const { schedule } = this.state;
+        if (!schedule || !this.hasValidPrice() || this.state.isSubmitting) return;
+
+        this.setState({ isSubmitting: true, submitError: "" });
+
+        try {
+            if (schedule.appointmentTypeId === "AT2") {
+                await startOnlineBookingPayment({ scheduleId: schedule.id });
+                const submitError = this.getText(
+                    "payment-not-configured",
+                    "SePay chưa được cấu hình. Lịch trực tuyến chưa thể được đặt."
+                );
+                this.setState({
+                    isSubmitting: false,
+                    submitError,
+                });
+                toast.info(submitError);
+                return;
+            }
+
+            const response = await postPatientBooking({
+                scheduleId: schedule.id,
+                reason: this.state.reason.trim() || null,
+            });
+
+            if (response?.errCode !== 0) {
+                throw new Error(response?.errMessage || this.getText("submit-error", "Không thể đặt lịch khám."));
+            }
+
+            toast.success(response.errMessage || this.getText("submit-success", "Đặt lịch thành công."));
+            this.setState({ reason: "", isSubmitting: false });
+            this.toggleModal();
+        } catch (error) {
+            const submitError = this.getErrorMessage(
+                error,
+                this.getText("submit-error", "Không thể đặt lịch khám.")
+            );
+            this.setState({ isSubmitting: false, submitError });
+            toast.error(submitError);
         }
     };
 
-    render() {
-        const { profile, genderArr, errors } = this.state;
-        const { language, isLoggedIn, patientInfo, intl } = this.props;
-        console.log('ScheduleTime', this.props.ScheduleTime);
+    renderAvatar = (person, className) => {
+        const image = this.getImageSrc(person?.image);
+        return (
+            <div className={className} aria-hidden="true">
+                {image ? <img src={image} alt="" /> : <span>{this.getInitials(person)}</span>}
+            </div>
+        );
+    };
+
+    renderDetails = () => {
+        const { patientProfile } = this.state;
+        const rows = [
+            [this.getText("medical-code", "Mã bệnh nhân"), patientProfile.medicalCode],
+            [this.getText("full-name", "Họ và tên"), this.getFullName(patientProfile)],
+            [this.getText("gender", "Giới tính"), this.formatGender(patientProfile.gender)],
+            [this.getText("date-of-birth", "Ngày sinh"), this.formatDate(patientProfile.dateOfBirth)],
+            [this.getText("phone", "Số điện thoại"), patientProfile.phoneNumber],
+        ];
 
         return (
-            <Modal
-                isOpen={this.props.isOpenModal}
-                toggle={this.toggleModal}
-                className={"booking-modal-container"}
-                size="lg"
-                centered
-            >
-                <ModalHeader toggle={this.toggleModal}>
-                    <i className="fa-solid fa-user me-2"></i>
-                    <FormattedMessage id="booking-modal.title" defaultMessage="Đặt lịch khám bệnh" />
-                </ModalHeader>
+            <div className="booking-modal__patient-details">
+                {rows.map(([label, value]) => (
+                    <div className="booking-modal__detail-row" key={label}>
+                        <span>{label}</span>
+                        <strong>{value || "—"}</strong>
+                    </div>
+                ))}
+            </div>
+        );
+    };
 
-                <ModalBody>
-                    {/* Bác sĩ */}
-                    <div className="doctor-booking-info d-flex align-items-center mb-3">
-                        <div className="doctor-avatar me-3">
-                            <img
-                                src={
-                                    profile?.image && profile.image !== "undefined"
-                                        ? `data:image/jpeg;base64,${profile.image}`
-                                        : "/default-doctor.png"
-                                }
-                                alt="doctor"
-                            />
+    renderPatientColumn = () => {
+        const { patientProfile, isDetailsOpen, reason } = this.state;
+
+        return (
+            <section className="booking-modal__left-column">
+                <div className="booking-modal__card booking-modal__patient-card">
+                    <div className="booking-modal__patient-header">
+                        <div className="booking-modal__patient-heading">
+                            {this.renderAvatar(patientProfile, "booking-modal__patient-avatar")}
+                            <div>
+                                <span className="booking-modal__self-badge">{this.getText("self", "Tôi")}</span>
+                                <h2>{this.getFullName(patientProfile)}</h2>
+                                <p>{this.formatDate(patientProfile.dateOfBirth)}</p>
+                            </div>
                         </div>
-                        <div className="doctor-meta">
-                            <h5 className="doctor-name mb-1">
-                                {language === languages.VI
-                                    ? `${profile?.positionVi || ""}, Bác sĩ ${profile?.firstName || ""} ${profile?.lastName || ""}`
-                                    : `${profile?.positionEn || ""}, Dr. ${profile?.firstName || ""} ${profile?.lastName || ""}`}
-                            </h5>
-                            <p className="doctor-time text-warning fw-semibold mb-0">
-                                <i className="fa-regular fa-clock me-1"></i>
-                                {this.getFormattedDateTime()}
-                            </p>
+                        <button
+                            type="button"
+                            className="booking-modal__collapse-button"
+                            onClick={() => this.setState((state) => ({ isDetailsOpen: !state.isDetailsOpen }))}
+                            aria-expanded={isDetailsOpen}
+                            aria-label={this.getText("toggle-patient", "Thu gọn hoặc mở rộng thông tin bệnh nhân")}
+                        >
+                            <i className={`fas fa-chevron-${isDetailsOpen ? "up" : "down"}`}></i>
+                        </button>
+                    </div>
+                    {isDetailsOpen && this.renderDetails()}
+                    <button
+                        type="button"
+                        className="booking-modal__adjust-button"
+                        onClick={() => this.setState({ isEditingProfile: true })}
+                    >
+                        {this.getText("adjust", "Điều chỉnh")}
+                    </button>
+                </div>
+
+                <div className="booking-modal__note-section">
+                    <h2>{this.getText("additional-info", "Thông tin bổ sung (không bắt buộc)")}</h2>
+                    <label htmlFor="booking-note">{this.getText("note", "Ghi chú")}</label>
+                    <textarea
+                        id="booking-note"
+                        value={reason}
+                        onChange={(event) => this.setState({ reason: event.target.value })}
+                        placeholder={this.getText("note-placeholder", "Triệu chứng, thuốc đang dùng, tiền sử, ...")}
+                        disabled={this.state.isSubmitting}
+                    />
+                </div>
+            </section>
+        );
+    };
+
+    renderBookingColumn = () => {
+        const { doctorProfile, patientProfile, schedule, isSubmitting } = this.state;
+        const isOnline = schedule.appointmentTypeId === "AT2";
+        const appointmentType = isOnline
+            ? this.getText("online", "Khám trực tuyến")
+            : this.getText("in-person", "Khám trực tiếp");
+        const location = isOnline
+            ? appointmentType
+            : doctorProfile.clinicAddress || this.getText("not-updated", "Chưa cập nhật");
+        const rows = [
+            [this.getText("appointment-date", "Ngày khám"), this.formatDate(schedule.date)],
+            [this.getText("time-slot", "Khung giờ"), this.formatTime(schedule)],
+            [this.getText("appointment-type", "Hình thức"), appointmentType],
+            [this.getText("patient", "Bệnh nhân"), this.getFullName(patientProfile)],
+            [this.getText("price", "Giá khám"), this.hasValidPrice() ? this.formatMoney(this.getPrice()) : null],
+        ];
+
+        return (
+            <aside className="booking-modal__right-column">
+                <div className="booking-modal__card booking-modal__summary-card">
+                    <h2>{this.getText("booking-info", "Thông tin đặt khám")}</h2>
+                    <div className="booking-modal__doctor-summary">
+                        {this.renderAvatar(doctorProfile, "booking-modal__doctor-avatar")}
+                        <div>
+                            <h3>{this.getFullName(doctorProfile)}</h3>
+                            {doctorProfile.specialtyName && <p>{doctorProfile.specialtyName}</p>}
+                            <span>{location}</span>
                         </div>
                     </div>
-
-                    {/* Nếu đã đăng nhập → KHÔNG hiển thị full form */}
-                    {isLoggedIn ? (
-                        <div className="alert alert-info">
-                            <FormattedMessage id="booking-modal.logged-in" defaultMessage="Bạn đang đăng nhập bằng email" />: <b>{patientInfo.email}</b>
-                            <br />
-                            <FormattedMessage id="booking-modal.logged-in-note" defaultMessage="Thông tin cá nhân sẽ được dùng để đặt lịch." />
-                        </div>
-                    ) : (
-                        <>
-                            {/* FORM CŨ — GIỮ NGUYÊN 100% */}
-                            <div className="row mb-3">
-                                <div className="col-md-6">
-                                    <label><FormattedMessage id="user-manage.first-name" defaultMessage="Họ và tên lót" /></label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        value={this.state.fỉrstName}
-                                        onChange={(e) => this.setState({ fỉrstName: e.target.value })}
-                                    />
-                                    {errors.fỉrstName && <small className="text-danger">{errors.fỉrstName}</small>}
-                                </div>
-
-                                <div className="col-md-6">
-                                    <label><FormattedMessage id="user-manage.last-name" defaultMessage="Tên" /></label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        value={this.state.lastName}
-                                        onChange={(e) => this.setState({ lastName: e.target.value })}
-                                    />
-                                    {errors.lastName && <small className="text-danger">{errors.lastName}</small>}
-                                </div>
+                    <div className="booking-modal__summary-rows">
+                        {rows.map(([label, value]) => (
+                            <div className={`booking-modal__summary-row${label === this.getText("price", "Giá khám") ? " booking-modal__summary-row--price" : ""}`} key={label}>
+                                <span>{label}</span>
+                                <strong>{value || this.getText("price-unavailable", "Chưa xác định được giá khám")}</strong>
                             </div>
-
-                            <div className="row mb-3">
-                                <div className="col-md-6">
-                                    <label><FormattedMessage id="user-manage.email" defaultMessage="Email" /></label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        value={this.state.email}
-                                        onChange={(e) => this.setState({ email: e.target.value })}
-                                    />
-                                    {errors.email && <small className="text-danger">{errors.email}</small>}
-                                </div>
-
-                                <div className="col-md-6">
-                                    <label><FormattedMessage id="user-manage.address" defaultMessage="Địa chỉ liên hệ" /></label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        value={this.state.address}
-                                        onChange={(e) => this.setState({ address: e.target.value })}
-                                    />
-                                    {errors.address && <small className="text-danger">{errors.address}</small>}
-                                </div>
-                            </div>
-
-                            <div className="row mb-3">
-                                <div className="col-md-6">
-                                    <label><FormattedMessage id="user-manage.phone-number" defaultMessage="Số điện thoại" /></label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        value={this.state.phoneNumber}
-                                        onChange={(e) => this.setState({ phoneNumber: e.target.value })}
-                                    />
-                                    {errors.phoneNumber && <small className="text-danger">{errors.phoneNumber}</small>}
-                                </div>
-
-                                <div className="col-md-6">
-                                    <label><FormattedMessage id="user-manage.gender" defaultMessage="Giới tính" /></label>
-                                    <select
-                                        className="form-select"
-                                        value={this.state.gender}
-                                        onChange={(e) => this.setState({ gender: e.target.value })}
-                                    >
-                                        <option value="">{intl.formatMessage({ id: "user-manage.choose" })}</option>
-                                        {genderArr.map((item, index) => (
-                                            <option key={index} value={item.keyMap}>
-                                                {language === languages.VI ? item.value_vi : item.value_en}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.gender && <small className="text-danger">{errors.gender}</small>}
-                                </div>
-                            </div>
-                        </>
-                    )}
-
-                    {/* Lý do khám – luôn hiển thị */}
-                    <div className="row mb-3">
-                        <div className="col-md-12">
-                            <label><FormattedMessage id="booking-modal.reason" defaultMessage="Lý do khám" /></label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                value={this.state.reason}
-                                onChange={(e) => this.setState({ reason: e.target.value })}
-                            />
-                            {errors.reason && <small className="text-danger">{errors.reason}</small>}
-                        </div>
+                        ))}
                     </div>
-                </ModalBody>
+                    <button
+                        type="button"
+                        className="booking-modal__submit-button"
+                        onClick={this.handleSubmit}
+                        disabled={!this.hasValidPrice() || isSubmitting}
+                    >
+                        {isSubmitting
+                            ? this.getText("submitting", "Đang xử lý...")
+                            : isOnline
+                                ? this.getText("book-and-pay", "Đặt lịch và thanh toán")
+                                : this.getText("book", "Đặt lịch")}
+                    </button>
+                </div>
+                <p className="booking-modal__terms">
+                    {this.getText("terms", "Bằng cách nhấn nút xác nhận, bạn đã đồng ý với các điều khoản và điều kiện đặt khám.")}
+                </p>
+            </aside>
+        );
+    };
 
-                <ModalFooter>
-                    <Button color="primary" onClick={this.SavePatient}>
-                        <FormattedMessage id="booking-modal.confirm" defaultMessage="Xác nhận đặt khám" />
-                    </Button>
-                    <Button color="secondary" onClick={this.toggleModal}>
-                        <FormattedMessage id="booking-modal.close" defaultMessage="Đóng" />
-                    </Button>
-                </ModalFooter>
-            </Modal>
+    renderLoading = () => (
+        <div className="booking-modal__loading" aria-live="polite">
+            <div className="booking-modal__skeleton booking-modal__skeleton--large"></div>
+            <div className="booking-modal__skeleton booking-modal__skeleton--small"></div>
+        </div>
+    );
+
+    render() {
+        const { isOpenModal, isLoggedIn } = this.props;
+        const { isLoading, patientProfile, doctorProfile, schedule, errorMessage, submitError } = this.state;
+
+        return (
+            <>
+                <Modal
+                    isOpen={isOpenModal}
+                    toggle={this.toggleModal}
+                    className="booking-modal-container"
+                    size="xl"
+                    centered
+                >
+                    <ModalHeader toggle={this.toggleModal}>
+                        <i className="fa-solid fa-calendar-check me-2"></i>
+                        {this.getText("title", "Xác nhận đặt lịch khám")}
+                    </ModalHeader>
+                    <ModalBody>
+                        {!isLoggedIn ? (
+                            <div className="booking-modal__login-required">
+                                <p>{this.getText("login-required", "Vui lòng đăng nhập để chọn và xác nhận hồ sơ bệnh nhân.")}</p>
+                                <Link to={path.LOGIN} onClick={this.toggleModal}>
+                                    {this.getText("login", "Đăng nhập")}
+                                </Link>
+                            </div>
+                        ) : isLoading ? (
+                            this.renderLoading()
+                        ) : errorMessage || !patientProfile || !doctorProfile || !schedule ? (
+                            <div className="booking-modal__state-error" role="alert">
+                                {errorMessage || this.getText("load-error", "Không thể tải thông tin đặt khám.")}
+                                <button type="button" onClick={this.loadBookingData}>
+                                    {this.getText("retry", "Thử lại")}
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="booking-modal__layout">
+                                {this.renderPatientColumn()}
+                                {this.renderBookingColumn()}
+                            </div>
+                        )}
+                        {submitError && <div className="booking-modal__submit-error" role="alert">{submitError}</div>}
+                    </ModalBody>
+                </Modal>
+                {this.state.isEditingProfile && (
+                    <EditModal
+                        isOpen
+                        toggle={() => this.setState({ isEditingProfile: false })}
+                        currentUser={this.state.patientProfile || {}}
+                        onSave={this.handleProfileSave}
+                        isSaving={this.state.isSavingProfile}
+                    />
+                )}
+            </>
         );
     }
 }
@@ -333,16 +437,10 @@ class BookingModal extends Component {
 const mapStateToProps = (state) => ({
     language: state.app.language,
     isLoggedIn: state.patient.isLoggedIn,
-    patientInfo: state.patient.patientInfo,
-    gender: state.admin.genderArr,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    getGender: () => dispatch(action.fetchGender()),
-    postPatientBooking: (data) => dispatch(action.SavePatientBooking(data)),
+    patientEditSuccess: (data) => dispatch({ type: "PATIENT_EDIT_SUCCESS", data }),
 });
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(injectIntl(BookingModal));
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(BookingModal));

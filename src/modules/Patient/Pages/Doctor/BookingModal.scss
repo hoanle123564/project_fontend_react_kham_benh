@@ -1,44 +1,350 @@
-.doctor-booking-info {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
+@import "../../../../styles/variables";
 
-    .doctor-avatar {
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
+.booking-modal-container {
+    .modal-content {
+        border: 0;
+        border-radius: 14px;
         overflow: hidden;
-        flex-shrink: 0;
+    }
+
+    .modal-header {
+        border-bottom: 1px solid #edf0f4;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .booking-modal__layout {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+        gap: 22px;
+        align-items: start;
+    }
+
+    .booking-modal__card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        box-shadow: 0 5px 16px rgba(15, 23, 42, 0.06);
+    }
+
+    .booking-modal__patient-card {
+        padding: 20px;
+        border-color: $colormain;
+    }
+
+    .booking-modal__patient-header,
+    .booking-modal__patient-heading,
+    .booking-modal__doctor-summary {
+        display: flex;
+        align-items: center;
+    }
+
+    .booking-modal__patient-header {
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .booking-modal__patient-heading,
+    .booking-modal__doctor-summary {
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .booking-modal__patient-avatar,
+    .booking-modal__doctor-avatar {
+        display: grid;
+        width: 58px;
+        height: 58px;
+        flex: 0 0 58px;
+        place-items: center;
+        overflow: hidden;
+        border-radius: 50%;
+        background: linear-gradient(135deg, lighten($colormain, 8%), $colormain);
+        color: #fff;
+        font-size: 20px;
+        font-weight: 600;
 
         img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 50%;
-            border: 2px solid #ddd;
         }
     }
 
-    .doctor-meta {
-        h5.doctor-name {
-            font-weight: 600;
-            color: #0071ba;
-            font-size: 17px;
-            margin-bottom: 4px;
+    .booking-modal__doctor-avatar {
+        width: 64px;
+        height: 64px;
+        flex-basis: 64px;
+        background: rgba($colormain, 0.1);
+        color: $colormain;
+    }
+
+    .booking-modal__self-badge {
+        display: inline-block;
+        margin-bottom: 2px;
+        padding: 1px 6px;
+        border-radius: 999px;
+        background: #718096;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .booking-modal__patient-heading h2,
+    .booking-modal__summary-card h2,
+    .booking-modal__note-section h2,
+    .booking-modal__doctor-summary h3 {
+        margin: 0;
+        color: #1f2937;
+    }
+
+    .booking-modal__patient-heading h2 {
+        font-size: 19px;
+    }
+
+    .booking-modal__patient-heading p,
+    .booking-modal__doctor-summary p,
+    .booking-modal__doctor-summary span {
+        margin: 2px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .booking-modal__doctor-summary span {
+        display: block;
+        line-height: 1.4;
+    }
+
+    .booking-modal__collapse-button {
+        width: 32px;
+        height: 32px;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        color: #374151;
+    }
+
+    .booking-modal__collapse-button:hover,
+    .booking-modal__collapse-button:focus-visible {
+        background: rgba($colormain, 0.1);
+    }
+
+    .booking-modal__patient-details {
+        margin-top: 22px;
+    }
+
+    .booking-modal__detail-row,
+    .booking-modal__summary-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+        gap: 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid #edf0f4;
+        color: #374151;
+    }
+
+    .booking-modal__detail-row strong,
+    .booking-modal__summary-row strong {
+        min-width: 0;
+        color: #111827;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .booking-modal__adjust-button {
+        margin-top: 18px;
+        padding: 9px 16px;
+        border: 0;
+        border-radius: 6px;
+        background: rgba($colormain, 0.1);
+        color: $colormain;
+        font-weight: 600;
+    }
+
+    .booking-modal__note-section {
+        margin-top: 22px;
+
+        h2 {
+            margin-bottom: 18px;
+            font-size: 18px;
         }
 
-        .doctor-time {
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 50px;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            resize: vertical;
+        }
+    }
+
+    .booking-modal__summary-card {
+        padding: 20px;
+
+        >h2 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+    }
+
+    .booking-modal__doctor-summary {
+        padding-bottom: 16px;
+        border-bottom: 1px solid #edf0f4;
+
+        h3 {
+            font-size: 18px;
+        }
+    }
+
+    .booking-modal__summary-rows {
+        margin-top: 14px;
+    }
+
+    .booking-modal__summary-row {
+        font-size: 15px;
+
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    .booking-modal__summary-row--price strong {
+        color: $colormain;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow-wrap: normal;
+    }
+
+    .booking-modal__submit-button {
+        width: 100%;
+        margin-top: 20px;
+        padding: 13px 16px;
+        border: 0;
+        border-radius: 6px;
+        background: $common-btn-confirm;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 600;
+
+        &:hover:not(:disabled) {
+            background: darken($common-btn-confirm, 8%);
+        }
+
+        &:disabled {
+            cursor: not-allowed;
+            opacity: 0.58;
+        }
+    }
+
+    .booking-modal__terms {
+        margin: 12px 0 0;
+        color: #6b7280;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    .booking-modal__loading {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+        gap: 22px;
+    }
+
+    .booking-modal__skeleton {
+        border-radius: 12px;
+        background: linear-gradient(90deg, #edf2f7 25%, #f8fafc 37%, #edf2f7 63%);
+        background-size: 400% 100%;
+        animation: booking-modal-loading 1.4s ease infinite;
+    }
+
+    .booking-modal__skeleton--large {
+        height: 360px;
+    }
+
+    .booking-modal__skeleton--small {
+        height: 300px;
+    }
+
+    .booking-modal__state-error,
+    .booking-modal__submit-error,
+    .booking-modal__login-required {
+        border-radius: 8px;
+        padding: 14px;
+    }
+
+    .booking-modal__state-error,
+    .booking-modal__submit-error {
+        border: 1px solid #fecaca;
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+
+    .booking-modal__state-error button {
+        display: block;
+        margin-top: 10px;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font-weight: 600;
+        text-decoration: underline;
+    }
+
+    .booking-modal__submit-error {
+        margin-top: 16px;
+    }
+
+    .booking-modal__login-required {
+        background: #f8fafc;
+        color: #374151;
+
+        p {
+            margin: 0 0 10px;
+        }
+
+        a {
+            color: $colormain;
+            font-weight: 600;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .modal-body {
+            padding: 16px;
+        }
+
+        .booking-modal__layout,
+        .booking-modal__loading {
+            grid-template-columns: 1fr;
+        }
+
+        .booking-modal__patient-card,
+        .booking-modal__summary-card {
+            padding: 16px;
+        }
+
+        .booking-modal__detail-row,
+        .booking-modal__summary-row {
+            gap: 10px;
             font-size: 14px;
-            color: #f6a300;
         }
     }
 }
 
-.clinic-info {
-    font-size: 14px;
-    color: #666;
+@keyframes booking-modal-loading {
+    0% {
+        background-position: 100% 50%;
+    }
 
-    i {
-        color: #888;
+    100% {
+        background-position: 0 50%;
     }
 }
