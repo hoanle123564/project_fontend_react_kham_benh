@@ -47,13 +47,14 @@ class ManageClinic extends Component {
   }
 
   componentDidMount() {
-    this.props.getAllClinic();
+    this.props.getAllClinic(this.getClinicRequestOptions());
   }
 
   componentDidUpdate(prevProps) {
     if (
       prevProps.clinics !== this.props.clinics ||
-      prevProps.adminInfo !== this.props.adminInfo
+      prevProps.adminInfo !== this.props.adminInfo ||
+      prevProps.doctorInfo !== this.props.doctorInfo
     ) {
       const sortedClinics = sortClinics(this.getVisibleClinics(this.props.clinics));
       this.setState({
@@ -75,7 +76,15 @@ class ManageClinic extends Component {
     return `data:image/jpeg;base64,${image}`;
   };
 
-  isClinicManager = () => this.props.adminInfo?.roleId === "R4";
+  isDoctorRoute = () => window.location.pathname.startsWith("/doctor");
+
+  getCurrentActor = () =>
+    this.isDoctorRoute() ? this.props.doctorInfo : this.props.adminInfo;
+
+  isClinicManager = () => ["R2", "R4"].includes(this.getCurrentActor()?.roleId);
+
+  getClinicRequestOptions = () =>
+    this.isClinicManager() ? { managedOnly: true } : {};
 
   getVisibleClinics = (clinics = []) => {
     if (!this.isClinicManager()) {
@@ -83,7 +92,7 @@ class ManageClinic extends Component {
     }
 
     return (clinics || []).filter(
-      (clinic) => Number(clinic.managerUserId) === Number(this.props.adminInfo?.id)
+      (clinic) => Number(clinic.managerUserId) === Number(this.getCurrentActor()?.id)
     );
   };
 
@@ -181,7 +190,11 @@ class ManageClinic extends Component {
 
   handleEdit = (clinic) => {
     if (this.props.history) {
-      this.props.history.push(`/system/edit-clinic/${clinic.id}`, {
+      const editPath = this.isDoctorRoute()
+        ? `/doctor/manage-clinic/${clinic.id}`
+        : `/system/edit-clinic/${clinic.id}`;
+
+      this.props.history.push(editPath, {
         clinicData: clinic,
       });
     }
@@ -194,7 +207,7 @@ class ManageClinic extends Component {
       const res = await DeleteClinic(clinic.id);
       if (res?.errCode === 0) {
         toast.success("Xóa phòng khám thành công!");
-        this.props.getAllClinic();
+        this.props.getAllClinic(this.getClinicRequestOptions());
         return;
       }
 
@@ -222,7 +235,7 @@ class ManageClinic extends Component {
 
       if (res?.errCode === 0) {
         toast.success("Cập nhật trạng thái phòng khám thành công!");
-        this.props.getAllClinic();
+        this.props.getAllClinic(this.getClinicRequestOptions());
         return;
       }
 
@@ -282,7 +295,7 @@ class ManageClinic extends Component {
 
       if (res?.errCode === 0) {
         toast.success("Cập nhật STT phòng khám thành công.");
-        this.props.getAllClinic();
+        this.props.getAllClinic(this.getClinicRequestOptions());
         return;
       }
 
@@ -539,10 +552,11 @@ class ManageClinic extends Component {
 const mapStateToProps = (state) => ({
   clinics: state.admin.AllClinic,
   adminInfo: state.adminAuth.adminInfo,
+  doctorInfo: state.doctor.doctorInfo,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  getAllClinic: () => dispatch(actions.GetAllClinic()),
+  getAllClinic: (options) => dispatch(actions.GetAllClinic(options)),
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ManageClinic));

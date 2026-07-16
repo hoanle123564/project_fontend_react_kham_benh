@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
+import { injectIntl } from "react-intl";
 import * as action from "../../../store/actions";
+import { postDetailDoctor } from "../../../services/userService";
 import "./ManageDoctor.scss";
 
 import ReactQuill from "react-quill";
@@ -42,18 +44,30 @@ class ManageDoctor extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchAllDoctor();
     this.props.GetDAllRequire();
     this.props.GetAllSpecialty();
     this.props.getAllClinic();
+
+    if (this.props.selfManaged) {
+      this.selectSelfDoctor();
+      return;
+    }
+
+    this.props.fetchAllDoctor();
   }
 
   componentDidUpdate(prevProps) {
-    if (
+    if (this.props.selfManaged && prevProps.doctorInfo !== this.props.doctorInfo) {
+      this.selectSelfDoctor();
+    }
+
+    const shouldRebuildDoctors = !this.props.selfManaged && (
       prevProps.ListDoctor !== this.props.ListDoctor ||
       prevProps.ListClinic !== this.props.ListClinic ||
       prevProps.adminInfo !== this.props.adminInfo
-    ) {
+    );
+
+    if (shouldRebuildDoctors) {
       const List = this.buildDataSelect(this.getVisibleDoctors(), "USERS");
       this.setState({ ListDoctor: List }, this.selectDoctorFromRoute);
     }
@@ -70,6 +84,8 @@ class ManageDoctor extends Component {
   }
 
   selectDoctorFromRoute = () => {
+    if (this.props.selfManaged) return;
+
     const selectedDoctorId = this.props.location?.state?.selectedDoctorId;
     if (
       !selectedDoctorId ||
@@ -228,6 +244,21 @@ class ManageDoctor extends Component {
     });
   };
 
+  selectSelfDoctor = () => {
+    const { doctorInfo } = this.props;
+    if (!doctorInfo?.id || Number(this.state.selectDoctor?.value) === Number(doctorInfo.id)) {
+      return;
+    }
+
+    this.handleChangeSelect(
+      {
+        label: `${doctorInfo.firstName || ""} ${doctorInfo.lastName || ""}`.trim(),
+        value: doctorInfo.id,
+      },
+      { name: "selectDoctor" }
+    );
+  };
+
   handleChangeSelect = async (option, meta) => {
     if (!meta?.name) return;
 
@@ -363,7 +394,7 @@ class ManageDoctor extends Component {
   handleSaveContent = async () => {
     if (!this.validateForm()) return;
 
-    const res = await this.props.SaveDetailDoctor({
+    const payload = {
       contentHTML: this.state.contentHTML,
       description: this.state.description,
       doctorId: this.state.selectDoctor.value,
@@ -374,19 +405,40 @@ class ManageDoctor extends Component {
       clinicId: this.state.selectClinic.value,
       slug: this.state.slug,
       isActive: this.state.isActive,
-      displayOrder: Number(this.state.displayOrder),
       image: this.state.image,
-    });
+    };
+
+    if (!this.props.selfManaged) {
+      payload.displayOrder = Number(this.state.displayOrder);
+    }
+
+    let res;
+    try {
+      res = this.props.selfManaged
+        ? await postDetailDoctor(payload)
+        : await this.props.SaveDetailDoctor(payload);
+    } catch (error) {
+      if (this.props.selfManaged) {
+        toast.error(this.getText("doctor.profile-editor.save-error", "Unable to save your professional profile."));
+      }
+      return;
+    }
 
     if (res?.errCode === 0) {
       const selectedDoctor = this.state.selectDoctor;
-      this.props.fetchAllDoctor();
+      if (this.props.selfManaged) {
+        toast.success(this.getText("doctor.profile-editor.save-success", "Professional profile updated."));
+      } else {
+        this.props.fetchAllDoctor();
+      }
       await this.handleChangeSelect(selectedDoctor, { name: "selectDoctor" });
     }
   };
 
+  getText = (id, defaultMessage) => this.props.intl.formatMessage({ id, defaultMessage });
+
   render() {
-    const { language } = this.props;
+    const { language, selfManaged } = this.props;
     const {
       contentHTML,
       selectDoctor,
@@ -406,34 +458,44 @@ class ManageDoctor extends Component {
       <div className="manage-doctor-container">
         <div className="manage-doctor__header">
           <div>
-            <h2>Quản lý thông tin bác sĩ</h2>
-            <p>Cập nhật hồ sơ, chuyên khoa, trạng thái hiển thị và ảnh bác sĩ.</p>
+            <h2>{selfManaged
+              ? this.getText("doctor.profile-editor.title", "My professional profile")
+              : "Quản lý thông tin bác sĩ"}
+            </h2>
+            <p>{selfManaged
+              ? this.getText("doctor.profile-editor.subtitle", "Update the public information shown on your doctor profile.")
+              : "Cập nhật hồ sơ, chuyên khoa, trạng thái hiển thị và ảnh bác sĩ."}
+            </p>
           </div>
-          <button
-            type="button"
-            className="manage-doctor__back-button"
-            onClick={() => this.props.history.push("/system/doctor-table")}
-          >
-            Quay lại danh sách
-          </button>
+          {!selfManaged && (
+            <button
+              type="button"
+              className="manage-doctor__back-button"
+              onClick={() => this.props.history.push("/system/doctor-table")}
+            >
+              Quay lại danh sách
+            </button>
+          )}
         </div>
 
         <div className="manage-doctor__content">
           <div className="manage-doctor__main">
             <div className="manage-doctor__section">
               <div className="manage-doctor__grid manage-doctor__grid--top row">
-                <div className="form-group col-5">
-                  <label>Chọn bác sĩ</label>
-                  <Select
-                    value={selectDoctor}
-                    onChange={this.handleChangeSelect}
-                    name="selectDoctor"
-                    options={this.state.ListDoctor}
-                    placeholder={
-                      language === "vi" ? "Chọn bác sĩ ..." : "Select doctor ..."
-                    }
-                  />
-                </div>
+                {!selfManaged && (
+                  <div className="form-group col-5">
+                    <label>Chọn bác sĩ</label>
+                    <Select
+                      value={selectDoctor}
+                      onChange={this.handleChangeSelect}
+                      name="selectDoctor"
+                      options={this.state.ListDoctor}
+                      placeholder={
+                        language === "vi" ? "Chọn bác sĩ ..." : "Select doctor ..."
+                      }
+                    />
+                  </div>
+                )}
                 <div className="manage-doctor__meta-row row mt-3">
                   <div className="form-group col-5">
                     <label>Slug</label>
@@ -656,6 +718,7 @@ const mapStateToProps = (state) => {
     ListSpecialty: state.admin.specialty,
     ListClinic: state.admin.AllClinic,
     adminInfo: state.adminAuth.adminInfo,
+    doctorInfo: state.doctor.doctorInfo,
   };
 };
 
@@ -670,4 +733,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ManageDoctor));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(injectIntl(ManageDoctor)));

@@ -91,12 +91,23 @@ class EditClinic extends Component {
         }
     }
 
+    isDoctorRoute = () => window.location.pathname.startsWith("/doctor");
+
+    getCurrentActor = () =>
+        this.isDoctorRoute() ? this.props.doctorInfo : this.props.adminInfo;
+
+    isScopedManager = () => ["R2", "R4"].includes(this.getCurrentActor()?.roleId);
+
     loadFormOptions = async (provinceCode = "", districtCode = "") => {
         try {
+            const currentActor = this.getCurrentActor();
+            const userRequest = this.isDoctorRoute()
+                ? Promise.resolve({ users: currentActor ? [currentActor] : [] })
+                : getAllUser("ALL");
             const [clinicTypeRes, provinceRes, userRes, districtRes, wardRes] = await Promise.all([
                 getLookUp("CLINIC_TYPE"),
                 getLookUp("PROVINCE"),
-                getAllUser("ALL"),
+                userRequest,
                 provinceCode ? getLookUp("DISTRICT", provinceCode) : Promise.resolve({ data: [] }),
                 districtCode ? getLookUp("WARD", districtCode) : Promise.resolve({ data: [] }),
             ]);
@@ -141,11 +152,13 @@ class EditClinic extends Component {
     loadClinic = async () => {
         const routeId = this.props.match?.params?.id;
         const stateItem = this.props.location?.state?.clinicData;
-        let clinicData = stateItem || null;
+        let clinicData = this.isScopedManager() ? null : stateItem || null;
 
         if (!clinicData && routeId) {
             try {
-                const res = await getDetailClinicById(routeId, "ALL");
+                const res = await getDetailClinicById(routeId, "ALL", {
+                    managedOnly: this.isScopedManager(),
+                });
                 if (res && res.errCode === 0) {
                     clinicData = Array.isArray(res.data) ? res.data[0] : res.data;
                 }
@@ -266,7 +279,9 @@ class EditClinic extends Component {
     };
 
     handleBack = () => {
-        this.props.history.push("/system/manage-clinic");
+        this.props.history.push(
+            this.isDoctorRoute() ? "/doctor/manage-clinic" : "/system/manage-clinic"
+        );
     };
 
     getNextSectionDisplayOrder = () =>
@@ -685,6 +700,7 @@ class EditClinic extends Component {
                     language={this.props.language}
                     clinicTypeOptions={this.state.clinicTypeOptions}
                     managerOptions={this.state.managerOptions}
+                    managerLocked={this.isDoctorRoute()}
                     provinceOptions={this.state.provinceOptions}
                     districtOptions={this.state.districtOptions}
                     wardOptions={this.state.wardOptions}
@@ -702,6 +718,8 @@ class EditClinic extends Component {
 
 const mapStateToProps = (state) => ({
     language: state.app.language,
+    adminInfo: state.adminAuth.adminInfo,
+    doctorInfo: state.doctor.doctorInfo,
 });
 
 export default connect(mapStateToProps)(EditClinic);

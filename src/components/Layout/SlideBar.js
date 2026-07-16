@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { adminMenu, clinicManagerMenu, doctorMenu } from "./menuApp";
+import { adminMenu, clinicManagerMenu, doctorClinicManagerMenu, doctorMenu } from "./menuApp";
 import Navigator from "../Navigator";
+import { getAllClinic } from "../../services/userService";
 import "./SlideBar.scss";
 
 import LifeCare from "../../assets/logo3.png";
@@ -28,7 +29,7 @@ class SlideBar extends Component {
     }
   }
 
-  loadMenuByRole = () => {
+  loadMenuByRole = async () => {
     const path = window.location.pathname;
 
     let token = null;
@@ -57,7 +58,21 @@ class SlideBar extends Component {
     let menu = [];
     if (roleId === "R1") menu = adminMenu;
     if (roleId === "R4") menu = clinicManagerMenu;
-    if (roleId === "R2") menu = doctorMenu;
+
+    if (roleId === "R2") {
+      this.setState({ menuApp: doctorMenu });
+
+      try {
+        const res = await getAllClinic({ managedOnly: true });
+        if (this.props.doctorToken === token && res?.errCode === 0 && res.data?.length > 0) {
+          this.setState({ menuApp: [...doctorMenu, ...doctorClinicManagerMenu] });
+        }
+      } catch {
+        this.setState({ menuApp: doctorMenu });
+      }
+
+      return;
+    }
 
     this.setState({ menuApp: menu });
   };

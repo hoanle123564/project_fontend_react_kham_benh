@@ -99,7 +99,14 @@
       "appointment": "Lịch hẹn",
       "manage-booking": "Quản lý lịch hẹn",
       "reviews": "Đánh giá",
-      "dashboard": "Dashboard bác sĩ"
+      "dashboard": "Dashboard bác sĩ",
+      "edit-profile": "Chỉnh sửa trang cá nhân"
+    },
+    "profile-editor": {
+      "title": "Hồ sơ chuyên môn của tôi",
+      "subtitle": "Cập nhật thông tin hiển thị trên hồ sơ bác sĩ của bạn.",
+      "save-success": "Đã cập nhật hồ sơ chuyên môn.",
+      "save-error": "Không thể lưu hồ sơ chuyên môn."
     },
     "clinic-manager": {
       "clinic": "Quản lý cơ sở",
@@ -436,7 +443,9 @@
       "reviewClose": "Đóng",
       "reviewRequired": "Vui lòng chọn số sao và nhập nhận xét.",
       "reviewSuccess": "Gửi đánh giá thành công.",
-      "reviewError": "Không thể gửi đánh giá."
+      "reviewError": "Không thể gửi đánh giá.",
+      "reminderBadge": "Sắp tới giờ khám",
+      "reminderToast": "Sắp tới giờ khám. Vui lòng chuẩn bị."
     },
     "profile": {
       "notFound": "Không tìm thấy thông tin bệnh nhân",
@@ -805,6 +814,9 @@
     "status": "Trạng thái",
     "note": "Lý do / ghi chú",
     "actions": "Cập nhật",
+    "doctorActions": "Thao tác",
+    "accept": "Đồng ý",
+    "reject": "Từ chối",
     "chooseStatus": "Chọn trạng thái mới",
     "update": "Cập nhật",
     "updating": "Đang cập nhật…",

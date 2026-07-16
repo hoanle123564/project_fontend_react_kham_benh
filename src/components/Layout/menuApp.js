@@ -173,6 +173,11 @@ export const doctorMenu = [
         icon: "bi bi-person-badge",
         link: "/doctor/manage-patient",
       },
+      {
+        name: "menu.doctor.edit-profile",
+        icon: "bi bi-person-gear",
+        link: "/doctor/edit-profile",
+      },
     ],
   },
   // tư vấn
@@ -191,6 +196,24 @@ export const doctorMenu = [
       },
     ]
   }
+];
+
+export const doctorClinicManagerMenu = [
+  {
+    name: "menu.admin.clinic",
+    menus: [
+      {
+        name: "menu.admin.manage-clinic",
+        icon: "bi bi-hospital",
+        link: "/doctor/manage-clinic",
+      },
+      {
+        name: "menu.admin.manage-clinic-department",
+        icon: "bi bi-diagram-3",
+        link: "/doctor/manage-clinic-department",
+      },
+    ],
+  },
 ];
 
 export const clinicManagerMenu = [

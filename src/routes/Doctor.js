@@ -10,7 +10,10 @@ import ChatPage from "../modules/Chat/ChatPage";
 import ManagePatient from "../modules/Doctor/ManagePatient";
 import ManageSchedulePrivate from "../modules/Doctor/ManageSchedulePrivate";
 import ListAppointment from "../modules/Doctor/ListAppointment";
-import EditProfile from "../modules/Admin/ManageUser/EditProfile";
+import ManageDoctor from "../modules/Admin/ManageUser/ManageDoctor";
+import ManageClinic from "../modules/Admin/Clinic/ManageClinic";
+import EditClinic from "../modules/Admin/Clinic/EditClinic";
+import ManageClinicDepartment from "../modules/Admin/ClinicDepartment/ManageClinicDepartment";
 import BookingManagement from "../modules/Booking/BookingManagement";
 import ReviewManagement from "../modules/Review/ReviewManagement";
 
@@ -47,7 +50,10 @@ class Doctor extends Component {
               <Route exact path="/doctor/message" component={ChatPage} />
               <Route path="/doctor/manage-schedule-private" component={ManageSchedulePrivate} />
               <Route path="/doctor/list-appointment" component={ListAppointment} />
-              <Route path="/doctor/edit-profile" component={EditProfile} />
+              <Route path="/doctor/edit-profile" render={(routeProps) => <ManageDoctor {...routeProps} selfManaged />} />
+              <Route path="/doctor/manage-clinic/:id" component={EditClinic} />
+              <Route exact path="/doctor/manage-clinic" component={ManageClinic} />
+              <Route path="/doctor/manage-clinic-department" component={ManageClinicDepartment} />
             </Switch>
           </div>
         </div>

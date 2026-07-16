@@ -471,10 +471,10 @@ export const SaveClinicFail = () => ({
   type: actionTypes.FETCH_SAVE_CLINIC_FAIL,
 });
 // GET ALL CLINIC
-export const GetAllClinic = () => {
+export const GetAllClinic = (options = {}) => {
   return async (dispatch, getState) => {
     try {
-      let res = await getAllClinic(); // Gọi dịch vụ lấy tất cả phòng khám
+      let res = await getAllClinic(options); // Gọi dịch vụ lấy tất cả phòng khám
       if (res && res.errCode === 0) {
         let listClinic = dispatch({
           type: actionTypes.FETCH_ALL_CLINIC,

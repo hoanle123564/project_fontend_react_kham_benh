@@ -34,14 +34,15 @@ class ManageClinicDepartment extends Component {
   }
 
   componentDidMount() {
-    this.props.GetAllClinic();
+    this.props.GetAllClinic(this.getClinicRequestOptions());
     this.props.GetAllSpecialty();
   }
 
   componentDidUpdate(prevProps) {
     if (
       prevProps.ListClinic !== this.props.ListClinic ||
-      prevProps.adminInfo !== this.props.adminInfo
+      prevProps.adminInfo !== this.props.adminInfo ||
+      prevProps.doctorInfo !== this.props.doctorInfo
     ) {
       const visibleClinics = this.getVisibleClinics();
       const hasSelectedClinic = visibleClinics.some(
@@ -76,7 +77,15 @@ class ManageClinicDepartment extends Component {
     isActive: 1,
   });
 
-  isClinicManager = () => this.props.adminInfo?.roleId === "R4";
+  isDoctorRoute = () => window.location.pathname.startsWith("/doctor");
+
+  getCurrentActor = () =>
+    this.isDoctorRoute() ? this.props.doctorInfo : this.props.adminInfo;
+
+  isClinicManager = () => ["R2", "R4"].includes(this.getCurrentActor()?.roleId);
+
+  getClinicRequestOptions = () =>
+    this.isClinicManager() ? { managedOnly: true } : {};
 
   getVisibleClinics = () => {
     if (!this.isClinicManager()) {
@@ -84,7 +93,7 @@ class ManageClinicDepartment extends Component {
     }
 
     return (this.props.ListClinic || []).filter(
-      (clinic) => Number(clinic.managerUserId) === Number(this.props.adminInfo?.id)
+      (clinic) => Number(clinic.managerUserId) === Number(this.getCurrentActor()?.id)
     );
   };
 
@@ -437,10 +446,11 @@ const mapStateToProps = (state) => ({
   ListClinic: state.admin.AllClinic,
   ListSpecialty: state.admin.specialty,
   adminInfo: state.adminAuth.adminInfo,
+  doctorInfo: state.doctor.doctorInfo,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  GetAllClinic: () => dispatch(actions.GetAllClinic()),
+  GetAllClinic: (options) => dispatch(actions.GetAllClinic(options)),
   GetAllSpecialty: () => dispatch(actions.GetAllSpecialty()),
 });
 

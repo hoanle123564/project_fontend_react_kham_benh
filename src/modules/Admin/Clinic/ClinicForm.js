@@ -15,6 +15,7 @@ const ClinicForm = ({
     provinceOptions = [],
     districtOptions = [],
     wardOptions = [],
+    managerLocked = false,
     onInputChange,
     onImageChange,
     onRemoveImage,
@@ -142,6 +143,7 @@ const ClinicForm = ({
                                         className="form-control"
                                         value={formData.managerUserId || ""}
                                         onChange={(event) => onInputChange(event, "managerUserId")}
+                                        disabled={managerLocked}
                                     >
                                         <option value="">{t("manage-clinic.choose-manager", "Choose manager")}</option>
                                         {managerOptions.map((item) => (

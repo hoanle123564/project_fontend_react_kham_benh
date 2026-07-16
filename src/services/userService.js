@@ -91,7 +91,7 @@ const getAllDoctor = () => {
 };
 // Lưu thông tin chi tiết bác sĩ
 const postDetailDoctor = (data) => {
-  return adminAxios.post("/api/save-doctor", data);
+  return getCurrentAuthAxios().post("/api/save-doctor", data);
 };
 
 // Lấy thông tin chi tiết bác sĩ
@@ -370,11 +370,15 @@ const EditClinicId = (data) => {
 
 const getAllClinic = (options = {}) => {
   const publicOnly = options?.publicOnly ? 1 : "";
-  return axios.get(`/api/get-clinic?publicOnly=${publicOnly}`);
+  const managedOnly = options?.managedOnly ? 1 : "";
+  const client = managedOnly ? getCurrentAuthAxios() : axios;
+  return client.get(`/api/get-clinic?publicOnly=${publicOnly}&managedOnly=${managedOnly}`);
 };
 
-const getDetailClinicById = (id, location) => {
-  return axios.get(`/api/get-detail-clinic-by-id?id=${id}&location=${location}`);
+const getDetailClinicById = (id, location, options = {}) => {
+  const managedOnly = options?.managedOnly ? "&managedOnly=1" : "";
+  const client = options?.managedOnly ? getCurrentAuthAxios() : axios;
+  return client.get(`/api/get-detail-clinic-by-id?id=${id}&location=${location}${managedOnly}`);
 }
 
 const getDetailClinicBySlug = (slug, location) => {
@@ -400,27 +404,27 @@ const DeleteClinic = (ClinicId) => {
 };
 
 const getClinicContentSections = (clinicId) => {
-  return adminAxios.get(`/api/get-clinic-content-section?clinicId=${encodeURIComponent(clinicId)}`);
+  return getCurrentAuthAxios().get(`/api/get-clinic-content-section?clinicId=${encodeURIComponent(clinicId)}`);
 };
 
 const postSaveClinicContentSection = (data) => {
-  return adminAxios.post("/api/create-clinic-content-section", data);
+  return getCurrentAuthAxios().post("/api/create-clinic-content-section", data);
 };
 
 const EditClinicContentSection = (data) => {
-  return adminAxios.put("/api/edit-clinic-content-section", data);
+  return getCurrentAuthAxios().put("/api/edit-clinic-content-section", data);
 };
 
 const DeleteClinicContentSection = (data) => {
-  return adminAxios.delete("/api/delete-clinic-content-section", { data });
+  return getCurrentAuthAxios().delete("/api/delete-clinic-content-section", { data });
 };
 
 const ChangeStatusClinicContentSection = (data) => {
-  return adminAxios.put("/api/change-status-clinic-content-section", data);
+  return getCurrentAuthAxios().put("/api/change-status-clinic-content-section", data);
 };
 
 const updateClinicContentSectionOrder = (clinicId, items) => {
-  return adminAxios.put("/api/update-clinic-content-section-order", { clinicId, items });
+  return getCurrentAuthAxios().put("/api/update-clinic-content-section-order", { clinicId, items });
 };
 
 const getClinicDepartment = (clinicId) => {

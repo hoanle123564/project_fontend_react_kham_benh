@@ -98,7 +98,14 @@
       "appointment": "Appointment",
       "manage-booking": "Booking management",
       "reviews": "Reviews",
-      "dashboard": "Doctor dashboard"
+      "dashboard": "Doctor dashboard",
+      "edit-profile": "Edit profile"
+    },
+    "profile-editor": {
+      "title": "My professional profile",
+      "subtitle": "Update the public information shown on your doctor profile.",
+      "save-success": "Professional profile updated.",
+      "save-error": "Unable to save your professional profile."
     },
     "clinic-manager": {
       "clinic": "Clinic management",
@@ -503,7 +510,9 @@
       "reviewClose": "Close",
       "reviewRequired": "Please choose a rating and enter your comment.",
       "reviewSuccess": "Review submitted successfully.",
-      "reviewError": "Could not submit review."
+      "reviewError": "Could not submit review.",
+      "reminderBadge": "Starting soon",
+      "reminderToast": "Your appointment is starting soon. Please get ready."
     }
   },
   "admin": {
@@ -602,6 +611,9 @@
     "status": "Status",
     "note": "Reason / note",
     "actions": "Update",
+    "doctorActions": "Actions",
+    "accept": "Accept",
+    "reject": "Reject",
     "chooseStatus": "Choose a new status",
     "update": "Update",
     "updating": "Updating…",

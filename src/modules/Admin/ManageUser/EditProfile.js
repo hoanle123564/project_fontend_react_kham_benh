@@ -167,18 +167,23 @@ class EditProfile extends Component {
 
     this.setState({ isSaving: true });
     try {
-      const payload = {
-        id: this.state.id,
-        email: this.state.email,
+      const profileData = {
         firstName: this.state.firstName,
         lastName: this.state.lastName,
         address: this.state.address,
         gender: this.state.gender,
-        roleId: this.state.roleId,
         phoneNumber: this.state.phoneNumber,
         positionId: this.state.roleId === "R2" ? this.state.positionId : "", // Position applies only to Doctor role
         image: this.state.avatar,
       };
+      const payload = this.props.isAdmin
+        ? {
+          ...profileData,
+          id: this.state.id,
+          email: this.state.email,
+          roleId: this.state.roleId,
+        }
+        : profileData;
 
       const res = await EditUser(payload);
       if (res && res.errCode === 0) {
