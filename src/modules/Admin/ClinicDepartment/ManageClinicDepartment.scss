@@ -134,19 +134,13 @@
         }
     }
 
-    .manage-clinic-department__name,
-    .manage-clinic-department__description {
+    .manage-clinic-department__name {
         text-align: left;
     }
 
     .manage-clinic-department__name {
         color: #244b62;
         font-weight: 700;
-    }
-
-    .manage-clinic-department__description {
-        max-width: 280px;
-        color: var(--department-muted);
     }
 
     .manage-clinic-department__actions {

@@ -21,16 +21,11 @@ class ManageDoctor extends Component {
       contentHTML: "",
 
       selectDoctor: "",
-      selectPrice: "",
-      selectOnlinePrice: "",
-      selectPayment: "",
       selectClinic: "",
       selectSpecialty: "",
       selectedClinicProvince: "",
 
       ListDoctor: [],
-      ListPrice: [],
-      ListPayment: [],
       ListSpecialty: [],
       ListClinic: [],
       description: "",
@@ -44,7 +39,6 @@ class ManageDoctor extends Component {
   }
 
   componentDidMount() {
-    this.props.GetDAllRequire();
     this.props.GetAllSpecialty();
     this.props.getAllClinic();
 
@@ -73,7 +67,6 @@ class ManageDoctor extends Component {
     }
 
     const shouldRebuildOptions =
-      prevProps.AllRequire !== this.props.AllRequire ||
       prevProps.ListSpecialty !== this.props.ListSpecialty ||
       prevProps.ListClinic !== this.props.ListClinic ||
       prevProps.language !== this.props.language;
@@ -139,20 +132,9 @@ class ManageDoctor extends Component {
   };
 
   rebuildOptions = () => {
-    const ListPri = this.buildDataSelect(this.props.AllRequire?.ResPri, "PRICE");
-    const ListPay = this.buildDataSelect(this.props.AllRequire?.ResPay, "PAYMENT");
     const ListSpec = this.buildDataSelect(this.props.ListSpecialty, "SPECIALTY");
     const ListClin = this.buildDataSelect(this.getVisibleClinics(), "CLINIC");
 
-    const selectedPrice = ListPri.find(
-      (item) => item.value === this.state.selectPrice?.value
-    );
-    const selectedOnlinePrice = ListPri.find(
-      (item) => item.value === this.state.selectOnlinePrice?.value
-    );
-    const selectedPayment = ListPay.find(
-      (item) => item.value === this.state.selectPayment?.value
-    );
     const selectedSpecialty = ListSpec.find(
       (item) => item.value === this.state.selectSpecialty?.value
     );
@@ -161,13 +143,8 @@ class ManageDoctor extends Component {
     );
     this.setState(
       {
-        ListPrice: ListPri,
-        ListPayment: ListPay,
         ListSpecialty: ListSpec,
         ListClinic: ListClin,
-        selectPrice: selectedPrice || this.state.selectPrice,
-        selectOnlinePrice: selectedOnlinePrice || this.state.selectOnlinePrice,
-        selectPayment: selectedPayment || this.state.selectPayment,
         selectSpecialty: selectedSpecialty || this.state.selectSpecialty,
         selectClinic: selectedClinic || this.state.selectClinic,
         selectedClinicProvince: selectedClinic?.province || this.state.selectedClinicProvince,
@@ -275,11 +252,8 @@ class ManageDoctor extends Component {
     if (meta.name !== "selectDoctor" || !option?.value) return;
 
     const res = await this.props.GetDetailDoctor(option.value);
-    const { ListPayment, ListPrice, ListSpecialty, ListClinic } =
+    const { ListSpecialty, ListClinic } =
       this.state;
-    const findPayment = ListPayment.find((item) => item.value === res?.paymentId);
-    const findPrice = ListPrice.find((item) => item.value === res?.priceId);
-    const findOnlinePrice = ListPrice.find((item) => item.value === res?.onlinePriceId);
     const findSpecialty = ListSpecialty.find(
       (item) => item.value === res?.specialtyId
     );
@@ -287,9 +261,6 @@ class ManageDoctor extends Component {
     this.setState({
       contentHTML: res?.contentHTML || "",
       description: res?.description || "",
-      selectPrice: findPrice || "",
-      selectOnlinePrice: findOnlinePrice || "",
-      selectPayment: findPayment || "",
       selectSpecialty: findSpecialty || "",
       selectClinic: findClinic || "",
       selectedClinicProvince: res?.province || findClinic?.province || "",
@@ -358,16 +329,6 @@ class ManageDoctor extends Component {
       return false;
     }
 
-    if (!this.state.selectPrice?.value) {
-      toast.error("Vui lòng chọn giá khám.");
-      return false;
-    }
-
-    if (!this.state.selectPayment?.value) {
-      toast.error("Vui lòng chọn phương thức thanh toán.");
-      return false;
-    }
-
     if (false) {
       toast.error("Vui lòng chọn tỉnh thành.");
       return false;
@@ -398,9 +359,6 @@ class ManageDoctor extends Component {
       contentHTML: this.state.contentHTML,
       description: this.state.description,
       doctorId: this.state.selectDoctor.value,
-      priceId: this.state.selectPrice.value,
-      onlinePriceId: this.state.selectOnlinePrice?.value || null,
-      paymentId: this.state.selectPayment.value,
       specialtyId: this.state.selectSpecialty.value,
       clinicId: this.state.selectClinic.value,
       slug: this.state.slug,
@@ -442,9 +400,6 @@ class ManageDoctor extends Component {
     const {
       contentHTML,
       selectDoctor,
-      selectPrice,
-      selectOnlinePrice,
-      selectPayment,
       selectClinic,
       selectSpecialty,
       selectedClinicProvince,
@@ -545,36 +500,6 @@ class ManageDoctor extends Component {
             <div className="manage-doctor__section">
               <div className="manage-doctor__grid manage-doctor__grid--three">
                 <div className="form-group">
-                  <label>Giá khám</label>
-                  <Select
-                    value={selectPrice}
-                    onChange={this.handleChangeSelect}
-                    name="selectPrice"
-                    options={this.state.ListPrice}
-                    placeholder={
-                      language === "vi"
-                        ? "Chọn giá khám ..."
-                        : "Select examination fee ..."
-                    }
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Phương thức thanh toán</label>
-                  <Select
-                    value={selectPayment}
-                    onChange={this.handleChangeSelect}
-                    name="selectPayment"
-                    options={this.state.ListPayment}
-                    placeholder={
-                      language === "vi"
-                        ? "Chọn phương thức ..."
-                        : "Select payment method ..."
-                    }
-                  />
-                </div>
-
-                <div className="form-group">
                   <label>Tỉnh thành</label>
                   <input
                     className="form-control"
@@ -620,26 +545,6 @@ class ManageDoctor extends Component {
                   />
                 </div>
 
-              </div>
-            </div>
-
-            <div className="manage-doctor__section">
-              <div className="manage-doctor__grid manage-doctor__grid--three">
-                <div className="form-group">
-                  <label>{language === "vi" ? "Giá khám online" : "Online examination fee"}</label>
-                  <Select
-                    value={selectOnlinePrice}
-                    onChange={this.handleChangeSelect}
-                    name="selectOnlinePrice"
-                    options={this.state.ListPrice}
-                    isClearable
-                    placeholder={
-                      language === "vi"
-                        ? "Chọn giá khám online ..."
-                        : "Select online examination fee ..."
-                    }
-                  />
-                </div>
               </div>
             </div>
 
@@ -714,7 +619,6 @@ const mapStateToProps = (state) => {
     language: state.app.language,
     ListDoctor: state.admin.AllDoctor,
     DetailDoctor: state.admin.DetailDoctor,
-    AllRequire: state.admin.AllRequire,
     ListSpecialty: state.admin.specialty,
     ListClinic: state.admin.AllClinic,
     adminInfo: state.adminAuth.adminInfo,
@@ -727,7 +631,6 @@ const mapDispatchToProps = (dispatch) => {
     fetchAllDoctor: () => dispatch(action.fetchAllDoctor()),
     SaveDetailDoctor: (data) => dispatch(action.SaveDetailDoctor(data)),
     GetDetailDoctor: (id) => dispatch(action.GetDetailDoctor(id)),
-    GetDAllRequire: () => dispatch(action.GetDAllRequire()),
     GetAllSpecialty: () => dispatch(action.GetAllSpecialty()),
     getAllClinic: () => dispatch(action.GetAllClinic()),
   };

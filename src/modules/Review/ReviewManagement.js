@@ -48,7 +48,6 @@ class ReviewManagement extends Component {
     replyDraftById: {},
     savingReplyId: null,
     visibilityModal: null,
-    visibilityReason: "",
     updatingVisibility: false,
   };
 
@@ -471,11 +470,6 @@ class ReviewManagement extends Component {
             </div>
           </header>
           <p>{review.comment}</p>
-          {review.isHidden && review.hiddenReason && (
-            <div className="review-management__hidden-note">
-              {this.getText("hiddenReason", "Hidden reason")}: {review.hiddenReason}
-            </div>
-          )}
           {review.reply && (
             <div className="review-management__reply">
               <span>{this.getText("doctorReply", "Doctor reply")}</span>
@@ -527,29 +521,23 @@ class ReviewManagement extends Component {
   openVisibilityModal = (review, hidden) => {
     this.setState({
       visibilityModal: { review, hidden },
-      visibilityReason: "",
       errorMessage: "",
     });
   };
 
   closeVisibilityModal = () => {
     if (this.state.updatingVisibility) return;
-    this.setState({ visibilityModal: null, visibilityReason: "", errorMessage: "" });
+    this.setState({ visibilityModal: null, errorMessage: "" });
   };
 
   confirmVisibility = async () => {
-    const { visibilityModal, visibilityReason } = this.state;
+    const { visibilityModal } = this.state;
     if (!visibilityModal) return;
-    if (visibilityModal.hidden && !visibilityReason.trim()) {
-      this.setState({ errorMessage: this.getText("reasonRequired", "Hidden reason is required.") });
-      return;
-    }
 
     this.setState({ updatingVisibility: true, errorMessage: "" });
     try {
       const response = await updateAdminReviewVisibility(visibilityModal.review.id, {
         hidden: visibilityModal.hidden,
-        reason: visibilityReason.trim(),
       });
       if (response?.errCode !== 0) {
         this.setState({
@@ -565,7 +553,7 @@ class ReviewManagement extends Component {
           : this.getText("restoreSuccess", "Review restored.")
       );
       this.setState(
-        { updatingVisibility: false, visibilityModal: null, visibilityReason: "" },
+        { updatingVisibility: false, visibilityModal: null },
         () => this.loadReviews({ page: this.state.pagination.page })
       );
     } catch (error) {
@@ -644,7 +632,7 @@ class ReviewManagement extends Component {
   };
 
   renderVisibilityModal = () => {
-    const { visibilityModal, visibilityReason, updatingVisibility } = this.state;
+    const { visibilityModal, updatingVisibility } = this.state;
     const isHide = Boolean(visibilityModal?.hidden);
     return (
       <Modal isOpen={Boolean(visibilityModal)} toggle={this.closeVisibilityModal} centered>
@@ -657,17 +645,6 @@ class ReviewManagement extends Component {
               ? this.getText("hideCopy", "This review will be removed from the public doctor profile.")
               : this.getText("restoreCopy", "This review will be visible on the public doctor profile again.")}
           </p>
-          {isHide && (
-            <label className="review-management__modal-field">
-              <span>{this.getText("reason", "Reason")}</span>
-              <textarea
-                rows="4"
-                maxLength={REVIEW_TEXT_MAX}
-                value={visibilityReason}
-                onChange={(event) => this.setState({ visibilityReason: event.target.value, errorMessage: "" })}
-              />
-            </label>
-          )}
           {this.state.errorMessage && <div className="review-management__alert">{this.state.errorMessage}</div>}
         </ModalBody>
         <ModalFooter>
@@ -678,7 +655,7 @@ class ReviewManagement extends Component {
             color={isHide ? "danger" : "primary"}
             type="button"
             onClick={this.confirmVisibility}
-            disabled={updatingVisibility || (isHide && !visibilityReason.trim())}
+            disabled={updatingVisibility}
           >
             {updatingVisibility
               ? this.getText("saving", "Saving...")

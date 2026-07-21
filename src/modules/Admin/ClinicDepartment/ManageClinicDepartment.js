@@ -73,7 +73,6 @@ class ManageClinicDepartment extends Component {
   getResetFormData = (clinicId) => ({
     clinicId: clinicId || "",
     specialtyId: "",
-    description: "",
     isActive: 1,
   });
 
@@ -181,7 +180,6 @@ class ManageClinicDepartment extends Component {
       formData: {
         clinicId: String(department.clinicId || ""),
         specialtyId: department.specialtyId ? String(department.specialtyId) : "",
-        description: department.description || "",
         isActive: Number(department.isActive) === 1 ? 1 : 0,
       },
     });
@@ -233,7 +231,6 @@ class ManageClinicDepartment extends Component {
     const payload = {
       clinicId: Number(this.state.formData.clinicId),
       specialtyId: Number(this.state.formData.specialtyId),
-      description: String(this.state.formData.description || "").trim(),
       isActive: Number(this.state.formData.isActive) === 1 ? 1 : 0,
     };
 
@@ -363,7 +360,6 @@ class ManageClinicDepartment extends Component {
                 <tr>
                   <th>ID</th>
                   <th>Tên khoa</th>
-                  <th>Mô tả</th>
                   <th>Hiển thị</th>
                   <th>Thao tác</th>
                 </tr>
@@ -371,13 +367,13 @@ class ManageClinicDepartment extends Component {
               <tbody>
                 {!selectedClinicId ? (
                   <tr>
-                    <td colSpan="5" className="manage-clinic-department__empty">
+                    <td colSpan="4" className="manage-clinic-department__empty">
                       Vui lòng chọn cơ sở để tải danh sách khoa.
                     </td>
                   </tr>
                 ) : loading ? (
                   <tr>
-                    <td colSpan="5" className="manage-clinic-department__empty">
+                    <td colSpan="4" className="manage-clinic-department__empty">
                       Đang tải danh sách khoa...
                     </td>
                   </tr>
@@ -386,9 +382,6 @@ class ManageClinicDepartment extends Component {
                     <tr key={department.id}>
                       <td>{department.id}</td>
                       <td className="manage-clinic-department__name">{department.specialtyName}</td>
-                      <td className="manage-clinic-department__description">
-                        {department.description || "Chưa có mô tả"}
-                      </td>
                       <td>
                         <div className="form-check form-switch d-inline-flex justify-content-center">
                           <input
@@ -415,7 +408,7 @@ class ManageClinicDepartment extends Component {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="manage-clinic-department__empty">
+                    <td colSpan="4" className="manage-clinic-department__empty">
                       Cơ sở này chưa có khoa nào.
                     </td>
                   </tr>

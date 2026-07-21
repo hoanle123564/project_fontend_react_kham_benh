@@ -58,16 +58,6 @@ class ClinicDepartmentModal extends Component {
               {errors.specialtyId && <div className="error-text">{errors.specialtyId}</div>}
             </div>
 
-            <div className="col-md-12 mb-3">
-              <label className="form-label">Mô tả</label>
-              <textarea
-                className="form-control"
-                rows="4"
-                value={formData.description}
-                onChange={(event) => onChange("description", event.target.value)}
-                placeholder="Mô tả phạm vi hoạt động hoặc lưu ý của khoa"
-              />
-            </div>
 
             <div className="col-md-12">
               <label className="form-label d-block">Hiển thị</label>

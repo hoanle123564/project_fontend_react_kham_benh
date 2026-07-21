@@ -32,7 +32,6 @@ const APPOINTMENT_TYPES = [
   { value: "AT2", vi: "Lịch tư vấn trực tuyến", en: "Online" },
 ];
 
-const DEFAULT_MAX_BOOKING_AHEAD_DAYS = 30;
 const PROJECT_TIME_ZONE = "Asia/Ho_Chi_Minh";
 
 const emptyForm = () => ({
@@ -44,11 +43,7 @@ const emptyForm = () => ({
   endTime: "11:00",
   slotDurationMinutes: 30,
   capacity: 1,
-  minBookingNoticeDays: 0,
-  maxBookingAheadDays: DEFAULT_MAX_BOOKING_AHEAD_DAYS,
   price: "",
-  discountPercent: 0,
-  isFullDay: false,
   isActive: 1,
 });
 
@@ -167,7 +162,6 @@ class ScheduleRuleManager extends Component {
       ruleType,
       appointmentTypeId: "AT1",
       isActive: 1,
-      isFullDay: false,
     };
 
     if (ruleType === "OFF") {
@@ -265,7 +259,6 @@ class ScheduleRuleManager extends Component {
     const isOff = activeTab === "OFF";
     const startTime = toTimeInput(form.startTime);
     const endTime = toTimeInput(form.endTime);
-    const isFullDay = isOff && startTime === "00:00" && endTime === "23:59";
     const appointmentTypeId =
       isOff && form.appointmentTypeId === "ALL" ? null : form.appointmentTypeId;
 
@@ -276,20 +269,11 @@ class ScheduleRuleManager extends Component {
       weekday: activeTab === "FIXED" ? Number(form.weekday) : null,
       date: activeTab === "FIXED" ? null : form.date,
       appointmentTypeId: isOff ? null : appointmentTypeId,
-      startTime: isFullDay ? "00:00" : startTime,
-      endTime: isFullDay ? "23:59" : endTime,
+      startTime,
+      endTime,
       slotDurationMinutes: isOff ? null : Number(form.slotDurationMinutes),
       capacity: isOff ? null : Number(form.capacity),
-      minBookingNoticeDays: Number(form.minBookingNoticeDays),
-      maxBookingAheadDays:
-        form.maxBookingAheadDays === "" ||
-          form.maxBookingAheadDays === null ||
-          form.maxBookingAheadDays === undefined
-          ? DEFAULT_MAX_BOOKING_AHEAD_DAYS
-          : Number(form.maxBookingAheadDays),
       price: form.price === "" ? null : Number(form.price),
-      discountPercent: Number(form.discountPercent) || 0,
-      isFullDay: isFullDay ? 1 : 0,
       isActive: Number(form.isActive) ? 1 : 0,
       ...override,
     };
@@ -345,11 +329,7 @@ class ScheduleRuleManager extends Component {
         endTime: toTimeInput(rule.endTime),
         slotDurationMinutes: rule.slotDurationMinutes || 30,
         capacity: rule.capacity || 1,
-        minBookingNoticeDays: rule.minBookingNoticeDays || 0,
-        maxBookingAheadDays: rule.maxBookingAheadDays || 30,
         price: rule.price === null || rule.price === undefined ? "" : rule.price,
-        discountPercent: rule.discountPercent || 0,
-        isFullDay: Number(rule.isFullDay) === 1,
         isActive: rule.isActive,
       },
     });
@@ -408,8 +388,8 @@ class ScheduleRuleManager extends Component {
       } else if (startMinutes !== null && endMinutes !== null && duration > endMinutes - startMinutes) {
         errors.slotDurationMinutes = "Thời lượng slot phải tạo được ít nhất một slot hoàn chỉnh";
       }
-      if (price === null || !Number.isInteger(price) || price < 0) {
-        errors.price = "Phí khám phải là số nguyên lớn hơn hoặc bằng 0";
+      if (!Number.isInteger(price) || price <= 0) {
+        errors.price = "Phí khám phải là số nguyên lớn hơn 0";
       }
     }
 
@@ -518,14 +498,7 @@ class ScheduleRuleManager extends Component {
         endTime: toTimeInput(rule.endTime),
         slotDurationMinutes: rule.slotDurationMinutes || "",
         capacity: rule.capacity || 1,
-        minBookingNoticeDays: rule.minBookingNoticeDays || 0,
-        maxBookingAheadDays:
-          rule.maxBookingAheadDays === null || rule.maxBookingAheadDays === undefined
-            ? DEFAULT_MAX_BOOKING_AHEAD_DAYS
-            : rule.maxBookingAheadDays,
         price: rule.price === null || rule.price === undefined ? "" : rule.price,
-        discountPercent: rule.discountPercent || 0,
-        isFullDay: Number(rule.isFullDay) === 1,
         isActive: Number(rule.isActive) ? 1 : 0,
       },
     });
@@ -703,14 +676,7 @@ class ScheduleRuleManager extends Component {
       endTime: toTimeInput(rule.endTime),
       slotDurationMinutes: rule.slotDurationMinutes || 30,
       capacity: rule.capacity || 1,
-      minBookingNoticeDays: rule.minBookingNoticeDays || 0,
-      maxBookingAheadDays:
-        rule.maxBookingAheadDays === null || rule.maxBookingAheadDays === undefined
-          ? DEFAULT_MAX_BOOKING_AHEAD_DAYS
-          : rule.maxBookingAheadDays,
       price: rule.price === null || rule.price === undefined ? "" : rule.price,
-      discountPercent: rule.discountPercent || 0,
-      isFullDay: false,
       isActive: Number(rule.isActive) ? 1 : 0,
     };
 
@@ -837,16 +803,7 @@ class ScheduleRuleManager extends Component {
     endTime: toTimeInput(slot.endTime),
     slotDurationMinutes: Number(slot.slotDurationMinutes) || 30,
     capacity: Number(slot.capacity) || 1,
-    minBookingNoticeDays: Number(slot.minBookingNoticeDays) || 0,
-    maxBookingAheadDays:
-      slot.maxBookingAheadDays === "" ||
-        slot.maxBookingAheadDays === null ||
-        slot.maxBookingAheadDays === undefined
-        ? DEFAULT_MAX_BOOKING_AHEAD_DAYS
-        : Number(slot.maxBookingAheadDays),
     price: slot.price === "" || slot.price === null || slot.price === undefined ? null : Number(slot.price),
-    discountPercent: Number(slot.discountPercent) || 0,
-    isFullDay: 0,
     isActive: Number(slot.isActive) ? 1 : 0,
     ...override,
   });
@@ -875,7 +832,7 @@ class ScheduleRuleManager extends Component {
         return false;
       }
 
-      if (price !== null && (!Number.isFinite(price) || price < 0)) {
+      if (!Number.isInteger(price) || price <= 0) {
         toast.error(`${dayLabel}: Phí khám không hợp lệ`);
         return false;
       }
@@ -1137,7 +1094,7 @@ class ScheduleRuleManager extends Component {
           Phí khám
           <input
             type="number"
-            min="0"
+            min="1"
             value={slot.price}
             placeholder="Phí khám"
             onChange={(event) => this.updateFixedDraftSlot(slot._key, "price", event.target.value)}
@@ -1331,7 +1288,7 @@ class ScheduleRuleManager extends Component {
               Phí khám
               <input
                 type="number"
-                min="0"
+                min="1"
                 value={fixedEditForm.price}
                 placeholder="Phí khám"
                 onChange={(event) => this.updateFixedEditForm("price", event.target.value)}
@@ -1528,7 +1485,7 @@ class ScheduleRuleManager extends Component {
               Phí khám <span>*</span>
               <input
                 type="number"
-                min="0"
+                min="1"
                 value={form.price}
                 disabled={disabled}
                 placeholder="Nhập phí khám"
@@ -1799,23 +1756,11 @@ class ScheduleRuleManager extends Component {
           </select>
         </label>
 
-        {isOff && (
-          <label className="schedule-rule-checkbox">
-            <input
-              type="checkbox"
-              checked={form.isFullDay}
-              onChange={(event) => this.updateForm("isFullDay", event.target.checked)}
-            />
-            Nghỉ cả ngày
-          </label>
-        )}
-
         <label>
           Giờ bắt đầu
           <input
             type="time"
             value={form.startTime}
-            disabled={isOff && form.isFullDay}
             onChange={(event) => this.updateForm("startTime", event.target.value)}
           />
         </label>
@@ -1825,7 +1770,6 @@ class ScheduleRuleManager extends Component {
           <input
             type="time"
             value={form.endTime}
-            disabled={isOff && form.isFullDay}
             onChange={(event) => this.updateForm("endTime", event.target.value)}
           />
         </label>
@@ -1853,44 +1797,13 @@ class ScheduleRuleManager extends Component {
             </label>
 
             <label>
-              Số ngày phải đặt khám trước
-              <input
-                type="number"
-                min="0"
-                value={form.minBookingNoticeDays}
-                onChange={(event) => this.updateForm("minBookingNoticeDays", event.target.value)}
-              />
-            </label>
-
-            <label>
-              Số ngày đặt khám xa nhất
-              <input
-                type="number"
-                min="0"
-                value={form.maxBookingAheadDays}
-                onChange={(event) => this.updateForm("maxBookingAheadDays", event.target.value)}
-              />
-            </label>
-
-            <label>
               Phí khám
               <input
                 type="number"
-                min="0"
+                min="1"
                 value={form.price}
-                placeholder="Dùng giá mặc định"
+                placeholder="Nhập phí khám"
                 onChange={(event) => this.updateForm("price", event.target.value)}
-              />
-            </label>
-
-            <label>
-              Giảm giá (%)
-              <input
-                type="number"
-                min="0"
-                max="100"
-                value={form.discountPercent}
-                onChange={(event) => this.updateForm("discountPercent", event.target.value)}
               />
             </label>
           </>
