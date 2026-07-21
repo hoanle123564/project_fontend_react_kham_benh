@@ -164,7 +164,8 @@
 
     table {
         width: 100%;
-        min-width: 980px;
+        min-width: 1290px;
+        table-layout: fixed;
         border-collapse: collapse;
     }
 
@@ -174,6 +175,39 @@
         border-bottom: 1px solid #e5eaf1;
         text-align: left;
         vertical-align: middle;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    th:nth-child(1),
+    td:nth-child(1) { width: 60px; }
+
+    th:nth-child(2),
+    td:nth-child(2) { width: 150px; }
+
+    th:nth-child(3),
+    td:nth-child(3) { width: 130px; }
+
+    th:nth-child(4),
+    td:nth-child(4) { width: 120px; }
+
+    th:nth-child(5),
+    td:nth-child(5) { width: 150px; }
+
+    th:nth-child(6),
+    td:nth-child(6) { width: 130px; }
+
+    th:nth-child(7),
+    td:nth-child(7) { width: 120px; }
+
+    th:nth-child(8),
+    td:nth-child(8) { width: 130px; }
+
+    th:nth-child(9),
+    td:nth-child(9) {
+        width: 280px;
+        overflow: visible;
     }
 
     th {
@@ -227,12 +261,16 @@
 
 .doctor-queue__patient {
     display: block;
+    max-width: 100%;
     padding: 0;
     border: 0;
     background: transparent;
     color: #0f766e;
     font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
     text-align: left;
+    white-space: nowrap;
 
     &:hover {
         text-decoration: underline;
@@ -241,9 +279,13 @@
 
 .doctor-queue__table-scroll small {
     display: block;
+    max-width: 100%;
     margin-top: 4px;
     color: #64748b;
     font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .doctor-queue__type-badge {

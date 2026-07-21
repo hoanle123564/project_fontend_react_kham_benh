@@ -557,8 +557,8 @@ class EditClinic extends Component {
             <div className="clinic-section-manager">
                 <div className="clinic-section-manager__inner">
                     <div className="clinic-section-manager__header">
-                        <h3>Section nội dung</h3>
-                        <div className="clinic-section-manager__actions">
+                        <h3>Nội dung trang cơ sở y tế</h3>
+                        <div className="clinic-section-manager__table-actions">
                             {isSectionOrderChanged && (
                                 <>
                                     <Button color="primary" onClick={this.handleSaveSectionOrder}>
@@ -689,29 +689,28 @@ class EditClinic extends Component {
 
     render() {
         return (
-            <>
-                <ClinicForm
-                    mode="EDIT"
-                    formData={this.state.formData}
-                    previewImg={this.state.previewImg}
-                    previewBannerImg={this.state.previewBannerImg}
-                    errors={this.state.errors}
-                    isSubmitting={this.state.isSubmitting}
-                    language={this.props.language}
-                    clinicTypeOptions={this.state.clinicTypeOptions}
-                    managerOptions={this.state.managerOptions}
-                    managerLocked={this.isDoctorRoute()}
-                    provinceOptions={this.state.provinceOptions}
-                    districtOptions={this.state.districtOptions}
-                    wardOptions={this.state.wardOptions}
-                    onInputChange={this.handleInputChange}
-                    onImageChange={this.handleImageChange}
-                    onRemoveImage={this.handleRemoveImage}
-                    onSubmit={this.handleSaveContent}
-                    onBack={this.handleBack}
-                />
+            <ClinicForm
+                mode="EDIT"
+                formData={this.state.formData}
+                previewImg={this.state.previewImg}
+                previewBannerImg={this.state.previewBannerImg}
+                errors={this.state.errors}
+                isSubmitting={this.state.isSubmitting}
+                language={this.props.language}
+                clinicTypeOptions={this.state.clinicTypeOptions}
+                managerOptions={this.state.managerOptions}
+                managerLocked={this.isDoctorRoute()}
+                provinceOptions={this.state.provinceOptions}
+                districtOptions={this.state.districtOptions}
+                wardOptions={this.state.wardOptions}
+                onInputChange={this.handleInputChange}
+                onImageChange={this.handleImageChange}
+                onRemoveImage={this.handleRemoveImage}
+                onSubmit={this.handleSaveContent}
+                onBack={this.handleBack}
+            >
                 {this.state.clinicId && this.renderSectionManager()}
-            </>
+            </ClinicForm>
         );
     }
 }

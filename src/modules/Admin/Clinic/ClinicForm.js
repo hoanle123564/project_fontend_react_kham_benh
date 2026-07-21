@@ -22,6 +22,7 @@ const ClinicForm = ({
     onSubmit,
     onBack,
     intl,
+    children,
 }) => {
     const isEditMode = mode === "EDIT";
     const t = (id, defaultMessage) => intl.formatMessage({ id, defaultMessage });
@@ -70,7 +71,13 @@ const ClinicForm = ({
                             ? t("manage-clinic.edit-title", "Edit clinic")
                             : t("manage-clinic.add-title", "Add clinic")}
                     </h3>
-                    <Button color="secondary" onClick={onBack}>
+                    <Button
+                        color="secondary"
+                        outline
+                        size="md"
+                        className="clinic-form__header-back"
+                        onClick={onBack}
+                    >
                         <i className="fa-solid fa-arrow-left me-2"></i>
                         {t("manage-clinic.back", "Back")}
                     </Button>
@@ -216,18 +223,18 @@ const ClinicForm = ({
                                     </select>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="clinic-form__actions">
-                            <Button color="secondary" onClick={onBack}>
-                                {t("manage-clinic.cancel", "Cancel")}
-                            </Button>
-                            <Button className="form-clinic-btn" onClick={onSubmit} disabled={isSubmitting}>
-                                <i className="fa-solid fa-floppy-disk me-2"></i>
-                                {isEditMode
-                                    ? t("manage-clinic.update", "Update")
-                                    : t("manage-clinic.save", "Save")}
-                            </Button>
+                            <div className="clinic-form__actions">
+                                <Button color="secondary" onClick={onBack}>
+                                    {t("manage-clinic.cancel", "Cancel")}
+                                </Button>
+                                <Button className="form-clinic-btn" onClick={onSubmit} disabled={isSubmitting}>
+                                    <i className="fa-solid fa-floppy-disk me-2"></i>
+                                    {isEditMode
+                                        ? t("manage-clinic.update", "Update")
+                                        : t("manage-clinic.save", "Save")}
+                                </Button>
+                            </div>
                         </div>
                     </div>
 
@@ -252,6 +259,7 @@ const ClinicForm = ({
                         })}
                     </aside>
                 </div>
+                {children}
             </div>
         </div>
     );

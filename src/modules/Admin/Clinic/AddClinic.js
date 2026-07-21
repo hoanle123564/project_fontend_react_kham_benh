@@ -20,7 +20,6 @@ class AddClinic extends Component {
         super(props);
         this.state = {
             formData: getDefaultClinicFormData(),
-            clinicTypeOptions: [],
             managerOptions: [],
             provinceOptions: [],
             districtOptions: [],
@@ -69,14 +68,12 @@ class AddClinic extends Component {
 
     loadFormOptions = async () => {
         try {
-            const [clinicTypeRes, provinceRes, userRes] = await Promise.all([
-                getLookUp("CLINIC_TYPE"),
+            const [provinceRes, userRes] = await Promise.all([
                 getLookUp("PROVINCE"),
                 getAllUser("ALL"),
             ]);
 
             this.setState({
-                clinicTypeOptions: buildLookupOptions(clinicTypeRes?.data || [], this.props.language),
                 provinceOptions: buildLookupOptions(provinceRes?.data || [], this.props.language),
                 managerOptions: buildManagerOptions(userRes?.users || []),
             });
@@ -222,7 +219,6 @@ class AddClinic extends Component {
                 errors={this.state.errors}
                 isSubmitting={this.state.isSubmitting}
                 language={this.props.language}
-                clinicTypeOptions={this.state.clinicTypeOptions}
                 managerOptions={this.state.managerOptions}
                 provinceOptions={this.state.provinceOptions}
                 districtOptions={this.state.districtOptions}
