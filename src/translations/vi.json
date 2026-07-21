@@ -83,6 +83,7 @@
       "medical-record": "Hồ sơ bệnh án",
       "manage-clinic-department": "Quản lý khoa",
       "manage-booking": "Quản lý lịch hẹn",
+      "manage-refund": "Quản lý hoàn tiền",
       "manage-review": "Quản lý đánh giá"
     },
     "doctor": {
@@ -116,7 +117,8 @@
       "manage-doctor": "Quản lý bác sĩ",
       "schedule": "Lịch làm việc",
       "appointments": "Lịch đặt khám",
-      "departments": "Quản lý khoa"
+      "departments": "Quản lý khoa",
+      "multiple-clinics-error": "Tài khoản đang quản lý nhiều cơ sở y tế. Vui lòng chọn cơ sở từ danh sách."
     },
     "patient": {
       "account": "Tài khoản",
@@ -195,7 +197,7 @@
     "book-and-pay": "Đặt lịch và thanh toán",
     "submitting": "Đang xử lý...",
     "terms": "Bằng cách nhấn nút xác nhận, bạn đã đồng ý với các điều khoản và điều kiện đặt khám.",
-    "login-required": "Vui lòng đăng nhập để chọn và xác nhận hồ sơ bệnh nhân.",
+    "login-required": "Bạn cần đăng nhập để đặt lịch khám.",
     "login": "Đăng nhập",
     "patient-not-found": "Không tìm thấy hồ sơ bệnh nhân.",
     "doctor-not-found": "Không tìm thấy thông tin bác sĩ.",
@@ -205,6 +207,10 @@
     "submit-error": "Không thể đặt lịch khám.",
     "submit-success": "Đặt lịch thành công.",
     "payment-not-configured": "SePay chưa được cấu hình. Lịch trực tuyến chưa thể được đặt.",
+    "payment-success": "Thanh toán thành công",
+    "payment-check": "Kiểm tra trạng thái thanh toán",
+    "payment-checking": "Đang kiểm tra thanh toán...",
+    "payment-check-error": "Không thể kiểm tra trạng thái thanh toán.",
     "profile-save-error": "Không thể cập nhật hồ sơ.",
     "profile-save-success": "Đã cập nhật hồ sơ."
   },
@@ -411,7 +417,6 @@
       "error": "Không tải được danh sách lịch hẹn.",
       "cancelError": "Không hủy được lịch hẹn.",
       "cancelSuccess": "Hủy lịch thành công.",
-      "cancelReasonPrompt": "Lý do hủy lịch (không bắt buộc):",
       "retry": "Thử lại",
       "date": "Ngày",
       "queue": "STT",
@@ -442,6 +447,10 @@
       "bookingCode": "Mã phiếu",
       "appointmentDate": "Ngày khám",
       "appointmentTime": "Giờ khám",
+      "paymentStatus": "Trạng thái thanh toán",
+      "paymentPaid": "Đã thanh toán",
+      "paymentAmount": "Số tiền thanh toán",
+      "paymentCode": "Mã thanh toán",
       "patientName": "Họ tên",
       "medicalCode": "Mã bệnh nhân",
       "dateOfBirth": "Ngày sinh",
@@ -856,9 +865,6 @@
     "updateError": "Không thể cập nhật trạng thái lịch hẹn.",
     "updateSuccess": "Cập nhật trạng thái lịch hẹn thành công.",
     "confirm": "Xác nhận cập nhật trạng thái lịch hẹn?",
-    "cancelReason": "Lý do hủy lịch (không bắt buộc):",
-    "rejectReason": "Lý do từ chối (không bắt buộc):",
-    "noShowNote": "Ghi chú bệnh nhân không đến (không bắt buộc):",
     "resultCount": "{count} lịch hẹn",
     "page": "Trang",
     "of": "trên",
@@ -923,7 +929,6 @@
     "editReply": "Chỉnh sửa phản hồi",
     "reply": "Phản hồi",
     "doctorReply": "Phản hồi của bác sĩ",
-    "hiddenReason": "Lý do ẩn",
     "visible": "Đang hiển thị",
     "hidden": "Đã ẩn",
     "index": "STT",
@@ -952,6 +957,20 @@
     "of": "trên",
     "previous": "Trước",
     "next": "Sau"
+  },
+  "refund-management": {
+    "title": "Hoàn tiền thủ công",
+    "loading": "Đang tải yêu cầu hoàn tiền...",
+    "patient": "Bệnh nhân",
+    "amount": "Số tiền",
+    "account": "Tài khoản hoàn tiền",
+    "reason": "Lý do",
+    "status": "Trạng thái",
+    "action": "Thao tác",
+    "confirm": "Xác nhận đã hoàn",
+    "referencePrompt": "Nhập mã giao dịch hoàn tiền",
+    "confirmed": "Đã xác nhận hoàn tiền.",
+    "accountMissing": "Thiếu tài khoản bệnh nhân"
   },
   "notifications": {
     "open": "Mở thông báo",

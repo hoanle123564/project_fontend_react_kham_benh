@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
+import { getDetailClinicById } from '../../services/userService';
 import './breadcrumb.scss';
 
 // ============================================================
@@ -89,6 +91,44 @@ const getLabel = (pathname, lang) => {
 };
 
 class Breadcrumb extends Component {
+    state = {
+        doctorClinicName: '',
+    };
+
+    componentDidMount() {
+        this.loadDoctorClinicName();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.location.pathname !== this.props.location.pathname) {
+            this.loadDoctorClinicName();
+        }
+    }
+
+    isDoctorClinicDetail = (pathname) => /^\/doctor\/manage-clinic\/[^/]+$/.test(pathname);
+
+    loadDoctorClinicName = async () => {
+        const pathname = this.props.location.pathname;
+        if (!this.isDoctorClinicDetail(pathname)) {
+            if (this.state.doctorClinicName) {
+                this.setState({ doctorClinicName: '' });
+            }
+            return;
+        }
+
+        const clinicId = pathname.split('/').pop();
+        this.setState({ doctorClinicName: '' });
+
+        try {
+            const res = await getDetailClinicById(clinicId, 'ALL', { managedOnly: true });
+            const clinic = Array.isArray(res?.data) ? res.data[0] : res?.data;
+            if (this.props.location.pathname === pathname && res?.errCode === 0 && clinic?.name) {
+                this.setState({ doctorClinicName: clinic.name });
+            }
+        } catch {
+            // Keep the generic route label when the clinic cannot be resolved.
+        }
+    };
 
     // Xác định variant từ pathname
     getVariant(pathname) {
@@ -109,7 +149,12 @@ class Breadcrumb extends Component {
             return null;
         }
 
-        const currentLabel = getLabel(pathname, lang);
+        const currentLabel = this.isDoctorClinicDetail(pathname)
+            ? this.state.doctorClinicName || this.props.intl.formatMessage({
+                id: 'menu.admin.manage-clinic',
+                defaultMessage: 'Manage Clinic',
+            })
+            : getLabel(pathname, lang);
 
         return [
             { label: rootLabel, path: rootPath, isActive: false },
@@ -157,4 +202,4 @@ const mapStateToProps = (state) => ({
     language: state.app.language,
 });
 
-export default withRouter(connect(mapStateToProps)(Breadcrumb));
+export default withRouter(connect(mapStateToProps)(injectIntl(Breadcrumb)));

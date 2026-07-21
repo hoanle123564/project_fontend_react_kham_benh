@@ -296,6 +296,9 @@ const postPatientBooking = (data) => {
   return patientAxios.post("/api/patient-book-appointment", data);
 };
 
+const getBookingPayment = (bookingId) =>
+  patientAxios.get(`/api/bookings/${encodeURIComponent(bookingId)}/payment`);
+
 // Xác nhận đặt lịch khám bệnh
 const VerifyPatientBooking = (data) => {
   return axios.post("/api/verify-book-appointment", data);
@@ -556,6 +559,9 @@ const getAllBooking = () => {
 };
 
 const getAdminBookingManagement = () => adminAxios.get("/api/admin/bookings");
+const getAdminRefunds = () => adminAxios.get("/api/admin/refunds");
+const confirmAdminRefund = (refundId, refundTransactionId) =>
+  adminAxios.post(`/api/admin/refunds/${encodeURIComponent(refundId)}/confirm`, { refundTransactionId });
 const updateAdminBookingStatus = (bookingId, data) =>
   adminAxios.patch(`/api/admin/bookings/${encodeURIComponent(bookingId)}/status`, data);
 const getDoctorBookingManagement = () => doctorAxios.get("/api/doctor/bookings");
@@ -644,6 +650,7 @@ export {
   updateDoctorScheduleRule,
   deleteDoctorScheduleRule,
   postPatientBooking,
+  getBookingPayment,
   VerifyPatientBooking,
   postSaveSpecialty,
   getAllSpecialty,
@@ -720,6 +727,8 @@ export {
   collectVisitPayment,
   getAllBooking,
   getAdminBookingManagement,
+  getAdminRefunds,
+  confirmAdminRefund,
   updateAdminBookingStatus,
   getDoctorBookingManagement,
   updateDoctorBookingStatus,

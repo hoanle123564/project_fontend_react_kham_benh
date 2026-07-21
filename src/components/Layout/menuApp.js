@@ -30,6 +30,11 @@ export const adminMenu = [
         link: "/system/manage-booking",
       },
       {
+        name: "menu.admin.manage-refund",
+        icon: "bi bi-cash-stack",
+        link: "/system/manage-refund",
+      },
+      {
         name: "menu.admin.manage-review",
         icon: "bi bi-star",
         link: "/system/manage-review",

@@ -25,6 +25,7 @@ import EditProfile from "../modules/Admin/ManageUser/EditProfile";
 import DoctorMedicalRecords from "../modules/Doctor/MedicalRecords/DoctorMedicalRecords";
 import BookingManagement from "../modules/Booking/BookingManagement";
 import ReviewManagement from "../modules/Review/ReviewManagement";
+import RefundManagement from "../modules/Payment/RefundManagement";
 
 class System extends Component {
   state = {
@@ -61,6 +62,7 @@ class System extends Component {
               <Route path="/system/manage-schedule" component={ManageSchedule} />
               <Route path="/system/list-appointment" component={ListAppointment} />
               <Route path="/system/manage-booking" render={(props) => <BookingManagement {...props} adminMode />} />
+              <Route path="/system/manage-refund" component={RefundManagement} />
               <Route path="/system/manage-review" render={(props) => <ReviewManagement {...props} adminMode />} />
               <Route
                 path="/system/medical-record/:bookingId"

@@ -149,23 +149,10 @@ class BookingManagement extends Component {
       },
     }));
 
-  getReasonPrompt = (statusId) => {
-    if (statusId === "S6")
-      return this.getText("rejectReason", "Reason for rejection (optional):");
-    if (statusId === "S7")
-      return this.getText("noShowNote", "No-show note (optional):");
-    if (["S4", "S5"].includes(statusId))
-      return this.getText("cancelReason", "Cancellation reason (optional):");
-    return null;
-  };
-
   updateStatus = async (booking, requestedStatusId = "") => {
     const statusId =
       requestedStatusId || this.state.selectedStatusByBooking[booking.id];
     if (!statusId) return;
-    const prompt = this.getReasonPrompt(statusId);
-    const note = prompt ? window.prompt(prompt) : null;
-    if (prompt && note === null) return;
     if (
       !window.confirm(this.getText("confirm", "Confirm booking status update?"))
     )
@@ -176,7 +163,7 @@ class BookingManagement extends Component {
       : updateDoctorBookingStatus;
     this.setState({ updatingId: booking.id, errorMessage: "" });
     try {
-      const response = await updateBooking(booking.id, { statusId, note });
+      const response = await updateBooking(booking.id, { statusId });
       if (response?.errCode !== 0) {
         this.setState({
           updatingId: null,
@@ -501,11 +488,7 @@ class BookingManagement extends Component {
                         </td>
                         {this.isAdmin() && (
                           <td className="booking-management__note">
-                            {booking.rejectReason ||
-                              booking.cancelReason ||
-                              booking.noShowNote ||
-                              booking.reason ||
-                              "-"}
+                            {booking.reason || "-"}
                           </td>
                         )}
                         <td>{this.renderActions(booking)}</td>

@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { injectIntl } from "react-intl";
+import { toast } from "react-toastify";
 
 import { adminMenu, clinicManagerMenu, doctorClinicManagerMenu, doctorMenu } from "./menuApp";
 import Navigator from "../Navigator";
@@ -64,7 +66,28 @@ class SlideBar extends Component {
 
       try {
         const res = await getAllClinic({ managedOnly: true });
-        if (this.props.doctorToken === token && res?.errCode === 0 && res.data?.length > 0) {
+        if (this.props.doctorToken !== token || res?.errCode !== 0 || !Array.isArray(res.data)) {
+          return;
+        }
+
+        if (res.data.length === 1 && res.data[0]?.id) {
+          const clinicMenu = doctorClinicManagerMenu.map((group) => ({
+            ...group,
+            menus: group.menus.map((item) =>
+              item.link === "/doctor/manage-clinic"
+                ? { ...item, link: `/doctor/manage-clinic/${res.data[0].id}` }
+                : item
+            ),
+          }));
+          this.setState({ menuApp: [...doctorMenu, ...clinicMenu] });
+          return;
+        }
+
+        if (res.data.length > 1) {
+          toast.error(this.props.intl.formatMessage({
+            id: "menu.clinic-manager.multiple-clinics-error",
+            defaultMessage: "Your account is assigned to multiple clinics. Please choose a clinic from the list.",
+          }));
           this.setState({ menuApp: [...doctorMenu, ...doctorClinicManagerMenu] });
         }
       } catch {
@@ -146,4 +169,4 @@ const mapDispatchToProps = (dispatch) => ({
   doctorLogout: () => dispatch({ type: "DOCTOR_LOGOUT" }),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(SlideBar);
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(SlideBar));

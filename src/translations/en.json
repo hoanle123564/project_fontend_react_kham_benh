@@ -82,6 +82,7 @@
       "medical-record": "Medical records",
       "manage-clinic-department": "Manage departments",
       "manage-booking": "Booking management",
+      "manage-refund": "Refund management",
       "manage-review": "Review management"
     },
     "doctor": {
@@ -115,7 +116,8 @@
       "manage-doctor": "Manage doctors",
       "schedule": "Schedule",
       "appointments": "Appointments",
-      "departments": "Manage departments"
+      "departments": "Manage departments",
+      "multiple-clinics-error": "Your account is assigned to multiple clinics. Please choose a clinic from the list."
     },
     "patient": {
       "account": "Patient account",
@@ -194,7 +196,7 @@
     "book-and-pay": "Book and pay",
     "submitting": "Processing...",
     "terms": "By confirming, you agree to the appointment terms and conditions.",
-    "login-required": "Please sign in to select and confirm the patient profile.",
+    "login-required": "You need to sign in to book an appointment.",
     "login": "Sign in",
     "patient-not-found": "Patient profile was not found.",
     "doctor-not-found": "Doctor information was not found.",
@@ -204,6 +206,10 @@
     "submit-error": "Could not book the appointment.",
     "submit-success": "Appointment booked successfully.",
     "payment-not-configured": "SePay is not configured, so an online appointment cannot be booked yet.",
+    "payment-success": "Payment successful",
+    "payment-check": "Check payment status",
+    "payment-checking": "Checking payment...",
+    "payment-check-error": "Could not check payment status.",
     "profile-save-error": "Could not update the profile.",
     "profile-save-success": "Profile updated."
   },
@@ -478,7 +484,6 @@
       "error": "Could not load appointments.",
       "cancelError": "Could not cancel appointment.",
       "cancelSuccess": "Appointment cancelled successfully.",
-      "cancelReasonPrompt": "Cancellation reason (optional):",
       "retry": "Retry",
       "date": "Date",
       "queue": "Queue",
@@ -509,6 +514,10 @@
       "bookingCode": "Booking code",
       "appointmentDate": "Appointment date",
       "appointmentTime": "Appointment time",
+      "paymentStatus": "Payment status",
+      "paymentPaid": "Paid",
+      "paymentAmount": "Payment amount",
+      "paymentCode": "Payment code",
       "patientName": "Patient name",
       "medicalCode": "Patient code",
       "dateOfBirth": "Date of birth",
@@ -653,9 +662,6 @@
     "updateError": "Could not update booking status.",
     "updateSuccess": "Booking status updated successfully.",
     "confirm": "Confirm booking status update?",
-    "cancelReason": "Cancellation reason (optional):",
-    "rejectReason": "Reason for rejection (optional):",
-    "noShowNote": "Patient no-show note (optional):",
     "resultCount": "{count} bookings",
     "page": "Page",
     "of": "of",
@@ -720,7 +726,6 @@
     "editReply": "Edit reply",
     "reply": "Reply",
     "doctorReply": "Doctor reply",
-    "hiddenReason": "Hidden reason",
     "visible": "Visible",
     "hidden": "Hidden",
     "index": "No.",
@@ -749,6 +754,20 @@
     "of": "of",
     "previous": "Previous",
     "next": "Next"
+  },
+  "refund-management": {
+    "title": "Manual refunds",
+    "loading": "Loading refunds...",
+    "patient": "Patient",
+    "amount": "Amount",
+    "account": "Refund account",
+    "reason": "Reason",
+    "status": "Status",
+    "action": "Action",
+    "confirm": "Confirm refunded",
+    "referencePrompt": "Enter the refund bank transaction reference",
+    "confirmed": "Refund confirmed.",
+    "accountMissing": "Patient account is incomplete"
   },
   "notifications": {
     "open": "Open notifications",

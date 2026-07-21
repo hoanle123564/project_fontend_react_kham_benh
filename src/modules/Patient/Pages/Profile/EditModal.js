@@ -53,6 +53,9 @@ class EditModal extends Component {
         bloodType: "",
         occupation: "",
         allergies: "",
+        refundBankName: "",
+        refundAccountName: "",
+        refundAccountNumber: "",
         provinceOptions: [],
         districtOptions: [],
         wardOptions: [],
@@ -90,6 +93,9 @@ class EditModal extends Component {
             bloodType: user.bloodType || "",
             occupation: user.occupation || "",
             allergies: user.allergies || "",
+            refundBankName: user.refundBankName || "",
+            refundAccountName: user.refundAccountName || "",
+            refundAccountNumber: user.refundAccountNumber || "",
             errors: {},
         });
     };
@@ -244,6 +250,9 @@ class EditModal extends Component {
             bloodType,
             occupation,
             allergies,
+            refundBankName,
+            refundAccountName,
+            refundAccountNumber,
         } = this.state;
 
         this.props.onSave({
@@ -263,6 +272,9 @@ class EditModal extends Component {
             bloodType,
             occupation,
             allergies,
+            refundBankName,
+            refundAccountName,
+            refundAccountNumber,
         });
     };
 
@@ -406,6 +418,14 @@ class EditModal extends Component {
                     <div className="row mb-3">
                         {this.renderInput("occupation", this.getText("occupation"))}
                         {this.renderInput("allergies", this.getText("allergies"), { multiline: true })}
+                    </div>
+
+                    <div className="row mb-3">
+                        {this.renderInput("refundBankName", this.getText("refundBankName", "Refund bank"))}
+                        {this.renderInput("refundAccountName", this.getText("refundAccountName", "Refund account holder"))}
+                    </div>
+                    <div className="row mb-3">
+                        {this.renderInput("refundAccountNumber", this.getText("refundAccountNumber", "Refund account number"), { className: "col-md-12" })}
                     </div>
 
                     <div className="row mb-4 align-items-center">
