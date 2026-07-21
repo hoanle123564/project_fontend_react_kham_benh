@@ -246,6 +246,23 @@
         }
     }
 
+    .booking-modal__payment {
+        margin-top: 20px;
+        text-align: center;
+
+        img {
+            display: block;
+            width: min(100%, 320px);
+            margin: 12px auto;
+            border-radius: 8px;
+        }
+
+        p {
+            margin: 8px 0;
+            overflow-wrap: anywhere;
+        }
+    }
+
     .booking-modal__terms {
         margin: 12px 0 0;
         color: #6b7280;
@@ -305,14 +322,29 @@
     .booking-modal__login-required {
         background: #f8fafc;
         color: #374151;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
 
         p {
             margin: 0 0 10px;
         }
 
-        a {
-            color: $colormain;
+        .booking-modal__login-button {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 6px;
+            background: $common-btn-confirm;
+            color: #fff !important;
             font-weight: 600;
+            text-decoration: none;
+
+            &:hover,
+            &:focus-visible {
+                background: darken($common-btn-confirm, 8%);
+                color: #fff;
+                text-decoration: none;
+            }
         }
     }
 

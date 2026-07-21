@@ -2,7 +2,7 @@ import locationHelperBuilder from "redux-auth-wrapper/history4/locationHelper";
 import { connectedRouterRedirect } from "redux-auth-wrapper/history4/redirect";
 import { jwtDecode } from "jwt-decode";
 
-const isTokenValid = (token) => {
+export const isTokenValid = (token) => {
     if (!token) return false;
 
     try {

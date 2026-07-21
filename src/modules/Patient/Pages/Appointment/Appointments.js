@@ -35,8 +35,6 @@ class Appointments extends Component {
             reviewError: "",
             submittingReview: false,
         };
-        this.reminderToastKeys = new Set();
-        this.hasLoadedAppointments = false;
         this.appointmentPollTimer = null;
         this.isComponentMounted = false;
     }
@@ -76,7 +74,6 @@ class Appointments extends Component {
             if (!this.isComponentMounted) return;
 
             if (Array.isArray(actionResult?.data)) {
-                this.handleReminderToasts(actionResult.data);
                 this.setState({
                     appointments: actionResult.data,
                     isLoading: false,
@@ -97,32 +94,11 @@ class Appointments extends Component {
         }
     };
 
-    handleReminderToasts = (appointments = []) => {
-        const keys = appointments
-            .filter((item) => item.inAppNotifiedAt)
-            .map((item) => `${item.id}:${item.inAppNotifiedAt}`);
-
-        if (!this.hasLoadedAppointments) {
-            keys.forEach((key) => this.reminderToastKeys.add(key));
-            this.hasLoadedAppointments = true;
-            return;
-        }
-
-        keys.forEach((key) => {
-            if (!this.reminderToastKeys.has(key)) {
-                this.reminderToastKeys.add(key);
-                toast.info(this.getText("reminderToast"));
-            }
-        });
-    };
-
     handleCancel = async (bookingId) => {
-        const cancelReason = window.prompt(this.getText("cancelReasonPrompt", "Lý do hủy lịch (không bắt buộc):"));
-        if (cancelReason === null) return;
         this.setState({ cancelingId: bookingId, errorMessage: "" });
 
         try {
-            const res = await this.props.CancelBooking({ BookingId: bookingId, cancelReason });
+            const res = await this.props.CancelBooking({ BookingId: bookingId });
 
             if (res?.errCode === 0) {
                 await this.loadAppointments();
@@ -184,16 +160,10 @@ class Appointments extends Component {
         return <span className="queue-number">{queueNumber}</span>;
     };
 
-    renderReminderBadge = (item) => {
-        if (!item?.inAppNotifiedAt) return null;
-
-        return (
-            <span className="appointment-reminder-badge">
-                <i className="fas fa-clock" aria-hidden="true"></i>
-                {this.getText("reminderBadge")}
-            </span>
-        );
-    };
+    getPaymentStatusLabel = (item = {}) =>
+        item.paymentStatus === "PAID"
+            ? this.getText("paymentPaid")
+            : item.paymentStatusVi || item.paymentStatusEn;
 
     getAppointmentTypeLabel = (item = {}) => {
         const fallbackKey = item.appointmentTypeId === "AT2" ? "typeOnline" : "typeInPerson";
@@ -573,7 +543,6 @@ class Appointments extends Component {
                     </div>
                     <div className="appointments-detail-status">
                         {this.renderStatus(item.statusId, item.statusVi, item.statusEn)}
-                        {this.renderReminderBadge(item)}
                     </div>
                 </div>
 
@@ -597,6 +566,9 @@ class Appointments extends Component {
                     {this.renderDetailRow("bookingCode", item.id)}
                     {this.renderDetailRow("appointmentDate", this.formatDate(item.date))}
                     {this.renderDetailRow("appointmentTime", this.formatTime(item))}
+                    {this.renderDetailRow("paymentStatus", this.getPaymentStatusLabel(item))}
+                    {item.paymentAmount && this.renderDetailRow("paymentAmount", `${Number(item.paymentAmount).toLocaleString("vi-VN")} VND`)}
+                    {item.paymentCode && this.renderDetailRow("paymentCode", item.paymentCode)}
                 </section>
 
                 <section className="appointments-section">
@@ -644,7 +616,6 @@ class Appointments extends Component {
                                 </div>
                                 <div className="appointments-list-item__meta">
                                     {this.renderStatus(item.statusId, item.statusVi, item.statusEn)}
-                                    {this.renderReminderBadge(item)}
                                     <span className={`appointment-type-badge ${item.appointmentTypeId || "AT1"}`}>
                                         {this.getAppointmentTypeLabel(item)}
                                     </span>

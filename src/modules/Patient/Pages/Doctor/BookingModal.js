@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import "./BookingModal.scss";
 import EditModal from "../Profile/EditModal";
 import { languages, path } from "../../../../utils";
+import { isTokenValid } from "../../../../hoc/authentication";
 import {
     getDetailDoctor,
     getPatientProfile,
@@ -16,7 +17,7 @@ import {
     postPatientBooking,
     updatePatientProfile,
 } from "../../../../services/userService";
-import { startOnlineBookingPayment } from "../../../../services/onlineBookingPaymentService";
+import { getOnlineBookingPayment, startOnlineBookingPayment } from "../../../../services/onlineBookingPaymentService";
 
 class BookingModal extends Component {
     state = {
@@ -31,6 +32,8 @@ class BookingModal extends Component {
         reason: "",
         errorMessage: "",
         submitError: "",
+        payment: null,
+        authRequired: false,
     };
 
     componentDidMount() {
@@ -44,6 +47,11 @@ class BookingModal extends Component {
         ) {
             this.loadBookingData();
         }
+        if (prevProps.isOpenModal && !this.props.isOpenModal) this.clearPaymentPolling();
+    }
+
+    componentWillUnmount() {
+        this.clearPaymentPolling();
     }
 
     getText = (key, defaultMessage) =>
@@ -54,6 +62,8 @@ class BookingModal extends Component {
 
     getErrorMessage = (error, fallback) =>
         error?.response?.data?.errMessage || error?.message || fallback;
+
+    isAuthError = (error) => [401, 403].includes(error?.response?.status);
 
     loadBookingData = async () => {
         const { ScheduleTime, profile, isLoggedIn } = this.props;
@@ -75,7 +85,10 @@ class BookingModal extends Component {
             errorMessage: "",
             submitError: "",
             schedule: null,
+            payment: null,
+            authRequired: false,
         });
+        this.paymentSucceeded = false;
 
         try {
             const [patientRes, doctorRes, scheduleRes] = await Promise.all([
@@ -106,9 +119,11 @@ class BookingModal extends Component {
                 isLoading: false,
             });
         } catch (error) {
+            const authRequired = this.isAuthError(error);
             this.setState({
                 isLoading: false,
-                errorMessage: this.getErrorMessage(
+                authRequired,
+                errorMessage: authRequired ? "" : this.getErrorMessage(
                     error,
                     this.getText("load-error", "Không thể tải thông tin đặt khám.")
                 ),
@@ -197,16 +212,14 @@ class BookingModal extends Component {
 
         try {
             if (schedule.appointmentTypeId === "AT2") {
-                await startOnlineBookingPayment({ scheduleId: schedule.id });
-                const submitError = this.getText(
-                    "payment-not-configured",
-                    "SePay chưa được cấu hình. Lịch trực tuyến chưa thể được đặt."
-                );
-                this.setState({
-                    isSubmitting: false,
-                    submitError,
+                const response = await startOnlineBookingPayment({
+                    scheduleId: schedule.id,
+                    reason: this.state.reason.trim() || null,
                 });
-                toast.info(submitError);
+                if (response?.errCode !== 0 || !response?.data?.payment) {
+                    throw new Error(response?.errMessage || this.getText("submit-error", "Unable to create payment."));
+                }
+                this.setState({ isSubmitting: false, payment: response.data.payment }, this.startPaymentPolling);
                 return;
             }
 
@@ -223,6 +236,11 @@ class BookingModal extends Component {
             this.setState({ reason: "", isSubmitting: false });
             this.toggleModal();
         } catch (error) {
+            if (this.isAuthError(error)) {
+                this.setState({ isSubmitting: false, submitError: "", authRequired: true });
+                return;
+            }
+
             const submitError = this.getErrorMessage(
                 error,
                 this.getText("submit-error", "Không thể đặt lịch khám.")
@@ -230,6 +248,65 @@ class BookingModal extends Component {
             this.setState({ isSubmitting: false, submitError });
             toast.error(submitError);
         }
+    };
+
+    clearPaymentPolling = () => {
+        window.clearTimeout(this.paymentPollTimer);
+        this.paymentPollTimer = null;
+    };
+
+    isTerminalPayment = (status) => ["PAID", "FAILED", "EXPIRED", "REFUNDED"].includes(status);
+
+    handlePaymentSuccess = (payment) => {
+        if (this.paymentSucceeded) return;
+        this.paymentSucceeded = true;
+        this.clearPaymentPolling();
+        this.setState({ payment });
+        toast.success(this.getText("payment-success", "Thanh toán thành công"));
+        window.setTimeout(() => {
+            if (this.props.isOpenModal) this.toggleModal();
+        }, 1200);
+    };
+
+    applyPaymentStatus = (payment) => {
+        if (payment.status === "PAID") return this.handlePaymentSuccess(payment);
+        this.setState({ payment });
+        if (this.isTerminalPayment(payment.status)) this.clearPaymentPolling();
+    };
+
+    checkPaymentStatus = async (isPolling = false) => {
+        const { payment } = this.state;
+        if (!payment?.bookingId || this.isCheckingPayment) return;
+        this.isCheckingPayment = true;
+        if (!isPolling) this.setState({ isCheckingPayment: true });
+        try {
+            const response = await getOnlineBookingPayment(payment.bookingId);
+            if (response?.errCode !== 0) throw new Error(response?.errMessage);
+            const updatedPayment = { ...payment, ...response.data };
+            this.applyPaymentStatus(updatedPayment);
+            return updatedPayment;
+        } catch (error) {
+            if (!isPolling) toast.error(this.getErrorMessage(error, this.getText("payment-check-error", "Unable to check payment.")));
+            this.clearPaymentPolling();
+            return null;
+        } finally {
+            this.isCheckingPayment = false;
+            if (!isPolling) this.setState({ isCheckingPayment: false });
+        }
+    };
+
+    startPaymentPolling = () => {
+        this.clearPaymentPolling();
+        const poll = async () => {
+            const { payment } = this.state;
+            if (!this.props.isOpenModal || !payment || this.isTerminalPayment(payment.status) || Date.parse(payment.expiresAt) <= Date.now()) {
+                this.clearPaymentPolling();
+                return;
+            }
+            const updatedPayment = await this.checkPaymentStatus(true);
+            if (updatedPayment && !this.paymentSucceeded && !this.isTerminalPayment(updatedPayment.status)) this.paymentPollTimer = window.setTimeout(poll, 4000);
+        };
+        this.paymentPollTimer = window.setTimeout(poll, 4000);
     };
 
     renderAvatar = (person, className) => {
@@ -314,7 +391,7 @@ class BookingModal extends Component {
     };
 
     renderBookingColumn = () => {
-        const { doctorProfile, patientProfile, schedule, isSubmitting } = this.state;
+        const { doctorProfile, patientProfile, schedule, isSubmitting, payment, isCheckingPayment } = this.state;
         const isOnline = schedule.appointmentTypeId === "AT2";
         const appointmentType = isOnline
             ? this.getText("online", "Khám trực tuyến")
@@ -350,7 +427,17 @@ class BookingModal extends Component {
                             </div>
                         ))}
                     </div>
-                    <button
+                    {payment ? <div className="booking-modal__payment" aria-live="polite">
+                        <h3>{this.getText("payment-title", "SePay payment")}</h3>
+                        {payment.qrCodeUrl && <img src={payment.qrCodeUrl} alt={this.getText("payment-qr", "SePay payment QR code")} />}
+                        <p>{this.getText("payment-code", "Transfer content")}: <strong>{payment.paymentCode}</strong></p>
+                        <p>{this.getText("payment-amount", "Amount")}: <strong>{this.formatMoney(payment.amount)}</strong></p>
+                        <p>{this.getText("payment-expires", "Expires")}: {moment(payment.expiresAt).format("DD/MM/YYYY HH:mm")}</p>
+                        {payment.status === "PENDING" && <p>{this.getText("payment-waiting", "Waiting for SePay confirmation. This button does not confirm payment.")}</p>}
+                        <button type="button" className="booking-modal__submit-button" onClick={() => this.checkPaymentStatus(false)} disabled={isCheckingPayment}>
+                            {isCheckingPayment ? this.getText("payment-checking", "Checking payment...") : this.getText("payment-check", "Check payment status")}
+                        </button>
+                    </div> : <button
                         type="button"
                         className="booking-modal__submit-button"
                         onClick={this.handleSubmit}
@@ -361,7 +448,7 @@ class BookingModal extends Component {
                             : isOnline
                                 ? this.getText("book-and-pay", "Đặt lịch và thanh toán")
                                 : this.getText("book", "Đặt lịch")}
-                    </button>
+                    </button>}
                 </div>
                 <p className="booking-modal__terms">
                     {this.getText("terms", "Bằng cách nhấn nút xác nhận, bạn đã đồng ý với các điều khoản và điều kiện đặt khám.")}
@@ -379,7 +466,8 @@ class BookingModal extends Component {
 
     render() {
         const { isOpenModal, isLoggedIn } = this.props;
-        const { isLoading, patientProfile, doctorProfile, schedule, errorMessage, submitError } = this.state;
+        const { isLoading, patientProfile, doctorProfile, schedule, errorMessage, submitError, authRequired } = this.state;
+        const loginRequired = !isLoggedIn || authRequired;
 
         return (
             <>
@@ -395,10 +483,20 @@ class BookingModal extends Component {
                         {this.getText("title", "Xác nhận đặt lịch khám")}
                     </ModalHeader>
                     <ModalBody>
-                        {!isLoggedIn ? (
+                        {loginRequired ? (
                             <div className="booking-modal__login-required">
-                                <p>{this.getText("login-required", "Vui lòng đăng nhập để chọn và xác nhận hồ sơ bệnh nhân.")}</p>
-                                <Link to={path.LOGIN} onClick={this.toggleModal}>
+                                <p>{this.getText("login-required", "Bạn cần đăng nhập để đặt lịch khám.")}</p>
+                                <Link
+                                    className="booking-modal__login-button"
+                                    to={{
+                                        pathname: path.LOGIN,
+                                        state: {
+                                            returnTo: this.props.returnTo,
+                                            resumeBooking: this.props.ScheduleTime,
+                                        },
+                                    }}
+                                    onClick={this.toggleModal}
+                                >
                                     {this.getText("login", "Đăng nhập")}
                                 </Link>
                             </div>
@@ -436,7 +534,7 @@ class BookingModal extends Component {
 
 const mapStateToProps = (state) => ({
     language: state.app.language,
-    isLoggedIn: state.patient.isLoggedIn,
+    isLoggedIn: state.patient.isLoggedIn && isTokenValid(state.patient.token),
 });
 
 const mapDispatchToProps = (dispatch) => ({

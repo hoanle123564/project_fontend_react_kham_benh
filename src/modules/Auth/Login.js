@@ -103,7 +103,18 @@ class Login extends Component {
 
             if (data.user.roleId === "R3") {
                 this.props.patientLoginSuccess(authPayload);
-                this.props.navigate("/home");
+                const { returnTo, resumeBooking } = this.props.location?.state || {};
+                const canResumeBooking =
+                    typeof returnTo === "string" &&
+                    /^\/detail-doctor\/[^/?#]+$/.test(returnTo) &&
+                    resumeBooking?.id &&
+                    resumeBooking?.date;
+
+                this.props.navigate(
+                    canResumeBooking
+                        ? { pathname: returnTo, state: { resumeBooking } }
+                        : "/home"
+                );
                 return;
             }
 

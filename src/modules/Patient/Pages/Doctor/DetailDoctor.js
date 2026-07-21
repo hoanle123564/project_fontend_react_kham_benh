@@ -119,13 +119,14 @@ class DetailDoctor extends Component {
                   doctorProfile={item}
                   appointmentTypeId={appointmentTypeId}
                   onAppointmentTypeChange={this.handleAppointmentTypeChange}
+                  returnTo={this.props.location?.pathname}
+                  resumeBooking={this.props.location?.state?.resumeBooking}
                 />
               </div>
               <div className="content-right-schedule">
                 <DoctorExtendInfo
                   doctorId={item.id}
                   doctorProfile={item}
-                  appointmentTypeId={appointmentTypeId}
                 />
               </div>
             </div>

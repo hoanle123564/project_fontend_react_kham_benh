@@ -23,6 +23,7 @@ class DoctorSchdule extends Component {
             isOpenMondalBooking: false,
             ScheduleTime: {}
         };
+        this.resumeAttempted = false;
     }
     getAllDay = () => {
         let arrDays = [];
@@ -68,6 +69,33 @@ class DoctorSchdule extends Component {
 
     getCurrentAppointmentTypeId = () => this.props.appointmentTypeId || this.state.appointmentTypeId || "AT1";
 
+    resumeBooking = async () => {
+        const { resumeBooking } = this.props;
+        const doctorId = this.props.doctorId || this.props.DoctorId;
+
+        if (this.resumeAttempted || !doctorId || !resumeBooking?.id || !resumeBooking?.date) return false;
+
+        this.resumeAttempted = true;
+        let schedule = resumeBooking;
+        let allAvailableTime = this.state.allAvailableTime;
+
+        try {
+            const response = await getScheduleDoctor(doctorId, resumeBooking.date);
+            if (response?.errCode === 0) {
+                allAvailableTime = response.data || [];
+                schedule = allAvailableTime.find((item) => Number(item.id) === Number(resumeBooking.id)) || resumeBooking;
+            }
+        } catch {}
+
+        this.handleAppointmentTypeChange(schedule.appointmentTypeId || "AT1");
+        this.setState({
+            allAvailableTime,
+            isOpenMondalBooking: true,
+            ScheduleTime: schedule,
+        });
+        return true;
+    };
+
     handleClickScheduleTime = (time) => {
         this.setState({
             isOpenMondalBooking: !this.state.isOpenMondalBooking,
@@ -80,7 +108,7 @@ class DoctorSchdule extends Component {
         this.setState({ allDays });
 
         const doctorId = this.props.doctorId || this.props.DoctorId;
-        if (doctorId) {
+        if (doctorId && !(await this.resumeBooking())) {
             let date = moment(allDays[0].value).format("YYYY-MM-DD");
             let res = await getScheduleDoctor(doctorId, date);
 
@@ -94,11 +122,17 @@ class DoctorSchdule extends Component {
         const doctorId = this.props.doctorId || this.props.DoctorId;
         const prevId = prevProps.doctorId || prevProps.DoctorId;
 
+        if (prevProps.resumeBooking !== this.props.resumeBooking) {
+            this.resumeAttempted = false;
+            if (await this.resumeBooking()) return;
+        }
+
         if (prevProps.language !== this.props.language) {
             this.setState({ allDays: this.getAllDay() });
         }
 
         if (doctorId && doctorId !== prevId) {
+            if (await this.resumeBooking()) return;
             let date = moment(this.state.allDays[0].value).format("YYYY-MM-DD");
             let res = await getScheduleDoctor(doctorId, date);
             if (res && res.errCode === 0) {
@@ -194,6 +228,7 @@ class DoctorSchdule extends Component {
                     }
                     ScheduleTime={this.state.ScheduleTime}
                     profile={this.props.doctorProfile}
+                    returnTo={this.props.returnTo}
                 />
             </>
         );

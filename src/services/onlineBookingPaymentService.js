@@ -1,3 +1,4 @@
-export const startOnlineBookingPayment = async () => ({
-  errCode: "PAYMENT_NOT_CONFIGURED",
-});
+import { getBookingPayment, postPatientBooking } from "./userService";
+
+export const startOnlineBookingPayment = (data) => postPatientBooking(data);
+export const getOnlineBookingPayment = (bookingId) => getBookingPayment(bookingId);
