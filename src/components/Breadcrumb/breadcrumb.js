@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { getDetailClinicById } from '../../services/userService';
+import { getMyChatRooms } from '../../services/doctorPatientChatService';
 import './breadcrumb.scss';
 
 // ============================================================
@@ -56,7 +57,10 @@ const ROUTE_MAP = {
     '/doctor/manage-patient': { vi: 'Quản lý bệnh nhân', en: 'Manage Patients' },
     '/doctor/medical-record': { vi: 'Hồ sơ bệnh án', en: 'Medical Records' },
     '/doctor/appointment': { vi: 'Lịch hẹn', en: 'Examination Queue' },
+    '/doctor/message': { vi: 'Tin nhắn', en: 'Messages' },
     '/doctor/list-appointment': { vi: 'Tất cả lịch hẹn', en: 'All Appointments' },
+    '/doctor/public-profile': { vi: 'Thông tin công khai', en: 'Public Profile' },
+    '/doctor/edit-profile': { vi: 'Chỉnh sửa tài khoản', en: 'Edit Account' },
 };
 
 // Root label cho từng nhóm
@@ -93,15 +97,18 @@ const getLabel = (pathname, lang) => {
 class Breadcrumb extends Component {
     state = {
         doctorClinicName: '',
+        doctorChatName: '',
     };
 
     componentDidMount() {
         this.loadDoctorClinicName();
+        this.loadDoctorChatName();
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.location.pathname !== this.props.location.pathname) {
             this.loadDoctorClinicName();
+            this.loadDoctorChatName();
         }
     }
 
@@ -130,6 +137,34 @@ class Breadcrumb extends Component {
         }
     };
 
+    isDoctorChatDetail = (pathname) => /^\/doctor\/message\/[^/]+$/.test(pathname);
+
+    loadDoctorChatName = async () => {
+        const pathname = this.props.location.pathname;
+        if (!this.isDoctorChatDetail(pathname)) {
+            if (this.state.doctorChatName) {
+                this.setState({ doctorChatName: '' });
+            }
+            return;
+        }
+
+        const roomId = decodeURIComponent(pathname.split('/').pop());
+        this.setState({ doctorChatName: '' });
+
+        try {
+            const res = await getMyChatRooms('doctor');
+            const room = (res?.errCode === 0 ? res.data : []).find(
+                (item) => String(item.id) === String(roomId)
+            );
+            const name = `${room?.opponent?.firstName || ''} ${room?.opponent?.lastName || ''}`.replace(/\s+/g, ' ').trim();
+            if (this.props.location.pathname === pathname && name) {
+                this.setState({ doctorChatName: name });
+            }
+        } catch {
+            // Keep the generic route label when the chat room cannot be resolved.
+        }
+    };
+
     // Xác định variant từ pathname
     getVariant(pathname) {
         if (pathname.startsWith('/system')) return 'admin';
@@ -154,6 +189,8 @@ class Breadcrumb extends Component {
                 id: 'menu.admin.manage-clinic',
                 defaultMessage: 'Manage Clinic',
             })
+            : this.isDoctorChatDetail(pathname)
+                ? this.state.doctorChatName || getLabel(pathname, lang)
             : getLabel(pathname, lang);
 
         return [

@@ -498,7 +498,7 @@ class ManageDoctor extends Component {
             </div>
 
             <div className="manage-doctor__section">
-              <div className="manage-doctor__grid manage-doctor__grid--three">
+              {/* <div className="manage-doctor__grid manage-doctor__grid--three">
                 <div className="form-group">
                   <label>Tỉnh thành</label>
                   <input
@@ -512,7 +512,7 @@ class ManageDoctor extends Component {
                     }
                   />
                 </div>
-              </div>
+              </div> */}
 
               <div className="manage-doctor__grid manage-doctor__grid--three">
                 <div className="form-group">

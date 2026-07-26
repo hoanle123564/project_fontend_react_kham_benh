@@ -11,6 +11,7 @@ import ManagePatient from "../modules/Doctor/ManagePatient";
 import ManageSchedulePrivate from "../modules/Doctor/ManageSchedulePrivate";
 import ListAppointment from "../modules/Doctor/ListAppointment";
 import ManageDoctor from "../modules/Admin/ManageUser/ManageDoctor";
+import EditProfile from "../modules/Admin/ManageUser/EditProfile";
 import ManageClinic from "../modules/Admin/Clinic/ManageClinic";
 import EditClinic from "../modules/Admin/Clinic/EditClinic";
 import ManageClinicDepartment from "../modules/Admin/ClinicDepartment/ManageClinicDepartment";
@@ -50,7 +51,8 @@ class Doctor extends Component {
               <Route exact path="/doctor/message" component={ChatPage} />
               <Route path="/doctor/manage-schedule-private" component={ManageSchedulePrivate} />
               <Route path="/doctor/list-appointment" component={ListAppointment} />
-              <Route path="/doctor/edit-profile" render={(routeProps) => <ManageDoctor {...routeProps} selfManaged />} />
+              <Route path="/doctor/public-profile" render={(routeProps) => <ManageDoctor {...routeProps} selfManaged />} />
+              <Route path="/doctor/edit-profile" component={EditProfile} />
               <Route path="/doctor/manage-clinic/:id" component={EditClinic} />
               <Route exact path="/doctor/manage-clinic" component={ManageClinic} />
               <Route path="/doctor/manage-clinic-department" component={ManageClinicDepartment} />
