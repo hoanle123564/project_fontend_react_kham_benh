@@ -179,9 +179,9 @@ export const doctorMenu = [
         link: "/doctor/manage-patient",
       },
       {
-        name: "menu.doctor.edit-profile",
+        name: "menu.doctor.public-profile",
         icon: "bi bi-person-gear",
-        link: "/doctor/edit-profile",
+        link: "/doctor/public-profile",
       },
     ],
   },

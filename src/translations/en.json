@@ -100,7 +100,8 @@
       "manage-booking": "Booking management",
       "reviews": "Reviews",
       "dashboard": "Doctor dashboard",
-      "edit-profile": "Edit profile"
+      "edit-profile": "Edit profile",
+      "public-profile": "Public profile"
     },
     "profile-editor": {
       "title": "My professional profile",
@@ -539,13 +540,13 @@
       "reviewTitle": "Review doctor",
       "reviewRating": "Rating",
       "reviewStarLabel": "{count} stars",
-      "reviewComment": "Comment",
+      "reviewComment": "Comment (optional)",
       "reviewCommentPlaceholder": "Share your visit experience...",
       "reviewCounter": "{count} characters remaining",
       "reviewSubmit": "Submit review",
       "reviewSubmitting": "Submitting...",
       "reviewClose": "Close",
-      "reviewRequired": "Please choose a rating and enter your comment.",
+      "reviewRequired": "Please choose a rating.",
       "reviewSuccess": "Review submitted successfully.",
       "reviewError": "Could not submit review.",
       "reminderBadge": "Starting soon",
@@ -781,5 +782,19 @@
     "appointmentDescription": "{name} confirmed an appointment.",
     "messageDescription": "{name} sent a new message.",
     "reviewDescription": "{name} submitted a new review."
+  },
+  "patient-notifications": {
+    "open": "Open notifications",
+    "title": "Notifications",
+    "markAll": "Mark all as read",
+    "loading": "Loading notifications...",
+    "empty": "You have no new notifications.",
+    "doctorFallback": "Doctor",
+    "messageTitle": "New message",
+    "messageDescription": "You have a new message from {name}.",
+    "statusTitle": "Appointment status updated",
+    "statusDescription": "Your appointment status is now {status}.",
+    "reminderTitle": "Appointment reminder",
+    "reminderDescription": "Your appointment with {name} is starting soon."
   }
 }

@@ -101,7 +101,8 @@
       "manage-booking": "Quản lý lịch hẹn",
       "reviews": "Đánh giá",
       "dashboard": "Dashboard bác sĩ",
-      "edit-profile": "Chỉnh sửa trang cá nhân"
+      "edit-profile": "Chỉnh sửa trang cá nhân",
+      "public-profile": "Thông tin công khai"
     },
     "profile-editor": {
       "title": "Hồ sơ chuyên môn của tôi",
@@ -472,13 +473,13 @@
       "reviewTitle": "Đánh giá bác sĩ",
       "reviewRating": "Số sao",
       "reviewStarLabel": "{count} sao",
-      "reviewComment": "Nhận xét",
+      "reviewComment": "Nhận xét (không bắt buộc)",
       "reviewCommentPlaceholder": "Chia sẻ trải nghiệm khám của bạn...",
       "reviewCounter": "Còn {count} ký tự",
       "reviewSubmit": "Gửi đánh giá",
       "reviewSubmitting": "Đang gửi...",
       "reviewClose": "Đóng",
-      "reviewRequired": "Vui lòng chọn số sao và nhập nhận xét.",
+      "reviewRequired": "Vui lòng chọn số sao.",
       "reviewSuccess": "Gửi đánh giá thành công.",
       "reviewError": "Không thể gửi đánh giá.",
       "reminderBadge": "Sắp tới giờ khám",
@@ -984,5 +985,19 @@
     "appointmentDescription": "{name} đã xác nhận lịch khám.",
     "messageDescription": "{name} đã gửi một tin nhắn mới.",
     "reviewDescription": "{name} vừa gửi một đánh giá mới."
+  },
+  "patient-notifications": {
+    "open": "M\u1edf th\u00f4ng b\u00e1o",
+    "title": "Th\u00f4ng b\u00e1o",
+    "markAll": "\u0110\u00e1nh d\u1ea5u \u0111\u00e3 \u0111\u1ecdc",
+    "loading": "\u0110ang t\u1ea3i th\u00f4ng b\u00e1o...",
+    "empty": "B\u1ea1n ch\u01b0a c\u00f3 th\u00f4ng b\u00e1o m\u1edbi.",
+    "doctorFallback": "B\u00e1c s\u0129",
+    "messageTitle": "Tin nh\u1eafn m\u1edbi",
+    "messageDescription": "B\u1ea1n c\u00f3 tin nh\u1eafn m\u1edbi t\u1eeb {name}.",
+    "statusTitle": "C\u1eadp nh\u1eadt tr\u1ea1ng th\u00e1i l\u1ecbch kh\u00e1m",
+    "statusDescription": "Tr\u1ea1ng th\u00e1i l\u1ecbch kh\u00e1m c\u1ee7a b\u1ea1n l\u00e0 {status}.",
+    "reminderTitle": "Nh\u1eafc l\u1ecbch kh\u00e1m",
+    "reminderDescription": "L\u1ecbch h\u1eb9n c\u1ee7a b\u1ea1n v\u1edbi {name} s\u1eafp b\u1eaft \u0111\u1ea7u."
   }
 }
