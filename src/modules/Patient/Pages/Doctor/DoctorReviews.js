@@ -186,7 +186,7 @@ class DoctorReviews extends Component {
           </div>
           {this.renderStars(review.rating)}
         </header>
-        <p>{review.comment}</p>
+        {review.comment && <p>{review.comment}</p>}
         {review.reply && (
           <div className="doctor-reviews__reply">
             <span>{this.getText("doctorReply", "Reply from doctor")}</span>

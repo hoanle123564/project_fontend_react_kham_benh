@@ -148,17 +148,17 @@ header {
             justify-content: flex-end;
             gap: 24px;
 
-            .support {
-                display: flex;
-                gap: 18px;
-                cursor: pointer;
-                font-size: 15px;
-                white-space: nowrap;
+            // .support {
+            //     display: flex;
+            //     gap: 18px;
+            //     cursor: pointer;
+            //     font-size: 15px;
+            //     white-space: nowrap;
 
-                i {
-                    font-size: 16px;
-                }
-            }
+            //     i {
+            //         font-size: 16px;
+            //     }
+            // }
 
             .language-vi,
             .language-en {
@@ -205,6 +205,159 @@ header {
 
                 &:hover {
                     background: rgba(0, 166, 187, 0.12);
+                }
+            }
+
+            .patient-notification-area {
+                position: relative;
+
+                .patient-notification-icon {
+                    position: relative;
+                    border: 0;
+                    background: transparent;
+                    color: #b7b9cc;
+                    font-size: 19px;
+                    line-height: 1;
+                    padding: 8px;
+                    cursor: pointer;
+
+                    &:hover {
+                        color: #858796;
+                    }
+
+                    &:focus-visible {
+                        outline: 2px solid #858796;
+                        outline-offset: 2px;
+                    }
+
+                    .badge {
+                        position: absolute;
+                        top: 0;
+                        right: -2px;
+                        min-width: 17px;
+                        height: 17px;
+                        padding: 0 4px;
+                        border-radius: 999px;
+                        background: #dc2626;
+                        color: #fff;
+                        font-size: 10px;
+                        line-height: 17px;
+                    }
+                }
+
+                .patient-notification-menu {
+                    position: absolute;
+                    top: calc(100% + 10px);
+                    right: 0;
+                    width: min(370px, calc(100vw - 24px));
+                    background: #fff;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 10px;
+                    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+                    z-index: 1100;
+                    overflow: hidden;
+
+                    &__header {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 12px;
+                        padding: 13px 15px;
+                        border-bottom: 1px solid #e2e8f0;
+
+                        h3 {
+                            margin: 0;
+                            font-size: 16px;
+                            font-weight: 700;
+                        }
+
+                        button {
+                            border: 0;
+                            background: transparent;
+                            color: #0f766e;
+                            font-size: 12px;
+                            font-weight: 700;
+                            cursor: pointer;
+                        }
+                    }
+
+                    &__items {
+                        max-height: 420px;
+                        overflow-y: auto;
+
+                        >p {
+                            margin: 0;
+                            padding: 20px 15px;
+                            color: #64748b;
+                            font-size: 14px;
+                        }
+                    }
+
+                    &__item {
+                        width: 100%;
+                        display: flex;
+                        align-items: flex-start;
+                        gap: 11px;
+                        border: 0;
+                        border-bottom: 1px solid #f1f5f9;
+                        background: #fff;
+                        padding: 12px 15px;
+                        text-align: left;
+                        cursor: pointer;
+
+                        &:hover,
+                        &.unread {
+                            background: #f0fdfa;
+                        }
+
+                        img,
+                        .patient-notification-menu__avatar {
+                            width: 38px;
+                            height: 38px;
+                            flex: 0 0 38px;
+                            border-radius: 50%;
+                            object-fit: cover;
+                        }
+
+                        .patient-notification-menu__avatar {
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            background: #ccfbf1;
+                            color: #115e59;
+                            font-weight: 700;
+                        }
+
+                        >span {
+                            min-width: 0;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 3px;
+
+                            strong,
+                            small,
+                            time {
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                            }
+
+                            strong {
+                                font-size: 13px;
+                                color: #0f172a;
+                            }
+
+                            small {
+                                font-size: 12px;
+                                color: #475569;
+                            }
+
+                            time {
+                                font-size: 11px;
+                                color: #94a3b8;
+                            }
+                        }
+                    }
                 }
             }
 

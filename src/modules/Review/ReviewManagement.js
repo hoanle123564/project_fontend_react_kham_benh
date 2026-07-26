@@ -469,7 +469,7 @@ class ReviewManagement extends Component {
               </span>
             </div>
           </header>
-          <p>{review.comment}</p>
+          {review.comment && <p>{review.comment}</p>}
           {review.reply && (
             <div className="review-management__reply">
               <span>{this.getText("doctorReply", "Doctor reply")}</span>

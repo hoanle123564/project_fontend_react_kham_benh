@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, injectIntl } from "react-intl";
+import moment from "moment";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import { jwtDecode } from "jwt-decode";
@@ -23,6 +24,7 @@ import { changeLangguageApp } from "../../../store/actions/appActions";
 import * as action from "../../../store/actions";
 import Breadcrumb from "../../../components/Breadcrumb/breadcrumb";
 import { buildImageSrc, getPublicPostCategories } from "../../../services/userService";
+import { getPatientNotifications, markPatientNotificationsRead } from "../../../services/patientNotificationService";
 
 const getActiveSortedSpecialties = (specialties = []) =>
   [...specialties]
@@ -55,9 +57,12 @@ class HomeHeader extends Component {
       specialtyList: [],
       postCategoryList: [],
       isDropdown: false,
+      isNotificationsOpen: false,
+      notifications: [],
+      isNotificationLoading: false,
     };
 
-    this.dropdownRef = React.createRef();
+    this.actionsRef = React.createRef();
   }
 
   async componentDidMount() {
@@ -68,6 +73,7 @@ class HomeHeader extends Component {
     ]);
 
     document.addEventListener("mousedown", this.handleClickOutside);
+    this.startNotifications();
   }
 
   componentDidUpdate(prevProps) {
@@ -84,10 +90,18 @@ class HomeHeader extends Component {
         specialtyList: getActiveSortedSpecialties(this.props.specialtys || []),
       });
     }
+
+    if (!prevProps.isLoggedIn && this.props.isLoggedIn) this.startNotifications();
+    if (!prevProps.userInfo && this.props.userInfo && this.props.isLoggedIn) this.startNotifications();
+    if (prevProps.isLoggedIn && !this.props.isLoggedIn) {
+      this.stopNotifications();
+      this.setState({ notifications: [], isNotificationsOpen: false });
+    }
   }
 
   componentWillUnmount() {
     document.removeEventListener("mousedown", this.handleClickOutside);
+    this.stopNotifications();
   }
 
   loadPublicPostCategories = async () => {
@@ -116,9 +130,72 @@ class HomeHeader extends Component {
   };
 
   handleClickOutside = (event) => {
-    if (this.dropdownRef.current && !this.dropdownRef.current.contains(event.target)) {
-      this.setState({ isDropdown: false });
+    if (this.actionsRef.current && !this.actionsRef.current.contains(event.target)) {
+      this.setState({ isDropdown: false, isNotificationsOpen: false });
     }
+  };
+
+  getNotificationText = (key, values) => this.props.intl.formatMessage({
+    id: `patient-notifications.${key}`,
+    defaultMessage: key,
+  }, values);
+
+  startNotifications = () => {
+    if (!this.props.isLoggedIn || !this.props.userInfo) return;
+    this.loadNotifications();
+    window.clearInterval(this.notificationTimer);
+    this.notificationTimer = window.setInterval(this.loadNotifications, 30000);
+  };
+
+  stopNotifications = () => window.clearInterval(this.notificationTimer);
+
+  loadNotifications = async () => {
+    if (!this.props.isLoggedIn || !this.props.userInfo) return;
+    this.setState({ isNotificationLoading: true });
+    try {
+      const response = await getPatientNotifications();
+      if (response?.errCode === 0) {
+        this.setState({ notifications: response.data || [], isNotificationLoading: false });
+        return;
+      }
+    } catch (error) {
+      // Keep the last successful list visible while the next lightweight poll retries.
+    }
+    this.setState({ isNotificationLoading: false });
+  };
+
+  toggleNotifications = () => {
+    this.setState((prevState) => ({
+      isNotificationsOpen: !prevState.isNotificationsOpen,
+      isDropdown: false,
+    }), () => {
+      if (this.state.isNotificationsOpen) this.loadNotifications();
+    });
+  };
+
+  markNotificationsRead = () => {
+    this.setState((prevState) => ({
+      notifications: prevState.notifications.map((item) => ({ ...item, isRead: true })),
+    }));
+    markPatientNotificationsRead().catch(this.loadNotifications);
+  };
+
+  openNotification = (notification) => {
+    if (!notification) return;
+    this.setState({ isNotificationsOpen: false });
+    if (!notification.isRead) {
+      this.setState((prevState) => ({
+        notifications: prevState.notifications.map((item) =>
+          item.id === notification.id ? { ...item, isRead: true } : item
+        ),
+      }));
+      markPatientNotificationsRead(notification.id).catch(this.loadNotifications);
+    }
+    if (notification.type === "NEW_MESSAGE" && notification.chatRoomId) {
+      this.props.history.push(`/patient/chat/${encodeURIComponent(notification.chatRoomId)}`);
+      return;
+    }
+    this.props.history.push("/appointments");
   };
 
   handleSearchChange = (event) => {
@@ -213,6 +290,7 @@ class HomeHeader extends Component {
   handleDropdown = () => {
     this.setState((prevState) => ({
       isDropdown: !prevState.isDropdown,
+      isNotificationsOpen: false,
     }));
   };
 
@@ -228,8 +306,12 @@ class HomeHeader extends Component {
 
   render() {
     const { language, userInfo, hideBreadcrumb, showBanner } = this.props;
-    const { specialtyList, postCategoryList, filteredDoctors, searchQuery, isDropdown } = this.state;
+    const {
+      specialtyList, postCategoryList, filteredDoctors, searchQuery, isDropdown,
+      isNotificationsOpen, notifications, isNotificationLoading,
+    } = this.state;
     const flagSrc = language === languages.VI ? vietnam : united;
+    const unreadCount = notifications.filter((item) => !item.isRead).length;
 
     return (
       <>
@@ -337,13 +419,13 @@ class HomeHeader extends Component {
               </div>
 
               <div className="col-lg-4">
-                <div className="right-content">
-                  <div className="support">
+                <div className="right-content" ref={this.actionsRef}>
+                  {/* <div className="support">
                     <span>
                       <i className="fa-solid fa-circle-question"></i>
                       <FormattedMessage id="home-header.support" />
                     </span>
-                  </div>
+                  </div> */}
 
                   {flagSrc ? (
                     language === languages.VI ? (
@@ -360,50 +442,86 @@ class HomeHeader extends Component {
                   ) : null}
 
                   {this.props.isLoggedIn && userInfo ? (
-                    <div
-                      className="header-user"
-                      onClick={this.handleDropdown}
-                      ref={this.dropdownRef}
-                    >
-                      <span>
-                        {userInfo.firstName} {userInfo.lastName}
-                      </span>
-                      <img
-                        src={buildImageSrc(userInfo?.image) || userDefault}
-                        alt="avatar"
-                        className="header-avatar"
-                      />
-                      {isDropdown ? (
-                        <i className="fas fa-chevron-up ChevronDown"></i>
-                      ) : (
-                        <i className="fas fa-chevron-down ChevronDown"></i>
-                      )}
+                    <>
+                      <div className="patient-notification-area">
+                        <button
+                          type="button"
+                          className="patient-notification-icon"
+                          aria-label={this.getNotificationText("open")}
+                          title={this.getNotificationText("open")}
+                          aria-expanded={isNotificationsOpen}
+                          onClick={this.toggleNotifications}
+                        >
+                          <i className="fas fa-bell"></i>
+                          {unreadCount > 0 && <span className="badge">{unreadCount > 99 ? "99+" : unreadCount}</span>}
+                        </button>
+                        {isNotificationsOpen && <div className="patient-notification-menu" role="dialog" aria-label={this.getNotificationText("title")}>
+                          <div className="patient-notification-menu__header">
+                            <h3>{this.getNotificationText("title")}</h3>
+                            <button type="button" onClick={this.markNotificationsRead}>{this.getNotificationText("markAll")}</button>
+                          </div>
+                          <div className="patient-notification-menu__items">
+                            {isNotificationLoading && notifications.length === 0 ? <p>{this.getNotificationText("loading")}</p> :
+                              notifications.length === 0 ? <p>{this.getNotificationText("empty")}</p> : notifications.map((item) => {
+                                const name = `${item.doctorFirstName || ""} ${item.doctorLastName || ""}`.trim() || this.getNotificationText("doctorFallback");
+                                const isMessage = item.type === "NEW_MESSAGE";
+                                const isReminder = item.type === "APPOINTMENT_REMINDER";
+                                const title = isMessage ? this.getNotificationText("messageTitle") : isReminder ? this.getNotificationText("reminderTitle") : this.getNotificationText("statusTitle");
+                                const detail = isMessage
+                                  ? this.getNotificationText("messageDescription", { name })
+                                  : isReminder
+                                    ? this.getNotificationText("reminderDescription", { name })
+                                    : this.getNotificationText("statusDescription", { status: (language === languages.VI ? item.bookingStatusVi : item.bookingStatusEn) || item.bookingStatusId || "-" });
+                                const image = buildImageSrc(item.doctorImage);
+                                return <button type="button" key={item.id} className={`patient-notification-menu__item ${item.isRead ? "" : "unread"}`} onClick={() => this.openNotification(item)}>
+                                  {image ? <img src={image} alt="" /> : <span className="patient-notification-menu__avatar">{name.slice(0, 1).toUpperCase()}</span>}
+                                  <span><strong>{title}</strong><small>{detail}</small><time>{item.createdAt ? moment(item.createdAt).locale(language === languages.VI ? "vi" : "en").fromNow() : ""}</time></span>
+                                </button>;
+                              })}
+                          </div>
+                        </div>}
+                      </div>
+                      <div className="header-user" onClick={this.handleDropdown}>
+                        <span>
+                          {userInfo.firstName} {userInfo.lastName}
+                        </span>
+                        <img
+                          src={buildImageSrc(userInfo?.image) || userDefault}
+                          alt="avatar"
+                          className="header-avatar"
+                        />
+                        {isDropdown ? (
+                          <i className="fas fa-chevron-up ChevronDown"></i>
+                        ) : (
+                          <i className="fas fa-chevron-down ChevronDown"></i>
+                        )}
 
-                      <div className={`dropdown-menu ${isDropdown ? "show" : ""}`}>
-                        <div
-                          className="dropdown-item"
-                          onClick={() => this.props.history.push("/patient-profile")}
-                        >
-                          <i className="fas fa-user fa-sm fa-fw"></i>
-                          <span>
-                            <FormattedMessage id="menu.patient.profile" />
-                          </span>
-                        </div>
-                        <div
-                          className="dropdown-item"
-                          onClick={() => this.props.history.push("/appointments")}
-                        >
-                          <i className="fas fa-clock"></i>
-                          <span>
-                            <FormattedMessage id="home-header.appointment" />
-                          </span>
-                        </div>
-                        <div className="dropdown-item" onClick={this.handleLogout}>
-                          <i className="fas fa-sign-out-alt fa-sm fa-fw"></i>
-                          <FormattedMessage id="home-header.logout" />
+                        <div className={`dropdown-menu ${isDropdown ? "show" : ""}`}>
+                          <div
+                            className="dropdown-item"
+                            onClick={() => this.props.history.push("/patient-profile")}
+                          >
+                            <i className="fas fa-user fa-sm fa-fw"></i>
+                            <span>
+                              <FormattedMessage id="menu.patient.profile" />
+                            </span>
+                          </div>
+                          <div
+                            className="dropdown-item"
+                            onClick={() => this.props.history.push("/appointments")}
+                          >
+                            <i className="fas fa-clock"></i>
+                            <span>
+                              <FormattedMessage id="home-header.appointment" />
+                            </span>
+                          </div>
+                          <div className="dropdown-item" onClick={this.handleLogout}>
+                            <i className="fas fa-sign-out-alt fa-sm fa-fw"></i>
+                            <FormattedMessage id="home-header.logout" />
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </>
                   ) : (
                     <div
                       className="menu-login"
@@ -557,4 +675,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(HomeHeader));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(injectIntl(HomeHeader)));

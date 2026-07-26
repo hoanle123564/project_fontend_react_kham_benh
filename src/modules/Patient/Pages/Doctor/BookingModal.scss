@@ -1,14 +1,21 @@
 @import "../../../../styles/variables";
 
+$booking-primary: #0f9c89;
+
 .booking-modal-container {
     .modal-content {
         border: 0;
+        border-top: 4px solid $booking-primary;
         border-radius: 14px;
         overflow: hidden;
     }
 
     .modal-header {
-        border-bottom: 1px solid #edf0f4;
+        border-bottom: 1px solid rgba($booking-primary, 0.2);
+
+        .modal-title {
+            color: $booking-primary;
+        }
     }
 
     .modal-body {
@@ -31,7 +38,7 @@
 
     .booking-modal__patient-card {
         padding: 20px;
-        border-color: $colormain;
+        border-color: $booking-primary;
     }
 
     .booking-modal__patient-header,
@@ -61,7 +68,7 @@
         place-items: center;
         overflow: hidden;
         border-radius: 50%;
-        background: linear-gradient(135deg, lighten($colormain, 8%), $colormain);
+        background: linear-gradient(135deg, lighten($booking-primary, 8%), $booking-primary);
         color: #fff;
         font-size: 20px;
         font-weight: 600;
@@ -77,8 +84,8 @@
         width: 64px;
         height: 64px;
         flex-basis: 64px;
-        background: rgba($colormain, 0.1);
-        color: $colormain;
+        background: rgba($booking-primary, 0.1);
+        color: $booking-primary;
     }
 
     .booking-modal__self-badge {
@@ -128,7 +135,7 @@
 
     .booking-modal__collapse-button:hover,
     .booking-modal__collapse-button:focus-visible {
-        background: rgba($colormain, 0.1);
+        background: rgba($booking-primary, 0.1);
     }
 
     .booking-modal__patient-details {
@@ -158,8 +165,8 @@
         padding: 9px 16px;
         border: 0;
         border-radius: 6px;
-        background: rgba($colormain, 0.1);
-        color: $colormain;
+        background: rgba($booking-primary, 0.1);
+        color: $booking-primary;
         font-weight: 600;
     }
 
@@ -219,7 +226,7 @@
     }
 
     .booking-modal__summary-row--price strong {
-        color: $colormain;
+        color: $booking-primary;
         font-weight: 700;
         white-space: nowrap;
         overflow-wrap: normal;
@@ -231,13 +238,13 @@
         padding: 13px 16px;
         border: 0;
         border-radius: 6px;
-        background: $common-btn-confirm;
+        background: $booking-primary;
         color: #fff;
         font-size: 16px;
         font-weight: 600;
 
         &:hover:not(:disabled) {
-            background: darken($common-btn-confirm, 8%);
+            background: darken($booking-primary, 8%);
         }
 
         &:disabled {
@@ -334,14 +341,14 @@
             display: inline-block;
             padding: 10px 16px;
             border-radius: 6px;
-            background: $common-btn-confirm;
+            background: $booking-primary;
             color: #fff !important;
             font-weight: 600;
             text-decoration: none;
 
             &:hover,
             &:focus-visible {
-                background: darken($common-btn-confirm, 8%);
+                background: darken($booking-primary, 8%);
                 color: #fff;
                 text-decoration: none;
             }

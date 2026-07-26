@@ -253,17 +253,16 @@ class Appointments extends Component {
         const { reviewTarget, reviewRating, reviewComment, submittingReview } = this.state;
         const comment = reviewComment.trim();
         if (submittingReview || !reviewTarget?.id) return;
-        if (!reviewRating || !comment) {
+        if (!reviewRating) {
             this.setState({ reviewError: this.getText("reviewRequired") });
             return;
         }
 
         this.setState({ submittingReview: true, reviewError: "" });
         try {
-            const response = await createBookingReview(reviewTarget.id, {
-                rating: reviewRating,
-                comment,
-            });
+            const payload = { rating: reviewRating };
+            if (comment) payload.comment = comment;
+            const response = await createBookingReview(reviewTarget.id, payload);
 
             if (response?.errCode === 0) {
                 const reviewId = response.data?.id || response.id;
@@ -499,9 +498,10 @@ class Appointments extends Component {
                     </Button>
                     <Button
                         color="primary"
+                        className="doctor-review-modal__submit-button"
                         type="button"
                         onClick={this.handleReviewSubmit}
-                        disabled={submittingReview || !reviewRating || !reviewComment.trim()}
+                        disabled={submittingReview || !reviewRating}
                     >
                         {submittingReview
                             ? this.getText("reviewSubmitting")

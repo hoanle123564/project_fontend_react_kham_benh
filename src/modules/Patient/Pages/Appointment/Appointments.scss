@@ -387,6 +387,7 @@
 .doctor-review-modal {
     .modal-content {
         border: 0;
+        border-top: 4px solid #0f9c89;
         border-radius: 10px;
         overflow: hidden;
     }
@@ -509,6 +510,22 @@
         color: #be123c;
         font-weight: 600;
         padding: 10px 12px;
+    }
+
+    .modal-footer .doctor-review-modal__submit-button {
+        background-color: #0f9c89;
+        border-color: #0f9c89;
+        color: #fff;
+
+        &:hover:not(:disabled),
+        &:focus-visible:not(:disabled) {
+            background-color: darken(#0f9c89, 8%);
+            border-color: darken(#0f9c89, 8%);
+        }
+
+        &:focus-visible {
+            box-shadow: 0 0 0 3px rgba(15, 156, 137, 0.24);
+        }
     }
 }
 
