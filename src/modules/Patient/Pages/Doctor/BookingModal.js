@@ -17,7 +17,7 @@ import {
     postPatientBooking,
     updatePatientProfile,
 } from "../../../../services/userService";
-import { getOnlineBookingPayment, startOnlineBookingPayment } from "../../../../services/onlineBookingPaymentService";
+import { cancelOnlineBookingPayment, getOnlineBookingPayment, startOnlineBookingPayment } from "../../../../services/onlineBookingPaymentService";
 
 class BookingModal extends Component {
     state = {
@@ -131,8 +131,23 @@ class BookingModal extends Component {
         }
     };
 
-    toggleModal = () => {
-        if (!this.state.isSubmitting) this.props.toggleModal();
+    toggleModal = async () => {
+        const { payment, isSubmitting } = this.state;
+        if (isSubmitting) return;
+        if (payment?.paymentId && payment.status === "PENDING") {
+            this.setState({ isSubmitting: true, submitError: "" });
+            try {
+                const response = await cancelOnlineBookingPayment(payment.paymentId);
+                if (response?.errCode !== 0) throw new Error(response?.errMessage || this.getText("payment-check-error", "Unable to check payment."));
+            } catch (error) {
+                const submitError = this.getErrorMessage(error, this.getText("payment-check-error", "Unable to check payment."));
+                this.setState({ isSubmitting: false, submitError });
+                toast.error(submitError);
+                return;
+            }
+            this.setState({ isSubmitting: false });
+        }
+        this.props.toggleModal();
     };
 
     getFullName = (person = {}) =>
@@ -276,11 +291,11 @@ class BookingModal extends Component {
 
     checkPaymentStatus = async (isPolling = false) => {
         const { payment } = this.state;
-        if (!payment?.bookingId || this.isCheckingPayment) return;
+        if (!payment?.paymentId || this.isCheckingPayment) return;
         this.isCheckingPayment = true;
         if (!isPolling) this.setState({ isCheckingPayment: true });
         try {
-            const response = await getOnlineBookingPayment(payment.bookingId);
+            const response = await getOnlineBookingPayment(payment.paymentId);
             if (response?.errCode !== 0) throw new Error(response?.errMessage);
             const updatedPayment = { ...payment, ...response.data };
             this.applyPaymentStatus(updatedPayment);
@@ -428,12 +443,12 @@ class BookingModal extends Component {
                         ))}
                     </div>
                     {payment ? <div className="booking-modal__payment" aria-live="polite">
-                        <h3>{this.getText("payment-title", "SePay payment")}</h3>
+                        {/* <h3>{this.getText("payment-title", "SePay payment")}</h3> */}
                         {payment.qrCodeUrl && <img src={payment.qrCodeUrl} alt={this.getText("payment-qr", "SePay payment QR code")} />}
                         <p>{this.getText("payment-code", "Transfer content")}: <strong>{payment.paymentCode}</strong></p>
                         <p>{this.getText("payment-amount", "Amount")}: <strong>{this.formatMoney(payment.amount)}</strong></p>
                         <p>{this.getText("payment-expires", "Expires")}: {moment(payment.expiresAt).format("DD/MM/YYYY HH:mm")}</p>
-                        {payment.status === "PENDING" && <p>{this.getText("payment-waiting", "Waiting for SePay confirmation. This button does not confirm payment.")}</p>}
+                        {/* {payment.status === "PENDING" && <p>{this.getText("payment-waiting", "Waiting for SePay confirmation. This button does not confirm payment.")}</p>} */}
                         <button type="button" className="booking-modal__submit-button" onClick={() => this.checkPaymentStatus(false)} disabled={isCheckingPayment}>
                             {isCheckingPayment ? this.getText("payment-checking", "Checking payment...") : this.getText("payment-check", "Check payment status")}
                         </button>

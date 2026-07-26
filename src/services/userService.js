@@ -298,6 +298,10 @@ const postPatientBooking = (data) => {
 
 const getBookingPayment = (bookingId) =>
   patientAxios.get(`/api/bookings/${encodeURIComponent(bookingId)}/payment`);
+const getPaymentIntent = (paymentId) =>
+  patientAxios.get(`/api/payments/${encodeURIComponent(paymentId)}`);
+const cancelPaymentIntent = (paymentId) =>
+  patientAxios.post(`/api/payments/${encodeURIComponent(paymentId)}/cancel`);
 
 // Xác nhận đặt lịch khám bệnh
 const VerifyPatientBooking = (data) => {
@@ -651,6 +655,8 @@ export {
   deleteDoctorScheduleRule,
   postPatientBooking,
   getBookingPayment,
+  getPaymentIntent,
+  cancelPaymentIntent,
   VerifyPatientBooking,
   postSaveSpecialty,
   getAllSpecialty,
