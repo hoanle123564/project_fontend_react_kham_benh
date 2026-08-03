@@ -6,7 +6,7 @@ import { languages } from '../../../utils/constant';
 
 const HomeFooter = ({ language }) => {
     return (
-        <footer>
+        <footer className='footer-page' >
             <div className="footer-content">
                 <div className="container">
                     <div className="row">

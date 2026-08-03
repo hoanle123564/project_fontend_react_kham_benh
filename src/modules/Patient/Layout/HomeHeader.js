@@ -315,7 +315,7 @@ class HomeHeader extends Component {
 
     return (
       <>
-        <header>
+        <header className="home-header-page">
           <div className="container">
             <div className="home-header-content d-flex align-items-center justify-content-center">
               <div className="col-lg-2">
