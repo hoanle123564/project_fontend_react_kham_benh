@@ -154,16 +154,16 @@ export const doctorMenu = [
     ],
   },
   // lịch sử khám bệnh
-  {
-    name: "menu.doctor.history-appointment",
-    menus: [
-      {
-        name: "menu.doctor.history-appointment",
-        icon: "bi bi-clock-history",
-        link: "/doctor/list-appointment",
-      },
-    ],
-  },
+  // {
+  //   name: "menu.doctor.history-appointment",
+  //   menus: [
+  //     {
+  //       name: "menu.doctor.history-appointment",
+  //       icon: "bi bi-clock-history",
+  //       link: "/doctor/list-appointment",
+  //     },
+  //   ],
+  // },
   // hồ sơ
   {
     name: "menu.doctor.profile",
@@ -194,11 +194,11 @@ export const doctorMenu = [
         icon: "bi bi-chat-left-text",
         link: "/doctor/message",
       },
-      {
-        name: "menu.doctor.video-call",
-        icon: "bi bi-camera-video",
-        link: "/doctor/video-call",
-      },
+      // {
+      //   name: "menu.doctor.video-call",
+      //   icon: "bi bi-camera-video",
+      //   link: "/doctor/video-call",
+      // },
     ]
   }
 ];
