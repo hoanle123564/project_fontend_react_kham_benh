@@ -51,37 +51,30 @@ class System extends Component {
           <Header toggleSidebar={this.toggleSidebar} />
           <div className="system-list">
             <Switch>
-              <Route path="/system/dashboard" component={DashBoard} />
-              <Route path="/system/user-manage" component={TableManageUser} />
-              <Route path="/system/doctor-table" component={DoctorTable} />
-              <Route path="/system/manage-doctor" component={ManageDoctor} />
-              <Route path="/system/manage-clinic" component={ManageClinic} />
-              <Route path="/system/manage-clinic-department" component={ManageClinicDepartment} />
-              <Route path="/system/add-clinic" component={AddClinic} />
-              <Route path="/system/edit-clinic/:id" component={EditClinic} />
-              <Route path="/system/manage-schedule" component={ManageSchedule} />
-              <Route path="/system/list-appointment" component={ListAppointment} />
-              <Route path="/system/manage-booking" render={(props) => <BookingManagement {...props} adminMode />} />
-              <Route path="/system/manage-refund" component={RefundManagement} />
-              <Route path="/system/manage-review" render={(props) => <ReviewManagement {...props} adminMode />} />
-              <Route
-                path="/system/medical-record/:bookingId"
-                render={(props) => <DoctorMedicalRecords {...props} adminMode />}
-              />
-              <Route
-                exact
-                path="/system/medical-record"
-                render={(props) => <DoctorMedicalRecords {...props} adminMode />}
-              />
-              <Route path="/system/manage-specialty" component={ManageSpecialty} />
-              <Route path="/system/add-specialty" component={AddSpecialty} />
-              <Route path="/system/edit-specialty/:id" component={EditSpecialty} />
-              <Route path="/system/manage-post" component={ManagePost} />
-              <Route path="/system/add-post" component={AddPost} />
-              <Route path="/system/edit-post/:id" component={EditPost} />
-              <Route path="/system/manage-post-category" component={ManagePostCategory} />
-              <Route path="/system/edit-profile" component={EditProfile} />
-              <Redirect to={systemMenuPath} />
+                  <Route path="/system/dashboard" component={DashBoard} />
+                  <Route path="/system/user-manage" component={TableManageUser} />
+                  <Route path="/system/doctor-table" component={DoctorTable} />
+                  <Route path="/system/manage-doctor" component={ManageDoctor} />
+                  <Route path="/system/manage-clinic" component={ManageClinic} />
+                  <Route path="/system/manage-clinic-department" component={ManageClinicDepartment} />
+                  <Route path="/system/add-clinic" component={AddClinic} />
+                  <Route path="/system/edit-clinic/:id" component={EditClinic} />
+                  <Route path="/system/manage-schedule" component={ManageSchedule} />
+                  <Route path="/system/list-appointment" component={ListAppointment} />
+                  <Route path="/system/manage-booking" render={(props) => <BookingManagement {...props} adminMode />} />
+                  <Route path="/system/manage-refund" component={RefundManagement} />
+                  <Route path="/system/manage-review" render={(props) => <ReviewManagement {...props} adminMode />} />
+                  <Route path="/system/medical-record/:bookingId" render={(props) => <DoctorMedicalRecords {...props} adminMode />} />
+                  <Route exact path="/system/medical-record" render={(props) => <DoctorMedicalRecords {...props} adminMode />} />
+                  <Route path="/system/manage-specialty" component={ManageSpecialty} />
+                  <Route path="/system/add-specialty" component={AddSpecialty} />
+                  <Route path="/system/edit-specialty/:id" component={EditSpecialty} />
+                  <Route path="/system/manage-post" component={ManagePost} />
+                  <Route path="/system/add-post" component={AddPost} />
+                  <Route path="/system/edit-post/:id" component={EditPost} />
+                  <Route path="/system/manage-post-category" component={ManagePostCategory} />
+                  <Route path="/system/edit-profile" component={EditProfile} />
+                  <Redirect to={systemMenuPath} />
             </Switch>
           </div>
         </div>
