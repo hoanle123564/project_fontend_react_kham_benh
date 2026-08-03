@@ -4,6 +4,7 @@ export const path = {
   REGISTER: "/register",
   LOG_OUT: "/logout",
   SYSTEM: "/system",
+  CLINIC_MANAGER: "/clinic-manager",
   HOMEPAGE: "/home/",
   DETAIL_DOCTOR: "/detail-doctor/:slug",
   DETAIL_SPECIALTY: "/detail-specialty/:slug",
