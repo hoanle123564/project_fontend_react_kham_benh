@@ -40,14 +40,15 @@ class ManageDoctor extends Component {
 
   componentDidMount() {
     this.props.GetAllSpecialty();
-    this.props.getAllClinic();
+    const options = this.isClinicManager() ? { managedOnly: true } : {};
+    this.props.getAllClinic(options);
 
     if (this.props.selfManaged) {
       this.selectSelfDoctor();
       return;
     }
 
-    this.props.fetchAllDoctor();
+    this.props.fetchAllDoctor(options);
   }
 
   componentDidUpdate(prevProps) {
@@ -99,36 +100,17 @@ class ManageDoctor extends Component {
     }
   };
 
-  getManagedClinicIds = () => {
-    if (this.props.adminInfo?.roleId !== "R4") {
-      return null;
-    }
+  isClinicManager = () => this.props.clinicManagerInfo?.roleId === "R4";
 
-    return (this.props.ListClinic || [])
-      .filter((clinic) => Number(clinic.managerUserId) === Number(this.props.adminInfo.id))
-      .map((clinic) => Number(clinic.id));
-  };
+  getDoctorTablePath = () =>
+    this.isClinicManager() ? "/clinic-manager/doctor-table" : "/system/doctor-table";
 
   getVisibleDoctors = () => {
-    const managedClinicIds = this.getManagedClinicIds();
-    if (!managedClinicIds) {
-      return this.props.ListDoctor || [];
-    }
-
-    return (this.props.ListDoctor || []).filter((doctor) =>
-      managedClinicIds.includes(Number(doctor.clinicId))
-    );
+    return this.props.ListDoctor || [];
   };
 
   getVisibleClinics = () => {
-    const managedClinicIds = this.getManagedClinicIds();
-    if (!managedClinicIds) {
-      return this.props.ListClinic || [];
-    }
-
-    return (this.props.ListClinic || []).filter((clinic) =>
-      managedClinicIds.includes(Number(clinic.id))
-    );
+    return this.props.ListClinic || [];
   };
 
   rebuildOptions = () => {
@@ -387,7 +369,7 @@ class ManageDoctor extends Component {
       if (this.props.selfManaged) {
         toast.success(this.getText("doctor.profile-editor.save-success", "Professional profile updated."));
       } else {
-        this.props.fetchAllDoctor();
+        this.props.fetchAllDoctor(this.isClinicManager() ? { managedOnly: true } : {});
       }
       await this.handleChangeSelect(selectedDoctor, { name: "selectDoctor" });
     }
@@ -426,7 +408,7 @@ class ManageDoctor extends Component {
             <button
               type="button"
               className="manage-doctor__back-button"
-              onClick={() => this.props.history.push("/system/doctor-table")}
+              onClick={() => this.props.history.push(this.getDoctorTablePath())}
             >
               Quay lại danh sách
             </button>
@@ -622,17 +604,18 @@ const mapStateToProps = (state) => {
     ListSpecialty: state.admin.specialty,
     ListClinic: state.admin.AllClinic,
     adminInfo: state.adminAuth.adminInfo,
+    clinicManagerInfo: state.clinicManagerAuth?.clinicManagerInfo,
     doctorInfo: state.doctor.doctorInfo,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchAllDoctor: () => dispatch(action.fetchAllDoctor()),
+    fetchAllDoctor: (options) => dispatch(action.fetchAllDoctor(options)),
     SaveDetailDoctor: (data) => dispatch(action.SaveDetailDoctor(data)),
     GetDetailDoctor: (id) => dispatch(action.GetDetailDoctor(id)),
     GetAllSpecialty: () => dispatch(action.GetAllSpecialty()),
-    getAllClinic: () => dispatch(action.GetAllClinic()),
+    getAllClinic: (options) => dispatch(action.GetAllClinic(options)),
   };
 };
 

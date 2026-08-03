@@ -115,6 +115,11 @@
       "doctor": "Doctors",
       "doctors": "Doctors list",
       "manage-doctor": "Manage doctors",
+      "patient": "Patients",
+      "patients": "Manage patients",
+      "account": "Account",
+      "profile": "My profile",
+      "create-error": "Unable to create doctor account.",
       "schedule": "Schedule",
       "appointments": "Appointments",
       "departments": "Manage departments",
@@ -576,7 +581,25 @@
   },
   "doctor": {
     "manage-patient": {
-      "backToList": "Back to patient list"
+      "backToList": "Back to patient list",
+      "edit": "Edit",
+      "save": "Save changes",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "phone": "Phone number",
+      "gender": "Gender",
+      "dob": "Date of birth",
+      "address": "Address",
+      "occupation": "Occupation",
+      "ethnicity": "Ethnicity",
+      "citizenId": "Citizen ID",
+      "insurance": "Health insurance code",
+      "male": "Male",
+      "female": "Female",
+      "other": "Other",
+      "saveError": "Could not update patient information"
     },
     "queue": {
       "backToQueue": "Back to queue",

@@ -93,8 +93,14 @@ class EditClinic extends Component {
 
     isDoctorRoute = () => window.location.pathname.startsWith("/doctor");
 
+    isClinicManagerRoute = () => window.location.pathname.startsWith("/clinic-manager");
+
     getCurrentActor = () =>
-        this.isDoctorRoute() ? this.props.doctorInfo : this.props.adminInfo;
+        this.isDoctorRoute()
+            ? this.props.doctorInfo
+            : this.isClinicManagerRoute()
+                ? this.props.clinicManagerInfo
+                : this.props.adminInfo;
 
     isScopedManager = () => ["R2", "R4"].includes(this.getCurrentActor()?.roleId);
 
@@ -280,7 +286,11 @@ class EditClinic extends Component {
 
     handleBack = () => {
         this.props.history.push(
-            this.isDoctorRoute() ? "/doctor/manage-clinic" : "/system/manage-clinic"
+            this.isDoctorRoute()
+                ? "/doctor/manage-clinic"
+                : this.isClinicManagerRoute()
+                    ? "/clinic-manager/manage-clinic"
+                    : "/system/manage-clinic"
         );
     };
 
@@ -718,6 +728,7 @@ class EditClinic extends Component {
 const mapStateToProps = (state) => ({
     language: state.app.language,
     adminInfo: state.adminAuth.adminInfo,
+    clinicManagerInfo: state.clinicManagerAuth?.clinicManagerInfo,
     doctorInfo: state.doctor.doctorInfo,
 });
 

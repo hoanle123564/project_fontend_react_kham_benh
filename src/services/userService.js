@@ -1,4 +1,4 @@
-import axios, { adminAxios, doctorAxios, patientAxios } from "../axios";
+import axios, { adminAxios, clinicManagerAxios, doctorAxios, patientAxios } from "../axios";
 import { buildImageSrc } from "../utils/imageUtils";
 
 // Đăng nhập
@@ -11,6 +11,10 @@ const getCurrentAuthAxios = () => {
 
   if (pathname.startsWith("/system")) {
     return adminAxios;
+  }
+
+  if (pathname.startsWith("/clinic-manager")) {
+    return clinicManagerAxios;
   }
 
   if (pathname.startsWith("/doctor")) {
@@ -28,6 +32,8 @@ const getAuthAxiosByRole = (authRole) => {
   switch (authRole) {
     case "admin":
       return adminAxios;
+    case "clinic-manager":
+      return clinicManagerAxios;
     case "doctor":
       return doctorAxios;
     case "patient":
@@ -86,8 +92,9 @@ const getDoctor = (limit) => {
   return axios.get(`/api/top-doctor?limit=${limit}`);
 };
 // Lấy tất cả bác sĩ
-const getAllDoctor = () => {
-  return axios.get(`/api/all-doctor`);
+const getAllDoctor = (options = {}) => {
+  const managedOnly = options?.managedOnly ? "?managedOnly=1" : "";
+  return (options?.managedOnly ? getCurrentAuthAxios() : axios).get(`/api/all-doctor${managedOnly}`);
 };
 // Lưu thông tin chi tiết bác sĩ
 const postDetailDoctor = (data) => {
@@ -104,6 +111,15 @@ const getDetailDoctor = (doctorIdOrSlug) => {
 const changeStatusDoctorInfo = (data) => {
   return adminAxios.put("/api/change-status-doctor-info", data);
 };
+
+const changeClinicManagerDoctorStatus = (doctorId, data) =>
+  getCurrentAuthAxios().patch(`/api/clinic-manager/doctors/${encodeURIComponent(doctorId)}/status`, data);
+
+const createClinicManagerDoctor = (data) =>
+  getCurrentAuthAxios().post("/api/clinic-manager/doctors", data);
+
+const updateClinicManagerDoctor = (doctorId, data) =>
+  getCurrentAuthAxios().put(`/api/clinic-manager/doctors/${encodeURIComponent(doctorId)}`, data);
 
 const updateDoctorInfoOrder = (items) => {
   return adminAxios.put("/api/update-doctor-info-order", { items });
@@ -202,6 +218,17 @@ const getDoctorAppointmentDetail = (bookingId) => {
     `/api/doctor/appointment-detail?bookingId=${encodeURIComponent(bookingId)}`
   );
 };
+
+const getClinicManagerPatients = (params = {}) => {
+  const query = buildDoctorPatientQuery(params);
+  return getCurrentAuthAxios().get(`/api/clinic-manager/patients${query ? `?${query}` : ""}`);
+};
+
+const getClinicManagerPatient = (patientId) =>
+  getCurrentAuthAxios().get(`/api/clinic-manager/patients/${encodeURIComponent(patientId)}`);
+
+const updateClinicManagerPatient = (patientId, data) =>
+  getCurrentAuthAxios().put(`/api/clinic-manager/patients/${encodeURIComponent(patientId)}`, data);
 
 const getAdminMedicalRecordAppointmentDetail = (bookingId) => {
   return adminAxios.get(
@@ -558,8 +585,9 @@ const postSendRemedy = (data) => {
 };
 
 // get list booking
-const getAllBooking = () => {
-  return getCurrentAuthAxios().get("/api/get-all-list-booking");
+const getAllBooking = (params = {}) => {
+  const query = buildDoctorPatientQuery(params);
+  return getCurrentAuthAxios().get(`/api/get-all-list-booking${query ? `?${query}` : ""}`);
 };
 
 const getAdminBookingManagement = () => adminAxios.get("/api/admin/bookings");
@@ -571,6 +599,8 @@ const updateAdminBookingStatus = (bookingId, data) =>
 const getDoctorBookingManagement = () => doctorAxios.get("/api/doctor/bookings");
 const updateDoctorBookingStatus = (bookingId, data) =>
   doctorAxios.patch(`/api/doctor/bookings/${encodeURIComponent(bookingId)}/status`, data);
+const updateClinicManagerBookingStatus = (bookingId, data) =>
+  getCurrentAuthAxios().patch(`/api/clinic-manager/bookings/${encodeURIComponent(bookingId)}/status`, data);
 
 const getPublicDoctorReviews = (doctorId, params = {}) => {
   const query = buildDoctorPatientQuery(params);
@@ -643,6 +673,9 @@ export {
   postDetailDoctor,
   getDetailDoctor,
   changeStatusDoctorInfo,
+  changeClinicManagerDoctorStatus,
+  createClinicManagerDoctor,
+  updateClinicManagerDoctor,
   updateDoctorInfoOrder,
   getRelatedDoctorsService,
   postScheduleDoctor,
@@ -712,6 +745,9 @@ export {
   DeleteScheduleDoctor,
   getAppointmentDoctor,
   getDoctorPatients,
+  getClinicManagerPatients,
+  getClinicManagerPatient,
+  updateClinicManagerPatient,
   getDoctorPatientDetail,
   getDoctorPatientHistory,
   getDoctorQueue,
@@ -738,6 +774,7 @@ export {
   updateAdminBookingStatus,
   getDoctorBookingManagement,
   updateDoctorBookingStatus,
+  updateClinicManagerBookingStatus,
   getPublicDoctorReviews,
   getBookingReviewEligibility,
   createBookingReview,

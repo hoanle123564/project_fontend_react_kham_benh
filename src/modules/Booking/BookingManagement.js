@@ -4,9 +4,11 @@ import { toast } from "react-toastify";
 import PagePagination from "../../components/Pagination/PagePagination";
 import {
   getAdminBookingManagement,
+  getAllBooking,
   getDoctorBookingManagement,
   getLookUp,
   updateAdminBookingStatus,
+  updateClinicManagerBookingStatus,
   updateDoctorBookingStatus,
 } from "../../services/userService";
 import "./BookingManagement.scss";
@@ -40,6 +42,7 @@ class BookingManagement extends Component {
     search: "",
     statusFilter: "",
     currentPage: 1,
+    pagination: null,
     selectedStatusByBooking: {},
   };
 
@@ -53,13 +56,22 @@ class BookingManagement extends Component {
       defaultMessage,
     });
 
-  isAdmin = () => Boolean(this.props.adminMode);
+  isAdmin = () => Boolean(this.props.adminMode || this.props.clinicManagerMode);
 
-  loadData = async () => {
+  isClinicManager = () => Boolean(this.props.clinicManagerMode);
+
+  loadData = async (page = this.state.currentPage) => {
     this.setState({ loading: true, errorMessage: "" });
-    const listBookings = this.isAdmin()
-      ? getAdminBookingManagement
-      : getDoctorBookingManagement;
+    const listBookings = this.isClinicManager()
+      ? () => getAllBooking({
+        page,
+        limit: PAGE_SIZE,
+        search: this.state.search.trim(),
+        statusId: this.state.statusFilter,
+      })
+      : this.isAdmin()
+        ? getAdminBookingManagement
+        : getDoctorBookingManagement;
     try {
       const [bookingResponse, statusResponse] = await Promise.all([
         listBookings(),
@@ -79,6 +91,8 @@ class BookingManagement extends Component {
         bookings: bookingResponse.data || [],
         statuses: statusResponse.data || [],
         loading: false,
+        currentPage: this.isClinicManager() ? Number(bookingResponse.pagination?.page) || page : page,
+        pagination: this.isClinicManager() ? bookingResponse.pagination || null : null,
         selectedStatusByBooking: {},
       });
     } catch (error) {
@@ -113,6 +127,7 @@ class BookingManagement extends Component {
   };
 
   getFilteredBookings = () => {
+    if (this.isClinicManager()) return this.state.bookings;
     const search = this.state.search.trim().toLowerCase();
     return this.state.bookings.filter((booking) => {
       const searchable = [
@@ -134,12 +149,15 @@ class BookingManagement extends Component {
   };
 
   getPageBookings = () => {
+    if (this.isClinicManager()) return this.state.bookings;
     const start = (this.state.currentPage - 1) * PAGE_SIZE;
     return this.getFilteredBookings().slice(start, start + PAGE_SIZE);
   };
 
   handleFilterChange = (field, value) =>
-    this.setState({ [field]: value, currentPage: 1 });
+    this.setState({ [field]: value, currentPage: 1 }, () => {
+      if (this.isClinicManager()) this.loadData(1);
+    });
 
   handleStatusSelect = (bookingId, statusId) =>
     this.setState((state) => ({
@@ -158,9 +176,11 @@ class BookingManagement extends Component {
     )
       return;
 
-    const updateBooking = this.isAdmin()
-      ? updateAdminBookingStatus
-      : updateDoctorBookingStatus;
+    const updateBooking = this.isClinicManager()
+      ? updateClinicManagerBookingStatus
+      : this.isAdmin()
+        ? updateAdminBookingStatus
+        : updateDoctorBookingStatus;
     this.setState({ updatingId: booking.id, errorMessage: "" });
     try {
       const response = await updateBooking(booking.id, { statusId });
@@ -336,10 +356,9 @@ class BookingManagement extends Component {
       currentPage,
     } = this.state;
     const filteredBookings = this.getFilteredBookings();
-    const totalPages = Math.max(
-      1,
-      Math.ceil(filteredBookings.length / PAGE_SIZE),
-    );
+    const totalPages = this.isClinicManager()
+      ? Math.max(1, Math.ceil((this.state.pagination?.total || 0) / PAGE_SIZE))
+      : Math.max(1, Math.ceil(filteredBookings.length / PAGE_SIZE));
     const title = this.isAdmin()
       ? this.getText("adminTitle", "Booking management")
       : this.getText("doctorTitle", "My bookings");
@@ -515,7 +534,7 @@ class BookingManagement extends Component {
               <PagePagination
                 page={Math.min(currentPage, totalPages)}
                 totalPages={totalPages}
-                onChange={(page) => this.setState({ currentPage: page })}
+                onChange={(page) => this.isClinicManager() ? this.loadData(page) : this.setState({ currentPage: page })}
                 className="booking-management__pagination"
                 previousLabel={this.getText("previous", "Previous")}
                 nextLabel={this.getText("next", "Next")}

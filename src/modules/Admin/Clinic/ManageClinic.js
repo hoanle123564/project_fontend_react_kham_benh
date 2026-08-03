@@ -78,8 +78,14 @@ class ManageClinic extends Component {
 
   isDoctorRoute = () => window.location.pathname.startsWith("/doctor");
 
+  isClinicManagerRoute = () => window.location.pathname.startsWith("/clinic-manager");
+
   getCurrentActor = () =>
-    this.isDoctorRoute() ? this.props.doctorInfo : this.props.adminInfo;
+    this.isDoctorRoute()
+      ? this.props.doctorInfo
+      : this.isClinicManagerRoute()
+        ? this.props.clinicManagerInfo
+        : this.props.adminInfo;
 
   isClinicManager = () => ["R2", "R4"].includes(this.getCurrentActor()?.roleId);
 
@@ -192,7 +198,9 @@ class ManageClinic extends Component {
     if (this.props.history) {
       const editPath = this.isDoctorRoute()
         ? `/doctor/manage-clinic/${clinic.id}`
-        : `/system/edit-clinic/${clinic.id}`;
+        : this.isClinicManagerRoute()
+          ? `/clinic-manager/edit-clinic/${clinic.id}`
+          : `/system/edit-clinic/${clinic.id}`;
 
       this.props.history.push(editPath, {
         clinicData: clinic,
@@ -552,6 +560,7 @@ class ManageClinic extends Component {
 const mapStateToProps = (state) => ({
   clinics: state.admin.AllClinic,
   adminInfo: state.adminAuth.adminInfo,
+  clinicManagerInfo: state.clinicManagerAuth?.clinicManagerInfo,
   doctorInfo: state.doctor.doctorInfo,
 });
 

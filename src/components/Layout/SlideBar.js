@@ -25,6 +25,7 @@ class SlideBar extends Component {
   componentDidUpdate(prevProps) {
     if (
       prevProps.adminToken !== this.props.adminToken ||
+      prevProps.clinicManagerToken !== this.props.clinicManagerToken ||
       prevProps.doctorToken !== this.props.doctorToken
     ) {
       this.loadMenuByRole();
@@ -36,7 +37,9 @@ class SlideBar extends Component {
 
     let token = null;
 
-    if (path.includes("/system")) {
+    if (path.includes("/clinic-manager")) {
+      token = this.props.clinicManagerToken;
+    } else if (path.includes("/system")) {
       token = this.props.adminToken;
     } else if (path.includes("/doctor")) {
       token = this.props.doctorToken;
@@ -103,6 +106,11 @@ class SlideBar extends Component {
   handleLogout = () => {
     const path = window.location.pathname;
 
+    if (path.includes("/clinic-manager") && this.props.clinicManagerToken) {
+      this.props.clinicManagerLogout();
+      return;
+    }
+
     if (path.includes("/system") && this.props.adminToken) {
       this.props.adminLogout();
       return;
@@ -158,6 +166,7 @@ class SlideBar extends Component {
 
 const mapStateToProps = (state) => ({
   adminToken: state.adminAuth.token,
+  clinicManagerToken: state.clinicManagerAuth?.token,
   doctorToken: state.doctor.token,
 });
 
@@ -166,6 +175,7 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch({ type: "CHANGE_LANGUAGE", language: lang }),
 
   adminLogout: () => dispatch({ type: "ADMIN_LOGOUT" }),
+  clinicManagerLogout: () => dispatch({ type: "CLINIC_MANAGER_LOGOUT" }),
   doctorLogout: () => dispatch({ type: "DOCTOR_LOGOUT" }),
 });
 

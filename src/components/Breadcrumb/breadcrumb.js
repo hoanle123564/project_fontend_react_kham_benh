@@ -50,6 +50,18 @@ const ROUTE_MAP = {
     '/system/edit-specialty': { vi: 'Chỉnh sửa chuyên khoa', en: 'Edit Specialty' },
     '/system/edit-post': { vi: 'Chỉnh sửa bài viết', en: 'Edit Post' },
 
+    // === CLINIC MANAGER (/clinic-manager) ===
+    '/clinic-manager': { vi: 'Cơ sở của tôi', en: 'My Clinic' },
+    '/clinic-manager/manage-patient': { vi: 'Quản lý bệnh nhân', en: 'Manage Patients' },
+    '/clinic-manager/doctor-table': { vi: 'Danh sách bác sĩ', en: 'Doctors List' },
+    '/clinic-manager/manage-doctor': { vi: 'Quản lý bác sĩ', en: 'Manage Doctors' },
+    '/clinic-manager/manage-clinic': { vi: 'Cơ sở của tôi', en: 'My Clinic' },
+    '/clinic-manager/edit-clinic': { vi: 'Chỉnh sửa cơ sở y tế', en: 'Edit Clinic' },
+    '/clinic-manager/manage-clinic-department': { vi: 'Quản lý khoa', en: 'Manage Departments' },
+    '/clinic-manager/manage-schedule': { vi: 'Quản lý lịch làm việc', en: 'Manage Schedule' },
+    '/clinic-manager/list-appointment': { vi: 'Lịch đặt khám', en: 'Appointments' },
+    '/clinic-manager/edit-profile': { vi: 'Chỉnh sửa tài khoản', en: 'Edit Account' },
+
     // === DOCTOR (/doctor) ===
     '/doctor': { vi: 'Dashboard', en: 'Dashboard' },
     '/doctor/dashboard': { vi: 'Dashboard', en: 'Dashboard' },
@@ -67,12 +79,14 @@ const ROUTE_MAP = {
 const ROOT_LABELS = {
     patient: { vi: 'Trang chủ', en: 'Home' },
     admin: { vi: 'Dashboard', en: 'Dashboard' },
+    'clinic-manager': { vi: 'Cơ sở của tôi', en: 'My Clinic' },
     doctor: { vi: 'Dashboard', en: 'Dashboard' },
 };
 
 const ROOT_PATHS = {
     patient: '/home',
     admin: '/system/dashboard',
+    'clinic-manager': '/clinic-manager/manage-clinic',
     doctor: '/doctor/dashboard',
 };
 
@@ -168,6 +182,7 @@ class Breadcrumb extends Component {
     // Xác định variant từ pathname
     getVariant(pathname) {
         if (pathname.startsWith('/system')) return 'admin';
+        if (pathname.startsWith('/clinic-manager')) return 'clinic-manager';
         if (pathname.startsWith('/doctor')) return 'doctor';
         return 'patient';
     }
@@ -180,7 +195,7 @@ class Breadcrumb extends Component {
 
         // Nếu đang ở trang root → không hiện breadcrumb
         if (pathname === rootPath || pathname === '/home' || pathname === '/'
-            || pathname === '/system' || pathname === '/doctor') {
+            || pathname === '/system' || pathname === '/clinic-manager' || pathname === '/doctor') {
             return null;
         }
 

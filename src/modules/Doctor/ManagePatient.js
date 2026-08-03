@@ -3,9 +3,12 @@ import { connect } from "react-redux";
 import { FormattedMessage, injectIntl } from "react-intl";
 import moment from "moment";
 import {
-    getDoctorPatientDetail,
-    getDoctorPatientHistory,
-    getDoctorPatients,
+  getDoctorPatientDetail,
+  getDoctorPatientHistory,
+  getDoctorPatients,
+  getClinicManagerPatient,
+  getClinicManagerPatients,
+  updateClinicManagerPatient,
 } from "../../services/userService";
 import "./ManagePatient.scss";
 
@@ -29,6 +32,9 @@ class ManagePatient extends Component {
             },
             isLoading: false,
             isDetailLoading: false,
+            isEditingPatient: false,
+            isSavingPatient: false,
+            patientForm: {},
             errorMessage: "",
         };
     }
@@ -53,6 +59,8 @@ class ManagePatient extends Component {
                     selectedPatientId: routePatientId,
                     patientDetail: null,
                     patientHistory: [],
+                    isEditingPatient: false,
+                    patientForm: {},
                     errorMessage: "",
                 },
                 () => {
@@ -72,6 +80,8 @@ class ManagePatient extends Component {
                     selectedPatientId: routePatientId,
                     patientDetail: null,
                     patientHistory: [],
+                    isEditingPatient: false,
+                    patientForm: {},
                 },
                 () => {
                     if (routePatientId) {
@@ -97,6 +107,8 @@ class ManagePatient extends Component {
             .trim();
     };
 
+    isClinicManager = () => this.props.userInfo?.roleId === "R4";
+
     getRoutePatientId = () => this.props.match?.params?.patientId || null;
 
     isDetailRoute = () => Boolean(this.getRoutePatientId());
@@ -113,7 +125,8 @@ class ManagePatient extends Component {
         this.setState({ isLoading: true, errorMessage: "" });
 
         try {
-            const response = await getDoctorPatients({
+            const getPatients = this.isClinicManager() ? getClinicManagerPatients : getDoctorPatients;
+            const response = await getPatients({
                 page,
                 limit: pagination.limit,
                 search: search.trim(),
@@ -166,10 +179,12 @@ class ManagePatient extends Component {
         this.setState({ selectedPatientId: patientId, isDetailLoading: true, errorMessage: "" });
 
         try {
-            const [detailResponse, historyResponse] = await Promise.all([
-                getDoctorPatientDetail(patientId),
-                getDoctorPatientHistory(patientId),
-            ]);
+            const [detailResponse, historyResponse] = this.isClinicManager()
+                ? [await getClinicManagerPatient(patientId), null]
+                : await Promise.all([
+                    getDoctorPatientDetail(patientId),
+                    getDoctorPatientHistory(patientId),
+                ]);
 
             if (Number(this.state.selectedPatientId) !== Number(patientId)) return;
 
@@ -190,6 +205,8 @@ class ManagePatient extends Component {
                     historyResponse && historyResponse.errCode === 0
                         ? historyResponse.data || []
                         : [],
+                isEditingPatient: false,
+                patientForm: {},
             });
         } catch {
             if (Number(this.state.selectedPatientId) !== Number(patientId)) return;
@@ -249,13 +266,14 @@ class ManagePatient extends Component {
         if (!patientId) return;
 
         if (this.props.history) {
-            this.props.history.push(`/doctor/manage-patient/${encodeURIComponent(patientId)}`);
+            const basePath = this.isClinicManager() ? "/clinic-manager/manage-patient" : "/doctor/manage-patient";
+            this.props.history.push(`${basePath}/${encodeURIComponent(patientId)}`);
         }
     };
 
     handleBackToList = () => {
         if (this.props.history) {
-            this.props.history.push("/doctor/manage-patient");
+            this.props.history.push(this.isClinicManager() ? "/clinic-manager/manage-patient" : "/doctor/manage-patient");
         }
     };
 
@@ -365,8 +383,66 @@ class ManagePatient extends Component {
         </div>
     );
 
+    createPatientForm = (patient = {}) => ({
+        firstName: patient.firstName || "",
+        lastName: patient.lastName || "",
+        phoneNumber: patient.phoneNumber || "",
+        gender: patient.gender || "",
+        dateOfBirth: patient.dateOfBirth ? String(patient.dateOfBirth).slice(0, 10) : "",
+        address: patient.address || "",
+        occupation: patient.occupation || "",
+        ethnicityId: patient.ethnicityId || "",
+        citizenId: patient.citizenId || "",
+        healthInsuranceCode: patient.healthInsuranceCode || "",
+    });
+
+    handleStartPatientEdit = () => {
+        this.setState({
+            isEditingPatient: true,
+            patientForm: this.createPatientForm(this.state.patientDetail),
+            errorMessage: "",
+        });
+    };
+
+    handlePatientFieldChange = (event) => {
+        const { name, value } = event.target;
+        this.setState((prevState) => ({
+            patientForm: { ...prevState.patientForm, [name]: value },
+        }));
+    };
+
+    handleCancelPatientEdit = () => {
+        this.setState({ isEditingPatient: false, patientForm: {}, errorMessage: "" });
+    };
+
+    handleSavePatient = async (event) => {
+        event.preventDefault();
+        const { selectedPatientId, patientForm } = this.state;
+        if (!selectedPatientId || !this.isClinicManager()) return;
+
+        this.setState({ isSavingPatient: true, errorMessage: "" });
+        try {
+            const response = await updateClinicManagerPatient(selectedPatientId, patientForm);
+            if (!response || response.errCode !== 0) {
+                this.setState({
+                    isSavingPatient: false,
+                    errorMessage: response?.errMessage || this.getText("saveError"),
+                });
+                return;
+            }
+            this.setState({
+                patientDetail: response.data || this.state.patientDetail,
+                isEditingPatient: false,
+                isSavingPatient: false,
+                patientForm: {},
+            });
+        } catch {
+            this.setState({ isSavingPatient: false, errorMessage: this.getText("saveError") });
+        }
+    };
+
     renderPatientInfoPanel = () => {
-        const { patientDetail } = this.state;
+        const { patientDetail, isEditingPatient, isSavingPatient, patientForm } = this.state;
 
         return (
             <section className="manage-patient__detail-panel">
@@ -375,22 +451,42 @@ class ManagePatient extends Component {
                         <h3>{patientDetail.patientName || "-"}</h3>
                         <p>{patientDetail.email || "-"}</p>
                     </div>
-                    <span>{patientDetail.medicalCode || "-"}</span>
+                    <div className="manage-patient__detail-actions">
+                        <span>{patientDetail.medicalCode || "-"}</span>
+                        {this.isClinicManager() && !isEditingPatient && (
+                            <button type="button" onClick={this.handleStartPatientEdit}>
+                                {this.getText("edit")}
+                            </button>
+                        )}
+                    </div>
                 </div>
 
-                <div className="manage-patient__detail-grid">
-                    {this.renderDetailRow(this.getText("phone"), patientDetail.phoneNumber)}
-                    {this.renderDetailRow(this.getText("gender"), this.formatGender(patientDetail.gender))}
-                    {this.renderDetailRow(this.getText("dob"), this.formatDate(patientDetail.dateOfBirth))}
-                    {this.renderDetailRow(this.getText("address"), patientDetail.address)}
-                    {this.renderDetailRow(this.getText("citizenId"), patientDetail.citizenId)}
-                    {this.renderDetailRow(this.getText("insurance"), patientDetail.healthInsuranceCode)}
-                    {this.renderDetailRow(this.getText("bloodType"), patientDetail.bloodType)}
-                    {this.renderDetailRow(
-                        this.getText("latestVisit"),
-                        this.formatLatestVisit(patientDetail)
-                    )}
-                </div>
+                {isEditingPatient ? (
+                    <form className="manage-patient__patient-form" onSubmit={this.handleSavePatient}>
+                        <label>{this.getText("firstName")}<input name="firstName" value={patientForm.firstName} onChange={this.handlePatientFieldChange} /></label>
+                        <label>{this.getText("lastName")}<input name="lastName" value={patientForm.lastName} onChange={this.handlePatientFieldChange} /></label>
+                        <label>{this.getText("phone")}<input name="phoneNumber" value={patientForm.phoneNumber} onChange={this.handlePatientFieldChange} /></label>
+                        <label>{this.getText("gender")}<select name="gender" value={patientForm.gender} onChange={this.handlePatientFieldChange}><option value="">-</option><option value="M">{this.getText("male")}</option><option value="F">{this.getText("female")}</option><option value="O">{this.getText("other")}</option></select></label>
+                        <label>{this.getText("dob")}<input type="date" name="dateOfBirth" value={patientForm.dateOfBirth} onChange={this.handlePatientFieldChange} /></label>
+                        <label>{this.getText("address")}<input name="address" value={patientForm.address} onChange={this.handlePatientFieldChange} /></label>
+                        <label>{this.getText("occupation")}<input name="occupation" value={patientForm.occupation} onChange={this.handlePatientFieldChange} /></label>
+                        <label>{this.getText("ethnicity")}<input name="ethnicityId" value={patientForm.ethnicityId} onChange={this.handlePatientFieldChange} /></label>
+                        <label>{this.getText("citizenId")}<input name="citizenId" value={patientForm.citizenId} onChange={this.handlePatientFieldChange} /></label>
+                        <label>{this.getText("insurance")}<input name="healthInsuranceCode" value={patientForm.healthInsuranceCode} onChange={this.handlePatientFieldChange} /></label>
+                        <div className="manage-patient__form-actions"><button type="submit" disabled={isSavingPatient}>{isSavingPatient ? this.getText("saving") : this.getText("save")}</button><button type="button" onClick={this.handleCancelPatientEdit} disabled={isSavingPatient}>{this.getText("cancel")}</button></div>
+                    </form>
+                ) : (
+                    <div className="manage-patient__detail-grid">
+                        {this.renderDetailRow(this.getText("phone"), patientDetail.phoneNumber)}
+                        {this.renderDetailRow(this.getText("gender"), this.formatGender(patientDetail.gender))}
+                        {this.renderDetailRow(this.getText("dob"), this.formatDate(patientDetail.dateOfBirth))}
+                        {this.renderDetailRow(this.getText("address"), patientDetail.address)}
+                        {this.renderDetailRow(this.getText("citizenId"), patientDetail.citizenId)}
+                        {this.renderDetailRow(this.getText("insurance"), patientDetail.healthInsuranceCode)}
+                        {this.renderDetailRow(this.getText("bloodType"), patientDetail.bloodType)}
+                        {this.renderDetailRow(this.getText("latestVisit"), this.formatLatestVisit(patientDetail))}
+                    </div>
+                )}
             </section>
         );
     };
@@ -411,7 +507,7 @@ class ManagePatient extends Component {
                                     <th>{this.getText("queueNumber")}</th>
                                     <th>{this.getText("prescription")}</th>
                                     <th>{this.getText("paraclinical")}</th>
-                                    <th>{this.getText("record")}</th>
+                                    {!this.isClinicManager() && <th>{this.getText("record")}</th>}
                                 </tr>
                             </thead>
                             <tbody>
@@ -427,23 +523,25 @@ class ManagePatient extends Component {
                                             <td>{item.queueNumber || "-"}</td>
                                             <td>{item.prescriptionId ? this.getText("yes") : this.getText("no")}</td>
                                             <td>{Number(item.paraclinicalCount || 0)}</td>
-                                            <td>
-                                                <button
-                                                    type="button"
-                                                    className="manage-patient__icon-button"
-                                                    disabled={!item.medicalRecordId}
-                                                    title={this.getText("viewRecord")}
-                                                    aria-label={this.getText("viewRecord")}
-                                                    onClick={() => this.handleOpenMedicalRecord(item.medicalRecordId)}
-                                                >
-                                                    <i className="bi bi-journal-medical"></i>
-                                                </button>
-                                            </td>
+                                            {!this.isClinicManager() && (
+                                                <td>
+                                                    <button
+                                                        type="button"
+                                                        className="manage-patient__icon-button"
+                                                        disabled={!item.medicalRecordId}
+                                                        title={this.getText("viewRecord")}
+                                                        aria-label={this.getText("viewRecord")}
+                                                        onClick={() => this.handleOpenMedicalRecord(item.medicalRecordId)}
+                                                    >
+                                                        <i className="bi bi-journal-medical"></i>
+                                                    </button>
+                                                </td>
+                                            )}
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="6">{this.getText("noHistory")}</td>
+                                        <td colSpan={this.isClinicManager() ? "5" : "6"}>{this.getText("noHistory")}</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -635,9 +733,11 @@ class ManagePatient extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state, ownProps) => ({
     language: state.app.language,
-    userInfo: state.doctor?.doctorInfo,
+    userInfo: ownProps.location?.pathname?.startsWith("/clinic-manager")
+        ? state.clinicManagerAuth?.clinicManagerInfo
+        : state.doctor?.doctorInfo,
 });
 
 export default connect(mapStateToProps)(injectIntl(ManagePatient));

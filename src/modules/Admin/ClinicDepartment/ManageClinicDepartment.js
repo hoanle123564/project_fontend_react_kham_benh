@@ -78,8 +78,14 @@ class ManageClinicDepartment extends Component {
 
   isDoctorRoute = () => window.location.pathname.startsWith("/doctor");
 
+  isClinicManagerRoute = () => window.location.pathname.startsWith("/clinic-manager");
+
   getCurrentActor = () =>
-    this.isDoctorRoute() ? this.props.doctorInfo : this.props.adminInfo;
+    this.isDoctorRoute()
+      ? this.props.doctorInfo
+      : this.isClinicManagerRoute()
+        ? this.props.clinicManagerInfo
+        : this.props.adminInfo;
 
   isClinicManager = () => ["R2", "R4"].includes(this.getCurrentActor()?.roleId);
 
@@ -439,6 +445,7 @@ const mapStateToProps = (state) => ({
   ListClinic: state.admin.AllClinic,
   ListSpecialty: state.admin.specialty,
   adminInfo: state.adminAuth.adminInfo,
+  clinicManagerInfo: state.clinicManagerAuth?.clinicManagerInfo,
   doctorInfo: state.doctor.doctorInfo,
 });
 

@@ -223,17 +223,27 @@ export const doctorClinicManagerMenu = [
 
 export const clinicManagerMenu = [
   {
+    name: "menu.clinic-manager.patient",
+    menus: [
+      {
+        name: "menu.clinic-manager.patients",
+        icon: "bi bi-person-vcard",
+        link: "/clinic-manager/manage-patient",
+      },
+    ],
+  },
+  {
     name: "menu.clinic-manager.clinic",
     menus: [
       {
         name: "menu.clinic-manager.my-clinic",
         icon: "bi bi-hospital",
-        link: "/system/manage-clinic",
+        link: "/clinic-manager/manage-clinic",
       },
       {
         name: "menu.clinic-manager.departments",
         icon: "bi bi-diagram-3",
-        link: "/system/manage-clinic-department",
+        link: "/clinic-manager/manage-clinic-department",
       },
     ],
   },
@@ -243,22 +253,32 @@ export const clinicManagerMenu = [
       {
         name: "menu.clinic-manager.doctors",
         icon: "bi bi-people",
-        link: "/system/doctor-table",
+        link: "/clinic-manager/doctor-table",
       },
       {
         name: "menu.clinic-manager.manage-doctor",
         icon: "bi bi-person-badge",
-        link: "/system/manage-doctor",
+        link: "/clinic-manager/manage-doctor",
       },
       {
         name: "menu.clinic-manager.schedule",
         icon: "bi bi-calendar3",
-        link: "/system/manage-schedule",
+        link: "/clinic-manager/manage-schedule",
       },
       {
         name: "menu.clinic-manager.appointments",
         icon: "bi bi-person-lines-fill",
-        link: "/system/list-appointment",
+        link: "/clinic-manager/list-appointment",
+      },
+    ],
+  },
+  {
+    name: "menu.clinic-manager.account",
+    menus: [
+      {
+        name: "menu.clinic-manager.profile",
+        icon: "bi bi-person-circle",
+        link: "/clinic-manager/edit-profile",
       },
     ],
   },

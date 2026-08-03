@@ -192,6 +192,8 @@ class EditProfile extends Component {
         // Sync with redux auth state immediately to update header
         if (this.props.isAdmin) {
           this.props.updateAdminInfo(res.data);
+        } else if (this.props.isClinicManager) {
+          this.props.updateClinicManagerInfo(res.data);
         } else {
           this.props.updateDoctorInfo(res.data);
         }
@@ -668,12 +670,18 @@ class EditProfile extends Component {
 const mapStateToProps = (state) => {
   const pathName = window.location.pathname;
   const isAdmin = pathName.includes("/system");
-  const currentUser = isAdmin ? state.adminAuth.adminInfo : state.doctor.doctorInfo;
+  const isClinicManager = pathName.includes("/clinic-manager");
+  const currentUser = isAdmin
+    ? state.adminAuth.adminInfo
+    : isClinicManager
+      ? state.clinicManagerAuth?.clinicManagerInfo
+      : state.doctor.doctorInfo;
 
   return {
     language: state.app.language,
     currentUser: currentUser,
     isAdmin: isAdmin,
+    isClinicManager: isClinicManager,
     gender: state.admin.genderArr,
     position: state.admin.positionArr,
     role: state.admin.roleArr,
@@ -685,6 +693,7 @@ const mapDispatchToProps = (dispatch) => ({
   getPosition: () => dispatch(action.fetchPosition()),
   getRole: () => dispatch(action.fetchRole()),
   updateAdminInfo: (data) => dispatch({ type: "UPDATE_ADMIN_INFO", data }),
+  updateClinicManagerInfo: (data) => dispatch({ type: "UPDATE_CLINIC_MANAGER_INFO", data }),
   updateDoctorInfo: (data) => dispatch({ type: "UPDATE_DOCTOR_INFO", data }),
 });
 

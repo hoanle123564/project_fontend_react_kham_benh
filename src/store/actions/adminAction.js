@@ -233,10 +233,10 @@ export const fetchTopDoctorFail = () => ({
   type: actionTypes.FETCH_DOCTOR_FAIL,
 });
 
-export const fetchAllDoctor = () => {
+export const fetchAllDoctor = (options = {}) => {
   return async (dispatch, getState) => {
     try {
-      let res = await getAllDoctor(); // Gọi dịch vụ lấy tất cả bác sĩ
+      let res = await getAllDoctor(options); // Gọi dịch vụ lấy tất cả bác sĩ
       if (res && res.errCode === 0) {
         let listDoctor = dispatch({
           type: actionTypes.FETCH_ALL_DOCTOR,

@@ -15,8 +15,9 @@ class ManageSchedule extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchAllDoctor();
-    this.props.GetAllClinic();
+    const options = this.isClinicManager() ? { managedOnly: true } : {};
+    this.props.fetchAllDoctor(options);
+    this.props.GetAllClinic(options);
   }
 
   componentDidUpdate(prevProps) {
@@ -47,25 +48,8 @@ class ManageSchedule extends Component {
 
   isClinicManager = () => this.props.userInfo?.roleId === "R4";
 
-  getManagedClinicIds = () => {
-    if (!this.isClinicManager()) {
-      return null;
-    }
-
-    return (this.props.ListClinic || [])
-      .filter((clinic) => Number(clinic.managerUserId) === Number(this.props.userInfo?.id))
-      .map((clinic) => Number(clinic.id));
-  };
-
   getVisibleDoctors = () => {
-    const managedClinicIds = this.getManagedClinicIds();
-    if (!managedClinicIds) {
-      return this.props.ListDoctor || [];
-    }
-
-    return (this.props.ListDoctor || []).filter((doctor) =>
-      managedClinicIds.includes(Number(doctor.clinicId))
-    );
+    return this.props.ListDoctor || [];
   };
 
   render() {
@@ -86,7 +70,7 @@ class ManageSchedule extends Component {
 
         {selectDoctor ? (
           <ScheduleRuleManager
-            authRole="admin"
+            authRole={this.isClinicManager() ? "clinic-manager" : "admin"}
             doctorId={selectDoctor.value}
             doctorLabel={selectDoctor.label}
             language={this.props.language}
@@ -101,16 +85,18 @@ class ManageSchedule extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state, ownProps) => ({
   language: state.app.language,
-  userInfo: state.adminAuth.adminInfo,
+  userInfo: ownProps.location?.pathname?.startsWith("/clinic-manager")
+    ? state.clinicManagerAuth?.clinicManagerInfo
+    : state.adminAuth.adminInfo,
   ListDoctor: state.admin.AllDoctor,
   ListClinic: state.admin.AllClinic,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  fetchAllDoctor: () => dispatch(action.fetchAllDoctor()),
-  GetAllClinic: () => dispatch(action.GetAllClinic()),
+  fetchAllDoctor: (options) => dispatch(action.fetchAllDoctor(options)),
+  GetAllClinic: (options) => dispatch(action.GetAllClinic(options)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ManageSchedule);

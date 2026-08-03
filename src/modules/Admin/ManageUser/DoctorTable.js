@@ -1,12 +1,15 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
+import { injectIntl } from "react-intl";
 import { Button } from "reactstrap";
 import { toast } from "react-toastify";
 import * as actions from "../../../store/actions";
 import {
   buildImageSrc,
+  changeClinicManagerDoctorStatus,
   changeStatusDoctorInfo,
+  createClinicManagerDoctor,
   updateDoctorInfoOrder,
 } from "../../../services/userService";
 import PagePagination from "../../../components/Pagination/PagePagination";
@@ -45,12 +48,16 @@ class DoctorTable extends Component {
       doctorsPerPage: 10,
       isOrderChanged: false,
       draggedIndex: null,
+      isCreateDoctorOpen: false,
+      isCreatingDoctor: false,
+      newDoctor: { email: "", password: "", firstName: "", lastName: "" },
     };
   }
 
   componentDidMount() {
-    this.props.fetchAllDoctor();
-    this.props.GetAllClinic();
+    const options = this.isClinicManager() ? { managedOnly: true } : {};
+    this.props.fetchAllDoctor(options);
+    this.props.GetAllClinic(options);
     this.props.GetAllSpecialty();
   }
 
@@ -103,27 +110,16 @@ class DoctorTable extends Component {
     return total || 1;
   };
 
-  isClinicManager = () => this.props.adminInfo?.roleId === "R4";
+  isClinicManager = () => this.props.clinicManagerInfo?.roleId === "R4";
 
-  getManagedClinicIds = () => {
-    if (!this.isClinicManager()) {
-      return null;
-    }
+  getManageDoctorPath = () =>
+    this.isClinicManager() ? "/clinic-manager/manage-doctor" : "/system/manage-doctor";
 
-    return (this.props.ListClinic || [])
-      .filter((clinic) => Number(clinic.managerUserId) === Number(this.props.adminInfo?.id))
-      .map((clinic) => Number(clinic.id));
-  };
+  getText = (id, defaultMessage) =>
+    this.props.intl.formatMessage({ id, defaultMessage });
 
   getVisibleDoctors = () => {
-    const managedClinicIds = this.getManagedClinicIds();
-    if (!managedClinicIds) {
-      return this.props.ListDoctor || [];
-    }
-
-    return (this.props.ListDoctor || []).filter((doctor) =>
-      managedClinicIds.includes(Number(doctor.clinicId))
-    );
+    return this.props.ListDoctor || [];
   };
 
   canEnableDragDrop = () =>
@@ -187,9 +183,43 @@ class DoctorTable extends Component {
   };
 
   handleEditDoctor = (doctor) => {
-    this.props.history.push("/system/manage-doctor", {
+    this.props.history.push(this.getManageDoctorPath(), {
       selectedDoctorId: doctor.id,
     });
+  };
+
+  handleCreateDoctorChange = (event) => {
+    const { name, value } = event.target;
+    this.setState((prevState) => ({
+      newDoctor: { ...prevState.newDoctor, [name]: value },
+    }));
+  };
+
+  handleCreateDoctor = async (event) => {
+    event.preventDefault();
+    if (!this.isClinicManager()) return;
+
+    this.setState({ isCreatingDoctor: true });
+    try {
+      const response = await createClinicManagerDoctor(this.state.newDoctor);
+      if (response?.errCode !== 0) {
+        toast.error(response?.errMessage || this.getText("menu.clinic-manager.create-error", "Unable to create doctor."));
+        this.setState({ isCreatingDoctor: false });
+        return;
+      }
+      this.setState({
+        isCreateDoctorOpen: false,
+        isCreatingDoctor: false,
+        newDoctor: { email: "", password: "", firstName: "", lastName: "" },
+      });
+      this.props.fetchAllDoctor({ managedOnly: true });
+      this.props.history.push(this.getManageDoctorPath(), {
+        selectedDoctorId: response.data?.doctorId,
+      });
+    } catch {
+      this.setState({ isCreatingDoctor: false });
+      toast.error(this.getText("menu.clinic-manager.create-error", "Unable to create doctor."));
+    }
   };
 
   handleToggleStatus = async (doctor) => {
@@ -208,14 +238,13 @@ class DoctorTable extends Component {
     }));
 
     try {
-      const res = await changeStatusDoctorInfo({
-        id: doctor.doctorInfoId,
-        isActive: nextStatus,
-      });
+      const res = this.isClinicManager()
+        ? await changeClinicManagerDoctorStatus(doctor.id, { isActive: nextStatus })
+        : await changeStatusDoctorInfo({ id: doctor.doctorInfoId, isActive: nextStatus });
 
       if (res?.errCode === 0) {
         toast.success("Cập nhật trạng thái bác sĩ thành công!");
-        this.props.fetchAllDoctor();
+        this.props.fetchAllDoctor(this.isClinicManager() ? { managedOnly: true } : {});
         return;
       }
 
@@ -350,13 +379,32 @@ class DoctorTable extends Component {
             <Button
               color="primary"
               className="doctor-table__manage-button"
-              onClick={() => this.props.history.push("/system/manage-doctor")}
+              onClick={() => this.props.history.push(this.getManageDoctorPath())}
             >
               <i className="fas fa-edit"></i>
               <span>Quản lý thông tin bác sĩ</span>
             </Button>
+            {isClinicManager && (
+              <Button
+                color="primary"
+                onClick={() => this.setState({ isCreateDoctorOpen: !this.state.isCreateDoctorOpen })}
+              >
+                <i className="fas fa-user-plus"></i>
+                <span>{this.getText("user-manage.add", "Add doctor")}</span>
+              </Button>
+            )}
           </div>
         </div>
+
+        {this.state.isCreateDoctorOpen && (
+          <form className="doctor-table__create-form" onSubmit={this.handleCreateDoctor}>
+            <label>{this.getText("user-manage.email", "Email")}<input type="email" name="email" required value={this.state.newDoctor.email} onChange={this.handleCreateDoctorChange} /></label>
+            <label>{this.getText("user-manage.password", "Password")}<input type="password" name="password" required value={this.state.newDoctor.password} onChange={this.handleCreateDoctorChange} /></label>
+            <label>{this.getText("user-manage.first-name", "First name")}<input name="firstName" required value={this.state.newDoctor.firstName} onChange={this.handleCreateDoctorChange} /></label>
+            <label>{this.getText("user-manage.last-name", "Last name")}<input name="lastName" required value={this.state.newDoctor.lastName} onChange={this.handleCreateDoctorChange} /></label>
+            <div><Button color="primary" type="submit" disabled={this.state.isCreatingDoctor}>{this.getText("user-manage.save", "Save")}</Button><Button color="secondary" outline type="button" onClick={() => this.setState({ isCreateDoctorOpen: false })} disabled={this.state.isCreatingDoctor}>{this.getText("user-manage.cancel", "Cancel")}</Button></div>
+          </form>
+        )}
 
         <div className="doctor-table__toolbar">
           <div className="doctor-table__search">
@@ -454,7 +502,6 @@ class DoctorTable extends Component {
                               className="form-check-input"
                               type="checkbox"
                               role="switch"
-                              disabled={isClinicManager}
                               checked={Number(doctor.isActive) === 1}
                               onChange={() => this.handleToggleStatus(doctor)}
                             />
@@ -501,12 +548,13 @@ const mapStateToProps = (state) => ({
   ListSpecialty: state.admin.specialty,
   ListClinic: state.admin.AllClinic,
   adminInfo: state.adminAuth.adminInfo,
+  clinicManagerInfo: state.clinicManagerAuth?.clinicManagerInfo,
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  fetchAllDoctor: () => dispatch(actions.fetchAllDoctor()),
-  GetAllClinic: () => dispatch(actions.GetAllClinic()),
+  fetchAllDoctor: (options) => dispatch(actions.fetchAllDoctor(options)),
+  GetAllClinic: (options) => dispatch(actions.GetAllClinic(options)),
   GetAllSpecialty: () => dispatch(actions.GetAllSpecialty()),
 });
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(DoctorTable));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(injectIntl(DoctorTable)));

@@ -131,6 +131,8 @@ class Header extends Component {
         // Chỉ logout đúng role đang dùng, tránh logout cả admin lẫn doctor cùng lúc
         if (path.includes("/system")) {
             this.props.adminLogout();
+        } else if (path.includes("/clinic-manager")) {
+            this.props.clinicManagerLogout();
         } else if (path.includes("/doctor")) {
             this.props.doctorLogout();
         }
@@ -142,6 +144,8 @@ class Header extends Component {
         const path = window.location.pathname;
         if (path.includes("/system")) {
             this.props.history.push('/system/edit-profile');
+        } else if (path.includes("/clinic-manager")) {
+            this.props.history.push('/clinic-manager/edit-profile');
         } else if (path.includes("/doctor")) {
             this.props.history.push('/doctor/edit-profile');
         }
@@ -149,18 +153,21 @@ class Header extends Component {
 
     render() {
         const { isDropdownOpen, isNotificationsOpen, notifications, isNotificationLoading } = this.state;
-        const { adminInfo, doctorInfo, toggleSidebar } = this.props;
+        const { adminInfo, clinicManagerInfo, doctorInfo, toggleSidebar } = this.props;
 
         const path = window.location.pathname;
         const isAdminPath = path.includes("/system");
+        const isClinicManagerPath = path.includes("/clinic-manager");
         const isDocPath = path.includes("/doctor");
 
         // Lấy đúng thông tin user theo role đang active
-        const currentInfo = isAdminPath ? adminInfo : isDocPath ? doctorInfo : null;
+        const currentInfo = isAdminPath ? adminInfo : isClinicManagerPath ? clinicManagerInfo : isDocPath ? doctorInfo : null;
 
         let displayName = "User";
         if (isAdminPath && adminInfo) {
             displayName = `${adminInfo.firstName} ${adminInfo.lastName}`;
+        } else if (isClinicManagerPath && clinicManagerInfo) {
+            displayName = `${clinicManagerInfo.firstName} ${clinicManagerInfo.lastName}`;
         } else if (isDocPath && doctorInfo) {
             displayName = `${doctorInfo.firstName} ${doctorInfo.lastName}`;
         }
@@ -173,7 +180,7 @@ class Header extends Component {
 
         return (
             <>
-                <header>
+                <header className='header-page'>
                     <div className="container">
                         <div className="header-container">
                             <div className="header-left">
@@ -181,7 +188,7 @@ class Header extends Component {
                                     <i className="fas fa-bars"></i>
                                 </span>
                                 {/* Breadcrumb — hiển thị đường dẫn ngay dưới header */}
-                                <Breadcrumb variant={isAdminPath ? 'admin' : 'doctor'} />
+                                <Breadcrumb variant={isAdminPath ? 'admin' : isClinicManagerPath ? 'clinic-manager' : 'doctor'} />
                             </div>
 
                             <div className="header-right" ref={this.actionsRef}>
@@ -194,8 +201,8 @@ class Header extends Component {
                                         aria-expanded={isNotificationsOpen}
                                         onClick={this.toggleNotifications}
                                     >
-                                    <i className="fas fa-bell"></i>
-                                    {unreadCount > 0 && <span className="badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
+                                        <i className="fas fa-bell"></i>
+                                        {unreadCount > 0 && <span className="badge">{unreadCount > 99 ? '99+' : unreadCount}</span>}
                                     </button>
                                     {isNotificationsOpen && <div className="notification-menu" role="dialog" aria-label={this.getText('title')}>
                                         <div className="notification-menu__header">
@@ -262,8 +269,10 @@ class Header extends Component {
 const mapStateToProps = state => {
     return {
         adminToken: state.adminAuth.token,
+        clinicManagerToken: state.clinicManagerAuth?.token,
         doctorToken: state.doctor.token,
         adminInfo: state.adminAuth.adminInfo,
+        clinicManagerInfo: state.clinicManagerAuth?.clinicManagerInfo,
         doctorInfo: state.doctor.doctorInfo,
         language: state.app.language,
     };
@@ -272,6 +281,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         adminLogout: () => dispatch({ type: "ADMIN_LOGOUT" }),
+        clinicManagerLogout: () => dispatch({ type: "CLINIC_MANAGER_LOGOUT" }),
         doctorLogout: () => dispatch({ type: "DOCTOR_LOGOUT" }),
     };
 };
