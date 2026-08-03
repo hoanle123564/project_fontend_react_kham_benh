@@ -59,11 +59,12 @@ const CreateUser = (data) => {
 };
 
 // Xóa người dùng
-const DeleteUser = (UserId) => {
+const DisableUser = (UserId, isActive) => {
   // return axios.delete('/api/delete-user', { id });
   return adminAxios.delete("/api/delete-user", {
     data: {
       id: UserId,
+      isActive,
     },
   });
 };
@@ -664,7 +665,7 @@ export {
   handleLoginAPI,
   getAllUser,
   CreateUser,
-  DeleteUser,
+  DisableUser,
   EditUser,
   changePassword,
   getLookUp,

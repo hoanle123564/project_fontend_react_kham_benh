@@ -101,8 +101,8 @@ class TableManageUser extends Component {
     this.setState({ userEdit: user });
   };
 
-  handleDeleteUser = (id) => {
-    this.props.DeleteUser(id);
+  handleDisableUser = (user) => {
+    this.props.DisableUser(user.id, Number(user.isActive) === 1 ? 0 : 1);
   };
 
   toggleUserEdit = () => {
@@ -229,6 +229,9 @@ class TableManageUser extends Component {
                       <FormattedMessage id="user-manage.avatar" defaultMessage="Avatar" />
                     </th>
                     <th>
+                      <FormattedMessage id="user-manage.status" defaultMessage="Status" />
+                    </th>
+                    <th>
                       <FormattedMessage id="user-manage.action" defaultMessage="Action" />
                     </th>
                   </tr>
@@ -270,6 +273,14 @@ class TableManageUser extends Component {
                           )}
                         </td>
                         <td>
+                          <span className={`table-manage-user__status table-manage-user__status--${Number(item.isActive) === 1 ? "active" : "disabled"}`}>
+                            <FormattedMessage
+                              id={Number(item.isActive) === 1 ? "user-manage.active" : "user-manage.disabled"}
+                              defaultMessage={Number(item.isActive) === 1 ? "Active" : "Disabled"}
+                            />
+                          </span>
+                        </td>
+                        <td>
                           <div className="table-manage-user__actions">
                             <button
                               className="table-manage-user__action-button table-manage-user__action-button--edit"
@@ -278,20 +289,28 @@ class TableManageUser extends Component {
                             >
                               <i className="fas fa-edit"></i>
                             </button>
-                            <button
-                              className="table-manage-user__action-button table-manage-user__action-button--delete"
-                              aria-label="Delete user"
-                              onClick={() => this.handleDeleteUser(item.id)}
+                            <FormattedMessage
+                              id={Number(item.isActive) === 1 ? "user-manage.disable-account" : "user-manage.enable-account"}
+                              defaultMessage={Number(item.isActive) === 1 ? "Disable account" : "Enable account"}
                             >
-                              <i className="fa-solid fa-trash"></i>
-                            </button>
+                              {(label) => (
+                                <button
+                                  className="table-manage-user__action-button table-manage-user__action-button--disable"
+                                  aria-label={label}
+                                  title={label}
+                                  onClick={() => this.handleDisableUser(item)}
+                                >
+                                  <i className={`fa-solid ${Number(item.isActive) === 1 ? "fa-user-slash" : "fa-user-check"}`}></i>
+                                </button>
+                              )}
+                            </FormattedMessage>
                           </div>
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="7" className="table-manage-user__empty">
+                      <td colSpan="8" className="table-manage-user__empty">
                         <FormattedMessage id="user-manage.no-users" defaultMessage="No users found." />
                       </td>
                     </tr>
@@ -359,7 +378,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   fetchAllUser: () => dispatch(action.fetchAllUser()),
-  DeleteUser: (UserId) => dispatch(action.fetchDeleteUser(UserId)),
+  DisableUser: (UserId, isActive) => dispatch(action.fetchDisableUser(UserId, isActive)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TableManageUser);

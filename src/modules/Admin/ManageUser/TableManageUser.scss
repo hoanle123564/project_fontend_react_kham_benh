@@ -178,6 +178,24 @@
     font-size: 13px;
   }
 
+  &__status {
+    display: inline-flex;
+    border-radius: 999px;
+    padding: 4px 9px;
+    font-size: 12px;
+    font-weight: 600;
+
+    &--active {
+      background: #e8f8f3;
+      color: #0c7a66;
+    }
+
+    &--disabled {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+  }
+
   &__actions {
     display: flex;
     align-items: center;
@@ -211,10 +229,15 @@
       color: var(--tm-warning);
     }
 
-    &--delete {
+    &--disable {
       background: #fff0f1;
       border-color: #f3b8bd;
       color: var(--tm-danger);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
     }
   }
 

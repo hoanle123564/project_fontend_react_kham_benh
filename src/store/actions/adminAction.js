@@ -3,7 +3,7 @@ import {
   getLookUp,
   CreateUser,
   getAllUser,
-  DeleteUser,
+  DisableUser,
   EditUser,
   getDoctor,
   getAllDoctor,
@@ -156,28 +156,25 @@ export const fetchAllUserFail = () => ({
 });
 
 // DELETE USER
-export const fetchDeleteUser = (UserId) => {
+export const fetchDisableUser = (UserId, isActive) => {
   return async (dispatch, getState) => {
     try {
-      let res = await DeleteUser(UserId);
+      let res = await DisableUser(UserId, isActive);
       if (res && res.errCode === 0) {
-        toast.success("Delete user success");
-        dispatch({
-          type: actionTypes.DELETE_USER,
-        });
+        toast.success(res.errMessage);
         dispatch(fetchAllUser());
       } else {
-        toast.error("Delete user failed");
-        dispatch(fetchDeleteUserFail());
+        toast.error(res?.errMessage || "Disable user failed");
+        dispatch(fetchDisableUserFail());
       }
     } catch (error) {
-      dispatch(fetchDeleteUserFail());
-      console.log("fetchDeleteUserFail error: ", error);
+      dispatch(fetchDisableUserFail());
+      console.log("fetchDisableUserFail error: ", error);
     }
   };
 };
 
-export const fetchDeleteUserFail = () => ({
+export const fetchDisableUserFail = () => ({
   type: actionTypes.DELETE_USER_FAILD,
 });
 
