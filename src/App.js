@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
-import { Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 import { ConnectedRouter as Router } from "connected-react-router";
 import { history } from "./redux";
 // toastify
@@ -10,6 +10,8 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import {
   doctorIsAuthenticated,
   adminIsAuthenticated,
+  clinicManagerIsAuthenticated,
+  isClinicManagerToken,
   patientIsAuthenticated,
 } from "./hoc/authentication";
 
@@ -17,6 +19,7 @@ import { path } from "./utils";
 import HomePage from "./modules/Patient/Pages/HomePage/HomePage";
 import Login from "./modules/Auth/Login";
 import System from "./routes/System";
+import ClinicManager from "./routes/ClinicManager";
 import Doctor from "./routes/Doctor";
 import DetailDoctor from "./modules/Patient/Pages/Doctor/DetailDoctor";
 import DetailSpeciality from "./modules/Patient/Pages/Speciality/DetailSpeciality";
@@ -35,6 +38,14 @@ import NotFound from "./modules/NotFound";
 import Remote from "./modules/Patient/Pages/Speciality/Remote";
 import PostCategoryPage from "./modules/Patient/Pages/Post/PostCategoryPage";
 import PostDetailPage from "./modules/Patient/Pages/Post/PostDetailPage";
+
+const AdminSystem = adminIsAuthenticated(System);
+
+const getClinicManagerLegacyPath = (location) => ({
+  pathname: location.pathname.replace(/^\/system(?=\/|$)/, "/clinic-manager"),
+  search: location.search,
+  hash: location.hash,
+});
 
 class App extends Component {
 
@@ -86,7 +97,15 @@ class App extends Component {
               <Route path={path.VIDEO_CONSULTATION} exact component={VideoConsultation} />
               <Route path={path.CHATBOT} exact component={ChatbotPage} />
 
-              <Route path={path.SYSTEM} component={adminIsAuthenticated(System)} />
+              <Route path={path.CLINIC_MANAGER} component={clinicManagerIsAuthenticated(ClinicManager)} />
+              <Route
+                path={path.SYSTEM}
+                render={(routeProps) =>
+                  isClinicManagerToken(this.props.clinicManagerToken)
+                    ? <Redirect to={getClinicManagerLegacyPath(routeProps.location)} />
+                    : <AdminSystem {...routeProps} />
+                }
+              />
               <Route path={path.DOCTOR} component={doctorIsAuthenticated(Doctor)} />
               <Route exact path="/:categorySlug/:postSlug" component={PostDetailPage} />
               <Route exact path="/:categorySlug" component={PostCategoryPage} />
@@ -116,11 +135,8 @@ class App extends Component {
 const mapStateToProps = (state) => {
   return {
     started: state.app.started,
+    clinicManagerToken: state.clinicManagerAuth?.token,
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {};
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps)(App);

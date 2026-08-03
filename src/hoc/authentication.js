@@ -13,12 +13,34 @@ export const isTokenValid = (token) => {
     }
 };
 
+const hasTokenRole = (token, roleId) => {
+    if (!isTokenValid(token)) return false;
+
+    try {
+        return jwtDecode(token).roleId === roleId;
+    } catch {
+        return false;
+    }
+};
+
+export const isAdminToken = (token) => hasTokenRole(token, "R1");
+export const isClinicManagerToken = (token) => hasTokenRole(token, "R4");
+
 // ===================================
 export const adminIsAuthenticated = connectedRouterRedirect({
     authenticatedSelector: state =>
-        state.adminAuth?.isLoggedIn && isTokenValid(state.adminAuth?.token),
+        state.adminAuth?.isLoggedIn && isAdminToken(state.adminAuth?.token),
 
     wrapperDisplayName: "AdminIsAuthenticated",
+    redirectPath: "/login",
+    allowRedirectBack: true
+});
+
+export const clinicManagerIsAuthenticated = connectedRouterRedirect({
+    authenticatedSelector: state =>
+        state.clinicManagerAuth?.isLoggedIn && isClinicManagerToken(state.clinicManagerAuth?.token),
+
+    wrapperDisplayName: "ClinicManagerIsAuthenticated",
     redirectPath: "/login",
     allowRedirectBack: true
 });

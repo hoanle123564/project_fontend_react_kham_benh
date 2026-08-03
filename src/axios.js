@@ -11,6 +11,8 @@ const getTokenByRole = (role) => {
   switch (role) {
     case "admin":
       return state.adminAuth?.token;
+    case "clinic-manager":
+      return state.clinicManagerAuth?.token;
     case "doctor":
       return state.doctor?.token;
     case "patient":
@@ -46,6 +48,10 @@ const getRoleByPath = () => {
 
   if (pathname.startsWith("/system")) {
     return "admin";
+  }
+
+  if (pathname.startsWith("/clinic-manager")) {
+    return "clinic-manager";
   }
 
   if (pathname.startsWith("/doctor")) {
@@ -102,8 +108,9 @@ const createInstance = (role) => {
 
 const instance = createInstance();
 const adminAxios = createInstance("admin");
+const clinicManagerAxios = createInstance("clinic-manager");
 const doctorAxios = createInstance("doctor");
 const patientAxios = createInstance("patient");
 
-export { adminAxios, doctorAxios, patientAxios };
+export { adminAxios, clinicManagerAxios, doctorAxios, patientAxios };
 export default instance;

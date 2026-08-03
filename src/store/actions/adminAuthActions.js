@@ -6,7 +6,7 @@ export const adminLogin = (email, password) => {
         try {
             const res = await handleLoginAPI(email, password);
 
-            if (res && res.errCode === 0 && ["R1", "R4"].includes(res.user.roleId)) {
+            if (res && res.errCode === 0 && res.user.roleId === "R1") {
                 dispatch({
                     type: actionTypes.ADMIN_LOGIN_SUCCESS,
                     data: res

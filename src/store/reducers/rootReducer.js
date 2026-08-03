@@ -5,9 +5,11 @@ import adminReducer from "./adminReducer";
 import patientReducer from "./patientReducer";
 import doctorReducer from "./doctorReducer";
 import adminAuthReducer from "./adminAuthReducer";
+import clinicManagerAuthReducer from "./clinicManagerAuthReducer";
 
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 import storage from "redux-persist/lib/storage";
+import sessionStorage from "redux-persist/lib/storage/session";
 import { persistReducer } from "redux-persist";
 
 const persistCommonConfig = {
@@ -28,10 +30,18 @@ const doctorConfig = {
   whitelist: ["isLoggedIn", "doctorInfo", "token"],
 };
 
-const adminConfig = {
+export const adminConfig = {
   ...persistCommonConfig,
+  storage: sessionStorage,
   key: "adminAuth",
   whitelist: ["isLoggedIn", "adminInfo", "token"],
+};
+
+export const clinicManagerConfig = {
+  ...persistCommonConfig,
+  storage: sessionStorage,
+  key: "clinicManagerAuth",
+  whitelist: ["isLoggedIn", "clinicManagerInfo", "token"],
 };
 
 const appPersistConfig = {
@@ -48,6 +58,7 @@ export default function createRootReducer(history) {
     patient: persistReducer(patientConfig, patientReducer),
     doctor: persistReducer(doctorConfig, doctorReducer),
     adminAuth: persistReducer(adminConfig, adminAuthReducer),
+    clinicManagerAuth: persistReducer(clinicManagerConfig, clinicManagerAuthReducer),
 
     // DATA CRUD
     admin: adminReducer,

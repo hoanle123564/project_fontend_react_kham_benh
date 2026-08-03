@@ -9,6 +9,7 @@ import { persistStore } from "redux-persist";
 
 import createRootReducer from "./store/reducers/rootReducer";
 import actionTypes from "./store/actions/actionTypes";
+import { migrateLegacyAuthToSession } from "./store/authSessionMigration";
 
 const environment = process.env.NODE_ENV || "development";
 let isDevelopment = environment === "development";
@@ -23,6 +24,14 @@ export const history = createBrowserHistory({
 const reduxStateSyncConfig = {
   whitelist: [actionTypes.APP_START_UP_COMPLETE, actionTypes.CHANGE_LANGUAGE],
 };
+
+if (typeof window !== "undefined") {
+  migrateLegacyAuthToSession({
+    localStorage: window.localStorage,
+    sessionStorage: window.sessionStorage,
+    pathname: window.location.pathname,
+  });
+}
 
 const rootReducer = createRootReducer(history);
 const middleware = [

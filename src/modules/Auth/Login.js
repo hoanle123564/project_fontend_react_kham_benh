@@ -84,14 +84,16 @@ class Login extends Component {
             };
 
             if (data.user.roleId === "R1") {
+                this.props.clinicManagerLogout();
                 this.props.adminLoginSuccess(authPayload);
                 this.props.navigate("/system");
                 return;
             }
 
             if (data.user.roleId === "R4") {
-                this.props.adminLoginSuccess(authPayload);
-                this.props.navigate("/system/manage-clinic");
+                this.props.adminLogout();
+                this.props.clinicManagerLoginSuccess(authPayload);
+                this.props.navigate("/clinic-manager/manage-clinic");
                 return;
             }
 
@@ -363,6 +365,10 @@ const mapDispatchToProps = (dispatch) => ({
     navigate: (path) => dispatch(push(path)),
     adminLoginSuccess: (data) =>
         dispatch({ type: "ADMIN_LOGIN_SUCCESS", data }),
+    adminLogout: () => dispatch({ type: "ADMIN_LOGOUT" }),
+    clinicManagerLoginSuccess: (data) =>
+        dispatch({ type: "CLINIC_MANAGER_LOGIN_SUCCESS", data }),
+    clinicManagerLogout: () => dispatch({ type: "CLINIC_MANAGER_LOGOUT" }),
     doctorLoginSuccess: (data) =>
         dispatch({ type: "DOCTOR_LOGIN_SUCCESS", data }),
     patientLoginSuccess: (data) =>
