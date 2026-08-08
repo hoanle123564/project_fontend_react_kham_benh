@@ -1,6 +1,7 @@
 // ListSpecialty.jsx
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { FormattedMessage } from "react-intl";
 import HomeHeader from "../../Layout/HomeHeader";
 import HomeFooter from "../../Layout/HomeFooter";
 import "./ListSpecialty.scss";
@@ -23,7 +24,9 @@ class ListSpecialty extends Component {
         super(props);
         this.state = {
             specialtyList: [],
+            search: "",
         };
+        this.swiper = null;
     }
 
     async componentDidMount() {
@@ -44,9 +47,25 @@ class ListSpecialty extends Component {
         }
     };
 
+    handleSearchChange = (event) => {
+        this.setState({ search: event.target.value }, () => {
+            if (this.swiper) this.swiper.slideTo(0);
+        });
+    };
+
+    getFilteredSpecialties = () => {
+        const query = this.state.search.trim().toLowerCase();
+        if (!query) return this.state.specialtyList;
+
+        return this.state.specialtyList.filter((item) =>
+            String(item.name || "").toLowerCase().includes(query)
+        );
+    };
+
     render() {
-        let { specialtyList } = this.state;
+        let { search } = this.state;
         let { language } = this.props;
+        const specialtyList = this.getFilteredSpecialties();
         const pagination = {
             el: '.custom-pagination',
             clickable: true,
@@ -65,24 +84,39 @@ class ListSpecialty extends Component {
                             {language === "vi" ? "Khám chuyên khoa" : "Specialties"}
                         </h1>
 
-                        <Swiper
-                            slidesPerView={4}
-                            grid={{
-                                rows: 3,
-                                fill: 'row'
-                            }}
-                            navigation={{
-                                prevEl: '.custom-prev',
-                                nextEl: '.custom-next',
-                            }}
-                            spaceBetween={20}
-                            pagination={pagination}
-                            modules={[Grid, Pagination, Navigation]}
-                            className="grid-container"
-                        >
-                            {specialtyList &&
-                                specialtyList.length > 0 &&
-                                specialtyList.map((item, index) => {
+                        <FormattedMessage id="manage-specialty.search" defaultMessage="Search specialty by name...">
+                            {(placeholder) => (
+                                <label className="list-specialty-search">
+                                    <i className="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                                    <input
+                                        type="search"
+                                        value={search}
+                                        placeholder={placeholder}
+                                        aria-label={placeholder}
+                                        onChange={this.handleSearchChange}
+                                    />
+                                </label>
+                            )}
+                        </FormattedMessage>
+
+                        {specialtyList.length > 0 ? (
+                            <Swiper
+                                slidesPerView={4}
+                                grid={{
+                                    rows: 3,
+                                    fill: 'row'
+                                }}
+                                navigation={{
+                                    prevEl: '.custom-prev',
+                                    nextEl: '.custom-next',
+                                }}
+                                spaceBetween={20}
+                                pagination={pagination}
+                                modules={[Grid, Pagination, Navigation]}
+                                className="grid-container"
+                                onSwiper={(swiper) => { this.swiper = swiper; }}
+                            >
+                                {specialtyList.map((item, index) => {
                                     return (
                                         <SwiperSlide
                                             className="grid-item"
@@ -104,12 +138,20 @@ class ListSpecialty extends Component {
                                     );
                                 })}
 
-                            <div className="custom-control-bar">
-                                <button className="custom-prev">&#10094;</button>
-                                <div className="custom-pagination"></div>
-                                <button className="custom-next">&#10095;</button>
+                                <div className="custom-control-bar">
+                                    <button className="custom-prev">&#10094;</button>
+                                    <div className="custom-pagination"></div>
+                                    <button className="custom-next">&#10095;</button>
+                                </div>
+                            </Swiper>
+                        ) : (
+                            <div className="list-specialty-empty">
+                                <FormattedMessage
+                                    id="manage-specialty.no-specialties"
+                                    defaultMessage="No specialties found."
+                                />
                             </div>
-                        </Swiper>
+                        )}
 
                         {/* <div className="grid-container">
                             {specialtyList &&

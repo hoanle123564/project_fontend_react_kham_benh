@@ -9,6 +9,42 @@
         text-align: center;
     }
 
+    .list-specialty-search {
+        display: flex;
+        align-items: center;
+        max-width: 480px;
+        margin: 0 auto 25px;
+        padding: 10px 14px;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+
+        i {
+            margin-right: 10px;
+            color: #64748b;
+        }
+
+        input {
+            width: 100%;
+            border: 0;
+            outline: 0;
+
+            &:focus {
+                outline: 0;
+            }
+        }
+
+        &:focus-within {
+            border-color: #3b82f6;
+        }
+    }
+
+    .list-specialty-empty {
+        padding: 60px 20px;
+        color: #64748b;
+        text-align: center;
+    }
+
     .grid-container {
         padding-bottom: 50px;
 
