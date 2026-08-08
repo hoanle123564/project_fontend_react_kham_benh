@@ -110,6 +110,7 @@
       "save-error": "Unable to save your professional profile."
     },
     "clinic-manager": {
+      "dashboard": "Dashboard",
       "clinic": "Clinic management",
       "my-clinic": "My clinic",
       "doctor": "Doctors",
@@ -229,6 +230,11 @@
     "failed": "Appointment does not exist or has already been confirmed"
   },
   "dashboard": {
+    "clinic-title": "Clinic Statistics",
+    "clinic-revenue": "Clinic Revenue",
+    "patients": "Patients",
+    "doctors": "Doctors",
+    "departments": "Departments",
     "total-user": "Total users",
     "total-doctor": "Total doctors",
     "total-admin": "Total admins",

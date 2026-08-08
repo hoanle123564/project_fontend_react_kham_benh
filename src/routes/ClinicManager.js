@@ -13,6 +13,7 @@ import EditProfile from "../modules/Admin/ManageUser/EditProfile";
 import BookingManagement from "../modules/Booking/BookingManagement";
 import ManagePatient from "../modules/Doctor/ManagePatient";
 import ManageSchedule from "../modules/Doctor/ManageSchedule";
+import DashBoard from "../modules/Admin/DashBoard";
 
 class ClinicManager extends Component {
   state = {
@@ -33,6 +34,7 @@ class ClinicManager extends Component {
           <Header toggleSidebar={this.toggleSidebar} />
           <div className="system-list">
             <Switch>
+              <Route exact path="/clinic-manager/dashboard" render={(props) => <DashBoard {...props} clinicManagerMode />} />
               <Route path="/clinic-manager/manage-patient/:patientId" component={ManagePatient} />
               <Route exact path="/clinic-manager/manage-patient" component={ManagePatient} />
               <Route path="/clinic-manager/doctor-table" component={DoctorTable} />
@@ -43,7 +45,7 @@ class ClinicManager extends Component {
               <Route path="/clinic-manager/manage-schedule" component={ManageSchedule} />
               <Route path="/clinic-manager/list-appointment" render={(props) => <BookingManagement {...props} clinicManagerMode />} />
               <Route path="/clinic-manager/edit-profile" component={EditProfile} />
-              <Redirect to="/clinic-manager/manage-clinic" />
+              <Redirect to="/clinic-manager/dashboard" />
             </Switch>
           </div>
         </div>

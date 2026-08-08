@@ -645,6 +645,18 @@ const getAdminDashboardStatistics = (
   );
 };
 
+const getClinicManagerDashboardStatistics = (
+  revenueType = "month",
+  topDoctorType = "month",
+  options = {}
+) => {
+  const recentPage = options.recentPage || 1;
+  const recentLimit = options.recentLimit || 5;
+  return clinicManagerAxios.get(
+    `/api/clinic-manager/dashboard-statistics?revenueType=${encodeURIComponent(revenueType)}&topDoctorType=${encodeURIComponent(topDoctorType)}&recentPage=${encodeURIComponent(recentPage)}&recentLimit=${encodeURIComponent(recentLimit)}`
+  );
+};
+
 const joinVideoConsultation = (bookingId, options = {}) => {
   return getAuthAxiosByRole(options.authRole).post("/api/video-consultation/join-token", {
     bookingId,
@@ -785,6 +797,7 @@ export {
   getAdminReviews,
   updateAdminReviewVisibility,
   getAdminDashboardStatistics,
+  getClinicManagerDashboardStatistics,
   joinVideoConsultation,
   markVideoConsultationStarted,
   getDoctorDashboardStatistics,

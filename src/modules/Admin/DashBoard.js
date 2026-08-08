@@ -1,8 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { injectIntl } from "react-intl";
 import "./DashBoard.scss";
 import * as actions from "../../store/actions";
-import { getAllBooking, getAdminDashboardStatistics } from "../../services/userService";
+import {
+    getAllBooking,
+    getAdminDashboardStatistics,
+    getClinicManagerDashboardStatistics,
+} from "../../services/userService";
 import Chart from "react-apexcharts";
 
 const RECENT_BOOKING_LIMIT = 5;
@@ -32,6 +37,18 @@ class DashBoard extends Component {
                     total: 0,
                     items: [],
                 },
+                summary: {
+                    patients: 0,
+                    doctors: 0,
+                    departments: 0,
+                },
+                bookingStatusOverview: {
+                    pendingConfirmation: 0,
+                    waitingExam: 0,
+                    inProgress: 0,
+                    completed: 0,
+                    cancelled: 0,
+                },
                 recentBookings: {
                     items: [],
                     pagination: {
@@ -47,6 +64,11 @@ class DashBoard extends Component {
     }
 
     async componentDidMount() {
+        if (this.props.clinicManagerMode) {
+            await this.fetchDashboardStatistics();
+            return;
+        }
+
         this.props.fetchAllUser();
         this.props.fetchAllDoctor();
         this.props.GetAllClinic();
@@ -76,7 +98,10 @@ class DashBoard extends Component {
         this.setState({ isLoadingStatistics: true });
 
         try {
-            const res = await getAdminDashboardStatistics(revenueType, topDoctorType, {
+            const getStatistics = this.props.clinicManagerMode
+                ? getClinicManagerDashboardStatistics
+                : getAdminDashboardStatistics;
+            const res = await getStatistics(revenueType, topDoctorType, {
                 recentPage: nextRecentPage,
                 recentLimit: RECENT_BOOKING_LIMIT,
             });
@@ -144,14 +169,24 @@ class DashBoard extends Component {
         });
     };
 
-    buildStatusChartOptions = (language) => ({
-        labels: [
-            language === "vi" ? "Lịch mới" : "New",
-            language === "vi" ? "Đã xác nhận" : "Confirmed",
-            language === "vi" ? "Hoàn thành" : "Completed",
-            language === "vi" ? "Huỷ" : "Cancelled",
-        ],
-        colors: ["#3498db", "#f39c12", "#2ecc71", "#e74c3c"],
+    buildStatusChartOptions = (language, clinicManagerMode) => ({
+        labels: clinicManagerMode
+            ? [
+                "pendingConfirmation",
+                "waitingExam",
+                "inProgress",
+                "completed",
+                "cancelled",
+            ].map((statusKey) => this.getStatusLabel(statusKey, language))
+            : [
+                language === "vi" ? "Lịch mới" : "New",
+                language === "vi" ? "Đã xác nhận" : "Confirmed",
+                language === "vi" ? "Hoàn thành" : "Completed",
+                language === "vi" ? "Huỷ" : "Cancelled",
+            ],
+        colors: clinicManagerMode
+            ? ["#3498db", "#f39c12", "#8e44ad", "#2ecc71", "#e74c3c"]
+            : ["#3498db", "#f39c12", "#2ecc71", "#e74c3c"],
         chart: {
             type: "donut",
             fontFamily: "inherit",
@@ -541,7 +576,7 @@ class DashBoard extends Component {
     };
 
     render() {
-        const { userList, doctorList, clinics, specialty, language } = this.props;
+        const { userList, doctorList, clinics, specialty, language, clinicManagerMode, intl } = this.props;
         const {
             allBooking,
             revenueType,
@@ -550,13 +585,28 @@ class DashBoard extends Component {
             isLoadingStatistics,
         } = this.state;
 
-        const patientCount = userList?.filter((u) => u.roleId === "R3")?.length || 0;
+        const summary = dashboardData?.summary || {};
+        const patientCount = clinicManagerMode
+            ? Number(summary.patients) || 0
+            : userList?.filter((u) => u.roleId === "R3")?.length || 0;
+        const doctorCount = clinicManagerMode
+            ? Number(summary.doctors) || 0
+            : doctorList?.length || 0;
 
         const statusNew = allBooking.filter((b) => b.statusId === "S1").length;
         const statusConfirmed = allBooking.filter((b) => b.statusId === "S2").length;
         const statusDone = allBooking.filter((b) => b.statusId === "S3").length;
         const statusCancel = allBooking.filter((b) => b.statusId === "S4").length;
-        const statusSeries = [statusNew, statusConfirmed, statusDone, statusCancel];
+        const bookingStatusOverview = dashboardData?.bookingStatusOverview || {};
+        const statusSeries = clinicManagerMode
+            ? [
+                bookingStatusOverview.pendingConfirmation || 0,
+                bookingStatusOverview.waitingExam || 0,
+                bookingStatusOverview.inProgress || 0,
+                bookingStatusOverview.completed || 0,
+                bookingStatusOverview.cancelled || 0,
+            ]
+            : [statusNew, statusConfirmed, statusDone, statusCancel];
 
         const revenueData = dashboardData?.revenue?.chartData || [];
         const revenueSeries = [
@@ -602,7 +652,9 @@ class DashBoard extends Component {
             <div className="dashboard-container">
                 <div className="container">
                     <h1 className="dashboard-title">
-                        {language === "vi" ? "Thống kê hệ thống" : "System Statistics"}
+                        {clinicManagerMode
+                            ? intl.formatMessage({ id: "dashboard.clinic-title" })
+                            : language === "vi" ? "Thống kê hệ thống" : "System Statistics"}
                     </h1>
 
                     <div className="top-stats">
@@ -610,7 +662,11 @@ class DashBoard extends Component {
                             <div className="col-12 col-md-6 col-xl-3">
                                 <div className="stat-box blue-line">
                                     <div className="content-box">
-                                        <div className="stat-label">{language === "vi" ? "Bệnh nhân" : "Patients"}</div>
+                                        <div className="stat-label">
+                                            {clinicManagerMode
+                                                ? intl.formatMessage({ id: "dashboard.patients" })
+                                                : language === "vi" ? "Bệnh nhân" : "Patients"}
+                                        </div>
                                         <div className="stat-number">{patientCount}</div>
                                     </div>
                                     <div className="icon-box">
@@ -622,8 +678,12 @@ class DashBoard extends Component {
                             <div className="col-12 col-md-6 col-xl-3">
                                 <div className="stat-box green-line">
                                     <div className="content-box">
-                                        <div className="stat-label">{language === "vi" ? "Bác sĩ" : "Doctors"}</div>
-                                        <div className="stat-number">{doctorList?.length || 0}</div>
+                                        <div className="stat-label">
+                                            {clinicManagerMode
+                                                ? intl.formatMessage({ id: "dashboard.doctors" })
+                                                : language === "vi" ? "Bác sĩ" : "Doctors"}
+                                        </div>
+                                        <div className="stat-number">{doctorCount}</div>
                                     </div>
                                     <div className="icon-box">
                                         <i className="fas fa-user-md"></i>
@@ -634,26 +694,34 @@ class DashBoard extends Component {
                             <div className="col-12 col-md-6 col-xl-3">
                                 <div className="stat-box orange-line">
                                     <div className="content-box">
-                                        <div className="stat-label">{language === "vi" ? "Cơ sở y tế" : "Clinics"}</div>
-                                        <div className="stat-number">{clinics?.length || 0}</div>
+                                        <div className="stat-label">
+                                            {clinicManagerMode
+                                                ? intl.formatMessage({ id: "dashboard.departments" })
+                                                : language === "vi" ? "Cơ sở y tế" : "Clinics"}
+                                        </div>
+                                        <div className="stat-number">
+                                            {clinicManagerMode ? Number(summary.departments) || 0 : clinics?.length || 0}
+                                        </div>
                                     </div>
                                     <div className="icon-box">
-                                        <i className="fas fa-hospital"></i>
+                                        <i className={clinicManagerMode ? "bi bi-diagram-3" : "fas fa-hospital"}></i>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="col-12 col-md-6 col-xl-3">
-                                <div className="stat-box red-line">
-                                    <div className="content-box">
-                                        <div className="stat-label">{language === "vi" ? "Chuyên khoa" : "Specialties"}</div>
-                                        <div className="stat-number">{specialty?.length || 0}</div>
-                                    </div>
-                                    <div className="icon-box">
-                                        <i className="fas fa-briefcase-medical"></i>
+                            {!clinicManagerMode && (
+                                <div className="col-12 col-md-6 col-xl-3">
+                                    <div className="stat-box red-line">
+                                        <div className="content-box">
+                                            <div className="stat-label">{language === "vi" ? "Chuyên khoa" : "Specialties"}</div>
+                                            <div className="stat-number">{specialty?.length || 0}</div>
+                                        </div>
+                                        <div className="icon-box">
+                                            <i className="fas fa-briefcase-medical"></i>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
                     </div>
 
@@ -683,7 +751,9 @@ class DashBoard extends Component {
                     <div className="dashboard-card revenue-card">
                         <div className="chart-header">
                             <h2 className="chart-title">
-                                {language === "vi" ? "Doanh thu hệ thống" : "System Revenue"}
+                                {clinicManagerMode
+                                    ? intl.formatMessage({ id: "dashboard.clinic-revenue" })
+                                    : language === "vi" ? "Doanh thu hệ thống" : "System Revenue"}
                             </h2>
                             {this.renderSegmentedFilter(revenueType, this.handleChangeRevenueType, revenueFilterOptions)}
                         </div>
@@ -724,37 +794,55 @@ class DashBoard extends Component {
                                 height={300}
                             />
                         </div>
+                        {clinicManagerMode && (
+                            <div className="dashboard-card">
+                                <div className="chart-header">
+                                    <h2 className="chart-title">
+                                        {language === "vi" ? "Trạng thái lịch khám" : "Appointment Status"}
+                                    </h2>
+                                </div>
 
-                        <div className="dashboard-card">
+                                <Chart
+                                    options={this.buildStatusChartOptions(language, clinicManagerMode)}
+                                    series={statusSeries}
+                                    type="donut"
+                                    height={280}
+                                />
+                            </div>
+                        )}
+                        {!clinicManagerMode && (
+                            <div className="dashboard-card">
+                                <div className="chart-header">
+                                    <h2 className="chart-title">
+                                        {language === "vi" ? "Tỷ lệ bác sĩ mới/cũ" : "Doctor Ratio"}
+                                    </h2>
+                                </div>
+
+                                <Chart
+                                    options={this.buildDoctorRatioOptions(language)}
+                                    series={doctorRatioSeries}
+                                    type="donut"
+                                    height={300}
+                                />
+                            </div>
+                        )}
+                    </div>
+                    {!clinicManagerMode && (
+                        <div className="dashboard-card status-card">
                             <div className="chart-header">
                                 <h2 className="chart-title">
-                                    {language === "vi" ? "Tỷ lệ bác sĩ mới/cũ" : "Doctor Ratio"}
+                                    {language === "vi" ? "Trạng thái lịch khám" : "Appointment Status"}
                                 </h2>
                             </div>
 
                             <Chart
-                                options={this.buildDoctorRatioOptions(language)}
-                                series={doctorRatioSeries}
+                                options={this.buildStatusChartOptions(language, clinicManagerMode)}
+                                series={statusSeries}
                                 type="donut"
-                                height={300}
+                                height={280}
                             />
                         </div>
-                    </div>
-
-                    <div className="dashboard-card status-card">
-                        <div className="chart-header">
-                            <h2 className="chart-title">
-                                {language === "vi" ? "Trạng thái lịch khám" : "Appointment Status"}
-                            </h2>
-                        </div>
-
-                        <Chart
-                            options={this.buildStatusChartOptions(language)}
-                            series={statusSeries}
-                            type="donut"
-                            height={280}
-                        />
-                    </div>
+                    )}
 
                     {this.renderRecentBookings(recentBookings, language)}
                 </div>
@@ -778,4 +866,4 @@ const mapDispatchToProps = (dispatch) => ({
     GetAllSpecialty: () => dispatch(actions.GetAllSpecialty()),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(DashBoard);
+export default injectIntl(connect(mapStateToProps, mapDispatchToProps)(DashBoard));

@@ -111,6 +111,7 @@
       "save-error": "Không thể lưu hồ sơ chuyên môn."
     },
     "clinic-manager": {
+      "dashboard": "Tổng quan",
       "clinic": "Quản lý cơ sở",
       "my-clinic": "Cơ sở của tôi",
       "doctor": "Bác sĩ",
@@ -230,6 +231,11 @@
     "failed": "Lịch hẹn không tồn tại hoặc đã được xác nhận"
   },
   "dashboard": {
+    "clinic-title": "Thống kê cơ sở",
+    "clinic-revenue": "Doanh thu cơ sở",
+    "patients": "Bệnh nhân",
+    "doctors": "Bác sĩ",
+    "departments": "Khoa/phòng ban",
     "total-user": "Tổng số người dùng",
     "total-doctor": "Tổng số bác sĩ",
     "total-admin": "Tổng số admin",

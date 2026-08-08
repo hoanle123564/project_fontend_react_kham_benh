@@ -51,7 +51,8 @@ const ROUTE_MAP = {
     '/system/edit-post': { vi: 'Chỉnh sửa bài viết', en: 'Edit Post' },
 
     // === CLINIC MANAGER (/clinic-manager) ===
-    '/clinic-manager': { vi: 'Cơ sở của tôi', en: 'My Clinic' },
+    '/clinic-manager': { vi: 'Dashboard', en: 'Dashboard' },
+    '/clinic-manager/dashboard': { vi: 'Dashboard', en: 'Dashboard' },
     '/clinic-manager/manage-patient': { vi: 'Quản lý bệnh nhân', en: 'Manage Patients' },
     '/clinic-manager/doctor-table': { vi: 'Danh sách bác sĩ', en: 'Doctors List' },
     '/clinic-manager/manage-doctor': { vi: 'Quản lý bác sĩ', en: 'Manage Doctors' },
@@ -79,14 +80,14 @@ const ROUTE_MAP = {
 const ROOT_LABELS = {
     patient: { vi: 'Trang chủ', en: 'Home' },
     admin: { vi: 'Dashboard', en: 'Dashboard' },
-    'clinic-manager': { vi: 'Cơ sở của tôi', en: 'My Clinic' },
+    'clinic-manager': { vi: 'Dashboard', en: 'Dashboard' },
     doctor: { vi: 'Dashboard', en: 'Dashboard' },
 };
 
 const ROOT_PATHS = {
     patient: '/home',
     admin: '/system/dashboard',
-    'clinic-manager': '/clinic-manager/manage-clinic',
+    'clinic-manager': '/clinic-manager/dashboard',
     doctor: '/doctor/dashboard',
 };
 

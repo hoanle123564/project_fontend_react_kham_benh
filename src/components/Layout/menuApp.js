@@ -223,6 +223,16 @@ export const doctorClinicManagerMenu = [
 
 export const clinicManagerMenu = [
   {
+    name: "menu.clinic-manager.dashboard",
+    menus: [
+      {
+        name: "menu.clinic-manager.dashboard",
+        icon: "bi bi-speedometer2",
+        link: "/clinic-manager/dashboard",
+      },
+    ],
+  },
+  {
     name: "menu.clinic-manager.patient",
     menus: [
       {
