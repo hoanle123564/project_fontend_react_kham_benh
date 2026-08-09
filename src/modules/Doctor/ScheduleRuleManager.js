@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import moment from "moment";
+import { injectIntl } from "react-intl";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import DatePicker from "../../components/Input/DatePicker";
@@ -10,6 +11,7 @@ import {
   previewDoctorScheduleRule,
   updateDoctorScheduleRule,
 } from "../../services/userService";
+import { fixedRulesOverlap, getFixedSlotConflictKeys } from "./scheduleRuleValidation";
 
 const TABS = [
   { id: "FIXED", vi: "Lịch cố định", en: "Fixed schedule" },
@@ -33,6 +35,7 @@ const APPOINTMENT_TYPES = [
 ];
 
 const PROJECT_TIME_ZONE = "Asia/Ho_Chi_Minh";
+const FIXED_SCHEDULE_OVERLAP_CODE = "FIXED_SCHEDULE_OVERLAP";
 
 const emptyForm = () => ({
   id: null,
@@ -114,7 +117,9 @@ class ScheduleRuleManager extends Component {
       isFixedEditOpen: false,
       fixedSetupType: "AT1",
       fixedDraft: [],
+      fixedDraftErrors: {},
       fixedEditForm: emptyForm(),
+      fixedEditError: "",
       fixedSaving: false,
     };
     this.fixedDraftKey = 1;
@@ -279,9 +284,13 @@ class ScheduleRuleManager extends Component {
     };
   };
 
-  confirmImpact = async (payload) => {
+  confirmImpact = async (payload, onOverlap) => {
     const preview = await previewDoctorScheduleRule(payload, { authRole: this.props.authRole });
     if (preview?.errCode !== 0) {
+      if (preview?.data?.code === FIXED_SCHEDULE_OVERLAP_CODE) {
+        onOverlap?.();
+        return false;
+      }
       toast.error(preview?.errMessage || "Cannot preview schedule impact");
       return false;
     }
@@ -624,6 +633,40 @@ class ScheduleRuleManager extends Component {
       (rule) => rule.ruleType === "FIXED" && Number(rule.isActive) !== 0
     );
 
+  getFixedOverlapMessage = () =>
+    this.props.intl?.formatMessage({
+      id: "manage-schedule.fixed-slot-overlap",
+      defaultMessage: "Khung thời gian bị trùng lặp với khung giờ khác",
+    }) || "Khung thời gian bị trùng lặp với khung giờ khác";
+
+  getFixedDraftConflictKeys = (slots = this.state.fixedDraft) =>
+    getFixedSlotConflictKeys(slots.filter((slot) => !slot._deleted));
+
+  getFixedEditConflictRule = () => {
+    const { fixedEditForm } = this.state;
+    if (!fixedEditForm?.id) return null;
+
+    return this.getFixedRules().find(
+      (rule) =>
+        Number(rule.id) !== Number(fixedEditForm.id) &&
+        fixedRulesOverlap(fixedEditForm, rule)
+    );
+  };
+
+  hasFixedDraftConflicts = () =>
+    this.getFixedDraftConflictKeys().size > 0 ||
+    Object.keys(this.state.fixedDraftErrors).length > 0;
+
+  markFixedDraftOverlap = (slotKey) => {
+    this.setState((prev) => ({
+      fixedDraftErrors: { ...prev.fixedDraftErrors, [slotKey]: true },
+      fixedSaving: false,
+    }));
+  };
+
+  markFixedEditOverlap = () =>
+    this.setState({ fixedEditError: this.getFixedOverlapMessage(), fixedSaving: false });
+
   getFixedRulesForWeekday = (weekday) =>
     this.getFixedRules().filter((rule) => Number(rule.weekday) === Number(weekday));
 
@@ -713,18 +756,20 @@ class ScheduleRuleManager extends Component {
       isFixedSetupOpen: true,
       fixedSetupType,
       fixedDraft: this.buildFixedDraft(fixedSetupType),
+      fixedDraftErrors: {},
     });
   };
 
   closeFixedSetup = () => {
     if (this.state.fixedSaving) return;
-    this.setState({ isFixedSetupOpen: false, fixedDraft: [] });
+    this.setState({ isFixedSetupOpen: false, fixedDraft: [], fixedDraftErrors: {} });
   };
 
   changeFixedSetupType = (appointmentTypeId) => {
     this.setState({
       fixedSetupType: appointmentTypeId,
       fixedDraft: this.buildFixedDraft(appointmentTypeId),
+      fixedDraftErrors: {},
     });
   };
 
@@ -747,6 +792,7 @@ class ScheduleRuleManager extends Component {
           fixedDraft: prev.fixedDraft.map((slot) =>
             Number(slot.weekday) === Number(weekday) ? { ...slot, _deleted: true } : slot
           ),
+          fixedDraftErrors: {},
         };
       }
 
@@ -755,6 +801,7 @@ class ScheduleRuleManager extends Component {
           fixedDraft: prev.fixedDraft.map((slot) =>
             Number(slot.weekday) === Number(weekday) ? { ...slot, _deleted: false } : slot
           ),
+          fixedDraftErrors: {},
         };
       }
 
@@ -763,6 +810,7 @@ class ScheduleRuleManager extends Component {
           ...prev.fixedDraft,
           this.newFixedDraftSlot(weekday, prev.fixedSetupType || "AT1"),
         ],
+        fixedDraftErrors: {},
       };
     });
   };
@@ -773,6 +821,7 @@ class ScheduleRuleManager extends Component {
         ...prev.fixedDraft,
         this.newFixedDraftSlot(weekday, prev.fixedSetupType || "AT1"),
       ],
+      fixedDraftErrors: {},
     }));
   };
 
@@ -781,6 +830,7 @@ class ScheduleRuleManager extends Component {
       fixedDraft: prev.fixedDraft
         .map((slot) => (slot._key === slotKey ? { ...slot, _deleted: true } : slot))
         .filter((slot) => slot.id || !slot._deleted),
+      fixedDraftErrors: {},
     }));
   };
 
@@ -789,6 +839,7 @@ class ScheduleRuleManager extends Component {
       fixedDraft: prev.fixedDraft.map((slot) =>
         slot._key === slotKey ? { ...slot, [key]: value } : slot
       ),
+      fixedDraftErrors: {},
     }));
   };
 
@@ -809,6 +860,8 @@ class ScheduleRuleManager extends Component {
   });
 
   validateFixedSlots = (slots) => {
+    if (getFixedSlotConflictKeys(slots).size > 0) return false;
+
     for (const slot of slots) {
       const dayLabel = this.getWeekdayLabel(slot.weekday);
       const startMinutes = this.timeToMinutes(slot.startTime);
@@ -847,6 +900,7 @@ class ScheduleRuleManager extends Component {
   handleFixedSetupApply = async () => {
     const { fixedDraft } = this.state;
     const activeSlots = fixedDraft.filter((slot) => !slot._deleted);
+    if (this.getFixedDraftConflictKeys(activeSlots).size > 0) return;
     if (!this.validateFixedSlots(activeSlots)) return;
 
     const deletedSlots = fixedDraft.filter((slot) => slot.id && slot._deleted);
@@ -861,7 +915,10 @@ class ScheduleRuleManager extends Component {
     this.setState({ fixedSaving: true });
     try {
       for (const slot of deletedSlots) {
-        const canContinue = await this.confirmImpact(this.buildFixedPayload(slot, { isActive: 0 }));
+        const canContinue = await this.confirmImpact(
+          this.buildFixedPayload(slot, { isActive: 0 }),
+          () => this.markFixedDraftOverlap(slot._key)
+        );
         if (!canContinue) {
           this.setState({ fixedSaving: false });
           return;
@@ -869,7 +926,10 @@ class ScheduleRuleManager extends Component {
       }
 
       for (const slot of changedSlots) {
-        const canContinue = await this.confirmImpact(this.buildFixedPayload(slot));
+        const canContinue = await this.confirmImpact(
+          this.buildFixedPayload(slot),
+          () => this.markFixedDraftOverlap(slot._key)
+        );
         if (!canContinue) {
           this.setState({ fixedSaving: false });
           return;
@@ -887,6 +947,10 @@ class ScheduleRuleManager extends Component {
           ? updateDoctorScheduleRule(payload.id, payload, { authRole: this.props.authRole })
           : createDoctorScheduleRule(payload, { authRole: this.props.authRole });
         const res = await request;
+        if (res?.data?.code === FIXED_SCHEDULE_OVERLAP_CODE) {
+          this.markFixedDraftOverlap(slot._key);
+          return;
+        }
         if (res?.errCode !== 0) throw new Error(res?.errMessage || "Lưu lịch thất bại");
       }
 
@@ -905,12 +969,13 @@ class ScheduleRuleManager extends Component {
     this.setState({
       isFixedEditOpen: true,
       fixedEditForm: this.ruleToFixedDraftSlot(rule),
+      fixedEditError: "",
     });
   };
 
   closeFixedEdit = () => {
     if (this.state.fixedSaving) return;
-    this.setState({ isFixedEditOpen: false, fixedEditForm: emptyForm() });
+    this.setState({ isFixedEditOpen: false, fixedEditForm: emptyForm(), fixedEditError: "" });
   };
 
   updateFixedEditForm = (key, value) => {
@@ -919,6 +984,7 @@ class ScheduleRuleManager extends Component {
         ...prev.fixedEditForm,
         [key]: value,
       },
+      fixedEditError: "",
     }));
   };
 
@@ -926,16 +992,25 @@ class ScheduleRuleManager extends Component {
     const { fixedEditForm } = this.state;
     if (!fixedEditForm.id || !this.validateFixedSlots([fixedEditForm])) return;
 
+    if (this.getFixedEditConflictRule()) {
+      this.setState({ fixedEditError: this.getFixedOverlapMessage() });
+      return;
+    }
+
     const payload = this.buildFixedPayload(fixedEditForm);
     this.setState({ fixedSaving: true });
     try {
-      const canContinue = await this.confirmImpact(payload);
+      const canContinue = await this.confirmImpact(payload, this.markFixedEditOverlap);
       if (!canContinue) {
         this.setState({ fixedSaving: false });
         return;
       }
 
       const res = await updateDoctorScheduleRule(payload.id, payload, { authRole: this.props.authRole });
+      if (res?.data?.code === FIXED_SCHEDULE_OVERLAP_CODE) {
+        this.markFixedEditOverlap();
+        return;
+      }
       if (res?.errCode === 0) {
         toast.success("Đã cập nhật lịch cố định");
         this.setState(
@@ -1025,8 +1100,18 @@ class ScheduleRuleManager extends Component {
     );
   };
 
-  renderFixedDraftSlot = (slot) => (
-    <div className="fixed-schedule-slot-card" key={slot._key}>
+  renderFixedDraftSlot = (slot) => {
+    const hasConflict =
+      this.getFixedDraftConflictKeys().has(slot._key) ||
+      Boolean(this.state.fixedDraftErrors[slot._key]);
+
+    return (
+    <div
+      className={`fixed-schedule-slot-card ${
+        hasConflict ? "fixed-schedule-slot-card--conflict" : ""
+      }`}
+      key={slot._key}
+    >
       <div className="fixed-schedule-slot-card__head">
         <div className="fixed-schedule-slot-card__meta">
           <span className="fixed-schedule-draft-badge">
@@ -1052,6 +1137,13 @@ class ScheduleRuleManager extends Component {
           <i className="bi bi-trash" aria-hidden="true" />
         </button>
       </div>
+
+      {hasConflict && (
+        <div className="fixed-schedule-slot-error" role="alert">
+          <i className="bi bi-exclamation-triangle" aria-hidden="true" />
+          <span>{this.getFixedOverlapMessage()}</span>
+        </div>
+      )}
 
       <div className="fixed-schedule-slot-grid">
         <label className="fixed-schedule-field">
@@ -1102,7 +1194,8 @@ class ScheduleRuleManager extends Component {
         </label>
       </div>
     </div>
-  );
+    );
+  };
 
   renderFixedDayItem = (day) => {
     const slots = this.getVisibleDraftSlots(day.value);
@@ -1157,6 +1250,7 @@ class ScheduleRuleManager extends Component {
 
   renderFixedSetupModal = () => {
     const { isFixedSetupOpen, fixedSetupType, fixedSaving } = this.state;
+    const hasConflicts = this.hasFixedDraftConflicts();
 
     return (
       <Modal
@@ -1194,7 +1288,7 @@ class ScheduleRuleManager extends Component {
               type="button"
               className="fixed-schedule-apply-button"
               onClick={this.handleFixedSetupApply}
-              disabled={fixedSaving}
+              disabled={fixedSaving || hasConflicts}
             >
               <i className="bi bi-floppy" aria-hidden="true" />
               {fixedSaving ? "Đang lưu..." : "Áp dụng"}
@@ -1210,7 +1304,8 @@ class ScheduleRuleManager extends Component {
   };
 
   renderFixedEditModal = () => {
-    const { isFixedEditOpen, fixedEditForm, fixedSaving } = this.state;
+    const { isFixedEditOpen, fixedEditForm, fixedEditError, fixedSaving } = this.state;
+    const hasConflict = Boolean(this.getFixedEditConflictRule() || fixedEditError);
 
     return (
       <Modal
@@ -1295,6 +1390,12 @@ class ScheduleRuleManager extends Component {
               />
             </label>
           </div>
+          {hasConflict && (
+            <div className="fixed-schedule-slot-error" role="alert">
+              <i className="bi bi-exclamation-triangle" aria-hidden="true" />
+              <span>{this.getFixedOverlapMessage()}</span>
+            </div>
+          )}
         </ModalBody>
         <ModalFooter>
           <Button color="danger" type="button" onClick={this.handleFixedEditDelete} disabled={fixedSaving}>
@@ -1303,7 +1404,12 @@ class ScheduleRuleManager extends Component {
           <Button color="secondary" type="button" onClick={this.closeFixedEdit} disabled={fixedSaving}>
             Đóng
           </Button>
-          <Button color="primary" type="button" onClick={this.handleFixedEditUpdate} disabled={fixedSaving}>
+          <Button
+            color="primary"
+            type="button"
+            onClick={this.handleFixedEditUpdate}
+            disabled={fixedSaving || hasConflict}
+          >
             {fixedSaving ? "Đang lưu..." : "Cập nhật"}
           </Button>
         </ModalFooter>
@@ -1912,4 +2018,4 @@ class ScheduleRuleManager extends Component {
   }
 }
 
-export default ScheduleRuleManager;
+export default injectIntl(ScheduleRuleManager);

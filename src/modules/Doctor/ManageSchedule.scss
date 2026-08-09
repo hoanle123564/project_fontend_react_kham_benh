@@ -1130,6 +1130,30 @@
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
 
+.fixed-schedule-slot-card--conflict {
+    border-color: #f87171;
+    background: #fff7f7;
+}
+
+.fixed-schedule-slot-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: -2px 0 16px;
+    padding: 12px 14px;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    i {
+        margin-top: 2px;
+    }
+}
+
 .fixed-schedule-slot-card__head {
     display: flex;
     align-items: center;
