@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import {
   createChatSession,
+  deleteChatSession,
   getChatSessionMessages,
   getChatSessions,
+  renameChatSession,
   sendChatMessage,
 } from "../../../../services/chatService";
 import logoSrc from "../../../../assets/logo2.png";
@@ -13,6 +16,9 @@ import DoctorCard from "./DoctorCard";
 import SlotCard from "./SlotCard";
 
 const NETWORK_ERROR_MESSAGE = "Có lỗi xảy ra khi kết nối chatbot. Vui lòng thử lại.";
+
+const getChatErrorMessage = (error) =>
+  error.response?.data?.errMessage || error.message || NETWORK_ERROR_MESSAGE;
 
 const normalizeMessage = (message, fallbackId) => ({
   id: message.id || fallbackId,
@@ -34,6 +40,9 @@ const formatSessionTime = (value) => {
   });
 };
 
+export const canCreateNewSession = (sessionId, messages) =>
+  !sessionId || messages.some((message) => message.role === "user");
+
 const Chatbot = ({ history, isLoggedIn, patientName }) => {
   const [sessions, setSessions] = useState([]);
   const [sessionId, setSessionId] = useState("");
@@ -43,7 +52,16 @@ const Chatbot = ({ history, isLoggedIn, patientName }) => {
   const [loadingSessions, setLoadingSessions] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [errorText, setErrorText] = useState("");
+  const [menuSessionId, setMenuSessionId] = useState("");
+  const [renamingSession, setRenamingSession] = useState(null);
+  const [renameTitle, setRenameTitle] = useState("");
+  const [renameError, setRenameError] = useState("");
+  const [savingRename, setSavingRename] = useState(false);
+  const [deleteSessionTarget, setDeleteSessionTarget] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
+  const [deletingSession, setDeletingSession] = useState(false);
   const threadRef = useRef(null);
+  const canCreateSessionRef = useRef(true);
 
   const latestBotMessageId = useMemo(() => {
     const latest = [...messages].reverse().find((message) => message.role === "bot");
@@ -54,6 +72,9 @@ const Chatbot = ({ history, isLoggedIn, patientName }) => {
     const latest = [...messages].reverse().find((message) => message.role === "bot");
     return latest?.state || "";
   }, [messages]);
+
+  const canCreateSession = canCreateNewSession(sessionId, messages);
+  canCreateSessionRef.current = canCreateSession;
 
   const refreshSessions = useCallback(async () => {
     const items = await getChatSessions();
@@ -72,13 +93,17 @@ const Chatbot = ({ history, isLoggedIn, patientName }) => {
       setSessionId(nextSessionId);
       setMessages(rows.map((item, index) => normalizeMessage(item, `${nextSessionId}-${index}`)));
     } catch (error) {
-      setErrorText(error.message || NETWORK_ERROR_MESSAGE);
+      setErrorText(getChatErrorMessage(error));
     } finally {
       setLoadingMessages(false);
     }
   }, []);
 
   const startNewSession = useCallback(async () => {
+    if (!canCreateSessionRef.current) {
+      return null;
+    }
+
     setLoadingMessages(true);
     setErrorText("");
 
@@ -92,7 +117,7 @@ const Chatbot = ({ history, isLoggedIn, patientName }) => {
       setInput("");
       return created;
     } catch (error) {
-      setErrorText(error.message || NETWORK_ERROR_MESSAGE);
+      setErrorText(getChatErrorMessage(error));
       return null;
     } finally {
       setLoadingMessages(false);
@@ -198,6 +223,84 @@ const Chatbot = ({ history, isLoggedIn, patientName }) => {
     }
   };
 
+  const openRenameModal = (item) => {
+    setMenuSessionId("");
+    setRenamingSession(item);
+    setRenameTitle(item.title || "");
+    setRenameError("");
+  };
+
+  const closeRenameModal = () => {
+    if (savingRename) return;
+    setRenamingSession(null);
+    setRenameTitle("");
+    setRenameError("");
+  };
+
+  const submitRename = async (event) => {
+    event.preventDefault();
+    if (!renamingSession || !renameTitle.trim()) return;
+
+    try {
+      setSavingRename(true);
+      setRenameError("");
+      const updated = await renameChatSession(renamingSession.sessionId, renameTitle);
+      setSessions((items) =>
+        items.map((session) =>
+          session.sessionId === renamingSession.sessionId ? { ...session, ...updated } : session
+        )
+      );
+      setRenamingSession(null);
+      setRenameTitle("");
+      setRenameError("");
+    } catch (error) {
+      setRenameError(getChatErrorMessage(error));
+    } finally {
+      setSavingRename(false);
+    }
+  };
+
+  const openDeleteModal = (item) => {
+    setMenuSessionId("");
+    setDeleteSessionTarget(item);
+    setDeleteError("");
+  };
+
+  const closeDeleteModal = () => {
+    if (deletingSession) return;
+    setDeleteSessionTarget(null);
+    setDeleteError("");
+  };
+
+  const removeSession = async () => {
+    if (!deleteSessionTarget || deletingSession) return;
+
+    const item = deleteSessionTarget;
+
+    try {
+      setDeletingSession(true);
+      setDeleteError("");
+      await deleteChatSession(item.sessionId);
+      const remaining = sessions.filter((session) => session.sessionId !== item.sessionId);
+      setSessions(remaining);
+      setDeleteSessionTarget(null);
+
+      if (item.sessionId !== sessionId) return;
+
+      setSessionId("");
+      setMessages([]);
+      if (remaining[0]?.sessionId) {
+        await loadMessages(remaining[0].sessionId);
+      } else {
+        await startNewSession();
+      }
+    } catch (error) {
+      setDeleteError(getChatErrorMessage(error));
+    } finally {
+      setDeletingSession(false);
+    }
+  };
+
   const renderOptions = (message) => {
     const isLatest = message.id === latestBotMessageId;
     if (!isLatest) return null;
@@ -270,7 +373,7 @@ const Chatbot = ({ history, isLoggedIn, patientName }) => {
         <button
           type="button"
           className="chatbot-new-session"
-          disabled={loadingMessages}
+          disabled={loadingMessages || !canCreateSession}
           onClick={startNewSession}
         >
           <i className="fa-solid fa-plus"></i>
@@ -284,16 +387,42 @@ const Chatbot = ({ history, isLoggedIn, patientName }) => {
             <div className="chatbot-session-empty">Chưa có cuộc trò chuyện.</div>
           )}
           {sessions.map((item) => (
-            <button
-              type="button"
+            <div
               key={item.sessionId}
               className={`chatbot-session-item ${item.sessionId === sessionId ? "active" : ""}`}
-              disabled={loadingMessages || loading}
-              onClick={() => loadMessages(item.sessionId)}
             >
-              <span>{item.title || "Cuộc trò chuyện mới"}</span>
-              <small>{formatSessionTime(item.updatedAt)}</small>
-            </button>
+              <button
+                type="button"
+                className="chatbot-session-select"
+                disabled={loadingMessages || loading}
+                onClick={() => loadMessages(item.sessionId)}
+              >
+                <span>{item.title || "Cuộc trò chuyện mới"}</span>
+                <small>{formatSessionTime(item.updatedAt)}</small>
+              </button>
+              <button
+                type="button"
+                className="chatbot-session-menu-button"
+                aria-label={`Tùy chọn cho ${item.title || "cuộc trò chuyện mới"}`}
+                aria-expanded={menuSessionId === item.sessionId}
+                disabled={loadingMessages || loading}
+                onClick={() => setMenuSessionId((id) => (id === item.sessionId ? "" : item.sessionId))}
+              >
+                <i className="fa-solid fa-ellipsis"></i>
+              </button>
+              {menuSessionId === item.sessionId && (
+                <div className="chatbot-session-menu">
+                  <button type="button" onClick={() => openRenameModal(item)}>
+                    <i className="fa-solid fa-pen"></i>
+                    Đổi tên
+                  </button>
+                  <button type="button" className="is-danger" onClick={() => openDeleteModal(item)}>
+                    <i className="fa-regular fa-trash-can"></i>
+                    Xóa
+                  </button>
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </aside>
@@ -345,6 +474,80 @@ const Chatbot = ({ history, isLoggedIn, patientName }) => {
           </button>
         </form>
       </section>
+
+      <Modal
+        isOpen={Boolean(renamingSession)}
+        toggle={closeRenameModal}
+        centered
+        className="chatbot-rename-modal"
+      >
+        <form onSubmit={submitRename}>
+          <ModalHeader toggle={closeRenameModal}>Đổi tên hội thoại</ModalHeader>
+          <ModalBody>
+            <p className="chatbot-rename-modal__description">
+              Nhập tên mới để dễ nhận biết hội thoại này.
+            </p>
+            <label className="visually-hidden" htmlFor="chatbot-rename-title">
+              Tên hội thoại
+            </label>
+            <input
+              id="chatbot-rename-title"
+              type="text"
+              className="form-control chatbot-rename-modal__input"
+              value={renameTitle}
+              maxLength="255"
+              autoFocus
+              disabled={savingRename}
+              onChange={(event) => {
+                setRenameTitle(event.target.value);
+                setRenameError("");
+              }}
+            />
+            {renameError && <div className="chatbot-rename-modal__error">{renameError}</div>}
+          </ModalBody>
+          <ModalFooter>
+            <Button type="button" className="chatbot-rename-modal__cancel" onClick={closeRenameModal} disabled={savingRename}>
+              Hủy
+            </Button>
+            <Button type="submit" className="chatbot-rename-modal__save" disabled={savingRename || !renameTitle.trim()}>
+              {savingRename ? "Đang lưu..." : "Lưu"}
+            </Button>
+          </ModalFooter>
+        </form>
+      </Modal>
+
+      <Modal
+        isOpen={Boolean(deleteSessionTarget)}
+        toggle={closeDeleteModal}
+        centered
+        className="chatbot-delete-modal"
+      >
+        <ModalHeader toggle={closeDeleteModal}>Xóa hội thoại?</ModalHeader>
+        <ModalBody>
+          <p className="chatbot-delete-modal__description">
+            Bạn có chắc muốn xóa “{deleteSessionTarget?.title || "Cuộc trò chuyện mới"}”? Thao tác này không thể hoàn tác.
+          </p>
+          {deleteError && <div className="chatbot-delete-modal__error">{deleteError}</div>}
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            type="button"
+            className="chatbot-delete-modal__cancel"
+            onClick={closeDeleteModal}
+            disabled={deletingSession}
+          >
+            Hủy
+          </Button>
+          <Button
+            type="button"
+            className="chatbot-delete-modal__delete"
+            onClick={removeSession}
+            disabled={deletingSession}
+          >
+            {deletingSession ? "Đang xóa..." : "Xóa"}
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 };

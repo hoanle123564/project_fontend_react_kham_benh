@@ -23,6 +23,21 @@ const getChatSessionMessages = async (sessionId) => {
   return response?.data || [];
 };
 
+const renameChatSession = async (sessionId, title) => {
+  const response = await patientAxios.patch(
+    `/api/chat/sessions/${encodeURIComponent(sessionId)}`,
+    { title },
+    { baseURL: API_BASE_URL }
+  );
+  return response?.data || null;
+};
+
+const deleteChatSession = async (sessionId) => {
+  await patientAxios.delete(`/api/chat/sessions/${encodeURIComponent(sessionId)}`, {
+    baseURL: API_BASE_URL,
+  });
+};
+
 const sendChatMessage = async (sessionId, message) => {
   try {
     return await patientAxios.post(
@@ -47,5 +62,7 @@ export {
   getChatSessions,
   createChatSession,
   getChatSessionMessages,
+  renameChatSession,
+  deleteChatSession,
   sendChatMessage,
 };
