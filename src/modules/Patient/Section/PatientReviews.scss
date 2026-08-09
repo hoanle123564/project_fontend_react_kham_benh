@@ -1,0 +1,218 @@
+.patient-reviews-wrapper {
+    background-color: #ffffff;
+    padding: 70px 0 90px 0;
+    width: 100%;
+    overflow: hidden;
+
+    .reviews-header {
+        text-align: center;
+        margin-bottom: 48px;
+
+        .reviews-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .reviews-subtitle {
+            font-size: 16px;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    }
+
+    .reviews-swiper-container {
+        width: 100%;
+        padding-bottom: 40px;
+
+        .swiper-pagination {
+            bottom: 0px !important;
+
+            .swiper-pagination-bullet {
+                background: #64748b;
+                opacity: 0.2;
+                width: 10px;
+                height: 10px;
+                transition: all 0.3s ease;
+
+                &-active {
+                    background: #00a896;
+                    opacity: 1;
+                    width: 24px;
+                    border-radius: 5px;
+                }
+            }
+        }
+    }
+
+    .review-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 280px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 168, 150, 0.06);
+            border-color: rgba(0, 168, 150, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            width: 100%;
+
+            .patient-info {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+
+                .patient-avatar {
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 50%;
+                    overflow: hidden;
+                    background-color: #f1f5f9;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    border: 2px solid #e2e8f0;
+                    flex-shrink: 0;
+
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+
+                    .avatar-placeholder {
+                        font-size: 14px;
+                        font-weight: 700;
+                        color: #0b9385;
+                        font-family: 'Inter', sans-serif;
+                    }
+                }
+
+                .patient-meta {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+
+                    .patient-name {
+                        font-size: 16px;
+                        font-weight: 700;
+                        color: #1e293b;
+                        margin: 0;
+                    }
+
+                    .rating-container {
+                        display: flex;
+                        gap: 2px;
+
+                        i {
+                            font-size: 12px;
+
+                            &.star-filled {
+                                color: #fbbf24;
+                            }
+
+                            &.star-empty {
+                                color: #cbd5e1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .verified-badge {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                background-color: #e6fcf5;
+                color: #0ca678;
+                font-size: 11px;
+                font-weight: 600;
+                padding: 4px 8px;
+                border-radius: 12px;
+                border: 1px solid #c3fae8;
+                white-space: nowrap;
+
+                i {
+                    font-size: 12px;
+                }
+            }
+        }
+
+        .card-body {
+            flex-grow: 1;
+            margin-bottom: 20px;
+
+            .review-text {
+                font-size: 14.5px;
+                color: #475569;
+                line-height: 1.6;
+                margin: 0;
+                font-style: italic;
+            }
+        }
+
+        .card-footer {
+            border-top: 1px solid #f1f5f9;
+            padding-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: auto;
+            width: 100%;
+
+            .visit-meta {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+
+                .doctor-badge,
+                .specialty-badge {
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 13px;
+                    color: #64748b;
+
+                    i {
+                        font-size: 13px;
+                        color: #00a896;
+                        width: 14px;
+                        text-align: center;
+                    }
+
+                    span {
+                        font-weight: 500;
+                    }
+                }
+
+                .doctor-badge span {
+                    color: #334155;
+                    font-weight: 600;
+                }
+            }
+
+            .visit-date {
+                font-size: 12px;
+                color: #94a3b8;
+                font-family: 'Inter', sans-serif;
+            }
+        }
+    }
+}

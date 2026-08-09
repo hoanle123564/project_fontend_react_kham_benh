@@ -378,7 +378,8 @@
     "save-schedule": "Save schedule",
     "price": "Consultation price",
     "online-price": "Online consultation price",
-    "invalid-price": "Price must be a valid non-negative number"
+    "invalid-price": "Price must be a valid non-negative number",
+    "fixed-slot-overlap": "This time range overlaps another time range."
   },
   "manage-patient": {
     "title": "Patient management",
@@ -816,6 +817,40 @@
     "appointmentDescription": "{name} confirmed an appointment.",
     "messageDescription": "{name} sent a new message.",
     "reviewDescription": "{name} submitted a new review."
+  },
+  "homepage": {
+    "booking-process": {
+      "title": "4-Step Simple Booking Process",
+      "subtitle": "Fast booking experience, saving your time",
+      "step1-title": "Find Doctor & Specialty",
+      "step1-desc": "Easily find the doctor or specialty that fits your needs",
+      "step2-title": "Select Date & Time",
+      "step2-desc": "Choose your flexible and active consultation schedule",
+      "step3-title": "Confirm Info & Payment",
+      "step3-desc": "Secure patient profile data and safe payment gateway",
+      "step4-title": "Consult Online or Offline",
+      "step4-desc": "Receive medical appointment confirmation instantly"
+    },
+    "key-stats": {
+      "title": "Why Choose LifeCare",
+      "subtitle": "Impressive numbers that build trust",
+      "stat1-title": "Patients Trusted",
+      "stat1-desc": "Successfully booked and treated on the platform",
+      "stat2-title": "Specialist Doctors",
+      "stat2-desc": "Experienced professors, PhDs, and top medical experts",
+      "stat3-title": "Linked Facilities",
+      "stat3-desc": "Prestigious hospitals, medical centers and clinics",
+      "stat4-title": "Satisfaction Rate",
+      "stat4-desc": "Positive feedback received after patient consultations"
+    },
+    "patient-reviews": {
+      "title": "Patient Stories",
+      "subtitle": "Real experiences shared by patients who visited us",
+      "verified": "Verified Patient"
+    },
+    "chatbot": {
+      "tooltip": "Need help with your symptoms today?"
+    }
   },
   "patient-notifications": {
     "open": "Open notifications",

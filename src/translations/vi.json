@@ -378,7 +378,8 @@
     "save-schedule": "Lưu kế hoạch",
     "price": "Giá khám",
     "online-price": "Giá khám online",
-    "invalid-price": "Giá khám phải là số hợp lệ và không âm"
+    "invalid-price": "Giá khám phải là số hợp lệ và không âm",
+    "fixed-slot-overlap": "Khung thời gian bị trùng lặp với khung giờ khác"
   },
   "manage-patient": {
     "title": "Quản lý bệnh nhân",
@@ -1009,7 +1010,42 @@
     "reviewTitle": "Đánh giá mới",
     "appointmentDescription": "{name} đã xác nhận lịch khám.",
     "messageDescription": "{name} đã gửi một tin nhắn mới.",
-    "reviewDescription": "{name} vừa gửi một đánh giá mới."
+    "reviewDescription": "{name} vừa gửi một đánh giá mới.",
+    "reminderDescription": "Lịch hẹn của bạn với {name} sắp bắt đầu."
+  },
+  "homepage": {
+    "booking-process": {
+      "title": "Quy trình đặt lịch 4 bước đơn giản",
+      "subtitle": "Trải nghiệm đặt lịch nhanh chóng, tiết kiệm thời gian",
+      "step1-title": "Tìm chuyên khoa & bác sĩ",
+      "step1-desc": "Dễ dàng tìm thấy bác sĩ hoặc chuyên khoa phù hợp với nhu cầu",
+      "step2-title": "Chọn ngày & giờ khám",
+      "step2-desc": "Chủ động lựa chọn thời gian khám bệnh linh hoạt nhất",
+      "step3-title": "Xác nhận thông tin & thanh toán",
+      "step3-desc": "Bảo mật thông tin bệnh nhân và thanh toán an toàn nhanh chóng",
+      "step4-title": "Đến khám hoặc khám trực tuyến",
+      "step4-desc": "Nhận mã đặt lịch y tế ngay lập tức và đến khám trực tiếp hoặc trực tuyến"
+    },
+    "key-stats": {
+      "title": "Lý do chọn LifeCare",
+      "subtitle": "Con số ấn tượng tạo nên sự tin tưởng",
+      "stat1-title": "Bệnh nhân tin dùng",
+      "stat1-desc": "Đã đặt lịch và điều trị thành công trên hệ thống",
+      "stat2-title": "Bác sĩ chuyên gia",
+      "stat2-desc": "Đội ngũ giáo sư, tiến sĩ, bác sĩ giỏi chuyên môn",
+      "stat3-title": "Bệnh viện liên kết",
+      "stat3-desc": "Các cơ sở y tế, bệnh viện và phòng khám uy tín",
+      "stat4-title": "Hài lòng",
+      "stat4-desc": "Tỷ lệ bệnh nhân phản hồi tích cực sau khi khám"
+    },
+    "patient-reviews": {
+      "title": "Chia sẻ từ bệnh nhân",
+      "subtitle": "Những phản hồi chân thực từ những người đã trải nghiệm dịch vụ",
+      "verified": "Đã khám bệnh"
+    },
+    "chatbot": {
+      "tooltip": "Bạn cần tư vấn triệu chứng gì hôm nay?"
+    }
   },
   "patient-notifications": {
     "open": "M\u1edf th\u00f4ng b\u00e1o",

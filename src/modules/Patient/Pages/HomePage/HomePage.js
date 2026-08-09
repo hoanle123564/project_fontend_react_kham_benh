@@ -2,17 +2,21 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import HomeHeader from "../../Layout/HomeHeader";
 import Speciality from "../../Section/Speciality";
-import RemoteExam from "../../Section/RemoteExam";
+import BookingProcess from "../../Section/BookingProcess";
+// import RemoteExam from "../../Section/RemoteExam";
 import Doctor from "../../Section/Doctor";
 import AboutUs from "../../Section/AboutUs";
 import HomeFooter from "../../Layout/HomeFooter";
 import Clinic from "../../Section/Clinic";
 import Commercial from "../../Section/Commercial";
 import PostSection from "../../Section/PostSection";
+import KeyStats from "../../Section/KeyStats";
+import PatientReviews from "../../Section/PatientReviews";
 import BackToTop from "../../../../components/BackToTop/BackToTop";
 import "./HomePage.scss";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+
 class HomePage extends Component {
   render() {
     let settings3 = {
@@ -35,11 +39,14 @@ class HomePage extends Component {
         <HomeHeader showBanner={true} />
         <BackToTop />
         <Speciality settings={settings3} />
-        <RemoteExam settings={settings3} />
+        <BookingProcess />
+        {/* <RemoteExam settings={settings3} /> */}
         <Commercial />
         <PostSection />
+        <KeyStats />
         <Clinic settings={settings3} />
         <Doctor settings={settings4} />
+        <PatientReviews />
         <AboutUs />
         <HomeFooter />
       </>
