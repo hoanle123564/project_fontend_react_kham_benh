@@ -63,7 +63,7 @@ class BookingProcess extends Component {
             <div className="booking-process-wrapper">
                 <div className="container">
                     <div className="process-header">
-                        <h2 className="process-title">
+                        <h2 className="process-title" data-aos="fade-up">
                             <FormattedMessage id="homepage.booking-process.title" />
                         </h2>
                         <p className="process-subtitle">
@@ -72,24 +72,31 @@ class BookingProcess extends Component {
                     </div>
                     <div className="process-grid">
                         {steps.map((step, index) => (
-                            <div className="process-step-card" key={index}>
-                                <div className="step-icon-container">
-                                    <div className="step-badge">{step.number}</div>
-                                    {step.icon}
-                                </div>
-                                <h3 className="step-title">
-                                    <FormattedMessage id={step.titleKey} />
-                                </h3>
-                                <p className="step-desc">
-                                    <FormattedMessage id={step.descKey} />
-                                </p>
-                                {index < steps.length - 1 && (
-                                    <div className="step-connector">
-                                        <svg viewBox="0 0 100 10" fill="none" preserveAspectRatio="none">
-                                            <line x1="0" y1="5" x2="100" y2="5" stroke="#00a896" strokeWidth="2" strokeDasharray="5 5" />
-                                        </svg>
+                            <div
+                                className="process-step-animation"
+                                data-aos="fade-up"
+                                data-aos-delay={index * 150}
+                                key={index}
+                            >
+                                <div className="process-step-card">
+                                    <div className="step-icon-container">
+                                        <div className="step-badge">{step.number}</div>
+                                        {step.icon}
                                     </div>
-                                )}
+                                    <h3 className="step-title">
+                                        <FormattedMessage id={step.titleKey} />
+                                    </h3>
+                                    <p className="step-desc">
+                                        <FormattedMessage id={step.descKey} />
+                                    </p>
+                                    {index < steps.length - 1 && (
+                                        <div className="step-connector">
+                                            <svg viewBox="0 0 100 10" fill="none" preserveAspectRatio="none">
+                                                <line x1="0" y1="5" x2="100" y2="5" stroke="#00a896" strokeWidth="2" strokeDasharray="5 5" />
+                                            </svg>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         ))}
                     </div>

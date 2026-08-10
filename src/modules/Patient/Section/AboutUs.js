@@ -15,12 +15,12 @@ class AboutUs extends Component {
                 <div className='section-share section-about'>
                     <div className="container">
                         <div className='section-container'>
-                            <div className='secton-header-about'>
+                            <div className='secton-header-about' data-aos="fade-up">
                                 <FormattedMessage id="banner.About-life-care" />
                             </div>
                             <div className="row">
                                 <div className="col-lg-6">
-                                    <div className='content-left-about'>
+                                    <div className='content-left-about' data-aos="fade-right">
                                         <iframe width="560" height="330"
                                             src="https://www.youtube.com/embed/HwGzmRVBsdw?list=PLearCtxlLjlcKWhwO3k9PGtDdxUNb6YCC"
                                             title="Medical Hospital Clinic Background Music For Videos" frameBorder="0"
@@ -32,7 +32,7 @@ class AboutUs extends Component {
                                 </div>
 
                                 <div className="col-lg-6">
-                                    <div className='content-right-about'>
+                                    <div className='content-right-about' data-aos="fade-left">
                                         <div className='section-items'>
                                             <img src={VNexpress} alt='VNexpress' />
                                         </div>

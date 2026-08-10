@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import HomeHeader from "../../Layout/HomeHeader";
 import Speciality from "../../Section/Speciality";
 import BookingProcess from "../../Section/BookingProcess";
@@ -18,6 +20,15 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 class HomePage extends Component {
+  componentDidMount() {
+    AOS.init({
+      once: true,
+      duration: 600,
+      easing: "ease-out",
+      offset: 80,
+    });
+  }
+
   render() {
     let settings3 = {
       dots: false,

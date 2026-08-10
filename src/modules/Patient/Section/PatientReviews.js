@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
+import AOS from 'aos';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -66,6 +67,10 @@ class PatientReviews extends Component {
         return name[0].toUpperCase();
     }
 
+    handleSlideChange = () => {
+        AOS.refresh();
+    }
+
     render() {
         const swiperBreakpoints = {
             0: {
@@ -86,7 +91,7 @@ class PatientReviews extends Component {
             <div className="patient-reviews-wrapper">
                 <div className="container">
                     <div className="reviews-header">
-                        <h2 className="reviews-title">
+                        <h2 className="reviews-title" data-aos="fade-up">
                             <FormattedMessage id="homepage.patient-reviews.title" />
                         </h2>
                         <p className="reviews-subtitle">
@@ -100,54 +105,61 @@ class PatientReviews extends Component {
                             pagination={{ clickable: true }}
                             breakpoints={swiperBreakpoints}
                             className="reviews-swiper"
+                            onSlideChange={this.handleSlideChange}
                         >
-                            {reviews.map((review) => (
+                            {reviews.map((review, index) => (
                                 <SwiperSlide key={review.id}>
-                                    <div className="review-card">
-                                        <div className="card-header">
-                                            <div className="patient-info">
-                                                <div className="patient-avatar">
-                                                    {review.avatar ? (
-                                                        <img src={review.avatar} alt={review.patientName} />
-                                                    ) : (
-                                                        <span className="avatar-placeholder">
-                                                            {this.getInitials(review.patientName)}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <div className="patient-meta">
-                                                    <h4 className="patient-name">{review.patientName}</h4>
-                                                    <div className="rating-container">
-                                                        {this.renderStars(review.rating)}
+                                    <div
+                                        className="review-card-animation"
+                                        data-aos="fade-up"
+                                        data-aos-delay={index * 150}
+                                    >
+                                        <div className="review-card">
+                                            <div className="card-header">
+                                                <div className="patient-info">
+                                                    <div className="patient-avatar">
+                                                        {review.avatar ? (
+                                                            <img src={review.avatar} alt={review.patientName} />
+                                                        ) : (
+                                                            <span className="avatar-placeholder">
+                                                                {this.getInitials(review.patientName)}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div className="patient-meta">
+                                                        <h4 className="patient-name">{review.patientName}</h4>
+                                                        <div className="rating-container">
+                                                            {this.renderStars(review.rating)}
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                {review.verified && (
+                                                    <span className="verified-badge">
+                                                        <i className="fa-solid fa-circle-check"></i>
+                                                        <FormattedMessage id="homepage.patient-reviews.verified" />
+                                                    </span>
+                                                )}
                                             </div>
-                                            {review.verified && (
-                                                <span className="verified-badge">
-                                                    <i className="fa-solid fa-circle-check"></i>
-                                                    <FormattedMessage id="homepage.patient-reviews.verified" />
-                                                </span>
-                                            )}
-                                        </div>
 
-                                        <div className="card-body">
-                                            <p className="review-text">
-                                                <FormattedMessage id={review.contentKey} />
-                                            </p>
-                                        </div>
-
-                                        <div className="card-footer">
-                                            <div className="visit-meta">
-                                                <div className="doctor-badge">
-                                                    <i className="fa-solid fa-user-doctor"></i>
-                                                    <span>{review.doctorName}</span>
-                                                </div>
-                                                <div className="specialty-badge">
-                                                    <i className="fa-solid fa-stethoscope"></i>
-                                                    <span>{review.specialty}</span>
-                                                </div>
+                                            <div className="card-body">
+                                                <p className="review-text">
+                                                    <FormattedMessage id={review.contentKey} />
+                                                </p>
                                             </div>
-                                            <div className="visit-date">{review.date}</div>
+
+                                            <div className="card-footer">
+                                                <div className="visit-meta">
+                                                    <div className="doctor-badge">
+                                                        <i className="fa-solid fa-user-doctor"></i>
+                                                        <span>{review.doctorName}</span>
+                                                    </div>
+                                                    <div className="specialty-badge">
+                                                        <i className="fa-solid fa-stethoscope"></i>
+                                                        <span>{review.specialty}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="visit-date">{review.date}</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </SwiperSlide>

@@ -7,6 +7,7 @@
     "@formatjs/intl-relativetimeformat": "^7.3.6",
     "@fortawesome/fontawesome-free": "^7.0.1",
     "@zegocloud/zego-uikit-prebuilt": "^2.17.3",
+    "aos": "^2.3.4",
     "apexcharts": "^5.11.0",
     "axios": "^0.21.1",
     "bootstrap": "^5.3.8",
