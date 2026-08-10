@@ -10,6 +10,7 @@ import {
   renameChatSession,
   sendChatMessage,
 } from "../../../../services/chatService";
+import { getOnlineBookingPayment } from "../../../../services/onlineBookingPaymentService";
 import logoSrc from "../../../../assets/logo2.png";
 import ChatMessage from "./ChatMessage";
 import DoctorCard from "./DoctorCard";
@@ -19,6 +20,26 @@ const NETWORK_ERROR_MESSAGE = "Có lỗi xảy ra khi kết nối chatbot. Vui l
 
 const getChatErrorMessage = (error) =>
   error.response?.data?.errMessage || error.message || NETWORK_ERROR_MESSAGE;
+
+const formatMoney = (value) => {
+  const amount = Number(value);
+  return Number.isInteger(amount) && amount > 0
+    ? `${amount.toLocaleString("vi-VN")}đ`
+    : "Chưa xác định";
+};
+
+const formatPaymentExpiry = (value) => {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? "Chưa xác định"
+    : date.toLocaleString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+};
 
 const normalizeMessage = (message, fallbackId) => ({
   id: message.id || fallbackId,
@@ -60,8 +81,10 @@ const Chatbot = ({ history, isLoggedIn, patientName }) => {
   const [deleteSessionTarget, setDeleteSessionTarget] = useState(null);
   const [deleteError, setDeleteError] = useState("");
   const [deletingSession, setDeletingSession] = useState(false);
+  const [checkingPaymentId, setCheckingPaymentId] = useState("");
   const threadRef = useRef(null);
   const canCreateSessionRef = useRef(true);
+  const paymentPollRef = useRef({ key: "", timer: null, inFlight: false });
 
   const latestBotMessageId = useMemo(() => {
     const latest = [...messages].reverse().find((message) => message.role === "bot");
@@ -223,6 +246,122 @@ const Chatbot = ({ history, isLoggedIn, patientName }) => {
     }
   };
 
+  const clearPaymentPolling = useCallback(() => {
+    if (paymentPollRef.current.timer) {
+      window.clearTimeout(paymentPollRef.current.timer);
+    }
+    paymentPollRef.current = { key: "", timer: null, inFlight: false };
+  }, []);
+
+  const applyPaymentStatus = useCallback((messageId, payment) => {
+    setMessages((items) =>
+      items.map((message) => {
+        if (message.id !== messageId) return message;
+
+        const paid = payment?.status === "PAID" && payment?.bookingId;
+        return {
+          ...message,
+          text: paid
+            ? `Thanh toán thành công. Mã lịch hẹn của bạn là ${payment.bookingId}.`
+            : message.text,
+          state: paid ? "BOOKING_CREATED" : message.state,
+          data: {
+            ...(message.data || {}),
+            payment,
+            ...(paid ? { booking: { id: payment.bookingId } } : {}),
+          },
+        };
+      })
+    );
+  }, []);
+
+  const checkPaymentStatus = useCallback(
+    async (messageId, payment, silent = false) => {
+      if (!payment?.paymentId) return null;
+
+      try {
+        const response = await getOnlineBookingPayment(payment.paymentId);
+        if (response?.errCode !== 0 || !response?.data) {
+          throw new Error(response?.errMessage || "Không thể kiểm tra thanh toán.");
+        }
+
+        const updatedPayment = { ...payment, ...response.data };
+        applyPaymentStatus(messageId, updatedPayment);
+        return updatedPayment;
+      } catch (error) {
+        if (!silent) setErrorText(getChatErrorMessage(error));
+        return null;
+      }
+    },
+    [applyPaymentStatus]
+  );
+
+  const startPaymentPolling = useCallback(
+    (messageId, payment) => {
+      if (!payment?.paymentId || payment.status !== "PENDING") return;
+
+      const key = `${messageId}:${payment.paymentId}`;
+      if (
+        paymentPollRef.current.key === key &&
+        (paymentPollRef.current.timer || paymentPollRef.current.inFlight)
+      ) {
+        return;
+      }
+
+      clearPaymentPolling();
+      paymentPollRef.current = { key, timer: null, inFlight: false };
+
+      const poll = async (currentPayment) => {
+        if (paymentPollRef.current.key !== key) return;
+
+        paymentPollRef.current.inFlight = true;
+        const updatedPayment = await checkPaymentStatus(messageId, currentPayment, true);
+        if (paymentPollRef.current.key !== key) return;
+        paymentPollRef.current.inFlight = false;
+
+        const nextPayment = updatedPayment || currentPayment;
+        const stillPending =
+          nextPayment.status === "PENDING" &&
+          (!nextPayment.expiresAt || Date.parse(nextPayment.expiresAt) > Date.now());
+
+        if (!stillPending) {
+          clearPaymentPolling();
+          return;
+        }
+
+        paymentPollRef.current.timer = window.setTimeout(() => poll(nextPayment), 4000);
+      };
+
+      poll(payment);
+    },
+    [checkPaymentStatus, clearPaymentPolling]
+  );
+
+  useEffect(() => {
+    if (loadingMessages) {
+      clearPaymentPolling();
+      return undefined;
+    }
+
+    const latestBotMessage = [...messages].reverse().find((message) => message.role === "bot");
+    const payment = latestBotMessage?.data?.payment;
+    if (latestBotMessage?.state === "WAIT_PAYMENT" && payment?.status === "PENDING") {
+      startPaymentPolling(latestBotMessage.id, payment);
+    } else {
+      clearPaymentPolling();
+    }
+
+    return undefined;
+  }, [clearPaymentPolling, loadingMessages, messages, startPaymentPolling]);
+
+  useEffect(() => () => clearPaymentPolling(), [clearPaymentPolling]);
+
+  const checkPaymentManually = async (messageId, payment) => {
+    setCheckingPaymentId(String(payment.paymentId));
+    await checkPaymentStatus(messageId, payment);
+    setCheckingPaymentId("");
+  };
+
   const openRenameModal = (item) => {
     setMenuSessionId("");
     setRenamingSession(item);
@@ -348,6 +487,62 @@ const Chatbot = ({ history, isLoggedIn, patientName }) => {
     return null;
   };
 
+  const renderPayment = (message) => {
+    const payment = message.data?.payment || message.data?.collected_info?.payment;
+    if (!payment?.paymentId) return null;
+
+    const isPending = payment.status === "PENDING";
+    const isPaid = payment.status === "PAID" && payment.bookingId;
+    const isChecking = checkingPaymentId === String(payment.paymentId);
+    const statusLabel = isPaid
+      ? "Đã thanh toán"
+      : isPending
+        ? "Đang chờ thanh toán"
+        : payment.status === "EXPIRED"
+          ? "Đã hết hạn"
+          : "Không thành công";
+
+    return (
+      <div className="chatbot-payment-card" aria-live="polite">
+        <div className="chatbot-payment-card__header">
+          <strong>Thanh toán lịch khám online</strong>
+          <span className={`chatbot-payment-card__status is-${String(payment.status || "PENDING").toLowerCase()}`}>
+            {statusLabel}
+          </span>
+        </div>
+        {payment.qrCodeUrl && isPending && (
+          <img className="chatbot-payment-card__qr" src={payment.qrCodeUrl} alt="Mã QR thanh toán" />
+        )}
+        <div className="chatbot-payment-card__details">
+          <span>Số tiền</span>
+          <strong>{formatMoney(payment.amount)}</strong>
+          <span>Nội dung chuyển khoản</span>
+          <strong>{payment.paymentCode || "—"}</strong>
+          <span>Hết hạn</span>
+          <strong>{formatPaymentExpiry(payment.expiresAt)}</strong>
+        </div>
+        {isPending && (
+          <div className="chatbot-payment-card__actions">
+            <button
+              type="button"
+              onClick={() => checkPaymentManually(message.id, payment)}
+              disabled={loading || isChecking}
+            >
+              {isChecking ? "Đang kiểm tra..." : "Kiểm tra thanh toán"}
+            </button>
+            <button type="button" className="is-secondary" onClick={() => sendMessage("hủy")} disabled={loading}>
+              Hủy
+            </button>
+          </div>
+        )}
+        {isPaid && <p className="chatbot-payment-card__success">Lịch hẹn đã được tạo sau khi thanh toán thành công.</p>}
+        {!isPending && !isPaid && (
+          <p className="chatbot-payment-card__error">Mã thanh toán này không còn hiệu lực. Hãy gửi “có” để thử lại.</p>
+        )}
+      </div>
+    );
+  };
+
   if (!isLoggedIn) {
     return (
       <div className="chatbot-login-required">
@@ -448,6 +643,7 @@ const Chatbot = ({ history, isLoggedIn, patientName }) => {
           {messages.map((message) => (
             <div key={message.id}>
               <ChatMessage message={message} />
+              {renderPayment(message)}
               {renderOptions(message)}
             </div>
           ))}

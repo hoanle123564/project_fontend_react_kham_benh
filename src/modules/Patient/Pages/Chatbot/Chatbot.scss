@@ -321,6 +321,108 @@
   margin: 0 0 16px;
 }
 
+.chatbot-payment-card {
+  display: grid;
+  gap: 12px;
+  max-width: 680px;
+  margin: 0 0 16px;
+  border: 1px solid #b7dfe0;
+  border-radius: 10px;
+  padding: 16px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(35, 79, 94, 0.08);
+}
+
+.chatbot-payment-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #14304a;
+}
+
+.chatbot-payment-card__status {
+  border-radius: 999px;
+  padding: 4px 8px;
+  background: #fff5d8;
+  color: #76530f;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.is-paid {
+    background: #e5f7ee;
+    color: #137343;
+  }
+
+  &.is-expired,
+  &.is-failed,
+  &.is-refunded {
+    background: #fdeaea;
+    color: #b52b2b;
+  }
+}
+
+.chatbot-payment-card__qr {
+  width: min(320px, 100%);
+  justify-self: center;
+  border: 1px solid #e1ebef;
+  border-radius: 8px;
+}
+
+.chatbot-payment-card__details {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(140px, auto);
+  gap: 6px 12px;
+  color: #617386;
+  font-size: 13px;
+
+  strong {
+    color: #203642;
+    text-align: right;
+  }
+}
+
+.chatbot-payment-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  button {
+    min-height: 38px;
+    border: 0;
+    border-radius: 8px;
+    padding: 8px 14px;
+    background: #0f9c89;
+    color: #ffffff;
+    font-weight: 600;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    &.is-secondary {
+      border: 1px solid #c7d8e1;
+      background: #ffffff;
+      color: #475d68;
+    }
+  }
+}
+
+.chatbot-payment-card__success,
+.chatbot-payment-card__error {
+  margin: 0;
+  font-size: 13px;
+}
+
+.chatbot-payment-card__success {
+  color: #137343;
+}
+
+.chatbot-payment-card__error {
+  color: #b52b2b;
+}
+
 .chatbot-option-card {
   display: flex;
   align-items: center;

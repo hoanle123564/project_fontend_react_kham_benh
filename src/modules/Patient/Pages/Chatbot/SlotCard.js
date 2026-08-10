@@ -1,5 +1,10 @@
 import React from "react";
 
+const formatMoney = (value) => {
+  const amount = Number(value);
+  return Number.isInteger(amount) && amount > 0 ? `${amount.toLocaleString("vi-VN")}đ` : "";
+};
+
 const SlotCard = ({ slot, index, disabled, onSelect }) => {
   const number = slot.index || index + 1;
 
@@ -12,6 +17,9 @@ const SlotCard = ({ slot, index, disabled, onSelect }) => {
         <div className="chatbot-option-meta">
           {[slot.start_time, slot.end_time].filter(Boolean).join(" - ")}
         </div>
+        {formatMoney(slot.effectivePrice || slot.price) && (
+          <div className="chatbot-option-meta">Giá khám: {formatMoney(slot.effectivePrice || slot.price)}</div>
+        )}
       </div>
       <button type="button" disabled={disabled} onClick={() => onSelect(String(number))}>
         Chọn

@@ -7,6 +7,10 @@ jest.mock("../../../../services/chatService", () => ({
   sendChatMessage: jest.fn(),
 }));
 
+jest.mock("../../../../services/onlineBookingPaymentService", () => ({
+  getOnlineBookingPayment: jest.fn(),
+}));
+
 describe("canCreateNewSession", () => {
   it("blocks a selected conversation without a patient message", () => {
     expect(canCreateNewSession("session-1", [])).toBe(false);
