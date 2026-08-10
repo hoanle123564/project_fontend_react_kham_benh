@@ -71,11 +71,11 @@ export const adminMenu = [
         icon: "bi bi-hospital",
         link: "/system/manage-clinic",
       },
-      {
-        name: "menu.admin.manage-clinic-department",
-        icon: "bi bi-diagram-3",
-        link: "/system/manage-clinic-department",
-      },
+      // {
+      //   name: "menu.admin.manage-clinic-department",
+      //   icon: "bi bi-diagram-3",
+      //   link: "/system/manage-clinic-department",
+      // },
       {
         name: "menu.admin.add-clinic",
         icon: "bi bi-hospital-fill",

@@ -484,3 +484,113 @@
     }
   }
 }
+
+.booking-management-reject-modal {
+  .modal-dialog {
+    max-width: 690px;
+  }
+
+  .modal-content {
+    overflow: hidden;
+    overscroll-behavior: contain;
+    border: 1px solid #d9e4e9;
+    border-radius: 10px;
+    background: #fbfdfe;
+    box-shadow: 0 16px 36px rgba(19, 46, 60, 0.24);
+  }
+
+  .modal-header {
+    align-items: center;
+    border-bottom: 0;
+    padding: 20px 25px 4px;
+
+    .modal-title {
+      color: #17232d;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .btn-close {
+      opacity: 0.65;
+    }
+  }
+
+  .modal-body {
+    padding: 4px 25px 22px;
+  }
+
+  .modal-footer {
+    justify-content: flex-end;
+    gap: 12px;
+    border-top: 1px solid #e7eef2;
+    padding: 16px 25px 20px;
+  }
+}
+
+.booking-management-reject-modal__description {
+  margin: 0;
+  color: #657583;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.booking-management-reject-modal__error {
+  margin-top: 12px;
+  color: #c92d2d;
+  font-size: 14px;
+}
+
+.booking-management-reject-modal__cancel,
+.booking-management-reject-modal__reject {
+  min-width: 60px;
+  min-height: 40px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.booking-management-reject-modal__cancel {
+  border: 2px solid #7acac4;
+  background: #ffffff;
+  color: #263641;
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    border-color: #55b4ad;
+    background: #f3fbfa;
+    color: #263641;
+    outline: 3px solid rgba(15, 143, 140, .18);
+    outline-offset: 2px;
+  }
+}
+
+.booking-management-reject-modal__reject {
+  border-color: #e31b23;
+  background: #e31b23;
+  color: #ffffff;
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    border-color: #c9151c;
+    background: #c9151c;
+    color: #ffffff;
+    outline: 3px solid rgba(227, 27, 35, .2);
+    outline-offset: 2px;
+  }
+}
+
+@media (max-width: 768px) {
+  .booking-management-reject-modal {
+    .modal-header {
+      padding: 20px 20px 4px;
+    }
+
+    .modal-body {
+      padding: 4px 20px 18px;
+    }
+
+    .modal-footer {
+      padding: 14px 20px 20px;
+    }
+  }
+}

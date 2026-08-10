@@ -228,7 +228,7 @@ class DashBoard extends Component {
             },
             fontFamily: "inherit",
         },
-        colors: ["#1e90ff"],
+        colors: ["#0f766e"],
         dataLabels: {
             enabled: false,
         },
@@ -240,9 +240,23 @@ class DashBoard extends Component {
             type: "gradient",
             gradient: {
                 shadeIntensity: 1,
-                opacityFrom: 0.35,
-                opacityTo: 0.05,
+                opacityFrom: 0.25,
+                opacityTo: 0.02,
                 stops: [0, 90, 100],
+            },
+        },
+        grid: {
+            borderColor: "#e2e8f0",
+            strokeDashArray: 4,
+            xaxis: {
+                lines: {
+                    show: false,
+                },
+            },
+            yaxis: {
+                lines: {
+                    show: true,
+                },
             },
         },
         xaxis: {
@@ -394,12 +408,27 @@ class DashBoard extends Component {
         return item.appointmentTypeEn || (item.appointmentTypeId === "AT2" ? "Online" : "In-person");
     };
 
-    buildAppointmentTypeOptions = (items, language) => ({
+    buildAppointmentTypeOptions = (items, language, total) => ({
         labels: items.map((item) => this.getAppointmentTypeLabel(item, language)),
         colors: ["#0ea5e9", "#0f766e"],
         chart: {
             type: "donut",
             fontFamily: "inherit",
+        },
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: "65%",
+                    labels: {
+                        show: true,
+                        total: {
+                            show: true,
+                            label: language === "vi" ? "Tổng số" : "Total",
+                            formatter: () => Number(total) || 0,
+                        },
+                    },
+                },
+            },
         },
         dataLabels: {
             enabled: false,
@@ -740,7 +769,11 @@ class DashBoard extends Component {
                                 </span>
                             </div>
                             <Chart
-                                options={this.buildAppointmentTypeOptions(appointmentTypeItems, language)}
+                                options={this.buildAppointmentTypeOptions(
+                                    appointmentTypeItems,
+                                    language,
+                                    appointmentTypeStats.total
+                                )}
                                 series={appointmentTypeSeries}
                                 type="donut"
                                 height={280}
@@ -760,11 +793,61 @@ class DashBoard extends Component {
 
                         <div className="revenue-content">
                             <div className="revenue-summary">
-                                <span>{language === "vi" ? "Tổng doanh thu" : "Total revenue"}</span>
-                                <strong>{this.formatCurrency(dashboardData?.revenue?.total).replace("₫", "đ")}</strong>
-                                {isLoadingStatistics && (
-                                    <small>{language === "vi" ? "Đang tải..." : "Loading..."}</small>
-                                )}
+                                <div className="revenue-summary-main">
+                                    <span>{language === "vi" ? "Tổng doanh thu" : "Total revenue"}</span>
+                                    <strong>{this.formatCurrency(dashboardData?.revenue?.total).replace("₫", "đ")}</strong>
+
+                                    {(() => {
+                                        const revenueComparison = dashboardData?.revenue?.comparison || {};
+                                        const direction = revenueComparison.direction || "neutral";
+                                        const percentage = revenueComparison.percentage;
+
+                                        return (
+                                            <div className={`revenue-trend revenue-trend--${direction}${isLoadingStatistics ? " loading-blur" : ""}`}>
+                                                {direction === "up" && <i className="fa-solid fa-arrow-trend-up"></i>}
+                                                {direction === "down" && <i className="fa-solid fa-arrow-trend-down"></i>}
+                                                {direction === "neutral" && <i className="fa-solid fa-minus"></i>}
+                                                {direction === "new" && <i className="fa-solid fa-arrow-trend-up"></i>}
+
+                                                {direction === "new"
+                                                    ? (language === "vi" ? "Phát sinh doanh thu mới" : "New revenue")
+                                                    : `${direction === "up" ? "+" : ""}${Number(percentage || 0).toFixed(1)}% ${language === "vi" ? "so với kỳ trước" : "vs previous period"
+                                                    }`}
+                                            </div>
+                                        );
+                                    })()}
+
+                                    {(() => {
+                                        const revenueComparison = dashboardData?.revenue?.comparison || {};
+                                        return (
+                                            <div className={`revenue-previous${isLoadingStatistics ? " loading-blur" : ""}`}>
+                                                {language === "vi" ? "Kỳ trước: " : "Previous period: "}
+                                                {this.formatCurrency(revenueComparison.previousTotal || 0).replace("₫", "đ")}
+                                            </div>
+                                        );
+                                    })()}
+
+                                    {isLoadingStatistics && (
+                                        <small className="loading-text">{language === "vi" ? "Đang tải..." : "Loading..."}</small>
+                                    )}
+                                </div>
+
+                                <div className="revenue-summary-metrics">
+                                    <div className="metric-row">
+                                        <span className="metric-label">{language === "vi" ? "Số giao dịch" : "Transactions"}</span>
+                                        <span className="metric-value">{paymentOverview?.paid?.count || 0} {language === "vi" ? "giao dịch" : "txns"}</span>
+                                    </div>
+                                    <div className="metric-row">
+                                        <span className="metric-label">{language === "vi" ? "Giá trị TB / giao dịch" : "Average Value"}</span>
+                                        <span className="metric-value">
+                                            {this.formatCurrency(
+                                                paymentOverview?.paid?.count > 0
+                                                    ? Math.round(paymentOverview.paid.amount / paymentOverview.paid.count)
+                                                    : 0
+                                            ).replace("₫", "đ")}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="revenue-chart">
@@ -794,23 +877,21 @@ class DashBoard extends Component {
                                 height={300}
                             />
                         </div>
-                        {clinicManagerMode && (
-                            <div className="dashboard-card">
-                                <div className="chart-header">
-                                    <h2 className="chart-title">
-                                        {language === "vi" ? "Trạng thái lịch khám" : "Appointment Status"}
-                                    </h2>
-                                </div>
-
-                                <Chart
-                                    options={this.buildStatusChartOptions(language, clinicManagerMode)}
-                                    series={statusSeries}
-                                    type="donut"
-                                    height={280}
-                                />
+                        <div className="dashboard-card">
+                            <div className="chart-header">
+                                <h2 className="chart-title">
+                                    {language === "vi" ? "Trạng thái lịch khám" : "Appointment Status"}
+                                </h2>
                             </div>
-                        )}
-                        {!clinicManagerMode && (
+
+                            <Chart
+                                options={this.buildStatusChartOptions(language, clinicManagerMode)}
+                                series={statusSeries}
+                                type="donut"
+                                height={280}
+                            />
+                        </div>
+                        {/* {!clinicManagerMode && (
                             <div className="dashboard-card">
                                 <div className="chart-header">
                                     <h2 className="chart-title">
@@ -825,9 +906,9 @@ class DashBoard extends Component {
                                     height={300}
                                 />
                             </div>
-                        )}
+                        )} */}
                     </div>
-                    {!clinicManagerMode && (
+                    {/* {!clinicManagerMode && (
                         <div className="dashboard-card status-card">
                             <div className="chart-header">
                                 <h2 className="chart-title">
@@ -842,7 +923,7 @@ class DashBoard extends Component {
                                 height={280}
                             />
                         </div>
-                    )}
+                    )} */}
 
                     {this.renderRecentBookings(recentBookings, language)}
                 </div>
