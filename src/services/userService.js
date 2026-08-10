@@ -673,6 +673,8 @@ const getDoctorDashboardStatistics = (range = "week") => {
   return doctorAxios.get(`/api/doctor/dashboard-statistics?range=${encodeURIComponent(range)}`);
 };
 
+const getPublicKeyStats = () => axios.get("/api/public/key-stats");
+
 export {
   handleLoginAPI,
   getAllUser,
@@ -801,5 +803,6 @@ export {
   joinVideoConsultation,
   markVideoConsultationStarted,
   getDoctorDashboardStatistics,
+  getPublicKeyStats,
   buildImageSrc
 };
