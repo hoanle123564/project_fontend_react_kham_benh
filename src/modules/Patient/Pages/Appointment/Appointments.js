@@ -200,6 +200,10 @@ class Appointments extends Component {
         this.props.history.push(`/video-consultation/${encodeURIComponent(bookingId)}?role=patient`);
     };
 
+    handleOpenRefund = (bookingId) => {
+        this.props.history.push(`/refunds?bookingId=${encodeURIComponent(bookingId)}`);
+    };
+
     handleOpenChat = async (item) => {
         if (!item?.id || this.state.creatingChatId) return;
 
@@ -406,6 +410,15 @@ class Appointments extends Component {
                         {cancelingId === item.id
                             ? this.getText("canceling")
                             : this.getText("cancel")}
+                    </button>
+                )}
+                {item.statusId === "S4" && item.appointmentTypeId === "AT2" && item.paymentStatusId === "PPS2" && (
+                    <button
+                        type="button"
+                        className="btn-refund"
+                        onClick={() => this.handleOpenRefund(item.id)}
+                    >
+                        {this.getText("requestRefund")}
                     </button>
                 )}
             </div>

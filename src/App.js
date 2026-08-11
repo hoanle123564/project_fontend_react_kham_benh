@@ -27,6 +27,7 @@ import DetailClinic from "./modules/Patient/Pages/Clinic/DetailClinic";
 import VerifyEmailBooking from "./modules/Patient/Pages/VerifyEmailBooking";
 import PatientProfile from "./modules/Patient/Pages/Profile/PatientProfile";
 import Appointments from "./modules/Patient/Pages/Appointment/Appointments";
+import PatientRefunds from "./modules/Patient/Pages/Refunds/PatientRefunds";
 import VideoConsultation from "./modules/VideoConsultation/VideoConsultation";
 import ChatbotPage from "./modules/Patient/Pages/Chatbot/ChatbotPage";
 import ChatPage from "./modules/Chat/ChatPage";
@@ -92,6 +93,7 @@ class App extends Component {
               <Route path={path.VERIFY_BOOKING} exact component={VerifyEmailBooking} />
               <Route path={path.PROFILE_PATIENT} component={patientIsAuthenticated(PatientProfile)} />
               <Route path={path.APPOINTMENTS} exact component={patientIsAuthenticated(Appointments)} />
+              <Route path={path.REFUNDS} exact component={patientIsAuthenticated(PatientRefunds)} />
               <Route path={path.PATIENT_CHAT_ROOM} exact component={patientIsAuthenticated(ChatPage)} />
               <Route path={path.PATIENT_CHAT} exact component={patientIsAuthenticated(ChatPage)} />
               <Route path={path.VIDEO_CONSULTATION} exact component={VideoConsultation} />
