@@ -123,6 +123,7 @@
       "create-error": "Unable to create doctor account.",
       "schedule": "Schedule",
       "appointments": "Appointments",
+      "refunds": "Refund management",
       "departments": "Manage departments",
       "multiple-clinics-error": "Your account is assigned to multiple clinics. Please choose a clinic from the list."
     },
@@ -130,6 +131,7 @@
       "account": "Patient account",
       "profile": "My profile",
       "appointments": "My appointments",
+      "refunds": "My refunds",
       "chat": "Chat"
     }
   },
@@ -568,6 +570,38 @@
       "reviewError": "Could not submit review.",
       "reminderBadge": "Starting soon",
       "reminderToast": "Your appointment is starting soon. Please get ready."
+    },
+    "refunds": {
+      "title": "Request a refund",
+      "intro": "For a cancelled online appointment, submit the bank details where the refund should be sent.",
+      "bookingId": "Booking ID",
+      "bankBin": "Bank BIN",
+      "bankName": "Bank name",
+      "bankAccountNumber": "Account number",
+      "bankAccountName": "Account name",
+      "reason": "Reason (optional)",
+      "submit": "Submit refund request",
+      "submitting": "Submitting...",
+      "created": "Refund request submitted.",
+      "submitError": "Could not submit refund request.",
+      "loadError": "Could not load refund requests.",
+      "loading": "Loading refund requests...",
+      "history": "My refund requests",
+      "empty": "No refund requests.",
+      "amount": "Amount",
+      "account": "Refund account",
+      "requestedAt": "Requested at",
+      "notAvailable": "Not available",
+      "status": {
+        "label": "Status",
+        "pending": "Pending review",
+        "approved": "Approved",
+        "processing": "Processing",
+        "completed": "Completed",
+        "failed": "Failed",
+        "rejected": "Rejected",
+        "unknown": "Needs review"
+      }
     }
   },
   "admin": {
@@ -796,18 +830,55 @@
     "next": "Next"
   },
   "refund-management": {
-    "title": "Manual refunds",
+    "title": "Refund management",
     "loading": "Loading refunds...",
     "patient": "Patient",
     "amount": "Amount",
     "account": "Refund account",
+    "reference": "Reference",
+    "mode": "Mode",
+    "providerState": "Provider state",
     "reason": "Reason",
-    "status": "Status",
+    "statusLabel": "Status",
+    "timestamps": "Timestamp",
     "action": "Action",
     "confirm": "Confirm refunded",
+    "approve": "Approve",
+    "reject": "Reject",
+    "sync": "Sync",
     "referencePrompt": "Enter the refund bank transaction reference",
+    "rejectionPrompt": "Enter the rejection reason",
     "confirmed": "Refund confirmed.",
-    "accountMissing": "Patient account is incomplete"
+    "approved": "Refund approved.",
+    "rejected": "Refund rejected.",
+    "synced": "Refund synchronized.",
+    "loadError": "Unable to load refunds.",
+    "confirmError": "Unable to confirm refund.",
+    "accountMissing": "Patient account is incomplete",
+    "status": {
+      "pending": "Pending review",
+      "approved": "Approved",
+      "processing": "Processing",
+      "completed": "Completed",
+      "failed": "Failed",
+      "rejected": "Rejected",
+      "unknown": "Unknown"
+    },
+    "provider": {
+      "processing": "Processing",
+      "succeeded": "Succeeded",
+      "failed": "Failed",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled",
+      "declined": "Declined",
+      "http403Ip": "Server IP is not allowed by PayOS",
+      "http401": "PayOS credentials were rejected",
+      "http403": "PayOS rejected this request",
+      "http5xx": "PayOS is temporarily unavailable",
+      "timeout": "PayOS request timed out",
+      "networkError": "PayOS could not be reached",
+      "httpError": "PayOS request requires attention"
+    }
   },
   "notifications": {
     "open": "Open notifications",

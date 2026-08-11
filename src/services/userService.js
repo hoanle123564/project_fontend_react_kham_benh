@@ -21,7 +21,7 @@ const getCurrentAuthAxios = () => {
     return doctorAxios;
   }
 
-  if (pathname.startsWith("/patient") || pathname.startsWith("/appointments")) {
+  if (pathname.startsWith("/patient") || pathname.startsWith("/appointments") || pathname.startsWith("/refunds")) {
     return patientAxios;
   }
 
@@ -595,6 +595,22 @@ const getAdminBookingManagement = () => adminAxios.get("/api/admin/bookings");
 const getAdminRefunds = () => adminAxios.get("/api/admin/refunds");
 const confirmAdminRefund = (refundId, refundTransactionId) =>
   adminAxios.post(`/api/admin/refunds/${encodeURIComponent(refundId)}/confirm`, { refundTransactionId });
+const approveAdminRefund = (refundId) =>
+  adminAxios.post(`/api/admin/refunds/${encodeURIComponent(refundId)}/approve`);
+const rejectAdminRefund = (refundId, rejectionReason) =>
+  adminAxios.post(`/api/admin/refunds/${encodeURIComponent(refundId)}/reject`, { rejectionReason });
+const syncAdminRefund = (refundId) =>
+  adminAxios.post(`/api/admin/refunds/${encodeURIComponent(refundId)}/sync`);
+const getClinicManagerRefunds = () => clinicManagerAxios.get("/api/clinic-manager/refunds");
+const approveClinicManagerRefund = (refundId) =>
+  clinicManagerAxios.post(`/api/clinic-manager/refunds/${encodeURIComponent(refundId)}/approve`);
+const rejectClinicManagerRefund = (refundId, rejectionReason) =>
+  clinicManagerAxios.post(`/api/clinic-manager/refunds/${encodeURIComponent(refundId)}/reject`, { rejectionReason });
+const syncClinicManagerRefund = (refundId) =>
+  clinicManagerAxios.post(`/api/clinic-manager/refunds/${encodeURIComponent(refundId)}/sync`);
+const createPatientRefund = (data) => patientAxios.post("/api/patient/refunds", data);
+const getPatientRefunds = () => patientAxios.get("/api/patient/refunds");
+const getPatientRefund = (refundId) => patientAxios.get(`/api/patient/refunds/${encodeURIComponent(refundId)}`);
 const updateAdminBookingStatus = (bookingId, data) =>
   adminAxios.patch(`/api/admin/bookings/${encodeURIComponent(bookingId)}/status`, data);
 const getDoctorBookingManagement = () => doctorAxios.get("/api/doctor/bookings");
@@ -786,6 +802,16 @@ export {
   getAdminBookingManagement,
   getAdminRefunds,
   confirmAdminRefund,
+  approveAdminRefund,
+  rejectAdminRefund,
+  syncAdminRefund,
+  getClinicManagerRefunds,
+  approveClinicManagerRefund,
+  rejectClinicManagerRefund,
+  syncClinicManagerRefund,
+  createPatientRefund,
+  getPatientRefunds,
+  getPatientRefund,
   updateAdminBookingStatus,
   getDoctorBookingManagement,
   updateDoctorBookingStatus,

@@ -280,6 +280,11 @@ export const clinicManagerMenu = [
         icon: "bi bi-person-lines-fill",
         link: "/clinic-manager/list-appointment",
       },
+      {
+        name: "menu.clinic-manager.refunds",
+        icon: "bi bi-cash-stack",
+        link: "/clinic-manager/manage-refund",
+      },
     ],
   },
   {
@@ -307,6 +312,11 @@ export const patientMenu = [
         name: "menu.patient.appointments",
         icon: "fas fa-calendar-alt",
         link: "/appointments",
+      },
+      {
+        name: "menu.patient.refunds",
+        icon: "fas fa-money-bill-wave",
+        link: "/refunds",
       },
       {
         name: "menu.patient.chat",

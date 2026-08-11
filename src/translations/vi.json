@@ -124,6 +124,7 @@
       "create-error": "Không thể tạo tài khoản bác sĩ.",
       "schedule": "Lịch làm việc",
       "appointments": "Lịch đặt khám",
+      "refunds": "Quản lý hoàn tiền",
       "departments": "Quản lý khoa",
       "multiple-clinics-error": "Tài khoản đang quản lý nhiều cơ sở y tế. Vui lòng chọn cơ sở từ danh sách."
     },
@@ -131,6 +132,7 @@
       "account": "Tài khoản",
       "profile": "Hồ sơ cá nhân",
       "appointments": "Lịch hẹn của tôi",
+      "refunds": "Yêu cầu hoàn tiền",
       "chat": "Tin nhắn"
     }
   },
@@ -501,6 +503,38 @@
       "reviewError": "Không thể gửi đánh giá.",
       "reminderBadge": "Sắp tới giờ khám",
       "reminderToast": "Sắp tới giờ khám. Vui lòng chuẩn bị."
+    },
+    "refunds": {
+      "title": "Yêu cầu hoàn tiền",
+      "intro": "Với lịch khám online đã hủy, hãy nhập tài khoản ngân hàng nhận tiền hoàn.",
+      "bookingId": "Mã lịch hẹn",
+      "bankBin": "Mã BIN ngân hàng",
+      "bankName": "Tên ngân hàng",
+      "bankAccountNumber": "Số tài khoản",
+      "bankAccountName": "Tên chủ tài khoản",
+      "reason": "Lý do (không bắt buộc)",
+      "submit": "Gửi yêu cầu hoàn tiền",
+      "submitting": "Đang gửi...",
+      "created": "Đã gửi yêu cầu hoàn tiền.",
+      "submitError": "Không thể gửi yêu cầu hoàn tiền.",
+      "loadError": "Không thể tải yêu cầu hoàn tiền.",
+      "loading": "Đang tải yêu cầu hoàn tiền...",
+      "history": "Yêu cầu hoàn tiền của tôi",
+      "empty": "Chưa có yêu cầu hoàn tiền.",
+      "amount": "Số tiền",
+      "account": "Tài khoản nhận tiền",
+      "requestedAt": "Thời gian yêu cầu",
+      "notAvailable": "Chưa cập nhật",
+      "status": {
+        "label": "Trạng thái",
+        "pending": "Chờ duyệt",
+        "approved": "Đã duyệt",
+        "processing": "Đang xử lý",
+        "completed": "Đã hoàn tiền",
+        "failed": "Hoàn tiền thất bại",
+        "rejected": "Bị từ chối",
+        "unknown": "Cần kiểm tra"
+      }
     },
     "profile": {
       "notFound": "Không tìm thấy thông tin bệnh nhân",
@@ -990,18 +1024,55 @@
     "next": "Sau"
   },
   "refund-management": {
-    "title": "Hoàn tiền thủ công",
+    "title": "Quản lý hoàn tiền",
     "loading": "Đang tải yêu cầu hoàn tiền...",
     "patient": "Bệnh nhân",
     "amount": "Số tiền",
     "account": "Tài khoản hoàn tiền",
+    "reference": "Mã tham chiếu",
+    "mode": "Phương thức",
+    "providerState": "Trạng thái nhà cung cấp",
     "reason": "Lý do",
-    "status": "Trạng thái",
+    "statusLabel": "Trạng thái",
+    "timestamps": "Thời gian",
     "action": "Thao tác",
     "confirm": "Xác nhận đã hoàn",
+    "approve": "Duyệt",
+    "reject": "Từ chối",
+    "sync": "Đồng bộ",
     "referencePrompt": "Nhập mã giao dịch hoàn tiền",
+    "rejectionPrompt": "Nhập lý do từ chối",
     "confirmed": "Đã xác nhận hoàn tiền.",
-    "accountMissing": "Thiếu tài khoản bệnh nhân"
+    "approved": "Đã duyệt hoàn tiền.",
+    "rejected": "Đã từ chối hoàn tiền.",
+    "synced": "Đã đồng bộ hoàn tiền.",
+    "loadError": "Không thể tải yêu cầu hoàn tiền.",
+    "confirmError": "Không thể xác nhận hoàn tiền.",
+    "accountMissing": "Thiếu tài khoản bệnh nhân",
+    "status": {
+      "pending": "Chờ duyệt",
+      "approved": "Đã duyệt",
+      "processing": "Đang xử lý",
+      "completed": "Đã hoàn tiền",
+      "failed": "Hoàn tiền thất bại",
+      "rejected": "Bị từ chối",
+      "unknown": "Không xác định"
+    },
+    "provider": {
+      "processing": "Đang xử lý",
+      "succeeded": "Thành công",
+      "failed": "Thất bại",
+      "rejected": "Bị từ chối",
+      "cancelled": "Đã hủy",
+      "declined": "Bị từ chối",
+      "http403Ip": "IP máy chủ chưa được PayOS cho phép",
+      "http401": "PayOS từ chối thông tin xác thực",
+      "http403": "PayOS từ chối yêu cầu này",
+      "http5xx": "PayOS đang tạm thời không khả dụng",
+      "timeout": "Yêu cầu PayOS bị quá thời gian",
+      "networkError": "Không thể kết nối PayOS",
+      "httpError": "Yêu cầu PayOS cần được kiểm tra"
+    }
   },
   "notifications": {
     "open": "Mở thông báo",
