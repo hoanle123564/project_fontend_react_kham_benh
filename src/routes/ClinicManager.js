@@ -14,6 +14,7 @@ import BookingManagement from "../modules/Booking/BookingManagement";
 import ManagePatient from "../modules/Doctor/ManagePatient";
 import ManageSchedule from "../modules/Doctor/ManageSchedule";
 import DashBoard from "../modules/Admin/DashBoard";
+import RefundManagement from "../modules/Payment/RefundManagement";
 
 class ClinicManager extends Component {
   state = {
@@ -44,6 +45,7 @@ class ClinicManager extends Component {
               <Route path="/clinic-manager/manage-clinic" component={ManageClinic} />
               <Route path="/clinic-manager/manage-schedule" component={ManageSchedule} />
               <Route path="/clinic-manager/list-appointment" render={(props) => <BookingManagement {...props} clinicManagerMode />} />
+              <Route path="/clinic-manager/manage-refund" render={(props) => <RefundManagement {...props} clinicManagerMode />} />
               <Route path="/clinic-manager/edit-profile" component={EditProfile} />
               <Redirect to="/clinic-manager/dashboard" />
             </Switch>

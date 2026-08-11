@@ -62,7 +62,7 @@ class System extends Component {
                   <Route path="/system/manage-schedule" component={ManageSchedule} />
                   <Route path="/system/list-appointment" component={ListAppointment} />
                   <Route path="/system/manage-booking" render={(props) => <BookingManagement {...props} adminMode />} />
-                  <Route path="/system/manage-refund" component={RefundManagement} />
+                  <Route path="/system/manage-refund" render={(props) => <RefundManagement {...props} adminMode />} />
                   <Route path="/system/manage-review" render={(props) => <ReviewManagement {...props} adminMode />} />
                   <Route path="/system/medical-record/:bookingId" render={(props) => <DoctorMedicalRecords {...props} adminMode />} />
                   <Route exact path="/system/medical-record" render={(props) => <DoctorMedicalRecords {...props} adminMode />} />
