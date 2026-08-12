@@ -12,6 +12,8 @@ import {
   syncAdminRefund,
   syncClinicManagerRefund,
 } from "../../services/userService";
+import "./RefundManagement.scss";
+import { getRefundAccountLines } from "./refundDisplayUtils";
 
 class RefundManagement extends Component {
   state = { refunds: [], loading: true, actionId: null };
@@ -129,33 +131,40 @@ class RefundManagement extends Component {
 
   render() {
     const { refunds, loading } = this.state;
-    return <div className="booking-management">
+    return <div className="booking-management refund-management">
       <h2>{this.text("title", "Refund management")}</h2>
-      {loading ? <p>{this.text("loading", "Loading refunds...")}</p> : <div className="table-responsive"><table className="table">
+      {loading ? <p>{this.text("loading", "Loading refunds...")}</p> : <div className="table-responsive refund-management__table-wrap"><table className="table refund-management__table">
         <thead><tr>
           <th>{this.text("patient", "Patient")}</th>
           <th>{this.text("amount", "Amount")}</th>
           <th>{this.text("account", "Refund account")}</th>
-          <th>{this.text("reference", "Reference")}</th>
-          <th>{this.text("mode", "Mode")}</th>
-          <th>{this.text("statusLabel", "Status")}</th>
+          {/* <th>{this.text("statusLabel", "Status")}</th> */}
           <th>{this.text("providerState", "Provider state")}</th>
           <th>{this.text("reason", "Reason")}</th>
           <th>{this.text("timestamps", "Timestamps")}</th>
           <th>{this.text("action", "Action")}</th>
         </tr></thead>
-        <tbody>{refunds.map((refund) => <tr key={refund.id}>
-          <td>{[refund.firstName, refund.lastName].filter(Boolean).join(" ") || refund.email}</td>
-          <td>{this.formatAmount(refund.amount)}</td>
-          <td>{[refund.receiverBank, refund.receiverBankBin, refund.receiverAccountNumber, refund.receiverAccountName].filter(Boolean).join(" - ") || this.text("accountMissing", "Patient account is incomplete")}</td>
-          <td>{refund.referenceId || "-"}</td>
-          <td>{refund.refundMode || "MANUAL"}</td>
-          <td>{this.getStatusLabel(refund.statusId)}</td>
-          <td>{this.getProviderStateLabel(refund.payosProviderState)}</td>
-          <td>{refund.rejectionReason || refund.failureReason || refund.reason || "-"}</td>
-          <td>{this.formatDate(refund.approvedAt || refund.rejectedAt || refund.processingAt || refund.refundedAt || refund.failedAt || refund.requestedAt)}</td>
-          <td>{this.renderAction(refund)}</td>
-        </tr>)}</tbody>
+        <tbody>{refunds.map((refund) => {
+          const patient = [refund.firstName, refund.lastName].filter(Boolean).join(" ") || refund.email || "-";
+          const account = getRefundAccountLines(refund, this.text("accountMissing", "Patient account is incomplete"));
+          const status = this.getStatusLabel(refund.statusId);
+          const providerState = this.getProviderStateLabel(refund.payosProviderState);
+          const reason = refund.rejectionReason || refund.failureReason || refund.reason || "-";
+          const timestamp = this.formatDate(refund.approvedAt || refund.rejectedAt || refund.processingAt || refund.refundedAt || refund.failedAt || refund.requestedAt);
+          return <tr key={refund.id}>
+            <td><span className="refund-management__ellipsis" title={patient}>{patient}</span></td>
+            <td>{this.formatAmount(refund.amount)}</td>
+            <td className="refund-management__account">
+              <span className="refund-management__ellipsis" title={account.bankAccount}>{account.bankAccount}</span>
+              <span className="refund-management__ellipsis" title={account.holder}>{account.holder}</span>
+            </td>
+            {/* <td><span className="refund-management__ellipsis" title={status}>{status}</span></td> */}
+            <td><span className="refund-management__ellipsis" title={providerState}>{providerState}</span></td>
+            <td><span className="refund-management__ellipsis_reason" title={reason}>{reason}</span></td>
+            <td><span className="refund-management__ellipsis" title={timestamp}>{timestamp}</span></td>
+            <td>{this.renderAction(refund)}</td>
+          </tr>;
+        })}</tbody>
       </table></div>}
     </div>;
   }
