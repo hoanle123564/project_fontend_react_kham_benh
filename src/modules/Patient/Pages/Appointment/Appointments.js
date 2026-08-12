@@ -10,12 +10,25 @@ import moment from "moment";
 import { buildImageSrc } from "../../../../utils/imageUtils";
 import userDefault from "../../../../assets/user_default.png";
 import { createChatRoomFromBooking } from "../../../../services/doctorPatientChatService";
-import { createBookingReview } from "../../../../services/userService";
+import {
+    createBookingReview,
+    createPatientRefund,
+    getPatientRefunds,
+    updatePatientManualRefund,
+} from "../../../../services/userService";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { getRefundReasonKey, isRefundRequestAvailable } from "./refundUtils";
 
 const REVIEW_COMMENT_MAX = 1000;
 const REVIEW_STARS = [1, 2, 3, 4, 5];
+const EMPTY_REFUND_FORM = {
+    bankBin: "",
+    bankName: "",
+    bankAccountNumber: "",
+    bankAccountName: "",
+    reason: "",
+};
 
 class Appointments extends Component {
     constructor(props) {
@@ -34,6 +47,11 @@ class Appointments extends Component {
             reviewComment: "",
             reviewError: "",
             submittingReview: false,
+            refundModalOpen: false,
+            refundTarget: null,
+            refundForm: { ...EMPTY_REFUND_FORM },
+            refundError: "",
+            submittingRefund: false,
         };
         this.appointmentPollTimer = null;
         this.isComponentMounted = false;
@@ -200,8 +218,113 @@ class Appointments extends Component {
         this.props.history.push(`/video-consultation/${encodeURIComponent(bookingId)}?role=patient`);
     };
 
-    handleOpenRefund = (bookingId) => {
-        this.props.history.push(`/refunds?bookingId=${encodeURIComponent(bookingId)}`);
+    handleOpenRefund = async (item) => {
+        if (!isRefundRequestAvailable(item)) return;
+
+        const defaultReason = this.getText(getRefundReasonKey(item.statusId));
+        this.setState({
+            refundModalOpen: true,
+            refundTarget: item,
+            refundForm: { ...EMPTY_REFUND_FORM, reason: defaultReason },
+            refundError: "",
+            submittingRefund: false,
+        });
+
+        if (item.statusId !== "S6") return;
+
+        try {
+            const response = await getPatientRefunds();
+            if (!this.isComponentMounted || this.state.refundTarget?.id !== item.id || response?.errCode !== 0) return;
+            const refund = (response.data || []).find(
+                (entry) => Number(entry.bookingId) === Number(item.id) && entry.refundMode === "MANUAL"
+            );
+            if (!refund) return;
+            this.setState((state) => ({
+                refundForm: {
+                    ...state.refundForm,
+                    bankBin: refund.receiverBankBin || "",
+                    bankName: refund.receiverBank || "",
+                    bankAccountNumber: refund.receiverAccountNumber || "",
+                    bankAccountName: refund.receiverAccountName || "",
+                },
+            }));
+        } catch (error) {
+            // The form remains editable even when an existing MANUAL snapshot cannot be loaded.
+        }
+    };
+
+    closeRefundModal = () => {
+        if (this.state.submittingRefund) return;
+        this.setState({
+            refundModalOpen: false,
+            refundTarget: null,
+            refundForm: { ...EMPTY_REFUND_FORM },
+            refundError: "",
+        });
+    };
+
+    handleRefundChange = (event) => {
+        const { name, value } = event.target;
+        this.setState((state) => ({
+            refundForm: { ...state.refundForm, [name]: value },
+            refundError: "",
+        }));
+    };
+
+    validateRefundForm = (form) => {
+        const requiredFields = ["bankBin", "bankName", "bankAccountNumber", "bankAccountName"];
+        if (requiredFields.some((field) => !String(form[field] || "").trim())) {
+            return this.getText("refundValidationRequired");
+        }
+        if (!/^\d{6,10}$/.test(String(form.bankBin || "").trim())) {
+            return this.getText("refundValidationBin");
+        }
+        return "";
+    };
+
+    handleRefundSubmit = async (event) => {
+        event.preventDefault();
+        const { refundTarget, refundForm, submittingRefund } = this.state;
+        if (submittingRefund || !refundTarget?.id) return;
+
+        const validationError = this.validateRefundForm(refundForm);
+        if (validationError) {
+            this.setState({ refundError: validationError });
+            return;
+        }
+
+        const payload = {
+            bankBin: refundForm.bankBin.trim(),
+            bankName: refundForm.bankName.trim(),
+            bankAccountNumber: refundForm.bankAccountNumber.trim(),
+            bankAccountName: refundForm.bankAccountName.trim(),
+            reason: refundForm.reason.trim() || null,
+        };
+
+        this.setState({ submittingRefund: true, refundError: "" });
+        try {
+            const response = refundTarget.statusId === "S6"
+                ? await updatePatientManualRefund(refundTarget.id, payload)
+                : await createPatientRefund({ bookingId: refundTarget.id, ...payload });
+
+            if (response?.errCode !== 0) throw new Error(response?.errMessage);
+
+            this.setState({
+                refundModalOpen: false,
+                refundTarget: null,
+                refundForm: { ...EMPTY_REFUND_FORM },
+                refundError: "",
+                submittingRefund: false,
+            });
+            toast.success(this.getText("refundSuccess"));
+            await this.loadAppointments();
+        } catch (error) {
+            const data = error.response?.data;
+            this.setState({
+                submittingRefund: false,
+                refundError: data?.errMessage || error.message || this.getText("refundError"),
+            });
+        }
     };
 
     handleOpenChat = async (item) => {
@@ -412,16 +535,117 @@ class Appointments extends Component {
                             : this.getText("cancel")}
                     </button>
                 )}
-                {item.statusId === "S4" && item.appointmentTypeId === "AT2" && item.paymentStatusId === "PPS2" && (
+                {isRefundRequestAvailable(item) && (
                     <button
                         type="button"
                         className="btn-refund"
-                        onClick={() => this.handleOpenRefund(item.id)}
+                        onClick={() => this.handleOpenRefund(item)}
                     >
                         {this.getText("requestRefund")}
                     </button>
                 )}
             </div>
+        );
+    };
+
+    renderRefundModal = () => {
+        const {
+            refundModalOpen,
+            refundTarget,
+            refundForm,
+            refundError,
+            submittingRefund,
+        } = this.state;
+
+        return (
+            <Modal
+                isOpen={refundModalOpen}
+                toggle={this.closeRefundModal}
+                centered
+                className="patient-refund-modal"
+            >
+                <ModalHeader toggle={this.closeRefundModal}>
+                    <div>{this.getText("refundTitle")}</div>
+                    {refundTarget && (
+                        <small className="patient-refund-modal__booking">
+                            {this.getText("refundBookingCode", "Booking ID: {bookingId}", { bookingId: refundTarget.id })}
+                        </small>
+                    )}
+                </ModalHeader>
+                <form onSubmit={this.handleRefundSubmit}>
+                    <ModalBody>
+                        <div className="patient-refund-modal__grid">
+                            <label className="patient-refund-modal__field" htmlFor="patient-refund-bank-bin">
+                                <span>{this.getText("refundBankBin")}</span>
+                                <input
+                                    id="patient-refund-bank-bin"
+                                    name="bankBin"
+                                    value={refundForm.bankBin}
+                                    onChange={this.handleRefundChange}
+                                    maxLength={10}
+                                    pattern="[0-9]{6,10}"
+                                    inputMode="numeric"
+                                    required
+                                />
+                            </label>
+                            <label className="patient-refund-modal__field" htmlFor="patient-refund-bank-name">
+                                <span>{this.getText("refundBankName")}</span>
+                                <input
+                                    id="patient-refund-bank-name"
+                                    name="bankName"
+                                    value={refundForm.bankName}
+                                    onChange={this.handleRefundChange}
+                                    maxLength={100}
+                                    required
+                                />
+                            </label>
+                            <label className="patient-refund-modal__field" htmlFor="patient-refund-account-number">
+                                <span>{this.getText("refundBankAccountNumber")}</span>
+                                <input
+                                    id="patient-refund-account-number"
+                                    name="bankAccountNumber"
+                                    value={refundForm.bankAccountNumber}
+                                    onChange={this.handleRefundChange}
+                                    maxLength={64}
+                                    inputMode="numeric"
+                                    required
+                                />
+                            </label>
+                            <label className="patient-refund-modal__field" htmlFor="patient-refund-account-name">
+                                <span>{this.getText("refundBankAccountName")}</span>
+                                <input
+                                    id="patient-refund-account-name"
+                                    name="bankAccountName"
+                                    value={refundForm.bankAccountName}
+                                    onChange={this.handleRefundChange}
+                                    maxLength={120}
+                                    required
+                                />
+                            </label>
+                            <label className="patient-refund-modal__field patient-refund-modal__field--wide" htmlFor="patient-refund-reason">
+                                <span>{this.getText("refundReason")}</span>
+                                <textarea
+                                    id="patient-refund-reason"
+                                    name="reason"
+                                    value={refundForm.reason}
+                                    onChange={this.handleRefundChange}
+                                    maxLength={500}
+                                    rows="3"
+                                />
+                            </label>
+                        </div>
+                        {refundError && <div className="patient-refund-modal__error" role="alert">{refundError}</div>}
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button type="button" color="secondary" onClick={this.closeRefundModal} disabled={submittingRefund}>
+                            {this.getText("refundClose")}
+                        </Button>
+                        <Button type="submit" color="primary" disabled={submittingRefund}>
+                            {submittingRefund ? this.getText("refundSubmitting") : this.getText("refundSubmit")}
+                        </Button>
+                    </ModalFooter>
+                </form>
+            </Modal>
         );
     };
 
@@ -700,6 +924,7 @@ class Appointments extends Component {
                 </div>
                 <HomeFooter />
                 {this.renderReviewModal()}
+                {this.renderRefundModal()}
             </>
         );
     }

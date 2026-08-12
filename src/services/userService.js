@@ -21,7 +21,7 @@ const getCurrentAuthAxios = () => {
     return doctorAxios;
   }
 
-  if (pathname.startsWith("/patient") || pathname.startsWith("/appointments") || pathname.startsWith("/refunds")) {
+  if (pathname.startsWith("/patient") || pathname.startsWith("/appointments")) {
     return patientAxios;
   }
 
@@ -609,6 +609,8 @@ const rejectClinicManagerRefund = (refundId, rejectionReason) =>
 const syncClinicManagerRefund = (refundId) =>
   clinicManagerAxios.post(`/api/clinic-manager/refunds/${encodeURIComponent(refundId)}/sync`);
 const createPatientRefund = (data) => patientAxios.post("/api/patient/refunds", data);
+const updatePatientManualRefund = (bookingId, data) =>
+  patientAxios.patch(`/api/patient/refunds/by-booking/${encodeURIComponent(bookingId)}`, data);
 const getPatientRefunds = () => patientAxios.get("/api/patient/refunds");
 const getPatientRefund = (refundId) => patientAxios.get(`/api/patient/refunds/${encodeURIComponent(refundId)}`);
 const updateAdminBookingStatus = (bookingId, data) =>
@@ -810,6 +812,7 @@ export {
   rejectClinicManagerRefund,
   syncClinicManagerRefund,
   createPatientRefund,
+  updatePatientManualRefund,
   getPatientRefunds,
   getPatientRefund,
   updateAdminBookingStatus,

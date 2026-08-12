@@ -314,11 +314,6 @@ export const patientMenu = [
         link: "/appointments",
       },
       {
-        name: "menu.patient.refunds",
-        icon: "fas fa-money-bill-wave",
-        link: "/refunds",
-      },
-      {
         name: "menu.patient.chat",
         icon: "bi bi-chat-left-text",
         link: "/patient/chat",
