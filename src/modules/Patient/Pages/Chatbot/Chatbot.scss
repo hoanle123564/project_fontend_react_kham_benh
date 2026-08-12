@@ -462,6 +462,14 @@
   font-size: 13px;
 }
 
+.chatbot-option-readonly {
+  flex: 0 0 auto;
+  color: #617386;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
 .chatbot-form {
   display: flex;
   gap: 10px;

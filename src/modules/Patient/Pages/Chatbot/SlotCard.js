@@ -5,7 +5,7 @@ const formatMoney = (value) => {
   return Number.isInteger(amount) && amount > 0 ? `${amount.toLocaleString("vi-VN")}đ` : "";
 };
 
-const SlotCard = ({ slot, index, disabled, onSelect }) => {
+const SlotCard = ({ slot, index, disabled, onSelect, readOnly = false }) => {
   const number = slot.index || index + 1;
 
   return (
@@ -21,9 +21,13 @@ const SlotCard = ({ slot, index, disabled, onSelect }) => {
           <div className="chatbot-option-meta">Giá khám: {formatMoney(slot.effectivePrice || slot.price)}</div>
         )}
       </div>
-      <button type="button" disabled={disabled} onClick={() => onSelect(String(number))}>
-        Chọn
-      </button>
+      {readOnly ? (
+        <span className="chatbot-option-readonly">Chỉ xem</span>
+      ) : (
+        <button type="button" disabled={disabled} onClick={() => onSelect(String(number))}>
+          Chọn
+        </button>
+      )}
     </div>
   );
 };

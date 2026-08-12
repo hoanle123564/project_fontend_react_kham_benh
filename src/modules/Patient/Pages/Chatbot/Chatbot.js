@@ -484,6 +484,22 @@ const Chatbot = ({ history, isLoggedIn, patientName }) => {
       );
     }
 
+    if (message.state === "SHOW_AVAILABLE_SLOTS" && slots.length) {
+      return (
+        <div className="chatbot-options" data-read-only="true">
+          {slots.map((slot, index) => (
+            <SlotCard
+              key={slot.id || slot.index || index}
+              slot={slot}
+              index={index}
+              disabled
+              readOnly
+            />
+          ))}
+        </div>
+      );
+    }
+
     return null;
   };
 
