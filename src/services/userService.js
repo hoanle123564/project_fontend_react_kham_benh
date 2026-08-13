@@ -336,8 +336,16 @@ const VerifyPatientBooking = (data) => {
   return axios.post("/api/verify-book-appointment", data);
 };
 
-const getListAppoinmentForPatient = () => {
-  return patientAxios.get("/api/get-list-booking-appointment-patient");
+const getListAppoinmentForPatient = (filters = {}) => {
+  const params = {};
+  ["startDate", "endDate", "statusId", "appointmentTypeId", "search"].forEach((key) => {
+    const value = filters?.[key];
+    if (typeof value === "string" && value.trim()) {
+      params[key] = value.trim();
+    }
+  });
+
+  return patientAxios.get("/api/get-list-booking-appointment-patient", { params });
 }
 
 const postCancelBookingAppointment = (data) => {

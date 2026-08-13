@@ -7,18 +7,29 @@ import PatientSidebar from "../../Layout/PatientSidebar";
 import * as actions from "../../../../store/actions";
 import "./Appointments.scss";
 import moment from "moment";
+import DateRangeField from "../../../../components/Input/DateRangeField";
 import { buildImageSrc } from "../../../../utils/imageUtils";
 import userDefault from "../../../../assets/user_default.png";
 import { createChatRoomFromBooking } from "../../../../services/doctorPatientChatService";
 import {
     createBookingReview,
     createPatientRefund,
+    getLookUp,
     getPatientRefunds,
     updatePatientManualRefund,
 } from "../../../../services/userService";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { getRefundReasonKey, isRefundRequestAvailable } from "./refundUtils";
+import {
+    EMPTY_APPOINTMENT_FILTERS,
+    buildAppointmentQuery,
+    clearAppointmentFilters,
+    getAppointmentListState,
+    getDateRangeFilters,
+    getStatusOptionsWithFallback,
+    validateAppointmentDateRange,
+} from "./appointmentFilterUtils";
 
 const REVIEW_COMMENT_MAX = 1000;
 const REVIEW_STARS = [1, 2, 3, 4, 5];
@@ -30,13 +41,25 @@ const EMPTY_REFUND_FORM = {
     reason: "",
 };
 
+const FILTER_ERROR_MESSAGE_KEY = {
+    incomplete: "dateRangeRequired",
+    invalid: "dateRangeInvalid",
+};
+
 class Appointments extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            appointments: props.listAppointment || [],
+            appointments: [],
             isLoading: false,
+            hasLoadedAppointments: false,
             errorMessage: "",
+            filterOpen: false,
+            draftFilters: { ...EMPTY_APPOINTMENT_FILTERS },
+            appliedFilters: { ...EMPTY_APPOINTMENT_FILTERS },
+            filterError: "",
+            search: "",
+            statusLookup: [],
             cancelingId: null,
             creatingChatId: null,
             selectedAppointmentId: null,
@@ -54,13 +77,16 @@ class Appointments extends Component {
             submittingRefund: false,
         };
         this.appointmentPollTimer = null;
+        this.searchDebounceTimer = null;
+        this.appointmentRequestId = 0;
         this.isComponentMounted = false;
     }
 
-    async componentDidMount() {
+    componentDidMount() {
         this.isComponentMounted = true;
-        await this.loadAppointments();
-        this.appointmentPollTimer = setInterval(this.loadAppointments, 60 * 1000);
+        this.loadAppointments();
+        this.loadStatusOptions();
+        this.appointmentPollTimer = setInterval(() => this.loadAppointments(), 60 * 1000);
     }
 
     componentWillUnmount() {
@@ -68,14 +94,10 @@ class Appointments extends Component {
         if (this.appointmentPollTimer) {
             clearInterval(this.appointmentPollTimer);
         }
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.listAppointment !== this.props.listAppointment) {
-            this.setState({
-                appointments: this.props.listAppointment || [],
-            });
+        if (this.searchDebounceTimer) {
+            clearTimeout(this.searchDebounceTimer);
         }
+        this.appointmentRequestId += 1;
     }
 
     getText = (key, defaultMessage = key, values) =>
@@ -84,32 +106,145 @@ class Appointments extends Component {
             defaultMessage,
         }, values);
 
-    loadAppointments = async () => {
+    loadStatusOptions = async () => {
+        try {
+            const response = await getLookUp("STATUS");
+            if (this.isComponentMounted && response?.errCode === 0 && Array.isArray(response.data)) {
+                this.setState({ statusLookup: response.data });
+            }
+        } catch (error) {
+            // The dropdown falls back to translated status labels when lookup loading fails.
+        }
+    };
+
+    loadAppointments = async (filters = this.state.appliedFilters, search = this.state.search) => {
+        const requestId = ++this.appointmentRequestId;
+        const query = buildAppointmentQuery(filters, search);
         this.setState({ isLoading: true, errorMessage: "" });
 
         try {
-            const actionResult = await this.props.ListAppointments();
-            if (!this.isComponentMounted) return;
+            const response = await this.props.ListAppointments(query);
+            if (!this.isComponentMounted || requestId !== this.appointmentRequestId) return;
 
-            if (Array.isArray(actionResult?.data)) {
-                this.setState({
-                    appointments: actionResult.data,
+            if (response?.errCode === 0 && Array.isArray(response.data)) {
+                this.setState((state) => ({
+                    appointments: response.data,
                     isLoading: false,
-                });
+                    hasLoadedAppointments: true,
+                    selectedAppointmentId: response.data.some(
+                        (item) => Number(item.id) === Number(state.selectedAppointmentId)
+                    )
+                        ? state.selectedAppointmentId
+                        : response.data[0]?.id || null,
+                }));
                 return;
             }
 
             this.setState({
                 isLoading: false,
-                errorMessage: this.getText("error"),
+                hasLoadedAppointments: true,
+                errorMessage: response?.errMessage || this.getText("error"),
             });
         } catch (error) {
-            if (!this.isComponentMounted) return;
+            if (!this.isComponentMounted || requestId !== this.appointmentRequestId) return;
+            const errorData = error?.response?.data;
             this.setState({
                 isLoading: false,
-                errorMessage: this.getText("error"),
+                hasLoadedAppointments: true,
+                errorMessage: errorData?.errMessage || error?.message || this.getText("error"),
             });
         }
+    };
+
+    toggleFilterPopover = () => {
+        this.setState((state) => {
+            if (state.filterOpen) {
+                return {
+                    filterOpen: false,
+                    draftFilters: { ...state.appliedFilters },
+                    filterError: "",
+                };
+            }
+
+            return {
+                filterOpen: true,
+                draftFilters: { ...state.appliedFilters },
+                filterError: "",
+            };
+        });
+    };
+
+    closeFilterPopover = () => {
+        this.setState((state) => ({
+            filterOpen: false,
+            draftFilters: { ...state.appliedFilters },
+            filterError: "",
+        }));
+    };
+
+    handleFilterKeyDown = (event) => {
+        if (event.key === "Escape") {
+            event.preventDefault();
+            this.closeFilterPopover();
+        }
+    };
+
+    handleDraftFilterChange = (key, value) => {
+        this.setState((state) => ({
+            draftFilters: { ...state.draftFilters, [key]: value },
+            filterError: "",
+        }));
+    };
+
+    handleDateRangeChange = (dates) => {
+        this.setState((state) => ({
+            draftFilters: {
+                ...state.draftFilters,
+                ...getDateRangeFilters(dates),
+            },
+            filterError: "",
+        }));
+    };
+
+    handleApplyFilters = () => {
+        const { draftFilters, search } = this.state;
+        const validationError = validateAppointmentDateRange(draftFilters);
+        if (validationError) {
+            this.setState({ filterError: this.getText(FILTER_ERROR_MESSAGE_KEY[validationError]) });
+            return;
+        }
+
+        const appliedFilters = { ...draftFilters };
+        this.setState({
+            appliedFilters,
+            draftFilters: { ...appliedFilters },
+            filterOpen: false,
+            filterError: "",
+        }, () => this.loadAppointments(appliedFilters, search));
+    };
+
+    handleClearFilters = () => {
+        const { filters, search } = clearAppointmentFilters(this.state.search);
+        this.setState({
+            appliedFilters: filters,
+            draftFilters: { ...filters },
+            filterOpen: false,
+            filterError: "",
+        }, () => this.loadAppointments(filters, search));
+    };
+
+    handleSearchChange = (event) => {
+        const search = event.target.value;
+        if (this.searchDebounceTimer) {
+            clearTimeout(this.searchDebounceTimer);
+        }
+
+        this.appointmentRequestId += 1;
+        this.setState({ search });
+        this.searchDebounceTimer = setTimeout(() => {
+            this.searchDebounceTimer = null;
+            this.loadAppointments(this.state.appliedFilters, search);
+        }, 300);
     };
 
     handleCancel = async (bookingId) => {
@@ -236,7 +371,7 @@ class Appointments extends Component {
             const response = await getPatientRefunds();
             if (!this.isComponentMounted || this.state.refundTarget?.id !== item.id || response?.errCode !== 0) return;
             const refund = (response.data || []).find(
-                (entry) => Number(entry.bookingId) === Number(item.id) && entry.refundMode === "MANUAL"
+                (entry) => Number(entry.bookingId) === Number(item.id)
             );
             if (!refund) return;
             this.setState((state) => ({
@@ -468,6 +603,146 @@ class Appointments extends Component {
     getClinicAddress = (item = {}) => this.displayValue(item.clinicAddress || item.clinicName);
 
     getDoctorImage = (item = {}) => buildImageSrc(item.doctorImage) || userDefault;
+
+    getStatusOptionLabel = (statusOption) => {
+        const { keyMap } = statusOption;
+        const lookupLabel = this.props.language === "vi"
+            ? statusOption.value_vi || statusOption.valueVi
+            : statusOption.value_en || statusOption.valueEn;
+
+        return lookupLabel || this.getText(`status${keyMap}`, keyMap);
+    };
+
+    getDraftDateRangeValue = () => {
+        const { startDate, endDate } = this.state.draftFilters;
+
+        return [startDate, endDate]
+            .filter(Boolean)
+            .map((date) => moment(date, "YYYY-MM-DD", true).toDate());
+    };
+
+    renderFilterPopover = () => {
+        const {
+            filterOpen,
+            draftFilters,
+            filterError,
+            statusLookup,
+        } = this.state;
+        const statusOptions = getStatusOptionsWithFallback(statusLookup);
+
+        return (
+            <div className="appointments-filter-control">
+                <button
+                    type="button"
+                    className={`appointments-filter-toggle ${filterOpen ? "active" : ""}`}
+                    aria-expanded={filterOpen}
+                    aria-controls="appointments-filter-popover"
+                    onClick={this.toggleFilterPopover}
+                >
+                    <i className="bi bi-funnel" aria-hidden="true"></i>
+                    {this.getText("filter")}
+                </button>
+
+                {filterOpen && (
+                    <div
+                        id="appointments-filter-popover"
+                        className="appointments-filter-popover"
+                        role="dialog"
+                        aria-label={this.getText("filterTitle")}
+                        onKeyDown={this.handleFilterKeyDown}
+                    >
+                        <div className="appointments-filter-group">
+                            <label htmlFor="appointments-filter-date-range">
+                                {this.getText("filterDate")}
+                            </label>
+                            <div className="appointments-filter-date-field">
+                                <DateRangeField
+                                    id="appointments-filter-date-range"
+                                    className="appointments-filter-date-input"
+                                    value={this.getDraftDateRangeValue()}
+                                    onChange={this.handleDateRangeChange}
+                                    options={{
+                                        mode: "range",
+                                        dateFormat: "d/m/Y",
+                                        conjunction: " → ",
+                                        allowInput: false,
+                                        disableMobile: true,
+                                    }}
+                                    placeholder={this.getText("dateRangePlaceholder", "{startDate} → {endDate}", {
+                                        startDate: this.getText("startDate"),
+                                        endDate: this.getText("endDate"),
+                                    })}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="appointments-filter-group">
+                            <label htmlFor="appointments-filter-status">
+                                {this.getText("filterStatus")}
+                            </label>
+                            <select
+                                id="appointments-filter-status"
+                                value={draftFilters.statusId}
+                                onChange={(event) => this.handleDraftFilterChange("statusId", event.target.value)}
+                            >
+                                <option value="">{this.getText("allStatuses")}</option>
+                                {statusOptions.map((statusOption) => (
+                                    <option key={statusOption.keyMap} value={statusOption.keyMap}>
+                                        {this.getStatusOptionLabel(statusOption)}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <fieldset className="appointments-filter-group appointments-filter-service">
+                            <legend>{this.getText("filterService")}</legend>
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="appointment-service"
+                                    value=""
+                                    checked={!draftFilters.appointmentTypeId}
+                                    onChange={(event) => this.handleDraftFilterChange("appointmentTypeId", event.target.value)}
+                                />
+                                <span>{this.getText("allServices")}</span>
+                            </label>
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="appointment-service"
+                                    value="AT1"
+                                    checked={draftFilters.appointmentTypeId === "AT1"}
+                                    onChange={(event) => this.handleDraftFilterChange("appointmentTypeId", event.target.value)}
+                                />
+                                <span>{this.getText("serviceInPerson")}</span>
+                            </label>
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="appointment-service"
+                                    value="AT2"
+                                    checked={draftFilters.appointmentTypeId === "AT2"}
+                                    onChange={(event) => this.handleDraftFilterChange("appointmentTypeId", event.target.value)}
+                                />
+                                <span>{this.getText("serviceOnline")}</span>
+                            </label>
+                        </fieldset>
+
+                        {filterError && <p className="appointments-filter-error" role="alert">{filterError}</p>}
+
+                        <div className="appointments-filter-actions">
+                            <button type="button" className="appointments-filter-apply" onClick={this.handleApplyFilters}>
+                                {this.getText("applyFilters")}
+                            </button>
+                            <button type="button" className="appointments-filter-clear" onClick={this.handleClearFilters}>
+                                {this.getText("clearFilters")}
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
 
     renderDetailRow = (labelKey, value) => (
         <div className="appointments-info-row">
@@ -825,11 +1100,33 @@ class Appointments extends Component {
     };
 
     renderAppointmentList = (selectedAppointment) => {
-        const { appointments } = this.state;
+        const {
+            appointments,
+            appliedFilters,
+            isLoading,
+            search,
+        } = this.state;
+        const listState = getAppointmentListState(appointments, appliedFilters, search);
 
         return (
             <div className="appointments-list-panel">
+                <label className="appointments-search" htmlFor="appointments-list-search">
+                    <i className="bi bi-search" aria-hidden="true"></i>
+                    <input
+                        id="appointments-list-search"
+                        type="search"
+                        value={search}
+                        onChange={this.handleSearchChange}
+                        placeholder={this.getText("searchPlaceholder")}
+                    />
+                </label>
                 <div className="appointments-list">
+                    {isLoading && <p className="appointments-list-loading">{this.getText("loading")}</p>}
+                    {!isLoading && appointments.length === 0 && (
+                        <p className="appointments-list-empty" role="status">
+                            {this.getText(listState === "no-results" ? "noResults" : "empty")}
+                        </p>
+                    )}
                     {appointments.map((item) => {
                         const isSelected = Number(selectedAppointment?.id) === Number(item.id);
 
@@ -869,17 +1166,17 @@ class Appointments extends Component {
         const selectedAppointment = this.getSelectedAppointment();
 
         return (
-            <div className="appointments-layout">
+            <div className={`appointments-layout ${selectedAppointment ? "" : "appointments-layout--list-only"}`}>
                 {this.renderAppointmentList(selectedAppointment)}
-                {this.renderAppointmentDetail()}
+                {selectedAppointment && this.renderAppointmentDetail()}
             </div>
         );
     };
 
     renderContent = () => {
-        const { appointments, isLoading, errorMessage } = this.state;
+        const { appointments, hasLoadedAppointments, isLoading, errorMessage } = this.state;
 
-        if (isLoading && appointments.length === 0) {
+        if (isLoading && !hasLoadedAppointments) {
             return <p className="appointments-state">{this.getText("loading")}</p>;
         }
 
@@ -892,10 +1189,6 @@ class Appointments extends Component {
                     </button>
                 </div>
             );
-        }
-
-        if (appointments.length === 0) {
-            return <p className="appointments-empty">{this.getText("empty")}</p>;
         }
 
         return (
@@ -916,6 +1209,10 @@ class Appointments extends Component {
                         <div className="patient-page-content">
                             <h2 className="appointments-title">{this.getText("title")}</h2>
 
+                            <div className="appointments-toolbar">
+                                {this.renderFilterPopover()}
+                            </div>
+
                             <div className="appointments-content">
                                 {this.renderContent()}
                             </div>
@@ -932,11 +1229,10 @@ class Appointments extends Component {
 
 const mapStateToProps = (state) => ({
     language: state.app.language,
-    listAppointment: state.patient?.listAppointment || [],
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    ListAppointments: () => dispatch(actions.GetListAppoinmentForPatient()),
+    ListAppointments: (filters) => dispatch(actions.GetListAppoinmentForPatient(filters)),
     CancelBooking: (BookingId) => dispatch(actions.CancelBookingAppointment(BookingId)),
 });
 

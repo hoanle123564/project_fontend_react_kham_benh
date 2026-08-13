@@ -493,23 +493,34 @@ export const GetAllClinicFail = () => ({
 });
 
 // GET LIST APPOINTMENT FOR PATIENT
-export const GetListAppoinmentForPatient = (patientId) => {
+export const GetListAppoinmentForPatient = (filters = {}) => {
   return async (dispatch, getState) => {
     try {
-      let res = await getListAppoinmentForPatient(patientId); // Gọi dịch vụ lấy tất cả phòng khám
+      let res = await getListAppoinmentForPatient(filters);
       if (res && res.errCode === 0) {
-        let listAppoinment = dispatch({
+        dispatch({
           type: actionTypes.FETCH_LIST_APPOINTMENT_FOR_PATIENT,
           data: res.data,
         });
-        return listAppoinment;
+        return res;
       }
+
       else {
         dispatch(GetListAppoinmentForPatientFail());
+        return res || {
+          errCode: 1,
+          errMessage: "Could not load appointments.",
+          data: [],
+        };
       }
     } catch (error) {
       dispatch(GetListAppoinmentForPatientFail());
       console.log("GetListAppoinmentForPatientFail error: ", error);
+      return error?.response?.data || {
+        errCode: 1,
+        errMessage: error?.message || "Could not load appointments.",
+        data: [],
+      };
     }
   };
 }
