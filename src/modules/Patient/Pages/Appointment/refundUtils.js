@@ -5,7 +5,7 @@ export const isRefundRequestAvailable = (item = {}) => {
     }
     return item.statusId === "S6"
         && item.paymentStatusId === "PPS6"
-        && item.refundMode === "MANUAL"
+        && ["MANUAL", "PAYOS"].includes(item.refundMode)
         && item.refundStatusId === "RFS1";
 };
 
