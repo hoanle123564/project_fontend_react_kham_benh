@@ -204,6 +204,18 @@
     }
   }
 
+  &__date-filter {
+    min-width: 0;
+
+    > span {
+      color: var(--review-navy);
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+  }
+
   &__preset-list {
     align-items: center;
     display: flex;

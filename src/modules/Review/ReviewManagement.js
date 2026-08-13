@@ -4,6 +4,8 @@ import moment from "moment";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import PagePagination from "../../components/Pagination/PagePagination";
+import DateRangeField from "../../components/Input/DateRangeField";
+import { getDateRangeFilters, getDateRangeValue, validateDateRange as validateBasicDateRange } from "../../utils/dateRangeUtils";
 import { buildImageSrc } from "../../utils/imageUtils";
 import userDefault from "../../assets/user_default.png";
 import {
@@ -41,6 +43,8 @@ class ReviewManagement extends Component {
     search: "",
     dateFrom: "",
     dateTo: "",
+    draftDateFrom: "",
+    draftDateTo: "",
     datePreset: "",
     dateError: "",
     focusedReviewId: "",
@@ -105,8 +109,12 @@ class ReviewManagement extends Component {
     const today = moment().startOf("day");
     const from = dateFrom ? moment(dateFrom, "YYYY-MM-DD", true) : null;
     const to = dateTo ? moment(dateTo, "YYYY-MM-DD", true) : null;
+    const basicError = validateBasicDateRange(dateFrom, dateTo);
 
-    if ((dateFrom && !from.isValid()) || (dateTo && !to.isValid())) {
+    if (basicError === "incomplete") {
+      return this.getText("dateIncompleteV2", "Select both a start and end date.");
+    }
+    if (basicError === "invalid" || (dateFrom && !from.isValid()) || (dateTo && !to.isValid())) {
       return this.getText("invalidDate", "Invalid date range.");
     }
     if ((from && from.isAfter(today)) || (to && to.isAfter(today))) {
@@ -176,6 +184,33 @@ class ReviewManagement extends Component {
     );
   };
 
+  getDateRangeValue = () => getDateRangeValue(this.state.draftDateFrom, this.state.draftDateTo);
+
+  handleDateRangeChange = (dates) => {
+    const { startDate, endDate } = getDateRangeFilters(dates);
+    this.setState({ draftDateFrom: startDate, draftDateTo: endDate, dateError: "", datePreset: "custom" });
+  };
+
+  applyDateRange = () => {
+    const { draftDateFrom, draftDateTo } = this.state;
+    const dateError = this.validateDateRange(draftDateFrom, draftDateTo);
+    if (dateError) {
+      this.setState({ dateError });
+      return;
+    }
+
+    this.setState(
+      {
+        dateFrom: draftDateFrom,
+        dateTo: draftDateTo,
+        datePreset: draftDateFrom || draftDateTo ? "custom" : "",
+        focusedReviewId: "",
+        pagination: { ...this.state.pagination, page: 1 },
+      },
+      () => this.loadReviews({ page: 1 })
+    );
+  };
+
   getPresetRange = (preset) => {
     const today = moment().startOf("day");
     switch (preset) {
@@ -206,6 +241,8 @@ class ReviewManagement extends Component {
     this.setState(
       {
         ...range,
+        draftDateFrom: range.dateFrom,
+        draftDateTo: range.dateTo,
         datePreset: preset,
         focusedReviewId: "",
         pagination: { ...this.state.pagination, page: 1 },
@@ -222,6 +259,8 @@ class ReviewManagement extends Component {
         search: "",
         dateFrom: "",
         dateTo: "",
+        draftDateFrom: "",
+        draftDateTo: "",
         datePreset: "",
         dateError: "",
         focusedReviewId: "",
@@ -338,44 +377,18 @@ class ReviewManagement extends Component {
           ))}
         </select>
       </label>
-      <label>
-        <span>{this.getText("dateFrom", "From")}</span>
-        <input
-          type="date"
-          value={this.state.dateFrom}
-          max={moment().format("YYYY-MM-DD")}
-          onChange={(event) => {
-            this.setState(
-              {
-                dateFrom: event.target.value,
-                datePreset: "custom",
-                focusedReviewId: "",
-                pagination: { ...this.state.pagination, page: 1 },
-              },
-              () => this.loadReviews({ page: 1 })
-            );
-          }}
+      <div className="review-management__date-filter">
+        <span>{this.getText("date", "Review date")}</span>
+        <DateRangeField
+          id="review-date-range"
+          value={this.getDateRangeValue()}
+          onChange={this.handleDateRangeChange}
+          placeholder={this.getText("dateRangePlaceholder", "From date → To date", {
+            startDate: this.getText("dateFrom", "From"),
+            endDate: this.getText("dateTo", "To"),
+          })}
         />
-      </label>
-      <label>
-        <span>{this.getText("dateTo", "To")}</span>
-        <input
-          type="date"
-          value={this.state.dateTo}
-          max={moment().format("YYYY-MM-DD")}
-          onChange={(event) => {
-            this.setState(
-              {
-                dateTo: event.target.value,
-                datePreset: "custom",
-                focusedReviewId: "",
-                pagination: { ...this.state.pagination, page: 1 },
-              },
-              () => this.loadReviews({ page: 1 })
-            );
-          }}
-        />
-      </label>
+      </div>
       <div className="review-management__preset-list">
         {DATE_PRESETS.map((preset) => (
           <button
@@ -388,7 +401,7 @@ class ReviewManagement extends Component {
           </button>
         ))}
       </div>
-      <button type="button" className="review-management__filter-action" onClick={() => this.loadReviews({ page: 1 })}>
+      <button type="button" className="review-management__filter-action" onClick={this.applyDateRange}>
         <i className="bi bi-search" aria-hidden="true"></i>
         {this.getText("applyFilters", "Apply")}
       </button>
