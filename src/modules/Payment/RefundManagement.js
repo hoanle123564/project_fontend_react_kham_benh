@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { injectIntl } from "react-intl";
 import { toast } from "react-toastify";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import {
   approveAdminRefund,
   approveClinicManagerRefund,
@@ -13,6 +14,8 @@ import {
   syncClinicManagerRefund,
 } from "../../services/userService";
 import PagePagination from "../../components/Pagination/PagePagination";
+import DateRangeField from "../../components/Input/DateRangeField";
+import { getDateRangeFilters, getDateRangeValue, validateDateRange } from "../../utils/dateRangeUtils";
 import "./RefundManagement.scss";
 import {
   EMPTY_PROVIDER_STATE,
@@ -30,11 +33,16 @@ class RefundManagement extends Component {
     refunds: [],
     loading: true,
     actionId: null,
+    rejectRefund: null,
+    rejectionReason: "",
+    rejectionError: "",
     search: "",
     providerState: "",
-    requestedDate: "",
     dateFrom: "",
     dateTo: "",
+    draftDateFrom: "",
+    draftDateTo: "",
+    dateError: "",
     currentPage: 1,
   };
 
@@ -62,7 +70,7 @@ class RefundManagement extends Component {
   };
 
   runAction = async (refund, request, successKey, fallback) => {
-    if (this.state.actionId) return;
+    if (this.state.actionId) return false;
     this.setState({ actionId: refund.id });
     try {
       const response = await request(refund.id);
@@ -72,9 +80,11 @@ class RefundManagement extends Component {
       notify(response?.errMessage || this.text(successKey, fallback));
       await this.load();
       this.setState({ actionId: null });
+      return true;
     } catch (error) {
       toast.error(this.getErrorMessage(error, fallback));
       this.setState({ actionId: null });
+      return false;
     }
   };
 
@@ -91,15 +101,42 @@ class RefundManagement extends Component {
     "Unable to approve refund.",
   );
 
-  reject = (refund) => {
-    const reason = window.prompt(this.text("rejectionPrompt", "Enter the rejection reason"));
-    if (!reason?.trim()) return;
-    return this.runAction(
-      refund,
-      (refundId) => (this.isClinicManager() ? rejectClinicManagerRefund : rejectAdminRefund)(refundId, reason.trim()),
+  openRejectModal = (refund) => this.setState({
+    rejectRefund: refund,
+    rejectionReason: "",
+    rejectionError: "",
+  });
+
+  closeRejectModal = () => {
+    if (this.state.actionId) return;
+    this.setState({
+      rejectRefund: null,
+      rejectionReason: "",
+      rejectionError: "",
+    });
+  };
+
+  handleRejectionReasonChange = (event) => this.setState({
+    rejectionReason: event.target.value,
+    rejectionError: "",
+  });
+
+  confirmReject = async () => {
+    const { rejectRefund, rejectionReason } = this.state;
+    const reason = rejectionReason.trim();
+    if (!rejectRefund) return;
+    if (!reason) {
+      this.setState({ rejectionError: this.text("rejectionRequired", "Please enter a rejection reason.") });
+      return;
+    }
+
+    const success = await this.runAction(
+      rejectRefund,
+      (refundId) => (this.isClinicManager() ? rejectClinicManagerRefund : rejectAdminRefund)(refundId, reason),
       "rejected",
       "Unable to reject refund.",
     );
+    if (success) this.closeRejectModal();
   };
 
   sync = (refund) => this.runAction(
@@ -155,15 +192,34 @@ class RefundManagement extends Component {
     return filteredRefunds.slice(start, start + PAGE_SIZE);
   };
 
-  handleFilterChange = (field, value) => {
-    const nextState = { [field]: value, currentPage: 1 };
-    if (field === "requestedDate") {
-      nextState.dateFrom = "";
-      nextState.dateTo = "";
-    }
-    if (field === "dateFrom" || field === "dateTo") nextState.requestedDate = "";
-    this.setState(nextState);
+  handleFilterChange = (field, value) => this.setState({ [field]: value, currentPage: 1 });
+
+  getDraftDateRangeValue = () => getDateRangeValue(this.state.draftDateFrom, this.state.draftDateTo);
+
+  handleDateRangeChange = (dates) => {
+    const { startDate, endDate } = getDateRangeFilters(dates);
+    this.setState({ draftDateFrom: startDate, draftDateTo: endDate, dateError: "" });
   };
+
+  applyDateRange = () => {
+    const { draftDateFrom, draftDateTo } = this.state;
+    const error = validateDateRange(draftDateFrom, draftDateTo);
+    if (error) {
+      this.setState({ dateError: this.text(error === "incomplete" ? "dateIncompleteV2" : "dateInvalidV2", error === "incomplete" ? "Select both dates." : "Invalid date range.") });
+      return;
+    }
+
+    this.setState({ dateFrom: draftDateFrom, dateTo: draftDateTo, dateError: "", currentPage: 1 });
+  };
+
+  clearDateRange = () => this.setState({
+    dateFrom: "",
+    dateTo: "",
+    draftDateFrom: "",
+    draftDateTo: "",
+    dateError: "",
+    currentPage: 1,
+  });
 
   renderSummary = () => {
     const summary = getRefundSummary(this.state.refunds);
@@ -226,7 +282,7 @@ class RefundManagement extends Component {
               fallback: "Reject",
               icon: "bi-x-lg",
               variant: "reject",
-              onClick: () => this.reject(refund),
+              onClick: () => this.openRejectModal(refund),
             })}
           </div>
         );
@@ -268,9 +324,7 @@ class RefundManagement extends Component {
       loading,
       search,
       providerState,
-      requestedDate,
-      dateFrom,
-      dateTo,
+      rejectRefund,
       currentPage,
     } = this.state;
     const filteredRefunds = this.getFilteredRefunds();
@@ -334,36 +388,27 @@ class RefundManagement extends Component {
                 ))}
               </select>
             </label>
-            <label>
+            <div className="refund-management__date-filter">
               <span>{this.text("requestedDate", "Requested date")}</span>
-              <input
-                type="date"
-                name="refundRequestedDate"
-                autoComplete="off"
-                value={requestedDate}
-                onChange={(event) => this.handleFilterChange("requestedDate", event.target.value)}
+              <DateRangeField
+                id="refund-date-range"
+                value={this.getDraftDateRangeValue()}
+                onChange={this.handleDateRangeChange}
+                placeholder={this.text("dateRangePlaceholder", "From date → To date", {
+                  startDate: this.text("dateFrom", "From date"),
+                  endDate: this.text("dateTo", "To date"),
+                })}
               />
-            </label>
-            <label>
-              <span>{this.text("dateFrom", "From date")}</span>
-              <input
-                type="date"
-                name="refundDateFrom"
-                autoComplete="off"
-                value={dateFrom}
-                onChange={(event) => this.handleFilterChange("dateFrom", event.target.value)}
-              />
-            </label>
-            <label>
-              <span>{this.text("dateTo", "To date")}</span>
-              <input
-                type="date"
-                name="refundDateTo"
-                autoComplete="off"
-                value={dateTo}
-                onChange={(event) => this.handleFilterChange("dateTo", event.target.value)}
-              />
-            </label>
+              <div className="refund-management__date-actions">
+                <button type="button" onClick={this.applyDateRange}>
+                  {this.text("applyDateRangeV2", "Apply")}
+                </button>
+                <button type="button" className="secondary" onClick={this.clearDateRange}>
+                  {this.text("clearDateRangeV2", "Clear")}
+                </button>
+              </div>
+              {this.state.dateError && <small className="refund-management__filter-error" role="alert">{this.state.dateError}</small>}
+            </div>
           </section>
 
           <section className="refund-management__table-card">
@@ -446,6 +491,63 @@ class RefundManagement extends Component {
             </footer>
           )}
         </div>
+        <Modal
+          isOpen={Boolean(rejectRefund)}
+          toggle={this.closeRejectModal}
+          centered
+          className="refund-management-reject-modal"
+        >
+          <ModalHeader toggle={this.closeRejectModal}>
+            {this.text("rejectionTitle", "Reject refund?")}
+          </ModalHeader>
+          <ModalBody>
+            <div className="refund-management-reject-modal__field">
+              <label htmlFor="refund-rejection-reason">
+                {this.text("rejectionLabel", "Rejection reason")}
+              </label>
+              <textarea
+                id="refund-rejection-reason"
+                rows="5"
+                maxLength="500"
+                value={this.state.rejectionReason}
+                onChange={this.handleRejectionReasonChange}
+                placeholder={this.text("rejectionPlaceholder", "Enter the reason for rejecting this refund")}
+                aria-invalid={Boolean(this.state.rejectionError)}
+                aria-describedby={this.state.rejectionError ? "refund-rejection-reason-error" : undefined}
+                aria-required="true"
+                required
+                autoFocus
+              />
+              {this.state.rejectionError && (
+                <div id="refund-rejection-reason-error" className="refund-management-reject-modal__error" role="alert">
+                  {this.state.rejectionError}
+                </div>
+              )}
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              type="button"
+              color="secondary"
+              className="refund-management-reject-modal__cancel"
+              onClick={this.closeRejectModal}
+              disabled={Boolean(this.state.actionId)}
+            >
+              {this.text("rejectionCancel", "Cancel")}
+            </Button>
+            <Button
+              type="button"
+              color="danger"
+              className="refund-management-reject-modal__submit"
+              onClick={this.confirmReject}
+              disabled={Boolean(this.state.actionId)}
+            >
+              {this.state.actionId
+                ? this.text("rejecting", "Rejecting…")
+                : this.text("rejectionConfirm", "Reject refund")}
+            </Button>
+          </ModalFooter>
+        </Modal>
       </div>
     );
   }

@@ -29,12 +29,11 @@ export const getLocalDateKey = (value) => {
     ].join("-");
 };
 
-export const matchesRefundDate = (refund = {}, { requestedDate = "", dateFrom = "", dateTo = "" } = {}) => {
-    if (!requestedDate && !dateFrom && !dateTo) return true;
+export const matchesRefundDate = (refund = {}, { dateFrom = "", dateTo = "" } = {}) => {
+    if (!dateFrom && !dateTo) return true;
 
     const refundDate = getLocalDateKey(refund.requestedAt);
     if (!refundDate) return false;
-    if (requestedDate) return refundDate === requestedDate;
 
     return (!dateFrom || refundDate >= dateFrom) && (!dateTo || refundDate <= dateTo);
 };

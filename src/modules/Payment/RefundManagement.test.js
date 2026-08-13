@@ -39,14 +39,13 @@ describe("refund account display", () => {
     expect(filterRefunds(refunds, { providerState: EMPTY_PROVIDER_STATE }).map(({ id }) => id)).toEqual([3]);
   });
 
-  it("filters by a local requested date or an inclusive date range", () => {
+  it("filters by an inclusive local requested date range", () => {
     const refunds = [
       { id: 1, requestedAt: new Date(2026, 7, 10, 9, 0).getTime() },
       { id: 2, requestedAt: new Date(2026, 7, 12, 9, 0).getTime() },
       { id: 3, requestedAt: new Date(2026, 7, 15, 9, 0).getTime() },
     ];
 
-    expect(filterRefunds(refunds, { requestedDate: "2026-08-12" }).map(({ id }) => id)).toEqual([2]);
     expect(filterRefunds(refunds, { dateFrom: "2026-08-10", dateTo: "2026-08-12" }).map(({ id }) => id)).toEqual([1, 2]);
   });
 
