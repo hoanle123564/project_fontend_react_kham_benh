@@ -1,0 +1,39 @@
+.date-range-field {
+    position: relative;
+
+    .flatpickr-wrapper {
+        display: block;
+        width: 100%;
+    }
+
+    &__input {
+        background: #fff;
+        border: 1px solid #d4dde7;
+        border-radius: 4px;
+        color: #27364a;
+        font-size: 1rem;
+        min-height: 44px;
+        padding: 9px 42px 9px 12px;
+        width: 100%;
+
+        &::placeholder {
+            color: #97a3b1;
+        }
+
+        &:focus {
+            border-color: #0f9c89;
+            box-shadow: 0 0 0 3px rgba(15, 156, 137, 0.14);
+            outline: none;
+        }
+    }
+
+    > i {
+        color: #7b8794;
+        font-size: 1.1rem;
+        pointer-events: none;
+        position: absolute;
+        right: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
