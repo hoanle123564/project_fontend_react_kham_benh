@@ -5,6 +5,7 @@ import { injectIntl } from 'react-intl';
 import moment from 'moment';
 import './Header.scss';
 import Breadcrumb from '../Breadcrumb/breadcrumb';
+import { getAdminNotifications, markAdminNotificationsRead } from '../../services/adminNotificationService';
 import { getDoctorNotifications, markDoctorNotificationsRead } from '../../services/doctorNotificationService';
 
 class Header extends Component {
@@ -21,10 +22,7 @@ class Header extends Component {
 
     componentDidMount() {
         document.addEventListener('mousedown', this.handleClickOutside);
-        if (this.isDoctorPath()) {
-            this.loadNotifications();
-            this.notificationTimer = window.setInterval(this.loadNotifications, 30000);
-        }
+        if (this.getNotificationRole()) this.startNotifications();
     }
 
     componentWillUnmount() {
@@ -33,13 +31,13 @@ class Header extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        const wasDoctor = prevProps.location?.pathname?.includes('/doctor');
-        const isDoctor = this.isDoctorPath();
-        if (!wasDoctor && isDoctor) {
-            this.loadNotifications();
-            this.notificationTimer = window.setInterval(this.loadNotifications, 30000);
+        const previousRole = this.getNotificationRole(prevProps.location?.pathname);
+        const currentRole = this.getNotificationRole();
+        if (previousRole !== currentRole) {
+            this.stopNotifications();
+            this.setState({ notifications: [], isNotificationsOpen: false });
+            if (currentRole) this.startNotifications();
         }
-        if (wasDoctor && !isDoctor) window.clearInterval(this.notificationTimer);
     }
 
     handleClickOutside = (event) => {
@@ -48,7 +46,21 @@ class Header extends Component {
         }
     }
 
-    isDoctorPath = () => this.props.location?.pathname?.includes('/doctor');
+    getNotificationRole = (pathname = this.props.location?.pathname) => {
+        if (pathname?.includes('/system')) return 'admin';
+        if (pathname?.includes('/doctor')) return 'doctor';
+        return null;
+    };
+
+    isDoctorPath = () => this.getNotificationRole() === 'doctor';
+
+    startNotifications = () => {
+        this.loadNotifications();
+        this.stopNotifications();
+        this.notificationTimer = window.setInterval(this.loadNotifications, 30000);
+    };
+
+    stopNotifications = () => window.clearInterval(this.notificationTimer);
 
     getText = (key, values) => this.props.intl.formatMessage({
         id: `notifications.${key}`,
@@ -56,10 +68,13 @@ class Header extends Component {
     }, values);
 
     loadNotifications = async () => {
-        if (!this.isDoctorPath()) return;
+        const role = this.getNotificationRole();
+        if (!role) return;
         this.setState({ isNotificationLoading: true });
         try {
-            const response = await getDoctorNotifications();
+            const response = role === 'admin'
+                ? await getAdminNotifications()
+                : await getDoctorNotifications();
             if (response?.errCode === 0) {
                 this.setState({ notifications: response.data || [], isNotificationLoading: false });
                 return;
@@ -81,7 +96,10 @@ class Header extends Component {
 
     markNotificationsRead = async () => {
         try {
-            await markDoctorNotificationsRead();
+            const markRead = this.getNotificationRole() === 'admin'
+                ? markAdminNotificationsRead
+                : markDoctorNotificationsRead;
+            await markRead();
             this.setState(prevState => ({
                 notifications: prevState.notifications.map(item => ({ ...item, isRead: true })),
             }));
@@ -92,6 +110,7 @@ class Header extends Component {
 
     openNotification = async (notification) => {
         if (!notification) return;
+        const role = this.getNotificationRole();
         this.setState({ isNotificationsOpen: false });
         if (!notification.isRead) {
             this.setState(prevState => ({
@@ -99,7 +118,12 @@ class Header extends Component {
                     item.id === notification.id ? { ...item, isRead: true } : item
                 ),
             }));
-            markDoctorNotificationsRead(notification.id).catch(() => this.loadNotifications());
+            const markRead = role === 'admin' ? markAdminNotificationsRead : markDoctorNotificationsRead;
+            markRead(notification.id).catch(() => this.loadNotifications());
+        }
+        if (role === 'admin' && notification.type === 'REFUND_REQUESTED') {
+            this.props.history.push('/system/manage-refund');
+            return;
         }
         if (notification.type === 'NEW_MESSAGE' && notification.chatRoomId) {
             this.props.history.push(`/doctor/message/${encodeURIComponent(notification.chatRoomId)}`);
@@ -159,6 +183,7 @@ class Header extends Component {
         const isAdminPath = path.includes("/system");
         const isClinicManagerPath = path.includes("/clinic-manager");
         const isDocPath = path.includes("/doctor");
+        const isNotificationPath = isAdminPath || isDocPath;
 
         // Lấy đúng thông tin user theo role đang active
         const currentInfo = isAdminPath ? adminInfo : isClinicManagerPath ? clinicManagerInfo : isDocPath ? doctorInfo : null;
@@ -192,7 +217,7 @@ class Header extends Component {
                             </div>
 
                             <div className="header-right" ref={this.actionsRef}>
-                                {isDocPath && <div className="notification-area">
+                                {isNotificationPath && <div className="notification-area">
                                     <button
                                         type="button"
                                         className="notification-icon"
@@ -217,12 +242,16 @@ class Header extends Component {
                                                         ? this.getText('messageTitle')
                                                         : item.type === 'NEW_REVIEW'
                                                             ? this.getText('reviewTitle')
-                                                            : this.getText('appointmentTitle');
+                                                            : item.type === 'REFUND_REQUESTED'
+                                                                ? this.getText('refundTitle')
+                                                                : this.getText('appointmentTitle');
                                                     const detail = item.type === 'NEW_MESSAGE'
                                                         ? item.content || this.getText('messageDescription', { name })
                                                         : item.type === 'NEW_REVIEW'
                                                             ? item.content || this.getText('reviewDescription', { name })
-                                                            : this.getText('appointmentDescription', { name });
+                                                            : item.type === 'REFUND_REQUESTED'
+                                                                ? this.getText('refundDescription', { name })
+                                                                : this.getText('appointmentDescription', { name });
                                                     const image = item.patientImage ? `data:image/jpeg;base64,${item.patientImage}` : null;
                                                     return <button type="button" key={item.id} className={`notification-menu__item ${item.isRead ? '' : 'unread'}`} onClick={() => this.openNotification(item)}>
                                                         {image ? <img src={image} alt="" /> : <span className="notification-menu__avatar">{name.slice(0, 1).toUpperCase()}</span>}
