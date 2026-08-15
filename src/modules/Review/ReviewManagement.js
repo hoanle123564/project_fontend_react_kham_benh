@@ -328,7 +328,10 @@ class ReviewManagement extends Component {
   };
 
   renderFilters = () => (
-    <section className="review-management__filters" aria-label={this.getText("filters", "Review filters")}>
+    <section
+      className={`review-management__filters${this.isAdmin() ? " admin" : ""}`}
+      aria-label={this.getText("filters", "Review filters")}
+    >
       {this.isAdmin() && (
         <label className="review-management__search">
           <span>{this.getText("search", "Search")}</span>
@@ -616,7 +619,6 @@ class ReviewManagement extends Component {
                 </td>
                 <td className="review-management__clamped" title={review.comment}>{review.comment}</td>
                 <td>
-                  <span className="review-management__rating-number">{review.rating}</span>
                   {this.renderStars(review.rating)}
                 </td>
                 <td>{this.formatDate(review.createdAt)}</td>

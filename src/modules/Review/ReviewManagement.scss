@@ -153,6 +153,10 @@
     margin-bottom: 14px;
     padding: 16px;
 
+    &.admin {
+      grid-template-columns: repeat(5, minmax(150px, 1fr));
+    }
+
     label {
       margin: 0;
       min-width: 0;
@@ -374,13 +378,6 @@
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
-  }
-
-  &__rating-number {
-    color: var(--review-navy);
-    display: block;
-    font-weight: 700;
-    margin-bottom: 3px;
   }
 
   &__stars {
@@ -655,7 +652,8 @@
   @media (max-width: 980px) {
 
     &__summary,
-    &__filters {
+    &__filters,
+    &__filters.admin {
       grid-template-columns: 1fr 1fr;
     }
 
@@ -676,7 +674,8 @@
     }
 
     &__summary,
-    &__filters {
+    &__filters,
+    &__filters.admin {
       grid-template-columns: 1fr;
     }
 
