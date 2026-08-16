@@ -1,4 +1,9 @@
-import { filterClinics, filterDoctors, filterSpecialties } from "./listPageFilterUtils";
+import {
+    filterClinics,
+    filterDoctors,
+    filterSpecialties,
+    getAvailableProvinceOptions,
+} from "./listPageFilterUtils";
 
 describe("public list filters", () => {
     it("combines doctor name, province, and specialty filters", () => {
@@ -19,5 +24,18 @@ describe("public list filters", () => {
 
         expect(filterClinics(clinics, { search: "an", provinceCode: "79" })).toEqual([clinics[1]]);
         expect(filterSpecialties([{ name: "Tim mach" }, { name: "Da lieu" }], "tim")).toEqual([{ name: "Tim mach" }]);
+    });
+
+    it("keeps only provinces used by the displayed doctors or clinics", () => {
+        const provinceOptions = [
+            { keyMap: "01", value_vi: "Ha Noi", value_en: "Ha Noi" },
+            { keyMap: "79", value_vi: "Ho Chi Minh", value_en: "Ho Chi Minh" },
+            { keyMap: "92", value_vi: "Can Tho", value_en: "Can Tho" },
+        ];
+
+        expect(getAvailableProvinceOptions([{ provinceCode: "01" }], provinceOptions)).toEqual([provinceOptions[0]]);
+        expect(getAvailableProvinceOptions([{ provinceCode: "79" }], provinceOptions)).toEqual([provinceOptions[1]]);
+        expect(getAvailableProvinceOptions([], provinceOptions)).toEqual([]);
+        expect(getAvailableProvinceOptions([{ provinceCode: "01" }], [])).toEqual([]);
     });
 });

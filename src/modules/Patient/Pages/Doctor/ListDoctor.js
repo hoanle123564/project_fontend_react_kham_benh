@@ -8,7 +8,7 @@ import HomeFooter from "../../Layout/HomeFooter";
 import BackToTop from "../../../../components/BackToTop/BackToTop";
 import { languages } from "../../../../utils";
 import { getAllDoctor, getAllSpecialty, getLookUp } from "../../../../services/userService";
-import { filterDoctors } from "../listPageFilterUtils";
+import { filterDoctors, getAvailableProvinceOptions } from "../listPageFilterUtils";
 import "../ListPageBanner.scss";
 import "./ListDoctor.scss";
 
@@ -248,6 +248,7 @@ class ListDoctor extends Component {
     render() {
         const {
             specialtyFilters,
+            doctorList,
             activeSpecialtyId,
             provinceOptions,
             provinceCode,
@@ -265,6 +266,7 @@ class ListDoctor extends Component {
             pageStart,
             pageStart + ITEMS_PER_PAGE
         );
+        const availableProvinceOptions = getAvailableProvinceOptions(doctorList, provinceOptions);
 
         return (
             <>
@@ -308,7 +310,7 @@ class ListDoctor extends Component {
                                         onChange={this.handleProvinceChange}
                                     >
                                         <option value="">{label}</option>
-                                        {provinceOptions.map((province) => (
+                                        {availableProvinceOptions.map((province) => (
                                             <option key={province.keyMap} value={province.keyMap}>
                                                 {this.props.language === languages.VI ? province.value_vi : province.value_en}
                                             </option>

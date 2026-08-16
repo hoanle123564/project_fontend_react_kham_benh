@@ -1,5 +1,17 @@
 const normalize = (value) => String(value || "").trim().toLowerCase();
 
+export const getAvailableProvinceOptions = (items = [], provinceOptions = []) => {
+    const availableProvinceCodes = new Set(
+        items
+            .map((item) => String(item?.provinceCode || "").trim())
+            .filter(Boolean)
+    );
+
+    return provinceOptions.filter((province) =>
+        availableProvinceCodes.has(String(province?.keyMap || "").trim())
+    );
+};
+
 export const filterDoctors = (doctors = [], { search = "", provinceCode = "", specialtyId, allSpecialties }) => {
     const query = normalize(search);
 

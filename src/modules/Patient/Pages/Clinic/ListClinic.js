@@ -10,7 +10,7 @@ import { withRouter } from "react-router";
 import BackToTop from "../../../../components/BackToTop/BackToTop";
 import { languages } from "../../../../utils";
 import { getLookUp } from "../../../../services/userService";
-import { filterClinics } from "../listPageFilterUtils";
+import { filterClinics, getAvailableProvinceOptions } from "../listPageFilterUtils";
 import "../ListPageBanner.scss";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Grid, Pagination, Navigation } from 'swiper/modules';
@@ -90,6 +90,7 @@ class ListClinic extends Component {
         let { search, provinceOptions, provinceCode } = this.state;
         let { language } = this.props;
         const clinicList = this.getFilteredClinics();
+        const availableProvinceOptions = getAvailableProvinceOptions(this.state.clinicList, provinceOptions);
         const pagination = {
             el: '.custom-pagination',
             clickable: true,
@@ -139,7 +140,7 @@ class ListClinic extends Component {
                                         onChange={this.handleProvinceChange}
                                     >
                                         <option value="">{label}</option>
-                                        {provinceOptions.map((province) => (
+                                        {availableProvinceOptions.map((province) => (
                                             <option key={province.keyMap} value={province.keyMap}>
                                                 {language === languages.VI ? province.value_vi : province.value_en}
                                             </option>
