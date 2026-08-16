@@ -718,7 +718,7 @@ class ReviewManagement extends Component {
               {this.getText("refresh", "Refresh")}
             </button>
           </div>
-          {this.renderSummary()}
+          {!this.isAdmin() && this.renderSummary()}
           {this.renderFilters()}
           {errorMessage && this.state.reviews.length > 0 && (
             <div className="review-management__alert" role="alert">{errorMessage}</div>
