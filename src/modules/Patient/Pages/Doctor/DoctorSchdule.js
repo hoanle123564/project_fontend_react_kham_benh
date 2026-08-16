@@ -7,6 +7,7 @@ import moment from "moment";
 import { getScheduleDoctor } from "../../../../services/userService";
 import { FormattedMessage } from "react-intl";
 import BookingModal from "./BookingModal";
+import { TIME_PERIOD_KEYS, groupAvailableTime } from "./doctorScheduleTimeUtils";
 
 const APPOINTMENT_TYPES = [
     { id: "AT1", vi: "Khám tại cơ sở", en: "In-person" },
@@ -151,6 +152,7 @@ class DoctorSchdule extends Component {
                 Number(item.remaining) > 0 &&
                 Number(item.isBookable) !== 0
         );
+        const groupedAvailableTime = groupAvailableTime(visibleAvailableTime);
 
         return (
             <>
@@ -193,19 +195,26 @@ class DoctorSchdule extends Component {
                             <div className="time-content">
                                 {visibleAvailableTime && visibleAvailableTime.length > 0 ? (
                                     <>
-                                        <div className="time-content-btn">
-                                            {visibleAvailableTime.map((item, index) => {
-                                                return (
-                                                    <button
-                                                        key={index}
-                                                        className="btn-time"
-                                                        onClick={() => this.handleClickScheduleTime(item)}
-                                                    >
-                                                        {this.props.language === languages.VI ? item.value_vi : item.value_en}
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
+                                        {TIME_PERIOD_KEYS.map((period) =>
+                                            groupedAvailableTime[period].length > 0 ? (
+                                                <section className="time-group" key={period}>
+                                                    <h3 className="time-group-title">
+                                                        <FormattedMessage id={`detail-doctor.${period}`} />
+                                                    </h3>
+                                                    <div className="time-content-btn">
+                                                        {groupedAvailableTime[period].map((item, index) => (
+                                                            <button
+                                                                key={item.id || `${period}-${index}`}
+                                                                className="btn-time"
+                                                                onClick={() => this.handleClickScheduleTime(item)}
+                                                            >
+                                                                {this.props.language === languages.VI ? item.value_vi : item.value_en}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </section>
+                                            ) : null
+                                        )}
                                         <div className="book-free my-3">
                                             <span>
                                                 <FormattedMessage id="detail-doctor.book-free" />
@@ -247,4 +256,5 @@ const mapDispatchToProps = (dispatch) => {
         GetDetailDoctor: (id) => dispatch(action.GetDetailDoctor(id)),
     };
 };
+
 export default connect(mapStateToProps, mapDispatchToProps)(DoctorSchdule);

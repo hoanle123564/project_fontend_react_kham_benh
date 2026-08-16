@@ -417,6 +417,9 @@
     "time-booking": "Giờ đặt khám"
   },
   "detail-doctor": {
+    "morning": "Buổi sáng",
+    "afternoon": "Buổi chiều",
+    "evening": "Buổi tối",
     "schedule": "Lịch khám",
     "book-free": "Chọn và đặt (miễn phí)",
     "no-schedule": "Không có lịch khám trong ngày này",

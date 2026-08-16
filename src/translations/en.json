@@ -414,6 +414,9 @@
     "time-booking": "Booking time"
   },
   "detail-doctor": {
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
     "schedule": "Schedule",
     "book-free": "Select and book (free)",
     "no-schedule": "No schedule available for this day",
