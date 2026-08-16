@@ -50,26 +50,6 @@ class DoctorExtendInfo extends Component {
                     <div className="clinic-name">{info.clinicName || "—"}</div>
                     <div className="clinic-address">{info.clinicAddress || "—"}</div>
 
-                    <div className="promotion-line">
-                        <i className="fas fa-bolt"></i>
-                        <span className="promo-text">
-                            <FormattedMessage id="detail-doctor.applyed-promo" />
-                        </span>
-                        <button className="link">
-                            <FormattedMessage id="detail-doctor.see-detail" />
-                        </button>
-                    </div>
-                </div>
-
-                <div className="line"></div>
-
-                <div className="insurance-block">
-                    <span className="title">
-                        <FormattedMessage id="detail-doctor.applyed-promo" />:
-                    </span>
-                    <button className="link">
-                        <FormattedMessage id="detail-doctor.see-detail" />
-                    </button>
                 </div>
             </div>
         );

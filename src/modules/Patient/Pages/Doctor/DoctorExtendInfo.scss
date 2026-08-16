@@ -4,10 +4,9 @@
     background: #fff;
     padding: 15px 20px;
     border-radius: 6px;
-    text-align: left; //  căn trái toàn bộ
-
-    border-left: 1px solid #ddd; // đường kẻ mảnh, nhẹ
-    margin-left: 25px; // tạo khoảng cách giữa 2 khối
+    text-align: left;
+    border-left: 1px solid #ddd;
+    margin-left: 25px;
     height: 80%;
 
     .title {
@@ -27,54 +26,10 @@
         margin-bottom: 6px;
     }
 
-    .promotion-line {
-        display: flex;
-        align-items: center;
-        font-weight: 500;
-        color: #f6a300;
-        margin-top: 3px;
-
-        i {
-            color: #ffb300;
-            margin-right: 5px;
-            font-size: 14px;
-        }
-
-        .promo-text {
-            color: #f6a300;
-            margin-right: 4px;
-        }
-
-        .link {
-            background: none;
-            border: none;
-            color: #00bcd4; // màu xanh giống link
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: inherit; // giữ nguyên kích thước chữ
-            padding: 0;
-            margin: 0;
-            font-family: inherit; // giữ phông chữ tự nhiên
-        }
-
-        .link:hover {
-            color: #0097a7; // đổi xanh đậm hơn khi hover
-            text-decoration: underline;
-        }
-
-    }
-
-    .line {
-        border-top: 1px solid #eee;
-        margin: 10px 0;
-    }
-
-    /* ==== Giá khám ==== */
     .price-block {
         display: flex;
         align-items: center;
-        // justify-content: space-between;
-        gap: 10px; // khoảng cách giữa các phần tử
+        gap: 10px;
         color: #444;
 
         .title {
@@ -100,45 +55,17 @@
         .link {
             background: none;
             border: none;
-            color: #00bcd4; // màu xanh giống link
+            color: #00bcd4;
             text-decoration: underline;
             cursor: pointer;
-            font-size: inherit; // giữ nguyên kích thước chữ
+            font-size: inherit;
             padding: 0;
             margin: 0;
-            font-family: inherit; // giữ phông chữ tự nhiên
+            font-family: inherit;
         }
 
         .link:hover {
-            color: #0097a7; // đổi xanh đậm hơn khi hover
-            text-decoration: underline;
-        }
-    }
-
-    /* ==== Bảo hiểm ==== */
-    .insurance-block {
-        align-items: center;
-        gap: 8px;
-
-        .title {
-            font-weight: 600;
-            color: #555;
-        }
-
-        .link {
-            background: none;
-            border: none;
-            color: #00bcd4; // màu xanh giống link
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: inherit; // giữ nguyên kích thước chữ
-            padding: 0;
-            margin: 0;
-            font-family: inherit; // giữ phông chữ tự nhiên
-        }
-
-        .link:hover {
-            color: #0097a7; // đổi xanh đậm hơn khi hover
+            color: #0097a7;
             text-decoration: underline;
         }
     }
