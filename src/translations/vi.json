@@ -116,12 +116,14 @@
       "my-clinic": "Cơ sở của tôi",
       "doctor": "Bác sĩ",
       "doctors": "Danh sách bác sĩ",
+      "add-doctor": "Thêm bác sĩ mới",
       "manage-doctor": "Quản lý bác sĩ",
       "patient": "Bệnh nhân",
       "patients": "Quản lý bệnh nhân",
       "account": "Tài khoản",
       "profile": "Hồ sơ cá nhân",
       "create-error": "Không thể tạo tài khoản bác sĩ.",
+      "create-success": "Đã tạo tài khoản bác sĩ.",
       "schedule": "Lịch làm việc",
       "appointments": "Lịch đặt khám",
       "refunds": "Quản lý hoàn tiền",
@@ -971,6 +973,10 @@
     "actions": "Cập nhật",
     "doctorActions": "Thao tác",
     "accept": "Đồng ý",
+    "acceptTitle": "Đồng ý lịch hẹn?",
+    "acceptDescription": "Bạn có chắc chắn muốn đồng ý lịch hẹn này không? Hành động này không thể hoàn tác.",
+    "acceptCancel": "Hủy",
+    "accepting": "Đang đồng ý…",
     "reject": "Từ chối",
     "rejectTitle": "Từ chối lịch hẹn?",
     "rejectDescription": "Bạn có chắc chắn muốn từ chối lịch hẹn này không? Hành động này không thể hoàn tác.",
@@ -1239,6 +1245,10 @@
     "statusTitle": "C\u1eadp nh\u1eadt tr\u1ea1ng th\u00e1i l\u1ecbch kh\u00e1m",
     "statusDescription": "Tr\u1ea1ng th\u00e1i l\u1ecbch kh\u00e1m c\u1ee7a b\u1ea1n l\u00e0 {status}.",
     "reminderTitle": "Nh\u1eafc l\u1ecbch kh\u00e1m",
-    "reminderDescription": "L\u1ecbch h\u1eb9n c\u1ee7a b\u1ea1n v\u1edbi {name} s\u1eafp b\u1eaft \u0111\u1ea7u."
+    "reminderDescription": "L\u1ecbch h\u1eb9n c\u1ee7a b\u1ea1n v\u1edbi {name} s\u1eafp b\u1eaft \u0111\u1ea7u.",
+    "reviewHiddenTitle": "B\u00ecnh lu\u1eadn b\u1ecb \u1ea9n",
+    "reviewHiddenDescription": "B\u00ecnh lu\u1eadn c\u1ee7a b\u1ea1n \u0111\u00e3 b\u1ecb \u1ea9n do vi ph\u1ea1m ti\u00eau chu\u1ea9n c\u1ed9ng \u0111\u1ed3ng.",
+    "reviewRestoredTitle": "B\u00ecnh lu\u1eadn \u0111\u01b0\u1ee3c kh\u00f4i ph\u1ee5c",
+    "reviewRestoredDescription": "Ch\u00fang t\u00f4i \u0111\u00e3 xem x\u00e9t v\u00e0 kh\u00f4i ph\u1ee5c b\u00ecnh lu\u1eadn c\u1ee7a b\u1ea1n."
   }
 }

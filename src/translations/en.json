@@ -115,12 +115,14 @@
       "my-clinic": "My clinic",
       "doctor": "Doctors",
       "doctors": "Doctors list",
+      "add-doctor": "Add new doctor",
       "manage-doctor": "Manage doctors",
       "patient": "Patients",
       "patients": "Manage patients",
       "account": "Account",
       "profile": "My profile",
       "create-error": "Unable to create doctor account.",
+      "create-success": "Doctor account created.",
       "schedule": "Schedule",
       "appointments": "Appointments",
       "refunds": "Refund management",
@@ -777,6 +779,10 @@
     "actions": "Update",
     "doctorActions": "Actions",
     "accept": "Accept",
+    "acceptTitle": "Accept appointment?",
+    "acceptDescription": "Are you sure you want to accept this appointment? This action cannot be undone.",
+    "acceptCancel": "Cancel",
+    "accepting": "Accepting…",
     "reject": "Reject",
     "rejectTitle": "Reject appointment?",
     "rejectDescription": "Are you sure you want to reject this appointment? This action cannot be undone.",
@@ -1044,6 +1050,10 @@
     "statusTitle": "Appointment status updated",
     "statusDescription": "Your appointment status is now {status}.",
     "reminderTitle": "Appointment reminder",
-    "reminderDescription": "Your appointment with {name} is starting soon."
+    "reminderDescription": "Your appointment with {name} is starting soon.",
+    "reviewHiddenTitle": "Review hidden",
+    "reviewHiddenDescription": "Your review was hidden for violating our community standards.",
+    "reviewRestoredTitle": "Review restored",
+    "reviewRestoredDescription": "We reviewed your review and restored it."
   }
 }

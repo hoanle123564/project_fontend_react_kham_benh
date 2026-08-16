@@ -57,40 +57,6 @@
         }
     }
 
-    .doctor-table__create-form {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 12px;
-        align-items: end;
-        margin: 0 0 16px;
-        padding: 14px;
-        border: 1px solid var(--doctor-border);
-        border-radius: 8px;
-        background: var(--doctor-card);
-
-        label {
-            display: grid;
-            gap: 5px;
-            color: var(--doctor-muted);
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        input {
-            min-height: 40px;
-            padding: 0 10px;
-            border: 1px solid var(--doctor-border);
-            border-radius: 7px;
-            color: var(--doctor-text);
-        }
-
-        div {
-            display: flex;
-            gap: 8px;
-            grid-column: 1 / -1;
-        }
-    }
-
     .doctor-table__toolbar {
         display: flex;
         align-items: center;
@@ -374,7 +340,6 @@
 
         .doctor-table__header-actions,
         .doctor-table__manage-button,
-        .doctor-table__create-form,
         .doctor-table__search,
         .doctor-table__specialty-filter,
         .doctor-table__total {
@@ -386,9 +351,6 @@
             text-align: center;
         }
 
-        .doctor-table__create-form {
-            grid-template-columns: 1fr;
-        }
     }
 }
 

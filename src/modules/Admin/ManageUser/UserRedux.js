@@ -14,7 +14,7 @@ import {
 } from "./userFormUtils";
 import "./UserRedux.scss";
 
-class UserRedux extends Component {
+export class UserRedux extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -29,7 +29,7 @@ class UserRedux extends Component {
       wardCode: "",
       gender: "",
       position: "",
-      role: "",
+      role: props.clinicManagerMode ? "R2" : "",
       avatar: "",
       previewImg: "",
       isModalOpen: false,
@@ -39,6 +39,7 @@ class UserRedux extends Component {
       provinceOptions: [],
       districtOptions: [],
       wardOptions: [],
+      isSaving: false,
       // lưu lỗi từng dòng
       errors: {},
     };
@@ -74,7 +75,7 @@ class UserRedux extends Component {
         wardCode: "",
         gender: "",
         position: "",
-        role: "",
+        role: this.getDefaultRole(),
         avatar: "",
         previewImg: "",
         districtOptions: [],
@@ -100,7 +101,33 @@ class UserRedux extends Component {
     this.setState({ isModalOpen: !this.state.isModalOpen });
   };
 
+  getDefaultRole = () => (this.props.clinicManagerMode ? "R2" : "");
+
+  resetForm = () => {
+    this.setState({
+      email: "",
+      password: "",
+      firstName: "",
+      lastName: "",
+      phoneNumber: "",
+      address: "",
+      provinceCode: "",
+      districtCode: "",
+      wardCode: "",
+      gender: "",
+      position: "",
+      role: this.getDefaultRole(),
+      avatar: "",
+      previewImg: "",
+      districtOptions: [],
+      wardOptions: [],
+      errors: {},
+    });
+  };
+
   handleChangeInput = (e, field) => {
+    if (field === "role" && this.props.clinicManagerMode) return;
+
     const value = e.target.value;
     this.setState((prevState) => {
       const updatedState = {
@@ -210,11 +237,16 @@ class UserRedux extends Component {
   getText = (id, defaultMessage) =>
     this.props.intl.formatMessage({ id, defaultMessage });
 
-  handleSaveUser = async () => {
-    let valid = this.checkValidateInput();
-    if (!valid) return;
+  getAddLabel = () =>
+    this.getText(
+      this.props.clinicManagerMode ? "menu.clinic-manager.add-doctor" : "user-manage.add",
+      this.props.clinicManagerMode ? "Add new doctor" : "Add new user"
+    );
 
-    this.props.saveUser({
+  handleSaveUser = async () => {
+    if (this.state.isSaving || !this.checkValidateInput()) return;
+
+    const payload = {
       email: this.state.email,
       password: this.state.password,
       firstName: this.state.firstName,
@@ -228,9 +260,26 @@ class UserRedux extends Component {
       roleId: this.state.role,
       phoneNumber: this.state.phoneNumber,
       image: this.state.avatar,
-    });
+    };
 
-    this.toggleModal();
+    if (!this.props.onSave) {
+      this.props.saveUser(payload);
+      this.toggleModal();
+      return;
+    }
+
+    this.setState({ isSaving: true });
+    try {
+      const response = await this.props.onSave(payload);
+      if (response?.errCode !== 0) return;
+
+      this.resetForm();
+      this.toggleModal();
+    } catch {
+      // The parent handles the error notification; keep the modal open.
+    } finally {
+      this.setState({ isSaving: false });
+    }
   };
 
   render() {
@@ -246,10 +295,10 @@ class UserRedux extends Component {
     const { language, intl } = this.props;
 
     return (
-      <div className="user-redux-container text-center mt-4">
+      <div className={"user-redux-container text-center " + (this.props.clinicManagerMode ? "" : "mt-4")}>
         <Button color="primary" onClick={this.toggleModal} className="manage-user__add-button">
           <i className="fa-solid fa-user-plus me-2"></i>
-          <FormattedMessage id="user-manage.add" />
+          {this.getAddLabel()}
         </Button>
 
         <Modal
@@ -261,7 +310,7 @@ class UserRedux extends Component {
         >
           <ModalHeader toggle={this.toggleModal}>
             <i className="fa-solid fa-user me-2"></i>
-            <FormattedMessage id="user-manage.add" />
+            {this.getAddLabel()}
           </ModalHeader>
 
           <ModalBody>
@@ -488,6 +537,7 @@ class UserRedux extends Component {
                   className="form-select"
                   value={this.state.role}
                   onChange={(e) => this.handleChangeInput(e, "role")}
+                  disabled={this.props.clinicManagerMode}
                 >
                   <option>
                     {intl.formatMessage({ id: "user-manage.choose" })}
@@ -560,10 +610,10 @@ class UserRedux extends Component {
           </ModalBody>
 
           <ModalFooter>
-            <Button color="primary" onClick={this.handleSaveUser}>
+            <Button color="primary" onClick={this.handleSaveUser} disabled={this.state.isSaving}>
               <FormattedMessage id="user-manage.save" />
             </Button>
-            <Button color="secondary" onClick={this.toggleModal}>
+            <Button color="secondary" onClick={this.toggleModal} disabled={this.state.isSaving}>
               <FormattedMessage id="user-manage.cancel" />
             </Button>
           </ModalFooter>

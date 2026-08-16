@@ -13,6 +13,7 @@ import {
   updateDoctorInfoOrder,
 } from "../../../services/userService";
 import PagePagination from "../../../components/Pagination/PagePagination";
+import UserRedux from "./UserRedux";
 import "./DoctorTable.scss";
 
 const getDoctorName = (doctor = {}) =>
@@ -48,9 +49,6 @@ class DoctorTable extends Component {
       doctorsPerPage: 10,
       isOrderChanged: false,
       draggedIndex: null,
-      isCreateDoctorOpen: false,
-      isCreatingDoctor: false,
-      newDoctor: { email: "", password: "", firstName: "", lastName: "" },
     };
   }
 
@@ -188,37 +186,22 @@ class DoctorTable extends Component {
     });
   };
 
-  handleCreateDoctorChange = (event) => {
-    const { name, value } = event.target;
-    this.setState((prevState) => ({
-      newDoctor: { ...prevState.newDoctor, [name]: value },
-    }));
-  };
+  handleCreateDoctor = async (payload) => {
+    if (!this.isClinicManager()) return { errCode: -1 };
 
-  handleCreateDoctor = async (event) => {
-    event.preventDefault();
-    if (!this.isClinicManager()) return;
-
-    this.setState({ isCreatingDoctor: true });
     try {
-      const response = await createClinicManagerDoctor(this.state.newDoctor);
+      const response = await createClinicManagerDoctor(payload);
       if (response?.errCode !== 0) {
         toast.error(response?.errMessage || this.getText("menu.clinic-manager.create-error", "Unable to create doctor."));
-        this.setState({ isCreatingDoctor: false });
-        return;
+        return response;
       }
-      this.setState({
-        isCreateDoctorOpen: false,
-        isCreatingDoctor: false,
-        newDoctor: { email: "", password: "", firstName: "", lastName: "" },
-      });
-      this.props.fetchAllDoctor({ managedOnly: true });
-      this.props.history.push(this.getManageDoctorPath(), {
-        selectedDoctorId: response.data?.doctorId,
-      });
+
+      await this.props.fetchAllDoctor({ managedOnly: true });
+      toast.success(this.getText("menu.clinic-manager.create-success", "Doctor account created."));
+      return response;
     } catch {
-      this.setState({ isCreatingDoctor: false });
       toast.error(this.getText("menu.clinic-manager.create-error", "Unable to create doctor."));
+      return { errCode: -1 };
     }
   };
 
@@ -384,27 +367,9 @@ class DoctorTable extends Component {
               <i className="fas fa-edit"></i>
               <span>Quản lý thông tin bác sĩ</span>
             </Button>
-            {isClinicManager && (
-              <Button
-                color="primary"
-                onClick={() => this.setState({ isCreateDoctorOpen: !this.state.isCreateDoctorOpen })}
-              >
-                <i className="fas fa-user-plus"></i>
-                <span>{this.getText("user-manage.add", "Add doctor")}</span>
-              </Button>
-            )}
+            {isClinicManager && <UserRedux clinicManagerMode onSave={this.handleCreateDoctor} />}
           </div>
         </div>
-
-        {this.state.isCreateDoctorOpen && (
-          <form className="doctor-table__create-form" onSubmit={this.handleCreateDoctor}>
-            <label>{this.getText("user-manage.email", "Email")}<input type="email" name="email" required value={this.state.newDoctor.email} onChange={this.handleCreateDoctorChange} /></label>
-            <label>{this.getText("user-manage.password", "Password")}<input type="password" name="password" required value={this.state.newDoctor.password} onChange={this.handleCreateDoctorChange} /></label>
-            <label>{this.getText("user-manage.first-name", "First name")}<input name="firstName" required value={this.state.newDoctor.firstName} onChange={this.handleCreateDoctorChange} /></label>
-            <label>{this.getText("user-manage.last-name", "Last name")}<input name="lastName" required value={this.state.newDoctor.lastName} onChange={this.handleCreateDoctorChange} /></label>
-            <div><Button color="primary" type="submit" disabled={this.state.isCreatingDoctor}>{this.getText("user-manage.save", "Save")}</Button><Button color="secondary" outline type="button" onClick={() => this.setState({ isCreateDoctorOpen: false })} disabled={this.state.isCreatingDoctor}>{this.getText("user-manage.cancel", "Cancel")}</Button></div>
-          </form>
-        )}
 
         <div className="doctor-table__toolbar">
           <div className="doctor-table__search">
