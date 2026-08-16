@@ -293,6 +293,17 @@
     "search": "Search clinic by name...",
     "total": "Total: {count} clinics"
   },
+  "list-page-banner": {
+    "tagline": "Easy booking with no waiting at Vietnam's leading clinics",
+    "doctors-title": "Doctor list",
+    "specialties-title": "Specialty list",
+    "clinics-title": "Clinic list",
+    "search-doctor": "Search doctors by name...",
+    "search-specialty": "Search specialties by name...",
+    "search-clinic": "Search clinics by name...",
+    "choose-province": "Choose Province / City",
+    "search-button": "Search"
+  },
   "manage-specialty": {
     "title": "Specialty management",
     "add-title": "Add new specialty",

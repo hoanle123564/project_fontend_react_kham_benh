@@ -294,6 +294,17 @@
     "search": "Tìm cơ sở y tế theo tên...",
     "total": "Tổng: {count} cơ sở y tế"
   },
+  "list-page-banner": {
+    "tagline": "Đặt khám dễ dàng, không lo chờ đợi tại các phòng khám hàng đầu Việt Nam",
+    "doctors-title": "Danh sách bác sĩ",
+    "specialties-title": "Danh sách chuyên khoa",
+    "clinics-title": "Danh sách cơ sở y tế",
+    "search-doctor": "Tìm bác sĩ theo tên...",
+    "search-specialty": "Tìm chuyên khoa theo tên...",
+    "search-clinic": "Tìm cơ sở y tế theo tên...",
+    "choose-province": "Chọn Tỉnh / Thành phố",
+    "search-button": "Tìm kiếm"
+  },
   "manage-specialty": {
     "title": "Quản lý chuyên khoa",
     "add-title": "Thêm chuyên khoa",

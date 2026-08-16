@@ -10,6 +10,8 @@ import { withRouter } from "react-router";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Grid, Pagination, Navigation } from 'swiper/modules';
 import BackToTop from "../../../../components/BackToTop/BackToTop";
+import { filterSpecialties } from "../listPageFilterUtils";
+import "../ListPageBanner.scss";
 import 'swiper/css';
 import 'swiper/css/grid';
 import 'swiper/css/pagination';
@@ -53,18 +55,17 @@ class ListSpecialty extends Component {
         });
     };
 
-    getFilteredSpecialties = () => {
-        const query = this.state.search.trim().toLowerCase();
-        if (!query) return this.state.specialtyList;
+    handleSearchSubmit = (event) => {
+        event.preventDefault();
+        if (this.swiper) this.swiper.slideTo(0);
+    };
 
-        return this.state.specialtyList.filter((item) =>
-            String(item.name || "").toLowerCase().includes(query)
-        );
+    getFilteredSpecialties = () => {
+        return filterSpecialties(this.state.specialtyList, this.state.search);
     };
 
     render() {
         let { search } = this.state;
-        let { language } = this.props;
         const specialtyList = this.getFilteredSpecialties();
         const pagination = {
             el: '.custom-pagination',
@@ -77,27 +78,40 @@ class ListSpecialty extends Component {
             <>
                 <HomeHeader showBanner={false} />
                 <BackToTop />
+                <section className="list-page-banner">
+                    <div className="list-page-banner__content">
+                        <p className="list-page-banner__tagline">
+                            <FormattedMessage id="list-page-banner.tagline" />
+                        </p>
+                        <h1 className="list-page-banner__title">
+                            <FormattedMessage id="list-page-banner.specialties-title" />
+                        </h1>
+                        <div className="list-page-banner__controls">
+                            <FormattedMessage id="list-page-banner.search-specialty">
+                                {(placeholder) => (
+                                    <form className="list-page-banner__search" onSubmit={this.handleSearchSubmit}>
+                                        <input
+                                            type="search"
+                                            value={search}
+                                            placeholder={placeholder}
+                                            aria-label={placeholder}
+                                            onChange={this.handleSearchChange}
+                                        />
+                                        <FormattedMessage id="list-page-banner.search-button">
+                                            {(label) => (
+                                                <button type="submit" className="list-page-banner__submit" aria-label={label}>
+                                                    <i className="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                                                </button>
+                                            )}
+                                        </FormattedMessage>
+                                    </form>
+                                )}
+                            </FormattedMessage>
+                        </div>
+                    </div>
+                </section>
                 <div className="list-specialty-container">
                     <div className="container">
-
-                        <h1 className="breadcrumb">
-                            {language === "vi" ? "Khám chuyên khoa" : "Specialties"}
-                        </h1>
-
-                        <FormattedMessage id="manage-specialty.search" defaultMessage="Search specialty by name...">
-                            {(placeholder) => (
-                                <label className="list-specialty-search">
-                                    <i className="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-                                    <input
-                                        type="search"
-                                        value={search}
-                                        placeholder={placeholder}
-                                        aria-label={placeholder}
-                                        onChange={this.handleSearchChange}
-                                    />
-                                </label>
-                            )}
-                        </FormattedMessage>
 
                         {specialtyList.length > 0 ? (
                             <Swiper

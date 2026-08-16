@@ -1,12 +1,15 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router";
+import { FormattedMessage } from "react-intl";
 import ReactPaginate from "react-paginate";
 import HomeHeader from "../../Layout/HomeHeader";
 import HomeFooter from "../../Layout/HomeFooter";
 import BackToTop from "../../../../components/BackToTop/BackToTop";
 import { languages } from "../../../../utils";
-import { getAllDoctor, getAllSpecialty } from "../../../../services/userService";
+import { getAllDoctor, getAllSpecialty, getLookUp } from "../../../../services/userService";
+import { filterDoctors } from "../listPageFilterUtils";
+import "../ListPageBanner.scss";
 import "./ListDoctor.scss";
 
 const ITEMS_PER_PAGE = 10;
@@ -41,6 +44,9 @@ class ListDoctor extends Component {
             doctorList: [],
             specialtyFilters: [],
             activeSpecialtyId: ALL_SPECIALTIES,
+            provinceOptions: [],
+            provinceCode: "",
+            search: "",
             currentPage: 0,
             isLoading: false,
         };
@@ -53,12 +59,11 @@ class ListDoctor extends Component {
     componentDidUpdate(prevProps, prevState) {
         if (
             prevState.doctorList !== this.state.doctorList ||
-            prevState.activeSpecialtyId !== this.state.activeSpecialtyId
+            prevState.activeSpecialtyId !== this.state.activeSpecialtyId ||
+            prevState.provinceCode !== this.state.provinceCode ||
+            prevState.search !== this.state.search
         ) {
-            const filteredDoctors = this.getFilteredDoctors(
-                this.state.doctorList,
-                this.state.activeSpecialtyId
-            );
+            const filteredDoctors = this.getFilteredDoctors();
             const maxPage = Math.max(
                 Math.ceil(filteredDoctors.length / ITEMS_PER_PAGE) - 1,
                 0
@@ -74,9 +79,10 @@ class ListDoctor extends Component {
         this.setState({ isLoading: true });
 
         try {
-            const [doctorRes, specialtyRes] = await Promise.all([
+            const [doctorRes, specialtyRes, provinceRes] = await Promise.all([
                 getAllDoctor(),
                 getAllSpecialty(),
+                getLookUp("PROVINCE").catch(() => ({ data: [] })),
             ]);
 
             const doctorList =
@@ -91,7 +97,10 @@ class ListDoctor extends Component {
             this.setState({
                 doctorList,
                 specialtyFilters: this.buildSpecialtyFilters(specialtyList, doctorList),
+                provinceOptions: provinceRes?.errCode === 0 ? provinceRes.data || [] : [],
                 activeSpecialtyId: ALL_SPECIALTIES,
+                provinceCode: "",
+                search: "",
                 currentPage: 0,
                 isLoading: false,
             });
@@ -100,7 +109,10 @@ class ListDoctor extends Component {
             this.setState({
                 doctorList: [],
                 specialtyFilters: [],
+                provinceOptions: [],
                 activeSpecialtyId: ALL_SPECIALTIES,
+                provinceCode: "",
+                search: "",
                 currentPage: 0,
                 isLoading: false,
             });
@@ -130,15 +142,12 @@ class ListDoctor extends Component {
         ];
     };
 
-    getFilteredDoctors = (doctorList, activeSpecialtyId) => {
-        if (activeSpecialtyId === ALL_SPECIALTIES) {
-            return doctorList;
-        }
-
-        return doctorList.filter(
-            (doctor) => String(doctor.specialtyId || "") === String(activeSpecialtyId)
-        );
-    };
+    getFilteredDoctors = () => filterDoctors(this.state.doctorList, {
+        search: this.state.search,
+        provinceCode: this.state.provinceCode,
+        specialtyId: this.state.activeSpecialtyId,
+        allSpecialties: ALL_SPECIALTIES,
+    });
 
     handleViewDetailDoctor = (doctor) => {
         const targetSlug = doctor?.slug || doctor?.id;
@@ -152,6 +161,19 @@ class ListDoctor extends Component {
             activeSpecialtyId: specialtyId,
             currentPage: 0,
         });
+    };
+
+    handleSearchChange = (event) => {
+        this.setState({ search: event.target.value, currentPage: 0 });
+    };
+
+    handleProvinceChange = (event) => {
+        this.setState({ provinceCode: event.target.value, currentPage: 0 });
+    };
+
+    handleSearchSubmit = (event) => {
+        event.preventDefault();
+        this.setState({ currentPage: 0 });
     };
 
     handlePageClick = (event) => {
@@ -225,14 +247,16 @@ class ListDoctor extends Component {
 
     render() {
         const {
-            doctorList,
             specialtyFilters,
             activeSpecialtyId,
+            provinceOptions,
+            provinceCode,
+            search,
             currentPage,
             isLoading,
         } = this.state;
 
-        const filteredDoctors = this.getFilteredDoctors(doctorList, activeSpecialtyId);
+        const filteredDoctors = this.getFilteredDoctors();
         const pageCount = Math.ceil(filteredDoctors.length / ITEMS_PER_PAGE);
         const safeCurrentPage =
             pageCount > 0 ? Math.min(currentPage, pageCount - 1) : 0;
@@ -246,15 +270,56 @@ class ListDoctor extends Component {
             <>
                 <HomeHeader showBanner={false} />
                 <BackToTop />
-                <div className="list-doctor-container">
-                    <div className="list-doctor-header">
-                        <h1>
-                            {this.props.language === languages.VI
-                                ? "Danh sách bác sĩ"
-                                : "List of doctors"}
+                <section className="list-page-banner">
+                    <div className="list-page-banner__content">
+                        <p className="list-page-banner__tagline">
+                            <FormattedMessage id="list-page-banner.tagline" />
+                        </p>
+                        <h1 className="list-page-banner__title">
+                            <FormattedMessage id="list-page-banner.doctors-title" />
                         </h1>
+                        <div className="list-page-banner__controls list-page-banner__controls--with-filter">
+                            <FormattedMessage id="list-page-banner.search-doctor">
+                                {(placeholder) => (
+                                    <form className="list-page-banner__search" onSubmit={this.handleSearchSubmit}>
+                                        <input
+                                            type="search"
+                                            value={search}
+                                            placeholder={placeholder}
+                                            aria-label={placeholder}
+                                            onChange={this.handleSearchChange}
+                                        />
+                                        <FormattedMessage id="list-page-banner.search-button">
+                                            {(label) => (
+                                                <button type="submit" className="list-page-banner__submit" aria-label={label}>
+                                                    <i className="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                                                </button>
+                                            )}
+                                        </FormattedMessage>
+                                    </form>
+                                )}
+                            </FormattedMessage>
+                            <FormattedMessage id="list-page-banner.choose-province">
+                                {(label) => (
+                                    <select
+                                        className="list-page-banner__select"
+                                        value={provinceCode}
+                                        aria-label={label}
+                                        onChange={this.handleProvinceChange}
+                                    >
+                                        <option value="">{label}</option>
+                                        {provinceOptions.map((province) => (
+                                            <option key={province.keyMap} value={province.keyMap}>
+                                                {this.props.language === languages.VI ? province.value_vi : province.value_en}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
+                            </FormattedMessage>
+                        </div>
                     </div>
-
+                </section>
+                <div className="list-doctor-container">
                     <div className="list-doctor-layout">
                         <div className="container">
                             <div className="row">

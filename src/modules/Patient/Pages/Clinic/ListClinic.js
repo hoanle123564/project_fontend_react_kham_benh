@@ -8,6 +8,10 @@ import "./ListClinic.scss";
 import * as action from "../../../../store/actions";
 import { withRouter } from "react-router";
 import BackToTop from "../../../../components/BackToTop/BackToTop";
+import { languages } from "../../../../utils";
+import { getLookUp } from "../../../../services/userService";
+import { filterClinics } from "../listPageFilterUtils";
+import "../ListPageBanner.scss";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Grid, Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
@@ -32,12 +36,18 @@ class ListClinic extends Component {
         this.state = {
             clinicList: [],
             search: "",
+            provinceOptions: [],
+            provinceCode: "",
         };
         this.swiper = null;
     }
 
     async componentDidMount() {
-        await this.props.getAllClinic();
+        const [provinceRes] = await Promise.all([
+            getLookUp("PROVINCE").catch(() => ({ data: [] })),
+            this.props.getAllClinic(),
+        ]);
+        this.setState({ provinceOptions: provinceRes?.errCode === 0 ? provinceRes.data || [] : [] });
     }
 
     componentDidUpdate(prevProps) {
@@ -61,17 +71,23 @@ class ListClinic extends Component {
         });
     };
 
-    getFilteredClinics = () => {
-        const query = this.state.search.trim().toLowerCase();
-        if (!query) return this.state.clinicList;
+    handleProvinceChange = (event) => {
+        this.setState({ provinceCode: event.target.value }, () => {
+            if (this.swiper) this.swiper.slideTo(0);
+        });
+    };
 
-        return this.state.clinicList.filter((clinic) =>
-            String(clinic.name || "").toLowerCase().includes(query)
-        );
+    handleSearchSubmit = (event) => {
+        event.preventDefault();
+        if (this.swiper) this.swiper.slideTo(0);
+    };
+
+    getFilteredClinics = () => {
+        return filterClinics(this.state.clinicList, this.state);
     };
 
     render() {
-        let { search } = this.state;
+        let { search, provinceOptions, provinceCode } = this.state;
         let { language } = this.props;
         const clinicList = this.getFilteredClinics();
         const pagination = {
@@ -85,27 +101,57 @@ class ListClinic extends Component {
             <>
                 <HomeHeader showBanner={false} />
                 <BackToTop />
+                <section className="list-page-banner">
+                    <div className="list-page-banner__content">
+                        <p className="list-page-banner__tagline">
+                            <FormattedMessage id="list-page-banner.tagline" />
+                        </p>
+                        <h1 className="list-page-banner__title">
+                            <FormattedMessage id="list-page-banner.clinics-title" />
+                        </h1>
+                        <div className="list-page-banner__controls list-page-banner__controls--with-filter">
+                            <FormattedMessage id="list-page-banner.search-clinic">
+                                {(placeholder) => (
+                                    <form className="list-page-banner__search" onSubmit={this.handleSearchSubmit}>
+                                        <input
+                                            type="search"
+                                            value={search}
+                                            placeholder={placeholder}
+                                            aria-label={placeholder}
+                                            onChange={this.handleSearchChange}
+                                        />
+                                        <FormattedMessage id="list-page-banner.search-button">
+                                            {(label) => (
+                                                <button type="submit" className="list-page-banner__submit" aria-label={label}>
+                                                    <i className="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                                                </button>
+                                            )}
+                                        </FormattedMessage>
+                                    </form>
+                                )}
+                            </FormattedMessage>
+                            <FormattedMessage id="list-page-banner.choose-province">
+                                {(label) => (
+                                    <select
+                                        className="list-page-banner__select"
+                                        value={provinceCode}
+                                        aria-label={label}
+                                        onChange={this.handleProvinceChange}
+                                    >
+                                        <option value="">{label}</option>
+                                        {provinceOptions.map((province) => (
+                                            <option key={province.keyMap} value={province.keyMap}>
+                                                {language === languages.VI ? province.value_vi : province.value_en}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
+                            </FormattedMessage>
+                        </div>
+                    </div>
+                </section>
                 <div className="list-clinic-container">
                     <div className="container">
-
-                        <h1 className="breadcrumb">
-                            {language === "vi" ? "Cơ sở y tế" : "Clinics"}
-                        </h1>
-
-                        <FormattedMessage id="clinic-manage.search" defaultMessage="Search clinic by name...">
-                            {(placeholder) => (
-                                <label className="list-clinic-search">
-                                    <i className="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-                                    <input
-                                        type="search"
-                                        value={search}
-                                        placeholder={placeholder}
-                                        aria-label={placeholder}
-                                        onChange={this.handleSearchChange}
-                                    />
-                                </label>
-                            )}
-                        </FormattedMessage>
 
                         {clinicList.length > 0 ? (
                             <Swiper
