@@ -191,6 +191,7 @@ class HomeHeader extends Component {
       }));
       markPatientNotificationsRead(notification.id).catch(this.loadNotifications);
     }
+    if (notification.type === "REVIEW_HIDDEN" || notification.type === "REVIEW_RESTORED") return;
     if (notification.type === "NEW_MESSAGE" && notification.chatRoomId) {
       this.props.history.push(`/patient/chat/${encodeURIComponent(notification.chatRoomId)}`);
       return;
@@ -466,12 +467,26 @@ class HomeHeader extends Component {
                                 const name = `${item.doctorFirstName || ""} ${item.doctorLastName || ""}`.trim() || this.getNotificationText("doctorFallback");
                                 const isMessage = item.type === "NEW_MESSAGE";
                                 const isReminder = item.type === "APPOINTMENT_REMINDER";
-                                const title = isMessage ? this.getNotificationText("messageTitle") : isReminder ? this.getNotificationText("reminderTitle") : this.getNotificationText("statusTitle");
+                                const isReviewHidden = item.type === "REVIEW_HIDDEN";
+                                const isReviewRestored = item.type === "REVIEW_RESTORED";
+                                const title = isMessage
+                                  ? this.getNotificationText("messageTitle")
+                                  : isReminder
+                                    ? this.getNotificationText("reminderTitle")
+                                    : isReviewHidden
+                                      ? this.getNotificationText("reviewHiddenTitle")
+                                      : isReviewRestored
+                                        ? this.getNotificationText("reviewRestoredTitle")
+                                        : this.getNotificationText("statusTitle");
                                 const detail = isMessage
                                   ? this.getNotificationText("messageDescription", { name })
                                   : isReminder
                                     ? this.getNotificationText("reminderDescription", { name })
-                                    : this.getNotificationText("statusDescription", { status: (language === languages.VI ? item.bookingStatusVi : item.bookingStatusEn) || item.bookingStatusId || "-" });
+                                    : isReviewHidden
+                                      ? this.getNotificationText("reviewHiddenDescription")
+                                      : isReviewRestored
+                                        ? this.getNotificationText("reviewRestoredDescription")
+                                        : this.getNotificationText("statusDescription", { status: (language === languages.VI ? item.bookingStatusVi : item.bookingStatusEn) || item.bookingStatusId || "-" });
                                 const image = buildImageSrc(item.doctorImage);
                                 return <button type="button" key={item.id} className={`patient-notification-menu__item ${item.isRead ? "" : "unread"}`} onClick={() => this.openNotification(item)}>
                                   {image ? <img src={image} alt="" /> : <span className="patient-notification-menu__avatar">{name.slice(0, 1).toUpperCase()}</span>}
