@@ -56,6 +56,18 @@
     &__controls--with-filter {
         grid-template-columns: 7fr 3fr;
         align-items: center;
+
+        .list-page-banner__search,
+        .list-page-banner__select {
+            height: 54px;
+            min-height: 54px;
+            box-sizing: border-box;
+        }
+
+        .list-page-banner__submit {
+            width: 40px;
+            height: 40px;
+        }
     }
 
     &__search {
