@@ -45,7 +45,7 @@ class BookingManagement extends Component {
     currentPage: 1,
     pagination: null,
     selectedStatusByBooking: {},
-    rejectBooking: null,
+    bookingAction: null,
   };
 
   componentDidMount() {
@@ -212,22 +212,26 @@ class BookingManagement extends Component {
     }
   };
 
-  openRejectModal = (booking) => {
+  openBookingActionModal = (booking, statusId) => {
     if (this.state.updatingId) return;
-    this.setState({ rejectBooking: booking, errorMessage: "" });
+    this.setState({ bookingAction: { booking, statusId }, errorMessage: "" });
   };
 
-  closeRejectModal = () => {
+  closeBookingActionModal = () => {
     if (this.state.updatingId) return;
-    this.setState({ rejectBooking: null });
+    this.setState({ bookingAction: null });
   };
 
-  confirmReject = async () => {
-    const { rejectBooking, updatingId } = this.state;
-    if (!rejectBooking || updatingId) return;
+  confirmBookingAction = async () => {
+    const { bookingAction, updatingId } = this.state;
+    if (!bookingAction || updatingId) return;
 
-    const updated = await this.updateStatus(rejectBooking, "S6", true);
-    if (updated) this.setState({ rejectBooking: null });
+    const updated = await this.updateStatus(
+      bookingAction.booking,
+      bookingAction.statusId,
+      true,
+    );
+    if (updated) this.setState({ bookingAction: null });
   };
 
   renderSummary = () => {
@@ -310,11 +314,7 @@ class BookingManagement extends Component {
               className={`booking-management__doctor-action booking-management__doctor-action--${className}`}
               disabled={isUpdating}
               aria-label={this.getText(key, fallback)}
-              onClick={() =>
-                statusId === "S6"
-                  ? this.openRejectModal(booking)
-                  : this.updateStatus(booking, statusId)
-              }
+              onClick={() => this.openBookingActionModal(booking, statusId)}
             >
               <i className={`bi ${icon}`} aria-hidden="true" />
               <span>
@@ -380,7 +380,7 @@ class BookingManagement extends Component {
       loading,
       errorMessage,
       updatingId,
-      rejectBooking,
+      bookingAction,
       search,
       statusFilter,
       currentPage,
@@ -392,6 +392,7 @@ class BookingManagement extends Component {
     const title = this.isAdmin()
       ? this.getText("adminTitle", "Booking management")
       : this.getText("doctorTitle", "My bookings");
+    const actionType = bookingAction?.statusId === "S6" ? "reject" : "accept";
 
     return (
       <div
@@ -573,24 +574,31 @@ class BookingManagement extends Component {
           )}
         </div>
         <Modal
-          isOpen={Boolean(rejectBooking)}
-          toggle={this.closeRejectModal}
+          isOpen={Boolean(bookingAction)}
+          toggle={this.closeBookingActionModal}
           centered
-          className="booking-management-reject-modal"
+          className="booking-management-confirm-modal"
         >
-          <ModalHeader toggle={this.closeRejectModal}>
-            {this.getText("rejectTitle", "Reject appointment?")}
+          <ModalHeader toggle={this.closeBookingActionModal}>
+            {this.getText(
+              `${actionType}Title`,
+              actionType === "reject"
+                ? "Reject appointment?"
+                : "Accept appointment?",
+            )}
           </ModalHeader>
           <ModalBody>
-            <p className="booking-management-reject-modal__description">
+            <p className="booking-management-confirm-modal__description">
               {this.getText(
-                "rejectDescription",
-                "Are you sure you want to reject this appointment? This action cannot be undone.",
+                `${actionType}Description`,
+                actionType === "reject"
+                  ? "Are you sure you want to reject this appointment? This action cannot be undone."
+                  : "Are you sure you want to accept this appointment? This action cannot be undone.",
               )}
             </p>
             {errorMessage && (
               <div
-                className="booking-management-reject-modal__error"
+                className="booking-management-confirm-modal__error"
                 role="alert"
               >
                 {errorMessage}
@@ -600,21 +608,27 @@ class BookingManagement extends Component {
           <ModalFooter>
             <Button
               type="button"
-              className="booking-management-reject-modal__cancel"
-              onClick={this.closeRejectModal}
+              className="booking-management-confirm-modal__cancel"
+              onClick={this.closeBookingActionModal}
               disabled={Boolean(updatingId)}
             >
-              {this.getText("rejectCancel", "Cancel")}
+              {this.getText(`${actionType}Cancel`, "Cancel")}
             </Button>
             <Button
               type="button"
-              className="booking-management-reject-modal__reject"
-              onClick={this.confirmReject}
+              className={`booking-management-confirm-modal__action booking-management-confirm-modal__action--${actionType}`}
+              onClick={this.confirmBookingAction}
               disabled={Boolean(updatingId)}
             >
               {updatingId
-                ? this.getText("rejecting", "Rejecting…")
-                : this.getText("reject", "Reject")}
+                ? this.getText(
+                  `${actionType}ing`,
+                  actionType === "reject" ? "Rejecting..." : "Accepting...",
+                )
+                : this.getText(
+                  actionType,
+                  actionType === "reject" ? "Reject" : "Accept",
+                )}
             </Button>
           </ModalFooter>
         </Modal>

@@ -485,7 +485,7 @@
   }
 }
 
-.booking-management-reject-modal {
+.booking-management-confirm-modal {
   .modal-dialog {
     max-width: 690px;
   }
@@ -527,21 +527,21 @@
   }
 }
 
-.booking-management-reject-modal__description {
+.booking-management-confirm-modal__description {
   margin: 0;
   color: #657583;
   font-size: 16px;
   line-height: 1.55;
 }
 
-.booking-management-reject-modal__error {
+.booking-management-confirm-modal__error {
   margin-top: 12px;
   color: #c92d2d;
   font-size: 14px;
 }
 
-.booking-management-reject-modal__cancel,
-.booking-management-reject-modal__reject {
+.booking-management-confirm-modal__cancel,
+.booking-management-confirm-modal__action {
   min-width: 60px;
   min-height: 40px;
   border-radius: 8px;
@@ -549,7 +549,7 @@
   font-weight: 600;
 }
 
-.booking-management-reject-modal__cancel {
+.booking-management-confirm-modal__cancel {
   border: 2px solid #7acac4;
   background: #ffffff;
   color: #263641;
@@ -564,7 +564,7 @@
   }
 }
 
-.booking-management-reject-modal__reject {
+.booking-management-confirm-modal__action--reject {
   border-color: #e31b23;
   background: #e31b23;
   color: #ffffff;
@@ -579,8 +579,23 @@
   }
 }
 
+.booking-management-confirm-modal__action--accept {
+  border-color: #00a86b;
+  background: #00a86b;
+  color: #ffffff;
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    border-color: #008f5b;
+    background: #008f5b;
+    color: #ffffff;
+    outline: 3px solid rgba(0, 168, 107, .2);
+    outline-offset: 2px;
+  }
+}
+
 @media (max-width: 768px) {
-  .booking-management-reject-modal {
+  .booking-management-confirm-modal {
     .modal-header {
       padding: 20px 20px 4px;
     }
