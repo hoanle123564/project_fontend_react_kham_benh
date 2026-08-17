@@ -734,7 +734,22 @@
     "record-workspace": {
       "symptomsRequired": "Please enter symptoms.",
       "prescriptionNumberInvalid": "Prescription quantities must not be negative.",
-      "readOnly": "Admin view is read-only."
+      "readOnly": "Admin view is read-only.",
+      "selectOption": "Select",
+      "dosageFormTablet": "Tablet",
+      "dosageFormPowder": "Powder",
+      "dosageFormLiquid": "Liquid",
+      "dosageFormInjection": "Injection",
+      "dosageFormTopical": "Topical",
+      "dosageFormDrops": "Drops",
+      "dosageFormSpray": "Spray",
+      "dosageFormOther": "Other",
+      "paraclinicalTypeTest": "Laboratory test",
+      "paraclinicalTypeImaging": "Diagnostic imaging",
+      "paraclinicalTypeFunctional": "Functional testing",
+      "paraclinicalTypeEndoscopy": "Endoscopy",
+      "paraclinicalTypePathology": "Pathology",
+      "paraclinicalTypeOther": "Other"
     }
   },
   "chat": {

@@ -156,6 +156,7 @@
     }
 
     input,
+    select,
     textarea {
         width: 100%;
         min-width: 0;
@@ -177,7 +178,8 @@
         }
     }
 
-    input {
+    input,
+    select {
         height: 36px;
         padding: 0 9px;
     }
@@ -230,7 +232,8 @@
         white-space: nowrap;
     }
 
-    input {
+    input,
+    select {
         width: 100%;
         min-width: 0;
         height: 34px;

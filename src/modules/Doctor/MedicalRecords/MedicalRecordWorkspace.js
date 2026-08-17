@@ -57,6 +57,29 @@ const EMPTY_PARACLINICAL_ITEM = {
     note: "",
 };
 
+const DOSAGE_FORM_OPTIONS = [
+    { value: "TABLET", labelKey: "dosageFormTablet" },
+    { value: "POWDER", labelKey: "dosageFormPowder" },
+    { value: "LIQUID", labelKey: "dosageFormLiquid" },
+    { value: "INJECTION", labelKey: "dosageFormInjection" },
+    { value: "TOPICAL", labelKey: "dosageFormTopical" },
+    { value: "DROPS", labelKey: "dosageFormDrops" },
+    { value: "SPRAY", labelKey: "dosageFormSpray" },
+    { value: "OTHER", labelKey: "dosageFormOther" },
+];
+
+const PARACLINICAL_TYPE_OPTIONS = [
+    { value: "XET_NGHIEM", labelKey: "paraclinicalTypeTest" },
+    { value: "CHAN_DOAN_HINH_ANH", labelKey: "paraclinicalTypeImaging" },
+    { value: "THAM_DO_CHUC_NANG", labelKey: "paraclinicalTypeFunctional" },
+    { value: "NOI_SOI", labelKey: "paraclinicalTypeEndoscopy" },
+    { value: "GIAI_PHAU_BENH", labelKey: "paraclinicalTypePathology" },
+];
+
+const LEGACY_PARACLINICAL_TYPE_OPTIONS = [
+    { value: "KHAC", labelKey: "paraclinicalTypeOther" },
+];
+
 class MedicalRecordWorkspace extends Component {
     constructor(props) {
         super(props);
@@ -655,7 +678,15 @@ class MedicalRecordWorkspace extends Component {
                         {this.state.prescriptionItems.map((item, index) => (
                             <tr key={`prescription-${index}`}>
                                 <td>{this.renderPrescriptionTableField(index, item, "medicineName")}</td>
-                                <td>{this.renderPrescriptionTableField(index, item, "dosageForm")}</td>
+                                <td>
+                                    {this.renderTableSelectField(
+                                        index,
+                                        item,
+                                        "dosageForm",
+                                        DOSAGE_FORM_OPTIONS,
+                                        this.handlePrescriptionItemChange
+                                    )}
+                                </td>
                                 <td>{this.renderPrescriptionTableField(index, item, "usageDays", "number")}</td>
                                 <td>{this.renderPrescriptionTableField(index, item, "morningQty", "number")}</td>
                                 <td>{this.renderPrescriptionTableField(index, item, "noonQty", "number")}</td>
@@ -708,6 +739,33 @@ class MedicalRecordWorkspace extends Component {
         </section>
     );
 
+    renderTableSelectField = (index, item, fieldName, options, onChange, legacyOptions = []) => {
+        const currentValue = item[fieldName] ?? "";
+        const optionsForValue =
+            currentValue && legacyOptions.some((option) => option.value === currentValue)
+                ? [...options, ...legacyOptions]
+                : options;
+        const selectOptions =
+            currentValue && !optionsForValue.some((option) => option.value === currentValue)
+                ? [...optionsForValue, { value: currentValue, label: currentValue }]
+                : optionsForValue;
+
+        return (
+            <select
+                value={currentValue}
+                disabled={!this.canEditRecord()}
+                onChange={(event) => onChange(index, fieldName, event.target.value)}
+            >
+                <option value="">{this.getText("selectOption", "Select")}</option>
+                {selectOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                        {option.labelKey ? this.getText(option.labelKey) : option.label}
+                    </option>
+                ))}
+            </select>
+        );
+    };
+
     renderPrescriptionTableField = (index, item, fieldName, type = "text", options = {}) => (
         <input
             type={type}
@@ -746,7 +804,16 @@ class MedicalRecordWorkspace extends Component {
                     <tbody>
                         {this.state.paraclinicalItems.map((item, index) => (
                             <tr key={`paraclinical-${index}`}>
-                                <td>{this.renderParaclinicalField(index, item, "type")}</td>
+                                <td>
+                                    {this.renderTableSelectField(
+                                        index,
+                                        item,
+                                        "type",
+                                        PARACLINICAL_TYPE_OPTIONS,
+                                        this.handleParaclinicalItemChange,
+                                        LEGACY_PARACLINICAL_TYPE_OPTIONS
+                                    )}
+                                </td>
                                 <td>{this.renderParaclinicalField(index, item, "name")}</td>
                                 <td>{this.renderParaclinicalField(index, item, "resultSummary")}</td>
                                 <td>{this.renderParaclinicalField(index, item, "note")}</td>
