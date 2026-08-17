@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { injectIntl } from "react-intl";
 import moment from "moment";
 import { toast } from "react-toastify";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import {
     closeMedicalRecord,
     completeMedicalRecordVisit,
@@ -113,6 +114,7 @@ class MedicalRecordWorkspace extends Component {
         isSavingParaclinical: false,
         isCompleting: false,
         isClosing: false,
+        closeModalOpen: false,
     });
 
     getText = (key, defaultMessage = key) =>
@@ -552,7 +554,7 @@ class MedicalRecordWorkspace extends Component {
         }
     };
 
-    handleCloseRecord = async () => {
+    openCloseRecordModal = () => {
         const medicalRecordId = this.getMedicalRecordId();
         const visitCompleted = this.getVisitStatusId() === VISIT_STATUS.COMPLETED;
 
@@ -562,7 +564,23 @@ class MedicalRecordWorkspace extends Component {
             return;
         }
 
-        if (!window.confirm(this.getText("closeConfirm"))) return;
+        this.setState({ closeModalOpen: true });
+    };
+
+    closeCloseRecordModal = () => {
+        if (this.state.isClosing) return;
+        this.setState({ closeModalOpen: false });
+    };
+
+    handleCloseRecord = async () => {
+        const medicalRecordId = this.getMedicalRecordId();
+        const visitCompleted = this.getVisitStatusId() === VISIT_STATUS.COMPLETED;
+
+        if (!medicalRecordId || this.state.isClosing || !this.canEditRecord()) return;
+        if (!visitCompleted) {
+            toast.error(this.getText("completeBeforeClose"));
+            return;
+        }
 
         this.setState({ isClosing: true });
         try {
@@ -583,6 +601,7 @@ class MedicalRecordWorkspace extends Component {
             this.setState({
                 record: nextRecord,
                 isClosing: false,
+                closeModalOpen: false,
             });
             toast.success(
                 response.closedNow === false ? this.getText("recordClosed") : this.getText("closeSuccess")
@@ -869,46 +888,86 @@ class MedicalRecordWorkspace extends Component {
         const visitCompleted = this.getVisitStatusId() === VISIT_STATUS.COMPLETED;
         const recordClosed = this.getRecordStatusId() === MEDICAL_RECORD_STATUS.CLOSED;
         return (
-            <div className="medical-record-workspace__actions">
-                {recordClosed && <span>{this.getText("recordClosed")}</span>}
-                {visitCompleted && <span>{this.getText("completed")}</span>}
-                <button
-                    type="button"
-                    onClick={this.handleSaveDraft}
-                    disabled={!this.canEditRecord() || this.state.isSavingDraft}
+            <>
+                <div className="medical-record-workspace__actions">
+                    {recordClosed && <span>{this.getText("recordClosed")}</span>}
+                    {visitCompleted && <span>{this.getText("completed")}</span>}
+                    <button
+                        type="button"
+                        onClick={this.handleSaveDraft}
+                        disabled={!this.canEditRecord() || this.state.isSavingDraft}
+                    >
+                        <i className="bi bi-save" />
+                        {this.state.isSavingDraft ? this.getText("saving") : this.getText("saveDraft")}
+                    </button>
+                    <button
+                        type="button"
+                        className="complete"
+                        onClick={this.handleCompleteVisit}
+                        disabled={
+                            !this.canEditRecord() ||
+                            visitCompleted ||
+                            this.state.isCompleting ||
+                            this.getVisitStatusId() !== VISIT_STATUS.IN_PROGRESS
+                        }
+                    >
+                        <i className="bi bi-check2-circle" />
+                        {this.state.isCompleting ? this.getText("saving") : this.getText("completeVisit")}
+                    </button>
+                    <button
+                        type="button"
+                        className="close-record"
+                        onClick={this.openCloseRecordModal}
+                        disabled={
+                            !this.canEditRecord() ||
+                            !visitCompleted ||
+                            this.state.isClosing ||
+                            this.getRecordStatusId() === MEDICAL_RECORD_STATUS.CLOSED
+                        }
+                    >
+                        <i className="bi bi-lock-fill" />
+                        {this.state.isClosing ? this.getText("saving") : this.getText("closeRecord")}
+                    </button>
+                </div>
+                <Modal
+                    isOpen={this.state.closeModalOpen}
+                    toggle={this.closeCloseRecordModal}
+                    centered
+                    className="booking-management-confirm-modal"
                 >
-                    <i className="bi bi-save" />
-                    {this.state.isSavingDraft ? this.getText("saving") : this.getText("saveDraft")}
-                </button>
-                <button
-                    type="button"
-                    className="complete"
-                    onClick={this.handleCompleteVisit}
-                    disabled={
-                        !this.canEditRecord() ||
-                        visitCompleted ||
-                        this.state.isCompleting ||
-                        this.getVisitStatusId() !== VISIT_STATUS.IN_PROGRESS
-                    }
-                >
-                    <i className="bi bi-check2-circle" />
-                    {this.state.isCompleting ? this.getText("saving") : this.getText("completeVisit")}
-                </button>
-                <button
-                    type="button"
-                    className="close-record"
-                    onClick={this.handleCloseRecord}
-                    disabled={
-                        !this.canEditRecord() ||
-                        !visitCompleted ||
-                        this.state.isClosing ||
-                        this.getRecordStatusId() === MEDICAL_RECORD_STATUS.CLOSED
-                    }
-                >
-                    <i className="bi bi-lock-fill" />
-                    {this.state.isClosing ? this.getText("saving") : this.getText("closeRecord")}
-                </button>
-            </div>
+                    <ModalHeader toggle={this.closeCloseRecordModal}>
+                        {this.getText("closeTitle", "Close medical record?")}
+                    </ModalHeader>
+                    <ModalBody>
+                        <p className="booking-management-confirm-modal__description">
+                            {this.getText(
+                                "closeConfirm",
+                                "Once closed, this medical record will be read-only. Continue?"
+                            )}
+                        </p>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button
+                            type="button"
+                            className="booking-management-confirm-modal__cancel"
+                            onClick={this.closeCloseRecordModal}
+                            disabled={this.state.isClosing}
+                        >
+                            {this.getText("closeCancel", "Cancel")}
+                        </Button>
+                        <Button
+                            type="button"
+                            className="booking-management-confirm-modal__action booking-management-confirm-modal__action--reject"
+                            onClick={this.handleCloseRecord}
+                            disabled={this.state.isClosing}
+                        >
+                            {this.state.isClosing
+                                ? this.getText("closing", "Closing...")
+                                : this.getText("closeRecord", "Close medical record")}
+                        </Button>
+                    </ModalFooter>
+                </Modal>
+            </>
         );
     };
 
