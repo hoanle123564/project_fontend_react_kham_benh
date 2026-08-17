@@ -417,7 +417,7 @@ class BookingManagement extends Component {
             <button
               className="booking-management__refresh"
               type="button"
-              onClick={this.loadData}
+              onClick={() => this.loadData()}
             >
               <i className="bi bi-arrow-clockwise" aria-hidden="true" />{" "}
               {this.getText("refresh", "Refresh")}

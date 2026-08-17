@@ -467,12 +467,15 @@ class HomeHeader extends Component {
                                 const name = `${item.doctorFirstName || ""} ${item.doctorLastName || ""}`.trim() || this.getNotificationText("doctorFallback");
                                 const isMessage = item.type === "NEW_MESSAGE";
                                 const isReminder = item.type === "APPOINTMENT_REMINDER";
+                                const isRefundRejected = item.type === "REFUND_REJECTED";
                                 const isReviewHidden = item.type === "REVIEW_HIDDEN";
                                 const isReviewRestored = item.type === "REVIEW_RESTORED";
                                 const title = isMessage
                                   ? this.getNotificationText("messageTitle")
                                   : isReminder
                                     ? this.getNotificationText("reminderTitle")
+                                    : isRefundRejected
+                                      ? this.getNotificationText("refundRejectedTitle")
                                     : isReviewHidden
                                       ? this.getNotificationText("reviewHiddenTitle")
                                       : isReviewRestored
@@ -482,6 +485,8 @@ class HomeHeader extends Component {
                                   ? this.getNotificationText("messageDescription", { name })
                                   : isReminder
                                     ? this.getNotificationText("reminderDescription", { name })
+                                    : isRefundRejected
+                                      ? this.getNotificationText("refundRejectedDescription", { reason: item.content || "-" })
                                     : isReviewHidden
                                       ? this.getNotificationText("reviewHiddenDescription")
                                       : isReviewRestored
