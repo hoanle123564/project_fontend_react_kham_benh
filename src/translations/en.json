@@ -197,6 +197,7 @@
     "toggle-patient": "Collapse or expand patient details",
     "adjust": "Adjust",
     "additional-info": "Additional information (optional)",
+    "late-arrival-warning": "Notice: If you arrive after the appointment start time, the doctor may mark you as absent/no-show.",
     "note": "Note",
     "note-placeholder": "Symptoms, current medication, medical history, ...",
     "booking-info": "Appointment information",
@@ -732,6 +733,15 @@
       "doctor": "Doctor"
     },
     "record-workspace": {
+      "title": "Medical record",
+      "closeTitle": "Close medical record?",
+      "closeRecord": "Close medical record",
+      "closeConfirm": "Once closed, this medical record will be read-only. Continue?",
+      "closeCancel": "Cancel",
+      "closing": "Closing...",
+      "closeSuccess": "Medical record closed.",
+      "closeError": "Could not close medical record.",
+      "completeBeforeClose": "Complete the visit before closing the medical record.",
       "symptomsRequired": "Please enter symptoms.",
       "prescriptionNumberInvalid": "Prescription quantities must not be negative.",
       "readOnly": "Admin view is read-only.",

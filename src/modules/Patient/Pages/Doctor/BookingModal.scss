@@ -195,6 +195,18 @@ $booking-primary: #0f9c89;
         }
     }
 
+    .booking-modal__late-arrival-warning {
+        margin: 16px 0 0;
+        padding: 10px 12px;
+        border: 1px solid #fecaca;
+        border-left: 4px solid #dc2626;
+        border-radius: 6px;
+        background: #fef2f2;
+        color: #b91c1c;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
     .booking-modal__summary-card {
         padding: 20px;
 

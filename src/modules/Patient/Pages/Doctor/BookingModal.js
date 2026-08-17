@@ -390,6 +390,13 @@ class BookingModal extends Component {
                     </button>
                 </div>
 
+                <p className="booking-modal__late-arrival-warning">
+                    {this.getText(
+                        "late-arrival-warning",
+                        "Lưu ý: Nếu bạn đến trễ so với thời gian bắt đầu khám, bác sĩ có quyền đánh dấu bạn vắng mặt/không đến khám."
+                    )}
+                </p>
+
                 <div className="booking-modal__note-section">
                     <h2>{this.getText("additional-info", "Thông tin bổ sung (không bắt buộc)")}</h2>
                     <label htmlFor="booking-note">{this.getText("note", "Ghi chú")}</label>
