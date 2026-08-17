@@ -1246,6 +1246,8 @@
     "statusDescription": "Tr\u1ea1ng th\u00e1i l\u1ecbch kh\u00e1m c\u1ee7a b\u1ea1n l\u00e0 {status}.",
     "reminderTitle": "Nh\u1eafc l\u1ecbch kh\u00e1m",
     "reminderDescription": "L\u1ecbch h\u1eb9n c\u1ee7a b\u1ea1n v\u1edbi {name} s\u1eafp b\u1eaft \u0111\u1ea7u.",
+    "refundRejectedTitle": "Y\u00eau c\u1ea7u ho\u00e0n ti\u1ec1n b\u1ecb t\u1eeb ch\u1ed1i",
+    "refundRejectedDescription": "L\u00fd do: {reason}",
     "reviewHiddenTitle": "B\u00ecnh lu\u1eadn b\u1ecb \u1ea9n",
     "reviewHiddenDescription": "B\u00ecnh lu\u1eadn c\u1ee7a b\u1ea1n \u0111\u00e3 b\u1ecb \u1ea9n do vi ph\u1ea1m ti\u00eau chu\u1ea9n c\u1ed9ng \u0111\u1ed3ng.",
     "reviewRestoredTitle": "B\u00ecnh lu\u1eadn \u0111\u01b0\u1ee3c kh\u00f4i ph\u1ee5c",

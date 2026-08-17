@@ -1051,6 +1051,8 @@
     "statusDescription": "Your appointment status is now {status}.",
     "reminderTitle": "Appointment reminder",
     "reminderDescription": "Your appointment with {name} is starting soon.",
+    "refundRejectedTitle": "Refund request rejected",
+    "refundRejectedDescription": "Reason: {reason}",
     "reviewHiddenTitle": "Review hidden",
     "reviewHiddenDescription": "Your review was hidden for violating our community standards.",
     "reviewRestoredTitle": "Review restored",
